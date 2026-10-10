@@ -378,7 +378,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (settings.developerMode) {
       list.push({
         id: 'test',
-        label: 'Experimental (Lab)',
+        label: 'Insider Flags (Lab)',
         secondary: 'Developer Mode',
         route: '/test',
         icon: FlaskConical,
@@ -1195,35 +1195,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </aside>
       )}
 
-      {/* 2. Mobile Drawer Navigation */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 z-50 md:hidden flex"
-          role="dialog"
-          aria-modal="true"
-        >
-          {/* Backdrop */}
+      {/* 2. Mobile Drawer Navigation with Smooth Animation */}
+      <AnimatePresence>
+        {isMobileOpen && (
           <div 
-            onClick={onCloseMobile}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity cursor-pointer"
-            aria-hidden="true"
-          />
-
-          {/* Slide-out Sidebar Drawer */}
-          <div 
-            id="waves-mobile-sidebar"
-            onTouchStart={handleDrawerTouchStart}
-            onTouchEnd={handleDrawerTouchEnd}
-            className="relative w-[280px] max-w-[85vw] h-full bg-[#202020] text-white shadow-2xl flex flex-col z-10"
-            style={{
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-            }}
+            className="fixed inset-0 z-50 md:hidden flex"
+            role="dialog"
+            aria-modal="true"
           >
-            {renderSidebarBody(true)}
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              onClick={onCloseMobile}
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+              aria-hidden="true"
+            />
+
+            {/* Slide-out Sidebar Drawer with smooth spring transition */}
+            <motion.div 
+              id="waves-mobile-sidebar"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320, mass: 0.85 }}
+              onTouchStart={handleDrawerTouchStart}
+              onTouchEnd={handleDrawerTouchEnd}
+              className="relative w-[280px] max-w-[85vw] h-full bg-[#202020] text-white shadow-2xl flex flex-col z-10"
+              style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}
+            >
+              {renderSidebarBody(true)}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Discord Welcome Modal */}
       <DiscordWelcomeModal

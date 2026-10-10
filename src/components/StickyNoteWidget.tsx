@@ -306,7 +306,12 @@ export const StickyNoteWidget: React.FC<StickyNoteWidgetProps> = ({ onNavigateNo
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div
-          ref={contentRef}
+          ref={(el) => {
+            contentRef.current = el;
+            if (el && document.activeElement !== el && el.innerHTML !== (noteContent || '')) {
+              el.innerHTML = noteContent || '';
+            }
+          }}
           contentEditable
           suppressContentEditableWarning
           onInput={(e) => {
@@ -317,7 +322,7 @@ export const StickyNoteWidget: React.FC<StickyNoteWidgetProps> = ({ onNavigateNo
             const html = e.currentTarget.innerHTML;
             setNoteContent(html);
           }}
-          className="outline-none min-h-[120px] leading-relaxed break-words"
+          className="outline-none min-h-[120px] leading-relaxed break-words font-sans"
           style={{ color: currentStickyColor.text }}
         />
       </div>

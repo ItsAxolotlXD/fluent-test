@@ -25,7 +25,8 @@ import {
   Redo2,
   Highlighter,
   RemoveFormatting,
-  FileText
+  FileText,
+  Type
 } from 'lucide-react';
 import { exportDocx, exportWritePdf } from '../utils/officeExport';
 import { useNotes, STICKY_COLORS } from '../context/NotesContext';
@@ -34,14 +35,62 @@ interface NotesAppProps {
   navigate: (route: string) => void;
 }
 
-const PRESET_FONTS = [
-  'Segoe UI',
-  'Inter',
-  'Arial',
-  'Times New Roman',
-  'Georgia',
-  'Courier New',
-  'Roboto',
+export interface FontOption {
+  id: string;
+  name: string;
+  label: string;
+  fontFamily: string;
+}
+
+export const PRESET_FONTS: FontOption[] = [
+  {
+    id: 'segoe-ui',
+    name: 'Segoe UI',
+    label: 'Segoe UI (Hỗ trợ tiếng Việt)',
+    fontFamily: "'Segoe UI', 'Be Vietnam Pro', 'Inter', system-ui, sans-serif"
+  },
+  {
+    id: 'be-vietnam-pro',
+    name: 'Be Vietnam Pro',
+    label: 'Be Vietnam Pro (Chuẩn Việt hóa đẹp)',
+    fontFamily: "'Be Vietnam Pro', 'Inter', sans-serif"
+  },
+  {
+    id: 'inter',
+    name: 'Inter',
+    label: 'Inter (Hiện đại & Tinh gọn)',
+    fontFamily: "'Inter', sans-serif"
+  },
+  {
+    id: 'roboto',
+    name: 'Roboto',
+    label: 'Roboto (Google Fonts)',
+    fontFamily: "'Roboto', sans-serif"
+  },
+  {
+    id: 'arial',
+    name: 'Arial',
+    label: 'Arial (Phổ thông)',
+    fontFamily: "Arial, Helvetica, sans-serif"
+  },
+  {
+    id: 'times-new-roman',
+    name: 'Times New Roman',
+    label: 'Times New Roman (Có chân cổ điển)',
+    fontFamily: "'Times New Roman', Times, serif"
+  },
+  {
+    id: 'georgia',
+    name: 'Georgia',
+    label: 'Georgia (Báo chí & Tạp chí)',
+    fontFamily: "Georgia, serif"
+  },
+  {
+    id: 'courier-new',
+    name: 'Courier New',
+    label: 'Courier New (Mã nguồn / Đơn cách)',
+    fontFamily: "'Courier New', Courier, monospace"
+  }
 ];
 
 const PRESET_COLORS = [
@@ -67,6 +116,8 @@ const PRESET_HIGHLIGHTS = [
   '#fbcfe8', // pink
 ];
 
+const QUICK_FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64, 72];
+
 export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   const {
     noteTitle,
@@ -80,7 +131,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     currentStickyColor,
   } = useNotes();
 
-  const [activeFont, setActiveFont] = useState('Segoe UI');
+  const [selectedFont, setSelectedFont] = useState<FontOption>(PRESET_FONTS[0]);
   const [activeFontSize, setActiveFontSize] = useState<number>(16);
   const [fontSizeInput, setFontSizeInput] = useState<string>('16');
   const [activeColor, setActiveColor] = useState('#ffffff');
@@ -91,6 +142,8 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>('left');
   
+  const [showFontMenu, setShowFontMenu] = useState(false);
+  const [showFontSizeMenu, setShowFontSizeMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showHighlightPicker, setShowHighlightPicker] = useState(false);
   const [showStickyColorMenu, setShowStickyColorMenu] = useState(false);
@@ -99,15 +152,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
 
   const editorRef = useRef<HTMLDivElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
-
-  // Initialize editor with current note content
-  useEffect(() => {
-    if (editorRef.current) {
-      if (editorRef.current.innerHTML !== noteContent) {
-        editorRef.current.innerHTML = noteContent || '';
-      }
-    }
-  }, [noteContent]);
+  const isInternalChangeRef = useRef(false);
 
   const [wordCount, setWordCount] = useState(0);
   const [charCount, setCharCount] = useState(0);
@@ -120,8 +165,25 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     setCharCount(text.length);
   }, []);
 
+  // Initialize editor with current note content once or on external update
+  useEffect(() => {
+    if (editorRef.current) {
+      if (isInternalChangeRef.current) {
+        isInternalChangeRef.current = false;
+        return;
+      }
+      if (document.activeElement === editorRef.current) {
+        return;
+      }
+      if (editorRef.current.innerHTML !== (noteContent || '')) {
+        editorRef.current.innerHTML = noteContent || '';
+        updateStats();
+      }
+    }
+  }, [noteContent, updateStats]);
+
   // Selection & Range management
-  const saveSelection = () => {
+  const saveSelection = useCallback(() => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0 && editorRef.current) {
       const range = sel.getRangeAt(0);
@@ -129,17 +191,24 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         savedRangeRef.current = range.cloneRange();
       }
     }
-  };
+  }, []);
 
-  const restoreSelection = () => {
-    if (savedRangeRef.current) {
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(savedRangeRef.current);
+  const ensureSelection = useCallback((): Selection | null => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+      return sel;
+    }
+    if (savedRangeRef.current && editorRef.current) {
+      const sel2 = window.getSelection();
+      if (sel2) {
+        sel2.removeAllRanges();
+        sel2.addRange(savedRangeRef.current);
+        return sel2;
       }
     }
-  };
+    return null;
+  }, []);
 
   const updateToolbarStates = useCallback(() => {
     try {
@@ -154,12 +223,20 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     } catch {}
   }, []);
 
+  const handleEditorInput = useCallback(() => {
+    if (editorRef.current) {
+      isInternalChangeRef.current = true;
+      const html = editorRef.current.innerHTML;
+      setNoteContent(html);
+      updateStats();
+    }
+  }, [setNoteContent, updateStats]);
+
   // Format execution helper using document.execCommand with selection retention
   const execCmd = (cmd: string, value: string | undefined = undefined) => {
     if (editorRef.current) {
-      editorRef.current.focus();
-      restoreSelection();
-      document.execCommand('styleWithCSS', false, 'true');
+      ensureSelection();
+      document.execCommand('styleWithCSS', false, true as any);
       document.execCommand(cmd, false, value);
       saveSelection();
       updateToolbarStates();
@@ -189,40 +266,110 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
 
   const handleColorSelect = (color: string) => {
     setActiveColor(color);
-    if (editorRef.current) {
-      editorRef.current.focus();
-      restoreSelection();
-      document.execCommand('styleWithCSS', false, 'true');
-      document.execCommand('foreColor', false, color);
-      saveSelection();
-      handleEditorInput();
+    if (!editorRef.current) return;
+    const sel = ensureSelection();
+    
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      const range = sel.getRangeAt(0);
+      if (editorRef.current.contains(range.commonAncestorContainer)) {
+        try {
+          const span = document.createElement('span');
+          span.style.color = color;
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+          
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+          handleEditorInput();
+          setShowColorPicker(false);
+          return;
+        } catch {}
+      }
     }
+    
+    document.execCommand('styleWithCSS', false, true as any);
+    document.execCommand('foreColor', false, color);
+    saveSelection();
+    handleEditorInput();
     setShowColorPicker(false);
   };
 
   const handleHighlightSelect = (color: string) => {
     setActiveHighlight(color);
-    if (editorRef.current) {
-      editorRef.current.focus();
-      restoreSelection();
-      document.execCommand('styleWithCSS', false, 'true');
-      document.execCommand('hiliteColor', false, color === 'transparent' ? 'initial' : color);
-      saveSelection();
-      handleEditorInput();
+    if (!editorRef.current) return;
+    const sel = ensureSelection();
+    
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      const range = sel.getRangeAt(0);
+      if (editorRef.current.contains(range.commonAncestorContainer)) {
+        try {
+          const span = document.createElement('span');
+          span.style.backgroundColor = color === 'transparent' ? 'transparent' : color;
+          if (color !== 'transparent') {
+            span.style.color = '#000000';
+            span.style.padding = '0.05em 0.2em';
+            span.style.borderRadius = '3px';
+          }
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+          
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+          handleEditorInput();
+          setShowHighlightPicker(false);
+          return;
+        } catch {}
+      }
     }
+    
+    document.execCommand('styleWithCSS', false, true as any);
+    document.execCommand('hiliteColor', false, color === 'transparent' ? 'transparent' : color);
+    saveSelection();
+    handleEditorInput();
     setShowHighlightPicker(false);
   };
 
-  const handleFontChange = (font: string) => {
-    setActiveFont(font);
-    if (editorRef.current) {
-      editorRef.current.focus();
-      restoreSelection();
-      document.execCommand('styleWithCSS', false, 'true');
-      document.execCommand('fontName', false, font);
-      saveSelection();
-      handleEditorInput();
+  const handleFontSelect = (fontObj: FontOption) => {
+    setSelectedFont(fontObj);
+    setShowFontMenu(false);
+    if (!editorRef.current) return;
+    const sel = ensureSelection();
+    
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      const range = sel.getRangeAt(0);
+      if (editorRef.current.contains(range.commonAncestorContainer)) {
+        try {
+          const span = document.createElement('span');
+          span.style.fontFamily = fontObj.fontFamily;
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+          
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+          handleEditorInput();
+          return;
+        } catch {}
+      }
     }
+    
+    // If no text selected or whole note: apply default font family to editor container
+    editorRef.current.style.fontFamily = fontObj.fontFamily;
+    document.execCommand('styleWithCSS', false, true as any);
+    document.execCommand('fontName', false, fontObj.fontFamily);
+    saveSelection();
+    handleEditorInput();
   };
 
   // Robust font size application supporting exact 1 to 200px
@@ -230,47 +377,52 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     const clampedSize = Math.max(1, Math.min(200, sizeVal));
     setActiveFontSize(clampedSize);
     setFontSizeInput(clampedSize.toString());
-
+    setShowFontSizeMenu(false);
+    
     if (!editorRef.current) return;
-    editorRef.current.focus();
-    restoreSelection();
-
-    const sel = window.getSelection();
+    const sel = ensureSelection();
+    
     if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
       const range = sel.getRangeAt(0);
       if (editorRef.current.contains(range.commonAncestorContainer)) {
-        // Use a unique marker attribute to replace
-        const uniqueMarker = `font-sz-marker-${Date.now()}`;
-        document.execCommand('styleWithCSS', false, 'false');
-        document.execCommand('fontSize', false, '7');
-        
-        const fontTags = editorRef.current.querySelectorAll('font[size="7"]');
-        fontTags.forEach((f) => {
+        try {
           const span = document.createElement('span');
           span.style.fontSize = `${clampedSize}px`;
-          span.setAttribute('data-sz', uniqueMarker);
-          span.innerHTML = f.innerHTML;
-          f.parentNode?.replaceChild(span, f);
-        });
-
-        // Re-select applied text
-        saveSelection();
-        handleEditorInput();
-        return;
+          span.style.lineHeight = '1.35';
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+          
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+          handleEditorInput();
+          return;
+        } catch {}
       }
     }
-
-    // If collapsed or no selection, wrap active node or apply directly
-    document.execCommand('styleWithCSS', false, 'false');
-    document.execCommand('fontSize', false, '7');
-    const fontTags = editorRef.current.querySelectorAll('font[size="7"]');
-    fontTags.forEach((f) => {
+    
+    // If collapsed or no selection, update default root font size or insert styled node
+    if (!editorRef.current.innerText.trim()) {
+      editorRef.current.style.fontSize = `${clampedSize}px`;
+    } else {
+      document.execCommand('styleWithCSS', false, true as any);
       const span = document.createElement('span');
       span.style.fontSize = `${clampedSize}px`;
-      span.innerHTML = f.innerHTML;
-      f.parentNode?.replaceChild(span, f);
-    });
-    saveSelection();
+      span.innerHTML = '&#8203;';
+      const r = sel && sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+      if (r && editorRef.current.contains(r.commonAncestorContainer)) {
+        r.insertNode(span);
+        const newR = document.createRange();
+        newR.setStart(span, 1);
+        newR.collapse(true);
+        sel?.removeAllRanges();
+        sel?.addRange(newR);
+        savedRangeRef.current = newR.cloneRange();
+      }
+    }
     handleEditorInput();
   };
 
@@ -295,11 +447,23 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     execCmd('formatBlock', tag);
   };
 
-  const handleEditorInput = () => {
-    if (editorRef.current) {
-      const html = editorRef.current.innerHTML;
-      setNoteContent(html);
-      updateStats();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        handleToggleBold();
+      } else if (e.key === 'i' || e.key === 'I') {
+        e.preventDefault();
+        handleToggleItalic();
+      } else if (e.key === 'u' || e.key === 'U') {
+        e.preventDefault();
+        handleToggleUnderline();
+      }
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      document.execCommand('insertHTML', false, '&nbsp;&nbsp;&nbsp;&nbsp;');
+      handleEditorInput();
     }
   };
 
@@ -339,16 +503,16 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${noteTitle || 'Note'}.txt`;
+    a.download = `${noteTitle.trim() || 'notes'}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    triggerToast('Đã tải xuống file văn bản (.txt)');
+    triggerToast('Đã xuất file văn bản (.txt) thành công!');
   };
 
   const handleClear = () => {
-    if (confirm('Bạn có chắc muốn xóa nội dung ghi chú này không?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ nội dung ghi chú này không?')) {
       if (editorRef.current) {
-        editorRef.current.innerHTML = '<p><br></p>';
+        editorRef.current.innerHTML = '';
         handleEditorInput();
       }
     }
@@ -356,27 +520,27 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
 
   const handleToggleStickies = () => {
     setIsStickyVisible(!isStickyVisible);
-    if (!isStickyVisible) {
-      triggerToast('Đã bật Sticky Note! Bạn có thể kéo và co giãn kích thước quanh màn hình.');
-    } else {
-      triggerToast('Đã ẩn Sticky Note.');
-    }
+    triggerToast(
+      !isStickyVisible 
+        ? 'Đã mở chế độ Sticky Note! Ghi chú hiển thị trên toàn ứng dụng.' 
+        : 'Đã ẩn Sticky Note.'
+    );
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#1c1c22] text-[#f3f4f6] select-text">
-      {/* 1. TOP SUITE NAVIGATION BAR */}
-      <div className="h-14 bg-[#24242c] border-b border-white/10 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+    <div className="flex flex-col h-full bg-[#1e1e24] text-neutral-100 select-text overflow-hidden">
+      {/* 1. TOP HEADER APP BAR */}
+      <div className="h-14 bg-[#18181f] border-b border-white/10 px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-8 h-8 rounded-md flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
             title="Quay lại Trang chủ"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
-
+          
           {/* App Branding Badge */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0078d4]/15 border border-[#4cc2ff]/30 text-white">
             <StickyNote className="w-4 h-4 text-[#4cc2ff]" />
@@ -431,6 +595,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               <span className="text-[11px]">{currentStickyColor.name}</span>
               <ChevronDown className="w-3 h-3 text-neutral-400" />
             </button>
+
             {showStickyColorMenu && (
               <div
                 className="absolute right-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-4 gap-1.5 z-50 w-44"
@@ -485,6 +650,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                     <div className="text-[10px] text-neutral-400">Xuất định dạng .docx</div>
                   </div>
                 </button>
+
                 <button
                   type="button"
                   onClick={handleExportPdf}
@@ -496,6 +662,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                     <div className="text-[10px] text-neutral-400">Xuất định dạng .pdf</div>
                   </div>
                 </button>
+
                 <button
                   type="button"
                   onClick={handleExportTxt}
@@ -546,66 +713,138 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
 
         <div className="w-[1px] h-5 bg-white/10 mx-1" />
 
-        {/* Font Family Selector */}
-        <select
-          value={activeFont}
-          onChange={(e) => handleFontChange(e.target.value)}
-          className="bg-black/30 border border-white/10 rounded-md px-2.5 py-1 text-xs text-white outline-none cursor-pointer hover:bg-black/40"
-          title="Phông chữ"
-        >
-          {PRESET_FONTS.map((f) => (
-            <option key={f} value={f} className="bg-[#212128] text-white">
-              {f}
-            </option>
-          ))}
-        </select>
+        {/* Font Family Selector Menu */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              setShowFontMenu(!showFontMenu);
+              setShowFontSizeMenu(false);
+              setShowColorPicker(false);
+              setShowHighlightPicker(false);
+            }}
+            className="flex items-center gap-1.5 bg-black/30 hover:bg-white/10 border border-white/10 rounded-md px-2.5 py-1 text-xs text-white outline-none cursor-pointer transition-colors max-w-[170px]"
+            title="Chọn phông chữ (Hỗ trợ tiếng Việt)"
+          >
+            <Type className="w-3.5 h-3.5 text-[#4cc2ff] shrink-0" />
+            <span className="truncate">{selectedFont.name}</span>
+            <ChevronDown className="w-3 h-3 text-neutral-400 shrink-0 ml-1" />
+          </button>
 
-        {/* Font Size: Custom typing (1 - 200) + Stepper */}
-        <div className="flex items-center gap-1 bg-black/30 border border-white/10 rounded-md px-1.5 py-0.5" title="Cỡ chữ (gõ từ 1 đến 200px)">
-          <span className="text-[10px] text-neutral-400 font-medium pl-0.5">Size</span>
-          <input
-            type="number"
-            min={1}
-            max={200}
-            value={fontSizeInput}
-            onChange={(e) => {
-              setFontSizeInput(e.target.value);
-              const num = parseInt(e.target.value, 10);
-              if (!isNaN(num) && num >= 1 && num <= 200) {
-                applyExactFontSize(num);
-              }
-            }}
-            onBlur={handleFontSizeInputBlurOrEnter}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleFontSizeInputBlurOrEnter();
-              }
-            }}
-            className="w-12 bg-transparent text-xs text-center font-bold text-white outline-none"
-            placeholder="16"
-          />
-          <span className="text-[10px] text-neutral-400">px</span>
-          <div className="flex flex-col ml-0.5">
+          {showFontMenu && (
+            <div 
+              className="absolute left-0 mt-1.5 w-64 bg-[#282832] border border-[#3e3e48] rounded-lg shadow-2xl p-1 z-50 text-xs"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-2.5 py-1 text-[11px] font-semibold text-neutral-400 border-b border-white/10 mb-1">
+                Phông chữ hỗ trợ tiếng Việt
+              </div>
+              {PRESET_FONTS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleFontSelect(f)}
+                  className={`w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer ${
+                    selectedFont.id === f.id ? 'bg-[#4cc2ff]/20 text-[#4cc2ff] font-semibold' : 'text-neutral-200'
+                  }`}
+                  style={{ fontFamily: f.fontFamily }}
+                >
+                  <span className="truncate">{f.label}</span>
+                  {selectedFont.id === f.id && <Check className="w-3.5 h-3.5 shrink-0 ml-1 text-[#4cc2ff]" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Font Size: Custom typing (1 - 200) + Stepper + Quick Presets */}
+        <div className="relative flex items-center">
+          <div className="flex items-center gap-1 bg-black/30 border border-white/10 rounded-md px-1.5 py-0.5" title="Cỡ chữ (Gõ số từ 1 đến 200px)">
+            <span className="text-[10px] text-neutral-400 font-medium pl-0.5">Size</span>
+            <input
+              type="number"
+              min={1}
+              max={200}
+              value={fontSizeInput}
+              onChange={(e) => {
+                setFontSizeInput(e.target.value);
+                const num = parseInt(e.target.value, 10);
+                if (!isNaN(num) && num >= 1 && num <= 200) {
+                  applyExactFontSize(num);
+                }
+              }}
+              onBlur={handleFontSizeInputBlurOrEnter}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleFontSizeInputBlurOrEnter();
+                }
+              }}
+              className="w-12 bg-transparent text-xs text-center font-bold text-white outline-none"
+              placeholder="16"
+            />
+            <span className="text-[10px] text-neutral-400">px</span>
+            
+            <div className="flex flex-col ml-0.5">
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => applyExactFontSize(activeFontSize + 1)}
+                className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
+                title="Tăng cỡ chữ"
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => applyExactFontSize(activeFontSize - 1)}
+                className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
+                title="Giảm cỡ chữ"
+              >
+                ▼
+              </button>
+            </div>
+
+            {/* Quick dropdown arrow for font sizes */}
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => applyExactFontSize(activeFontSize + 1)}
-              className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
-              title="Tăng cỡ chữ"
+              onClick={() => {
+                setShowFontSizeMenu(!showFontSizeMenu);
+                setShowFontMenu(false);
+                setShowColorPicker(false);
+                setShowHighlightPicker(false);
+              }}
+              className="ml-1 pl-1 border-l border-white/15 text-neutral-400 hover:text-white cursor-pointer"
+              title="Danh sách cỡ chữ mẫu"
             >
-              ▲
-            </button>
-            <button
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => applyExactFontSize(activeFontSize - 1)}
-              className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
-              title="Giảm cỡ chữ"
-            >
-              ▼
+              <ChevronDown className="w-3 h-3" />
             </button>
           </div>
+
+          {showFontSizeMenu && (
+            <div 
+              className="absolute left-0 top-full mt-1.5 w-36 bg-[#282832] border border-[#3e3e48] rounded-lg shadow-2xl p-1 z-50 text-xs grid grid-cols-3 gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {QUICK_FONT_SIZES.map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => applyExactFontSize(sz)}
+                  className={`py-1 text-center rounded hover:bg-white/10 transition-colors cursor-pointer ${
+                    activeFontSize === sz ? 'bg-[#4cc2ff] text-black font-bold' : 'text-neutral-200'
+                  }`}
+                >
+                  {sz}px
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="w-[1px] h-5 bg-white/10 mx-1" />
@@ -622,6 +861,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Bold className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -633,6 +873,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Italic className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -644,6 +885,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Underline className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -666,6 +908,8 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             onClick={() => {
               setShowColorPicker(!showColorPicker);
               setShowHighlightPicker(false);
+              setShowFontMenu(false);
+              setShowFontSizeMenu(false);
             }}
             className="flex items-center gap-1.5 px-2 py-1 rounded bg-black/20 hover:bg-white/10 text-neutral-300 text-xs transition-colors cursor-pointer"
             title="Màu chữ"
@@ -674,6 +918,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             <span>Màu</span>
             <ChevronDown className="w-3 h-3 text-neutral-400" />
           </button>
+
           {showColorPicker && (
             <div 
               className="absolute left-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-5 gap-1.5 z-50"
@@ -706,6 +951,8 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             onClick={() => {
               setShowHighlightPicker(!showHighlightPicker);
               setShowColorPicker(false);
+              setShowFontMenu(false);
+              setShowFontSizeMenu(false);
             }}
             className="flex items-center gap-1 px-2 py-1 rounded bg-black/20 hover:bg-white/10 text-neutral-300 text-xs transition-colors cursor-pointer"
             title="Màu nền đánh dấu (Highlighter)"
@@ -713,6 +960,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             <Highlighter className="w-3.5 h-3.5 text-yellow-300" />
             <ChevronDown className="w-3 h-3 text-neutral-400" />
           </button>
+
           {showHighlightPicker && (
             <div 
               className="absolute left-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-4 gap-1.5 z-50 w-36"
@@ -751,6 +999,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <AlignLeft className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -762,6 +1011,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <AlignCenter className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -773,6 +1023,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <AlignRight className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -797,6 +1048,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Heading1 className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -806,6 +1058,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Heading2 className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -815,6 +1068,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <List className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -824,6 +1078,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <ListOrdered className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -833,6 +1088,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         >
           <Quote className="w-3.5 h-3.5" />
         </button>
+
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -867,6 +1123,8 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
       <div 
         className="flex-1 overflow-y-auto px-4 py-8 flex justify-center bg-[#15151a]"
         onClick={() => {
+          setShowFontMenu(false);
+          setShowFontSizeMenu(false);
           setShowColorPicker(false);
           setShowHighlightPicker(false);
           setShowStickyColorMenu(false);
@@ -880,6 +1138,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             suppressContentEditableWarning
             onInput={handleEditorInput}
             onSelect={saveSelection}
+            onKeyDown={handleKeyDown}
             onKeyUp={() => {
               saveSelection();
               updateToolbarStates();
@@ -890,9 +1149,10 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               updateToolbarStates();
               updateStats();
             }}
-            className="flex-1 outline-none text-neutral-200 leading-relaxed font-sans text-base empty:before:content-['Bắt_đầu_viết_ghi_chú_tại_đây...'] empty:before:text-neutral-500"
+            className="flex-1 outline-none text-neutral-200 leading-relaxed text-base empty:before:content-['Bắt_đầu_viết_ghi_chú_tại_đây...'] empty:before:text-neutral-500"
             style={{
-              fontFamily: activeFont,
+              fontFamily: selectedFont.fontFamily,
+              fontSize: `${activeFontSize}px`,
               minHeight: '600px',
             }}
           />
@@ -904,7 +1164,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         <div className="flex items-center gap-4">
           <span>{wordCount} từ</span>
           <span>{charCount} ký tự</span>
-          <span className="hidden sm:inline">Phông: {activeFont} ({activeFontSize}px)</span>
+          <span className="hidden sm:inline">Phông: {selectedFont.name} ({activeFontSize}px)</span>
         </div>
         <div className="flex items-center gap-3">
           {isStickyVisible && (

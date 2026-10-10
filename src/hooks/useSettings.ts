@@ -28,6 +28,7 @@ export interface SystemSettings {
   animatePageTransitions: boolean;
   immersiveSearch: boolean;
   nativeKeyboard: boolean;
+  nativeKeyboardVersion?: number;
   keyboardNumberRow: boolean;
   keyboardClipboard: boolean;
   keyboardSoundEnabled: boolean;
@@ -75,7 +76,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   animateModals: true,
   animatePageTransitions: true,
   immersiveSearch: true,
-  nativeKeyboard: false,
+  nativeKeyboard: true,
+  nativeKeyboardVersion: 1,
   keyboardNumberRow: false,
   keyboardClipboard: true,
   keyboardSoundEnabled: true,
@@ -148,7 +150,10 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.floatingSearchBar === 'boolean' ? parsed.floatingSearchBar : true)
           : true,
         floatingSearchBarVersion: 1,
-        nativeKeyboard: typeof parsed.nativeKeyboard === 'boolean' ? parsed.nativeKeyboard : DEFAULT_SETTINGS.nativeKeyboard,
+        nativeKeyboard: parsed.nativeKeyboardVersion === 1
+          ? (typeof parsed.nativeKeyboard === 'boolean' ? parsed.nativeKeyboard : true)
+          : true,
+        nativeKeyboardVersion: 1,
         keyboardNumberRow: typeof parsed.keyboardNumberRow === 'boolean' ? parsed.keyboardNumberRow : DEFAULT_SETTINGS.keyboardNumberRow,
         keyboardClipboard: typeof parsed.keyboardClipboard === 'boolean' ? parsed.keyboardClipboard : DEFAULT_SETTINGS.keyboardClipboard,
         keyboardSoundEnabled: typeof parsed.keyboardSoundEnabled === 'boolean' ? parsed.keyboardSoundEnabled : DEFAULT_SETTINGS.keyboardSoundEnabled,
