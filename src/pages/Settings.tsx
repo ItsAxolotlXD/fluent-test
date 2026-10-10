@@ -1,0 +1,1754 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  Palette, 
+  Key, 
+  Search, 
+  Type, 
+  X,
+  Sparkles,
+  Sliders,
+  Mic,
+  MicOff,
+  Wrench,
+  FlaskConical,
+  Keyboard,
+  RotateCcw,
+  AlertCircle,
+  Info,
+  Tv,
+  Box,
+  ChevronRight,
+  ChevronLeft,
+  Sun,
+  Moon
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSettings';
+import { useVoiceSearch } from '../hooks/useVoiceSearch';
+import { WelcomeModal } from '../components/WelcomeModal';
+import { SfCheckmark } from '../components/SfCheckmark';
+import { CategoryIcon } from '../components/CategoryIcon';
+import { TriangleLoader } from '../components/TriangleLoader';
+import { KEYBIND_DEFINITIONS, DEFAULT_KEYBINDS, eventToKeyString, validateKeybind } from '../utils/keybinds';
+import { KeybindAction } from '../types';
+
+export type SettingsCategoryId = 
+  | 'spatial-glass' 
+  | 'interface' 
+  | 'accessibility' 
+  | 'tools' 
+  | 'experimental';
+
+interface SettingsCategoryItem {
+  id: SettingsCategoryId;
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badgeColor: string;
+  keywords: string[];
+}
+
+const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
+  {
+    id: 'spatial-glass',
+    title: 'Fluent Design',
+    subtitle: 'Acrylic, Mica material effects and modern visual styling',
+    icon: Box,
+    badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
+    keywords: ['fluent', 'design', 'acrylic', 'mica', 'opacity', 'blur', 'windows 11', 'transparency'],
+  },
+  {
+    id: 'interface',
+    title: 'Interface',
+    subtitle: 'Navigation bar, app theme, text scaling, and display mode',
+    icon: Palette,
+    badgeColor: 'bg-gradient-to-b from-[#34C759] to-[#248A3D]',
+    keywords: ['interface', 'navigation', 'sidebar', 'topbar', 'side view', 'top view', 'floaty', 'tab view', 'theme', 'light mode', 'dark mode', 'font', 'scale', 'super dark'],
+  },
+  {
+    id: 'accessibility',
+    title: 'Accessibility',
+    subtitle: 'Motion animations, search scope, and virtual keyboard',
+    icon: Key,
+    badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
+    keywords: ['accessibility', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts'],
+  },
+];
+
+const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
+  {
+    id: 'tools',
+    title: 'Tools',
+    subtitle: 'Aspect ratio and sidebar auto-hide preferences',
+    icon: Wrench,
+    badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
+    keywords: ['tools', 'aspect ratio', '16:9', '4:3', 'auto hide', 'sidebar'],
+  },
+  {
+    id: 'experimental',
+    title: 'Experimental',
+    subtitle: 'Laboratory preview features and diagnostic tests',
+    icon: FlaskConical,
+    badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
+    keywords: ['experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader'],
+  },
+];
+
+const ALL_CATEGORIES = [...SETTINGS_GROUP_1, ...SETTINGS_GROUP_2];
+
+interface SettingsProps {
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+}
+
+export const Settings: React.FC<SettingsProps> = ({
+  searchQuery: externalSearchQuery,
+  onSearchChange: externalOnSearchChange
+}) => {
+  const { 
+    settings, 
+    draftSettings, 
+    hasChanges, 
+    changedKeys, 
+    updateDraftSetting, 
+    applyDraftSettings 
+  } = useSettings();
+
+  const [activeCategory, setActiveCategory] = useState<SettingsCategoryId | null>(null);
+  const [showApplyToast, setShowApplyToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [internalSearchQuery, setInternalSearchQuery] = useState('');
+
+  const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
+  const setSearchQuery = (q: string) => {
+    setInternalSearchQuery(q);
+    externalOnSearchChange?.(q);
+  };
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const [editingKeybindId, setEditingKeybindId] = useState<KeybindAction | null>(null);
+  const [keybindError, setKeybindError] = useState<{ id: KeybindAction; message: string } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const shouldAnimateMotion = !draftSettings.reduceAllMotion && draftSettings.animatePageTransitions;
+
+  const updateDraft = <K extends keyof SystemSettings>(key: K, value: SystemSettings[K]) => {
+    updateDraftSetting(key, value);
+    if (key === 'superDarkMode') {
+      if (value) {
+        document.documentElement.classList.add('super-dark');
+        document.body?.classList.add('super-dark');
+      } else {
+        document.documentElement.classList.remove('super-dark');
+        document.body?.classList.remove('super-dark');
+      }
+    }
+    if (key === 'theme') {
+      if (value === 'light') {
+        document.documentElement.classList.add('light-mode');
+        document.documentElement.classList.remove('dark');
+        document.body?.classList.add('light-mode');
+      } else {
+        document.documentElement.classList.remove('light-mode');
+        document.documentElement.classList.add('dark');
+        document.body?.classList.remove('light-mode');
+      }
+    }
+    if (key === 'disableShinyOutline') {
+      if (value) {
+        document.documentElement.classList.add('no-shiny-outline');
+        document.body?.classList.add('no-shiny-outline');
+      } else {
+        document.documentElement.classList.remove('no-shiny-outline');
+        document.body?.classList.remove('no-shiny-outline');
+      }
+    }
+  };
+
+  const handleApplySettings = () => {
+    if (!hasChanges) {
+      setToastMessage('All settings are already up to date');
+      setShowApplyToast(true);
+      setTimeout(() => setShowApplyToast(false), 2200);
+      return;
+    }
+
+    applyDraftSettings();
+    setToastMessage(`Applied ${changedKeys.length} settings changes!`);
+    setShowApplyToast(true);
+    setTimeout(() => setShowApplyToast(false), 2600);
+  };
+
+  useEffect(() => {
+    const handleAppliedEvent = () => {
+      setToastMessage('Settings changes applied successfully!');
+      setShowApplyToast(true);
+      setTimeout(() => setShowApplyToast(false), 2600);
+    };
+    window.addEventListener('settings-applied-toast', handleAppliedEvent);
+    return () => window.removeEventListener('settings-applied-toast', handleAppliedEvent);
+  }, []);
+
+  const {
+    isListening,
+    toggleListening
+  } = useVoiceSearch((transcript) => {
+    setSearchQuery(transcript);
+    setIsFocused(true);
+    inputRef.current?.focus();
+  });
+
+  const matchesSearch = (text: string) => {
+    if (!searchQuery.trim()) return true;
+    return text.toLowerCase().includes(searchQuery.toLowerCase().trim());
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6 pb-28 pt-2 select-none">
+      {/* 1. Top Header on Main Category View OR Minimal Back Bar on Subpage */}
+      {activeCategory === null ? (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              Settings
+            </h1>
+            {hasChanges && (
+              <button
+                type="button"
+                id="btn-settings-save"
+                onClick={handleApplySettings}
+                className="px-5 py-2 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+              >
+                <span>Save</span>
+              </button>
+            )}
+          </div>
+          <p className="text-xs sm:text-sm text-[#9CA3AF]">
+            Customize your Vplay streaming and display experience.
+          </p>
+
+          {/* Search Header */}
+          <div className="pt-2">
+            <div 
+              id="settings-search-box"
+              onClick={() => {
+                setIsFocused(true);
+                inputRef.current?.focus();
+              }}
+              className="relative w-full h-[48px] flex items-center px-4 rounded-[6px] bg-white/5 dark:bg-[#2b2b2b] text-sm transition-all shadow-lg overflow-hidden cursor-text select-none border border-black/10 dark:border-white/10 border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff]"
+            >
+                <motion.div 
+                  animate={{
+                    x: isFocused || searchQuery ? 0 : 'calc(50% - 75px)',
+                  }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                  className="flex items-center gap-2 pointer-events-none"
+                >
+                  <Search className="w-4 h-4 text-[#8E8E93] shrink-0" />
+                  {!isFocused && !searchQuery && (
+                    <span className="text-[#8E8E93] text-sm font-medium">
+                      Search...
+                    </span>
+                  )}
+                </motion.div>
+
+                <input
+                  ref={inputRef}
+                  id="settings-search-input"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  placeholder={isFocused ? 'Search settings...' : ''}
+                  className={`w-full h-full bg-transparent border-none outline-none text-white placeholder-[#8E8E93] text-sm pl-2 pr-8 ${
+                    !isFocused && !searchQuery ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+
+                <div className="absolute right-3 flex items-center gap-1">
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSearchQuery('');
+                        inputRef.current?.focus();
+                      }}
+                      className="p-1 rounded-full text-[#8E8E93] hover:text-white hover:bg-white/10 transition-colors"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleListening();
+                    }}
+                    className={`p-1.5 rounded-full transition-colors ${
+                      isListening
+                        ? 'text-[#E6005A] bg-[#E6005A]/20 animate-pulse'
+                        : 'text-[#8E8E93] hover:text-white hover:bg-white/10'
+                    }`}
+                    title={isListening ? 'Stop listening' : 'Voice search'}
+                  >
+                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+      ) : (
+        /* Subpage Minimal Header: Back button (no redundant title/description) */
+        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <button
+            type="button"
+            id="btn-settings-back"
+            onClick={() => setActiveCategory(null)}
+            className="inline-flex items-center gap-1 text-[#007AFF] hover:text-[#32ADE6] active:opacity-75 transition-all font-semibold text-sm sm:text-base py-1 px-2.5 rounded-full bg-white/5 hover:bg-white/10 cursor-default"
+          >
+            <ChevronLeft className="w-5 h-5 -ml-1" />
+            <span>Settings</span>
+          </button>
+        </div>
+      )}
+
+      {/* 2. Main Page: Grouped Categories vs Subpages with horizontal slide animation */}
+      <AnimatePresence mode="wait" initial={false}>
+        {activeCategory === null ? (
+          <motion.div
+            key="settings-main-categories"
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{
+              duration: shouldAnimateMotion ? 0.28 : 0,
+              ease: [0.16, 1, 0.3, 1]
+            }}
+            className="space-y-3.5"
+          >
+          {/* Quick Search Jump Results if user typed a search query */}
+          {searchQuery.trim() && (
+            <div className="p-4 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
+              <div className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider px-1">
+                Search results for "{searchQuery}"
+              </div>
+              <div className="grid grid-cols-1 gap-1">
+                {ALL_CATEGORIES.filter((cat) => 
+                  matchesSearch(cat.title) || 
+                  matchesSearch(cat.subtitle) || 
+                  cat.keywords.some(k => matchesSearch(k))
+                ).map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.id)}
+                    className="flex items-center justify-between p-2.5 sm:p-3 rounded-[18px] bg-white/5 hover:bg-white/10 text-left transition-colors cursor-default"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`settings-category-badge w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${cat.badgeColor}`}>
+                        <cat.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-white">{cat.title}</div>
+                        <div className="text-xs text-[#9CA3AF]">{cat.subtitle}</div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#8E8E93]" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Group 1: Spatial Glass, Giao diện, Trợ năng */}
+          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
+            {SETTINGS_GROUP_1.map((item, idx) => (
+              <React.Fragment key={item.id}>
+                <div
+                  id={`settings-category-${item.id}`}
+                  onClick={() => setActiveCategory(item.id)}
+                  className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
+                >
+                  {/* Icon Badge without outline - 100% border radius */}
+                  <div className={`settings-category-badge w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-full flex items-center justify-center shrink-0 shadow-sm ${item.badgeColor}`}>
+                    <item.icon className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] text-white" />
+                  </div>
+
+                  {/* Label */}
+                  <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
+                    <div className="text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
+                      {item.title}
+                    </div>
+                  </div>
+
+                  {/* Chevron Right */}
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-white transition-colors shrink-0 ml-2" />
+                </div>
+                {idx < SETTINGS_GROUP_1.length - 1 && (
+                  <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Group 2: Công cụ, Thử nghiệm */}
+          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
+            {SETTINGS_GROUP_2.map((item, idx) => (
+              <React.Fragment key={item.id}>
+                <div
+                  id={`settings-category-${item.id}`}
+                  onClick={() => setActiveCategory(item.id)}
+                  className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
+                >
+                  {/* Icon Badge without outline - 100% border radius */}
+                  <div className={`settings-category-badge w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-full flex items-center justify-center shrink-0 shadow-sm ${item.badgeColor}`}>
+                    <item.icon className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] text-white" />
+                  </div>
+
+                  {/* Label */}
+                  <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
+                    <div className="text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
+                      {item.title}
+                    </div>
+                  </div>
+
+                  {/* Chevron Right */}
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-white transition-colors shrink-0 ml-2" />
+                </div>
+                {idx < SETTINGS_GROUP_2.length - 1 && (
+                  <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Thông tin phần mềm & Giới thiệu (Chuyển xuống cuối trang Cài đặt) */}
+          <section 
+            id="settings-section-version"
+            className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none"
+          >
+            <div className="p-3.5 sm:p-4 rounded-[18px] bg-white/5 space-y-3 select-text">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="font-medium text-white">Software Update</span>
+                <span className="font-semibold text-[#9CA3AF]">26.10.0</span>
+              </div>
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="font-medium text-white">Software Build</span>
+                <span className="font-semibold text-[#9CA3AF]">26v1009</span>
+              </div>
+              {/* Compatible with Fluent Design */}
+              <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-white/10 flex items-center">
+                <p className="text-sm sm:text-base font-semibold tracking-tight text-white">
+                  Compatible with{' '}
+                  <span className="text-[#4cc2ff] font-semibold">
+                    Microsoft Fluent Design.
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-0.5">
+              {/* Test VNRT Online Option Card */}
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+                <div>
+                  <div className="font-bold text-white text-xs sm:text-sm">
+                    Test VNRT Online
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                    Try our test builds of VNRT Online with new, early unreleased features.
+                  </div>
+                </div>
+
+                <a
+                  id="btn-test-vplay-switch"
+                  href="https://test-vplay.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-1.5 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                >
+                  <span className="text-white font-bold">Switch</span>
+                </a>
+              </div>
+
+              {/* Changelogs Option Card */}
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+                <div>
+                  <div className="font-bold text-white text-xs sm:text-sm">
+                    Changelogs
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của VNRT Online.
+                  </div>
+                </div>
+
+                <button
+                  id="btn-changelogs-read"
+                  type="button"
+                  onClick={() => setIsWelcomeModalOpen(true)}
+                  className="px-4 py-1.5 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                >
+                  <span className="text-white font-bold">Read</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </motion.div>
+      ) : (
+        /* 3. Subpage Content Views (Smooth horizontal slide from right to left) */
+        <motion.div
+          key={activeCategory}
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 80 }}
+          transition={{
+            duration: shouldAnimateMotion ? 0.32 : 0,
+            ease: [0.16, 1, 0.3, 1]
+          }}
+          className="space-y-6"
+        >
+            {/* SUBPAGE 1: SPATIAL GLASS */}
+            {activeCategory === 'spatial-glass' && (
+              <section 
+                id="settings-section-spatial-glass"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+              >
+                <div className="space-y-4 select-none">
+                  {/* 1. Fluent Design Master Toggle */}
+                  <div 
+                    id="setting-spatial-glass"
+                    className="p-3.5 sm:p-4 rounded-[12px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5"
+                  >
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="font-semibold text-white text-sm">
+                        <span className="text-[#4cc2ff] font-semibold">
+                          Fluent Design (Mica & Acrylic)
+                        </span>
+                      </div>
+                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        Ngôn ngữ thiết kế giao diện người dùng Fluent Design của Microsoft, kết hợp hiệu ứng chất liệu Mica và Acrylic, phân cấp thị giác tinh tế và đường nét tối giản hiện đại.
+                      </div>
+                    </div>
+
+                    {/* Toggle Switch */}
+                    <button
+                      id="toggle-spatial-glass"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.spatialGlass}
+                      onClick={() => updateDraft('spatialGlass', !draftSettings.spatialGlass)}
+                      className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                        draftSettings.spatialGlass ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                      }`}
+                      title="Bật/Tắt hiệu ứng Acrylic Fluent Design"
+                    >
+                      <span
+                        className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-sm pointer-events-none transition-transform ${draftSettings.spatialGlass ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* 2. Slider: Độ trong suốt (Opacity) */}
+                  <div 
+                    id="setting-spatial-glass-opacity"
+                    className={`p-3.5 sm:p-4 rounded-[20px] space-y-3 transition-opacity duration-200 ${
+                      !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-white text-sm">
+                          Độ trong suốt Acrylic (Opacity)
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Điều chỉnh độ trong suốt của chất liệu Acrylic Fluent Design từ 0% đến 100%. Khi trên 40%, biểu tượng và văn bản sẽ tự động cân bằng tương phản tối ưu.
+                        </div>
+                      </div>
+                      <span className="text-xs font-mono font-semibold text-[#4cc2ff] px-2.5 py-1 rounded-md bg-white/10 shrink-0 ml-2">
+                        {draftSettings.spatialGlassOpacity ?? 20}%
+                      </span>
+                    </div>
+
+                    {/* Slider Container */}
+                    <div className="pt-1">
+                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
+                        <input
+                          id="slider-spatial-glass-opacity"
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={draftSettings.spatialGlassOpacity ?? 20}
+                          onChange={(e) => updateDraft('spatialGlassOpacity', parseInt(e.target.value, 10))}
+                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
+                          aria-label="Độ trong suốt (Opacity)"
+                        />
+                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
+                          <div 
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-75 ease-out"
+                            style={{ width: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
+                          />
+                          <div 
+                            id="settings-slider-thumb-opacity"
+                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
+                            style={{ 
+                              left: `${draftSettings.spatialGlassOpacity ?? 20}%`,
+                              top: '50%',
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-[11px] text-[#6B7280] px-1 pt-1">
+                        <span>0%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Slider: Độ mờ (Blur) */}
+                  <div 
+                    id="setting-spatial-glass-blur"
+                    className={`p-3.5 sm:p-4 rounded-[20px] space-y-3 transition-opacity duration-200 ${
+                      !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-white text-sm">
+                          Độ mờ Acrylic (Blur)
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Điều chỉnh độ nhòe phông nền (backdrop blur) của chất liệu Acrylic từ 0% đến 100% cho thanh điều hướng và menu hệ thống.
+                        </div>
+                      </div>
+                      <span className="text-xs font-mono font-semibold text-[#4cc2ff] px-2.5 py-1 rounded-md bg-white/10 shrink-0 ml-2">
+                        {draftSettings.spatialGlassBlur ?? 10}%
+                      </span>
+                    </div>
+
+                    {/* Slider Container */}
+                    <div className="pt-1">
+                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
+                        <input
+                          id="slider-spatial-glass-blur"
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={draftSettings.spatialGlassBlur ?? 10}
+                          onChange={(e) => updateDraft('spatialGlassBlur', parseInt(e.target.value, 10))}
+                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
+                          aria-label="Độ mờ (Blur)"
+                        />
+                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
+                          <div 
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-75 ease-out"
+                            style={{ width: `${draftSettings.spatialGlassBlur ?? 10}%` }}
+                          />
+                          <div 
+                            id="settings-slider-thumb-blur"
+                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
+                            style={{ 
+                              left: `${draftSettings.spatialGlassBlur ?? 10}%`,
+                              top: '50%',
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-[11px] text-[#6B7280] px-1 pt-1">
+                        <span>0%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* SUBPAGE 2: GIAO DIỆN */}
+            {activeCategory === 'interface' && (
+              <section 
+                id="settings-section-interface"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+              >
+                <div className="space-y-4">
+                  {/* 1. Chế độ ứng dụng (Ban ngày / Ban đêm) */}
+                  <div
+                    id="setting-theme-mode"
+                    className="p-3.5 sm:p-4 rounded-[20px] space-y-3"
+                  >
+                    <div>
+                      <div className="font-bold text-white text-sm">Chế độ ứng dụng</div>
+                    </div>
+                    <div className="settings-segmented-group grid grid-cols-2 gap-2 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5  max-w-sm" role="group" aria-label="Chế độ ứng dụng">
+                      {([
+                        ['light', 'Ban ngày', Sun],
+                        ['dark', 'Ban đêm', Moon],
+                      ] as const).map(([val, label, IconComponent]) => (
+                        <button
+                          key={val}
+                          type="button"
+                          id={`theme-btn-${val}`}
+                          onClick={() => {
+                            updateDraft('theme', val);
+                            if (val === 'light') {
+                              updateDraft('spatialGlassOpacity', 43);
+                            } else if (draftSettings.spatialGlassOpacity === 43) {
+                              updateDraft('spatialGlassOpacity', 20);
+                            }
+                          }}
+                          className={`flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-default ${
+                            (draftSettings.theme || 'dark') === val
+                              ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                              : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                          }`}
+                          aria-pressed={(draftSettings.theme || 'dark') === val}
+                        >
+                          <IconComponent className="w-4 h-4" />
+                          <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 2. Thanh điều hướng */}
+                  <div className="p-3.5 sm:p-4 rounded-[20px] space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                      <div>
+                        <div className="font-bold text-white text-sm">Thanh điều hướng</div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">Lựa chọn kiểu điều hướng của ứng dụng.</div>
+                      </div>
+                      {draftSettings.navigationMode === 'topbar' && (
+                        <span className="inline-flex items-center text-[11px] font-medium text-[#fd932f] bg-[#fd932f]/10 px-2 py-0.5 rounded-full self-start sm:self-auto">
+                          Progressive Blur Top View
+                        </span>
+                      )}
+                    </div>
+                    <div className="settings-segmented-group grid grid-cols-3 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5 " role="group" aria-label="Thanh điều hướng">
+                      {([
+                        ['sidebar', 'Side View'],
+                        ['topbar', 'Top View'],
+                        ['floaty', 'Tab View'],
+                      ] as const).map(([value, label]) => (
+                        <button 
+                          key={value} 
+                          type="button" 
+                          onClick={() => { 
+                            updateDraft('navigationMode', value); 
+                            updateDraft('immersiveSidebar', false); 
+                          }} 
+                          className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center truncate ${
+                            draftSettings.navigationMode === value
+                              ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                              : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                          }`} 
+                          aria-pressed={draftSettings.navigationMode === value}
+                          title={label}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    {draftSettings.navigationMode === 'topbar' && (
+                      <p className="text-[12px] text-[#9CA3AF] leading-relaxed pt-1">
+                        Giao diện Top View sẽ đưa thanh điều khiển và điều hướng (Logo trang chủ, Truyền hình, News và các công cụ, icon cài đặt) lên thanh Progressive Blur trên cùng màn hình.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* 2. Thu phóng giao diện */}
+                  <div className="p-3.5 sm:p-4 rounded-[20px] space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Type className="w-4.5 h-4.5 text-[#9CA3AF]" />
+                          <span className="font-bold text-white text-sm">
+                            Thu phóng giao diện
+                          </span>
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Tùy chỉnh kích cỡ giao diện ứng dụng để phù hợp với thiết bị của bạn.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-1">
+                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
+                        <input
+                          id="slider-font-scale"
+                          type="range"
+                          min="0"
+                          max={FONT_SCALE_CONFIG.length - 1}
+                          step="1"
+                          value={draftSettings.fontScale}
+                          onChange={(e) => updateDraft('fontScale', parseInt(e.target.value, 10))}
+                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
+                          aria-label="Thu phóng giao diện"
+                        />
+                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
+                          <div 
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-150 ease-out"
+                            style={{ width: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
+                          />
+                          <div 
+                            id="settings-slider-thumb"
+                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
+                            style={{ 
+                              left: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%`,
+                              top: '50%',
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative flex items-center justify-between text-[11px] pt-3 px-1 sm:px-2">
+                        {FONT_SCALE_CONFIG.map((item, idx) => {
+                          const isSelected = draftSettings.fontScale === idx;
+                          let alignClass = 'text-center';
+                          if (idx === 0) alignClass = 'text-left';
+                          else if (idx === FONT_SCALE_CONFIG.length - 1) alignClass = 'text-right';
+                          return (
+                            <button
+                              key={item.label}
+                              type="button"
+                              id={`btn-font-scale-${idx}`}
+                              onClick={() => updateDraft('fontScale', idx)}
+                              className={`cursor-default transition-colors py-1 ${alignClass} ${
+                                isSelected
+                                  ? 'text-[#fd932f] font-bold text-xs'
+                                  : 'text-[#6B7280] hover:text-[#9CA3AF]'
+                              }`}
+                            >
+                              {item.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Vị trí thanh bên (nếu dùng chế độ Side View) */}
+                  {draftSettings.navigationMode === 'sidebar' && (
+                    <div
+                      id="setting-sidebar-position"
+                      className="p-3.5 sm:p-4 rounded-[20px] space-y-4"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <div className="font-bold text-white text-sm">Vị trí thanh bên (Side View position)</div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">Chọn vị trí hiển thị thanh bên trái hoặc phải.</div>
+                        </div>
+                      </div>
+                      <div className="settings-segmented-group grid grid-cols-2 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5 ">
+                        {[
+                          ['left', 'Trái'],
+                          ['right', 'Phải'],
+                        ].map(([pos, label]) => (
+                          <button
+                            key={pos}
+                            type="button"
+                            onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
+                            className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center ${
+                              draftSettings.sidebarPosition === pos
+                                ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                                : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. Siêu chế độ tối */}
+                  <div
+                    id="setting-super-dark-mode"
+                    className="p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5"
+                  >
+                    <div>
+                      <div className="font-bold text-white text-sm">
+                        Siêu chế độ tối (Super Dark Mode)
+                      </div>
+                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        Chuyển đổi giao diện sang màu đen tuyền tuyệt đối (OLED Pure Black #000000) giúp tối ưu tiết kiệm pin trên màn hình OLED và tạo cảm giác dịu mắt ban đêm.
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-super-dark-mode"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.superDarkMode}
+                      onClick={() => updateDraft('superDarkMode', !draftSettings.superDarkMode)}
+                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                        draftSettings.superDarkMode ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                      }`}
+                    >
+                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* SUBPAGE: CÔNG CỤ (TỶ LỆ KHUNG HÌNH, TỰ ĐỘNG ẨN VÀ CHUYỂN ĐỘNG) */}
+            {activeCategory === 'tools' && (
+              <div className="space-y-6">
+                {/* 4.1 Section Trợ năng */}
+                <section 
+                  id="settings-section-accessibility"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="space-y-3">
+                    {/* Tỉ lệ khung hình */}
+                    <div className="p-3 sm:p-4 rounded-[20px] space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Tv className="w-4.5 h-4.5 text-[#9CA3AF]" />
+                          <span className="font-bold text-white text-sm">
+                            Tỉ lệ khung hình
+                          </span>
+                        </div>
+                        <span className="text-xs font-semibold text-[#fd932f] font-mono">
+                          {draftSettings.streamAspectRatio === '4:3' ? '4.3 (chuẩn vuông)' : '16:9 (chuẩn rộng)'}
+                        </span>
+                      </div>
+                      <div className="text-xs text-[#9CA3AF] leading-relaxed">
+                        Chuyển đổi tỉ lệ khung hình khi xem giữa 4:3 hoặc 16:9.
+                      </div>
+                      <div className="settings-segmented-group grid grid-cols-2 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5  pt-1">
+                        {[
+                          { value: '16:9', label: '16:9 (chuẩn rộng)' },
+                          { value: '4:3', label: '4.3 (chuẩn vuông)' },
+                        ].map(({ value, label }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            id={`btn-aspect-${value.replace(':', '-')}`}
+                            onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
+                            className={`h-9 sm:h-10 rounded-full font-semibold text-xs sm:text-sm transition-all cursor-default flex items-center justify-center ${
+                              draftSettings.streamAspectRatio === value
+                                ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                                : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                            }`}
+                            aria-pressed={draftSettings.streamAspectRatio === value}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tự động ẩn Side View */}
+                    <div className="p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5">
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Tự động ẩn Side View
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Tự động thu gọn thanh menu khi không di chuột vào.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-autohide-sidebar"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.autoHideSidebar}
+                        onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.autoHideSidebar ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* SUBPAGE: TRỢ NĂNG (HIỆU ỨNG CHUYỂN ĐỘNG, NỘI DUNG TÌM KIẾM, BÀN PHÍM VÀ TỔ HỢP PHÍM) */}
+            {activeCategory === 'accessibility' && (
+              <div className="space-y-6">
+                {/* Section: Chuyển động (Reduce all animation & Sub-options) */}
+                <section 
+                  id="settings-section-motion"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
+                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
+                      Hiệu ứng chuyển động (Motion)
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Reduce all animation */}
+                    <div 
+                      id="setting-motion-reduce-all"
+                      onClick={() => updateDraft('reduceAllMotion', !draftSettings.reduceAllMotion)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Reduce all animation
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Giảm và tắt toàn bộ các hiệu ứng chuyển động trong ứng dụng.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-motion-reduce-all"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.reduceAllMotion}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('reduceAllMotion', !draftSettings.reduceAllMotion);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    <hr className="border-white/10" />
+
+                    {/* Sub-options Container */}
+                    <div 
+                      className={`space-y-3 transition-opacity duration-200 ${
+                        draftSettings.reduceAllMotion 
+                          ? 'opacity-35 pointer-events-none select-none filter grayscale-[30%]' 
+                          : ''
+                      }`}
+                    >
+                      {/* Side View */}
+                      <div 
+                        id="setting-motion-sidebar"
+                        onClick={() => {
+                          if (!draftSettings.reduceAllMotion) {
+                            updateDraft('animateSidebar', !draftSettings.animateSidebar);
+                          }
+                        }}
+                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      >
+                        <div>
+                          <div className="font-bold text-white text-sm">
+                            Side View
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Hiệu ứng mở rộng/thu gọn và trượt ngăn kéo menu bên.
+                          </div>
+                        </div>
+
+                        <button
+                          id="toggle-motion-sidebar"
+                          type="button"
+                          role="switch"
+                          aria-checked={draftSettings.animateSidebar && !draftSettings.reduceAllMotion}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateDraft('animateSidebar', !draftSettings.animateSidebar);
+                          }}
+                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                            draftSettings.animateSidebar && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          }`}
+                        >
+                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        </button>
+                      </div>
+
+                      {/* Hộp thoại */}
+                      <div 
+                        id="setting-motion-modals"
+                        onClick={() => {
+                          if (!draftSettings.reduceAllMotion) {
+                            updateDraft('animateModals', !draftSettings.animateModals);
+                          }
+                        }}
+                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      >
+                        <div>
+                          <div className="font-bold text-white text-sm">
+                            Hộp thoại (Modal dialog)
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Hiệu ứng phóng to, thu nhỏ và làm mờ các cửa sổ bật lên.
+                          </div>
+                        </div>
+
+                        <button
+                          id="toggle-motion-modals"
+                          type="button"
+                          role="switch"
+                          aria-checked={draftSettings.animateModals && !draftSettings.reduceAllMotion}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateDraft('animateModals', !draftSettings.animateModals);
+                          }}
+                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                            draftSettings.animateModals && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          }`}
+                        >
+                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        </button>
+                      </div>
+
+                      {/* Chuyển trang */}
+                      <div 
+                        id="setting-motion-page-transitions"
+                        onClick={() => {
+                          if (!draftSettings.reduceAllMotion) {
+                            updateDraft('animatePageTransitions', !draftSettings.animatePageTransitions);
+                          }
+                        }}
+                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      >
+                        <div>
+                          <div className="font-bold text-white text-sm">
+                            Chuyển trang trong Cài đặt
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Hiệu ứng trượt ngang mượt mà khi vào hoặc thoát các mục cài đặt.
+                          </div>
+                        </div>
+
+                        <button
+                          id="toggle-motion-page-transitions"
+                          type="button"
+                          role="switch"
+                          aria-checked={draftSettings.animatePageTransitions && !draftSettings.reduceAllMotion}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateDraft('animatePageTransitions', !draftSettings.animatePageTransitions);
+                          }}
+                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                            draftSettings.animatePageTransitions && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          }`}
+                        >
+                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Section 2: Nội dung Tìm kiếm */}
+                <section 
+                  id="settings-section-search"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
+                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
+                      Nội dung Tìm kiếm
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Danh mục */}
+                    <div 
+                      id="setting-search-categories"
+                      onClick={() => updateDraft('searchCategories', !draftSettings.searchCategories)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Danh mục
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Hiển thị các tab và điều hướng hệ thống (Home, Live TV, News, v.v.).
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-search-categories"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.searchCategories}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('searchCategories', !draftSettings.searchCategories);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.searchCategories ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    {/* Tin tức */}
+                    <div 
+                      id="setting-search-news"
+                      onClick={() => updateDraft('searchNews', !draftSettings.searchNews)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Tin tức
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Hiển thị các bài viết tin tức, thông báo cộng đồng và sự kiện.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-search-news"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.searchNews}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('searchNews', !draftSettings.searchNews);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.searchNews ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    {/* Truyền hình & Tìm kênh theo số hiệu */}
+                    <div className="p-3.5 sm:p-4 rounded-[20px] space-y-4">
+                      <div 
+                        id="setting-search-tv"
+                        onClick={() => updateDraft('searchTv', !draftSettings.searchTv)}
+                        className="group flex items-center justify-between gap-4 cursor-default"
+                      >
+                        <div>
+                          <div className="font-bold text-white text-sm">
+                            Truyền hình
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Hiển thị danh sách kênh truyền hình trực tiếp theo tên hoặc nhóm kênh.
+                          </div>
+                        </div>
+
+                        <button
+                          id="toggle-search-tv"
+                          type="button"
+                          role="switch"
+                          aria-checked={draftSettings.searchTv}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateDraft('searchTv', !draftSettings.searchTv);
+                          }}
+                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                            draftSettings.searchTv ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          }`}
+                        >
+                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        </button>
+                      </div>
+
+                      <hr className="border-white/10" />
+
+                      {/* Tìm kênh theo số hiệu kênh */}
+                      <div 
+                        id="setting-search-channel-number"
+                        onClick={() => updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber)}
+                        className="group flex items-center justify-between gap-4 cursor-default"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-white text-sm">
+                              Tìm kênh theo số hiệu kênh
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#fd932f]/20 text-[#fd932f] tracking-wider">
+                              CH #
+                            </span>
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Cho phép gõ số kênh (ví dụ: 1, 001, #12, kênh 5) để tìm nhanh.
+                          </div>
+                        </div>
+
+                        <button
+                          id="toggle-search-channel-number"
+                          type="button"
+                          role="switch"
+                          aria-checked={draftSettings.searchChannelNumber}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber);
+                          }}
+                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                            draftSettings.searchChannelNumber ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          }`}
+                        >
+                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Cài đặt */}
+                    <div 
+                      id="setting-search-settings"
+                      onClick={() => updateDraft('searchSettings', !draftSettings.searchSettings)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Cài đặt
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Quản lý và chuyển nhanh tới các mục tùy chọn hệ thống.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-search-settings"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.searchSettings}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('searchSettings', !draftSettings.searchSettings);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.searchSettings ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Section 2: Bàn phím */}
+                <section 
+                  id="settings-section-keyboard"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
+                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
+                      Bàn phím
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Bàn phím số */}
+                    <div 
+                      id="setting-keyboard-number-row"
+                      onClick={() => updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Bàn phím số
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Hiển thị bàn phím số từ 0 đến 9 ngay trên dải phím chữ.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-keyboard-number-row"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.keyboardNumberRow}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.keyboardNumberRow ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    {/* Clipboard */}
+                    <div 
+                      id="setting-keyboard-clipboard"
+                      onClick={() => updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Clipboard
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Danh sách lịch sử sao chép trong ứng dụng.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-keyboard-clipboard"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.keyboardClipboard}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.keyboardClipboard ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    {/* Âm bàn phím */}
+                    <div 
+                      id="setting-keyboard-sound"
+                      onClick={() => updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-white text-sm">
+                          Âm bàn phím
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Phát ra tiếng "pop" khi gõ trên bàn phím.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-keyboard-sound"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.keyboardSoundEnabled}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.keyboardSoundEnabled ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Section 3: Tổ hợp phím */}
+                <section 
+                  id="settings-section-keybinds"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="flex items-center justify-between px-3.5 sm:px-4 pt-0.5 pb-1">
+                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
+                      Tổ hợp phím
+                    </div>
+                    <button
+                      type="button"
+                      id="btn-reset-keybinds"
+                      onClick={() => {
+                        updateDraft('customKeybinds', { ...DEFAULT_KEYBINDS });
+                        setEditingKeybindId(null);
+                        setKeybindError(null);
+                      }}
+                      title="Đặt lại tất cả phím tắt về mặc định"
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold text-[#A1A1AA] hover:text-white bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-1.5 shrink-0 cursor-default"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Phím tắt mặc định</span>
+                    </button>
+                  </div>
+
+                  {/* Keybind items list */}
+                  <div className="space-y-2.5 pt-1">
+                    {KEYBIND_DEFINITIONS.map((def) => {
+                      const currentKey = draftSettings.customKeybinds?.[def.id] || def.defaultKey;
+                      const isEditing = editingKeybindId === def.id;
+                      const error = keybindError?.id === def.id ? keybindError.message : null;
+
+                      return (
+                        <div
+                          key={def.id}
+                          id={`keybind-row-${def.id}`}
+                          className="p-3.5 sm:p-4 rounded-[20px] flex flex-col gap-2 transition-colors hover:bg-white/5"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-white text-sm flex items-center gap-2">
+                                <span>{def.label}</span>
+                                {currentKey !== def.defaultKey && (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#fd932f]/20 text-[#FF4D8B] font-medium border border-[#fd932f]/30">
+                                    Đã đổi
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                                {def.description}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                              {isEditing ? (
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="text"
+                                    autoFocus
+                                    readOnly
+                                    data-keybind-recording="true"
+                                    value="Nhấn tổ hợp phím..."
+                                    onKeyDown={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+
+                                      if (e.key === 'Escape') {
+                                        setEditingKeybindId(null);
+                                        setKeybindError(null);
+                                        return;
+                                      }
+
+                                      const keyStr = eventToKeyString(e.nativeEvent);
+                                      if (!keyStr) return;
+
+                                      const validation = validateKeybind(keyStr);
+                                      if (!validation.valid) {
+                                        setKeybindError({ id: def.id, message: validation.reason || 'Phím tắt không hợp lệ.' });
+                                        return;
+                                      }
+
+                                      const existingAction = Object.entries(draftSettings.customKeybinds || {}).find(
+                                        ([act, key]) => act !== def.id && typeof key === 'string' && key.toLowerCase() === keyStr.toLowerCase()
+                                      );
+
+                                      if (existingAction) {
+                                        const targetDef = KEYBIND_DEFINITIONS.find(d => d.id === existingAction[0]);
+                                        setKeybindError({
+                                          id: def.id,
+                                          message: `Tổ hợp này đã gán cho mục "${targetDef?.label || existingAction[0]}".`
+                                        });
+                                        return;
+                                      }
+
+                                      const updated = {
+                                        ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
+                                        [def.id]: keyStr
+                                      };
+                                      updateDraft('customKeybinds', updated);
+                                      setEditingKeybindId(null);
+                                      setKeybindError(null);
+                                    }}
+                                    onBlur={() => {
+                                      setEditingKeybindId(null);
+                                    }}
+                                    className="px-3 py-1.5 text-xs rounded-xl bg-[#fd932f]/20 border-2 border-[#fd932f] text-white font-mono animate-pulse text-center w-36 cursor-default outline-none select-none"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingKeybindId(null);
+                                      setKeybindError(null);
+                                    }}
+                                    className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white bg-white/5 hover:bg-white/10 text-xs transition-colors"
+                                    title="Hủy"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    id={`btn-edit-keybind-${def.id}`}
+                                    onClick={() => {
+                                      setEditingKeybindId(def.id);
+                                      setKeybindError(null);
+                                    }}
+                                    className="px-3 py-1.5 rounded-xl bg-[#1F1E24] hover:bg-[#34333C] border border-white/10 hover:border-[#fd932f]/60 text-white font-mono text-xs font-bold transition-all shadow-inner active:scale-95 cursor-default"
+                                    title="Nhấp để thay đổi phím tắt"
+                                  >
+                                    {currentKey}
+                                  </button>
+
+                                  {currentKey !== def.defaultKey && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const updated = {
+                                          ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
+                                          [def.id]: def.defaultKey
+                                        };
+                                        updateDraft('customKeybinds', updated);
+                                        setKeybindError(null);
+                                      }}
+                                      className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white bg-white/5 hover:bg-white/10 transition-colors cursor-default"
+                                      title="Khôi phục mặc định"
+                                    >
+                                      <RotateCcw className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {error && (
+                            <div className="flex items-start gap-1.5 text-xs text-[#FF4D8B] bg-[#fd932f]/10 border border-[#fd932f]/30 p-2 rounded-xl">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                              <span>{error}</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* SUBPAGE 6: THỬ NGHIỆM */}
+            {activeCategory === 'experimental' && (
+              <section 
+                id="settings-section-experimental"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+              >
+                <div className="space-y-3">
+                  {/* Native keyboard */}
+                  <div 
+                    id="setting-experimental-native-keyboard"
+                    onClick={() => updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard)}
+                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                  >
+                    <div>
+                      <div className="font-bold text-white text-sm">
+                        Native keyboard
+                      </div>
+                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        Sử dụng bàn phím của ứng dụng thay vì bàn phím của thiết bị (chỉ áp dụng cho thiết bị cảm ứng).
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-native-keyboard"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.nativeKeyboard}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard);
+                      }}
+                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                        draftSettings.nativeKeyboard ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                      }`}
+                    >
+                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                    </button>
+                  </div>
+
+                  {/* Immersive search experience */}
+                  <div 
+                    id="setting-experimental-immersive-search"
+                    onClick={() => updateDraft('immersiveSearch', !draftSettings.immersiveSearch)}
+                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                  >
+                    <div>
+                      <div className="font-bold text-white text-sm">
+                        Immersive search experience
+                      </div>
+                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        Search UI that looks immersive.
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-immersive-search"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.immersiveSearch}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('immersiveSearch', !draftSettings.immersiveSearch);
+                      }}
+                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                        draftSettings.immersiveSearch ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                      }`}
+                    >
+                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                    </button>
+                  </div>
+
+                  {/* Thử nghiệm "Tam giác" */}
+                  <div 
+                    id="setting-experimental-triangle"
+                    onClick={() => updateDraft('triangleExperiment', !draftSettings.triangleExperiment)}
+                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                        <TriangleLoader size={32} glow={false} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                          <span>Tam giác</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#fd932f]/20 text-[#fd932f] border border-[#fd932f]/30">
+                            Mới
+                          </span>
+                        </div>
+                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          Khi bật, biểu tượng loading của app sẽ thay bằng hình tam giác lỗ màu đỏ cam gradient chạy loop liên tục.
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      id="toggle-triangle-experiment"
+                      type="button"
+                      role="switch"
+                      aria-checked={draftSettings.triangleExperiment}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateDraft('triangleExperiment', !draftSettings.triangleExperiment);
+                      }}
+                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                        draftSettings.triangleExperiment ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                      }`}
+                    >
+                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Welcome to VNRT Online / Changelogs Modal Dialog */}
+      <WelcomeModal
+        isOpen={isWelcomeModalOpen}
+        onClose={() => setIsWelcomeModalOpen(false)}
+      />
+
+      {/* Floating Apply Feedback Toast */}
+      <AnimatePresence>
+        {showApplyToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.95 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#1E1D24] border border-[#fd932f]/60 text-white text-xs sm:text-sm font-semibold shadow-2xl "
+          >
+            <div className="w-5 h-5 rounded-full bg-[#fd932f] flex items-center justify-center shrink-0">
+              <SfCheckmark className="w-3 h-3" />
+            </div>
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};

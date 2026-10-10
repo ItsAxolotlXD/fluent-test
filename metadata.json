@@ -1,0 +1,10 @@
+{
+  "name": "fluent",
+  "description": "Imported from GitHub: ItsAxolotlXD/waves-2610",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
