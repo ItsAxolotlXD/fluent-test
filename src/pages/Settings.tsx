@@ -99,11 +99,15 @@ const ALL_CATEGORIES = [...SETTINGS_GROUP_1, ...SETTINGS_GROUP_2];
 interface SettingsProps {
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  onOpenUpdate?: () => void;
+  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({
   searchQuery: externalSearchQuery,
-  onSearchChange: externalOnSearchChange
+  onSearchChange: externalOnSearchChange,
+  onOpenUpdate,
+  onOpenOfficeTool
 }) => {
   const { 
     settings, 
@@ -218,7 +222,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 type="button"
                 id="btn-settings-save"
                 onClick={handleApplySettings}
-                className="px-5 py-2 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                className="px-5 py-2 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
               >
                 <span>Save</span>
               </button>
@@ -472,9 +476,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   href="https://test-vplay.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-1.5 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
                 >
-                  <span className="text-white font-bold">Switch</span>
+                  <span className="text-black font-bold">Switch</span>
                 </a>
               </div>
 
@@ -493,9 +497,30 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-changelogs-read"
                   type="button"
                   onClick={() => setIsWelcomeModalOpen(true)}
-                  className="px-4 py-1.5 rounded-full font-bold text-white bg-[#fd932f] hover:bg-[#e68428] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="text-white font-bold">Read</span>
+                  <span className="text-black font-bold">Read</span>
+                </button>
+              </div>
+
+              {/* Update Vplay Option Card */}
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+                <div>
+                  <div className="font-bold text-white text-xs sm:text-sm">
+                    Update Vplay
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Vplay.
+                  </div>
+                </div>
+
+                <button
+                  id="btn-update-vplay"
+                  type="button"
+                  onClick={onOpenUpdate}
+                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                >
+                  <span className="text-black font-bold">Update</span>
                 </button>
               </div>
             </div>
@@ -592,7 +617,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         />
                         <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
                           <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-75 ease-out"
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-75 ease-out"
                             style={{ width: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
                           />
                           <div 
@@ -650,7 +675,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         />
                         <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
                           <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-75 ease-out"
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-75 ease-out"
                             style={{ width: `${draftSettings.spatialGlassBlur ?? 10}%` }}
                           />
                           <div 
@@ -708,7 +733,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           }}
                           className={`flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-default ${
                             (draftSettings.theme || 'dark') === val
-                              ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                              ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                               : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                           }`}
                           aria-pressed={(draftSettings.theme || 'dark') === val}
@@ -728,7 +753,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">Lựa chọn kiểu điều hướng của ứng dụng.</div>
                       </div>
                       {draftSettings.navigationMode === 'topbar' && (
-                        <span className="inline-flex items-center text-[11px] font-medium text-[#fd932f] bg-[#fd932f]/10 px-2 py-0.5 rounded-full self-start sm:self-auto">
+                        <span className="inline-flex items-center text-[11px] font-medium text-[#4cc2ff] bg-[#4cc2ff]/10 px-2 py-0.5 rounded-full self-start sm:self-auto">
                           Progressive Blur Top View
                         </span>
                       )}
@@ -748,7 +773,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           }} 
                           className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center truncate ${
                             draftSettings.navigationMode === value
-                              ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                              ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                               : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                           }`} 
                           aria-pressed={draftSettings.navigationMode === value}
@@ -796,7 +821,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         />
                         <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
                           <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#fd932f] transition-all duration-150 ease-out"
+                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-150 ease-out"
                             style={{ width: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
                           />
                           <div 
@@ -825,7 +850,7 @@ export const Settings: React.FC<SettingsProps> = ({
                               onClick={() => updateDraft('fontScale', idx)}
                               className={`cursor-default transition-colors py-1 ${alignClass} ${
                                 isSelected
-                                  ? 'text-[#fd932f] font-bold text-xs'
+                                  ? 'text-[#4cc2ff] font-bold text-xs'
                                   : 'text-[#6B7280] hover:text-[#9CA3AF]'
                               }`}
                             >
@@ -860,7 +885,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
                             className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center ${
                               draftSettings.sidebarPosition === pos
-                                ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                                ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                                 : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                             }`}
                           >
@@ -892,7 +917,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       aria-checked={draftSettings.superDarkMode}
                       onClick={() => updateDraft('superDarkMode', !draftSettings.superDarkMode)}
                       className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.superDarkMode ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        draftSettings.superDarkMode ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                       }`}
                     >
                       <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -920,7 +945,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             Tỉ lệ khung hình
                           </span>
                         </div>
-                        <span className="text-xs font-semibold text-[#fd932f] font-mono">
+                        <span className="text-xs font-semibold text-[#4cc2ff] font-mono">
                           {draftSettings.streamAspectRatio === '4:3' ? '4.3 (chuẩn vuông)' : '16:9 (chuẩn rộng)'}
                         </span>
                       </div>
@@ -939,7 +964,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
                             className={`h-9 sm:h-10 rounded-full font-semibold text-xs sm:text-sm transition-all cursor-default flex items-center justify-center ${
                               draftSettings.streamAspectRatio === value
-                                ? 'bg-[#fd932f] text-white shadow-[0_2px_10px_rgba(253,147,47,0.35)]'
+                                ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                                 : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                             }`}
                             aria-pressed={draftSettings.streamAspectRatio === value}
@@ -968,11 +993,72 @@ export const Settings: React.FC<SettingsProps> = ({
                         aria-checked={draftSettings.autoHideSidebar}
                         onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.autoHideSidebar ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.autoHideSidebar ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
                       </button>
+                    </div>
+
+                    {/* Office Tools (Write, Table, Present) */}
+                    <div className="p-3.5 sm:p-4 rounded-[20px] space-y-3 bg-black/10 dark:bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-bold text-white text-sm flex items-center gap-2">
+                            <span>Office Productivity Tools</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
+                              Fluent 365
+                            </span>
+                          </div>
+                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                            Truy cập bộ công cụ văn phòng: Write (Word), Table (Excel) và Present (PowerPoint).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => onOpenOfficeTool?.('write')}
+                          className="p-3 rounded-xl bg-white/5 hover:bg-[#185abd]/20 border border-white/10 hover:border-[#185abd] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-[#185abd] flex items-center justify-center shrink-0">
+                            <span className="text-white text-xs font-bold">W</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white group-hover:text-[#4cc2ff]">Write</div>
+                            <div className="text-[10px] text-neutral-400">Word Editor</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onOpenOfficeTool?.('table')}
+                          className="p-3 rounded-xl bg-white/5 hover:bg-[#107c41]/20 border border-white/10 hover:border-[#107c41] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-[#107c41] flex items-center justify-center shrink-0">
+                            <span className="text-white text-xs font-bold">T</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white group-hover:text-[#2ecc71]">Table</div>
+                            <div className="text-[10px] text-neutral-400">Excel Grid</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onOpenOfficeTool?.('present')}
+                          className="p-3 rounded-xl bg-white/5 hover:bg-[#d24726]/20 border border-white/10 hover:border-[#d24726] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-[#d24726] flex items-center justify-center shrink-0">
+                            <span className="text-white text-xs font-bold">P</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white group-hover:text-[#ff7849]">Present</div>
+                            <div className="text-[10px] text-neutral-400">Slides Deck</div>
+                          </div>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -1019,7 +1105,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('reduceAllMotion', !draftSettings.reduceAllMotion);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1065,7 +1151,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animateSidebar', !draftSettings.animateSidebar);
                           }}
                           className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animateSidebar && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                            draftSettings.animateSidebar && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                           }`}
                         >
                           <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1101,7 +1187,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animateModals', !draftSettings.animateModals);
                           }}
                           className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animateModals && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                            draftSettings.animateModals && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                           }`}
                         >
                           <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1137,7 +1223,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animatePageTransitions', !draftSettings.animatePageTransitions);
                           }}
                           className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animatePageTransitions && !draftSettings.reduceAllMotion ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                            draftSettings.animatePageTransitions && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                           }`}
                         >
                           <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1184,7 +1270,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('searchCategories', !draftSettings.searchCategories);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchCategories ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.searchCategories ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1216,7 +1302,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('searchNews', !draftSettings.searchNews);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchNews ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.searchNews ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1249,7 +1335,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('searchTv', !draftSettings.searchTv);
                           }}
                           className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.searchTv ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                            draftSettings.searchTv ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                           }`}
                         >
                           <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1269,7 +1355,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             <span className="font-bold text-white text-sm">
                               Tìm kênh theo số hiệu kênh
                             </span>
-                            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#fd932f]/20 text-[#fd932f] tracking-wider">
+                            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#4cc2ff]/20 text-[#4cc2ff] tracking-wider">
                               CH #
                             </span>
                           </div>
@@ -1288,7 +1374,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber);
                           }}
                           className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.searchChannelNumber ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                            draftSettings.searchChannelNumber ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                           }`}
                         >
                           <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1321,7 +1407,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('searchSettings', !draftSettings.searchSettings);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchSettings ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.searchSettings ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1367,7 +1453,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardNumberRow ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.keyboardNumberRow ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1399,7 +1485,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardClipboard ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.keyboardClipboard ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1431,7 +1517,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled);
                         }}
                         className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardSoundEnabled ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                          draftSettings.keyboardSoundEnabled ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                         }`}
                       >
                         <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1483,7 +1569,7 @@ export const Settings: React.FC<SettingsProps> = ({
                               <div className="font-bold text-white text-sm flex items-center gap-2">
                                 <span>{def.label}</span>
                                 {currentKey !== def.defaultKey && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#fd932f]/20 text-[#FF4D8B] font-medium border border-[#fd932f]/30">
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#4cc2ff]/20 text-[#FF4D8B] font-medium border border-[#4cc2ff]/30">
                                     Đã đổi
                                   </span>
                                 )}
@@ -1545,7 +1631,7 @@ export const Settings: React.FC<SettingsProps> = ({
                                     onBlur={() => {
                                       setEditingKeybindId(null);
                                     }}
-                                    className="px-3 py-1.5 text-xs rounded-xl bg-[#fd932f]/20 border-2 border-[#fd932f] text-white font-mono animate-pulse text-center w-36 cursor-default outline-none select-none"
+                                    className="px-3 py-1.5 text-xs rounded-xl bg-[#4cc2ff]/20 border-2 border-[#4cc2ff] text-white font-mono animate-pulse text-center w-36 cursor-default outline-none select-none"
                                   />
                                   <button
                                     type="button"
@@ -1568,7 +1654,7 @@ export const Settings: React.FC<SettingsProps> = ({
                                       setEditingKeybindId(def.id);
                                       setKeybindError(null);
                                     }}
-                                    className="px-3 py-1.5 rounded-xl bg-[#1F1E24] hover:bg-[#34333C] border border-white/10 hover:border-[#fd932f]/60 text-white font-mono text-xs font-bold transition-all shadow-inner active:scale-95 cursor-default"
+                                    className="px-3 py-1.5 rounded-xl bg-[#1F1E24] hover:bg-[#34333C] border border-white/10 hover:border-[#4cc2ff]/60 text-white font-mono text-xs font-bold transition-all shadow-inner active:scale-95 cursor-default"
                                     title="Nhấp để thay đổi phím tắt"
                                   >
                                     {currentKey}
@@ -1597,7 +1683,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           </div>
 
                           {error && (
-                            <div className="flex items-start gap-1.5 text-xs text-[#FF4D8B] bg-[#fd932f]/10 border border-[#fd932f]/30 p-2 rounded-xl">
+                            <div className="flex items-start gap-1.5 text-xs text-[#FF4D8B] bg-[#4cc2ff]/10 border border-[#4cc2ff]/30 p-2 rounded-xl">
                               <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                               <span>{error}</span>
                             </div>
@@ -1642,7 +1728,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard);
                       }}
                       className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.nativeKeyboard ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        draftSettings.nativeKeyboard ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                       }`}
                     >
                       <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1674,7 +1760,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         updateDraft('immersiveSearch', !draftSettings.immersiveSearch);
                       }}
                       className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.immersiveSearch ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        draftSettings.immersiveSearch ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                       }`}
                     >
                       <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1694,7 +1780,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="font-bold text-white text-sm flex items-center gap-2">
                           <span>Tam giác</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#fd932f]/20 text-[#fd932f] border border-[#fd932f]/30">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
                             Mới
                           </span>
                         </div>
@@ -1714,7 +1800,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         updateDraft('triangleExperiment', !draftSettings.triangleExperiment);
                       }}
                       className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.triangleExperiment ? 'bg-[#fd932f]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        draftSettings.triangleExperiment ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
                       }`}
                     >
                       <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
@@ -1740,9 +1826,9 @@ export const Settings: React.FC<SettingsProps> = ({
             initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.95 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#1E1D24] border border-[#fd932f]/60 text-white text-xs sm:text-sm font-semibold shadow-2xl "
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#1E1D24] border border-[#4cc2ff]/60 text-white text-xs sm:text-sm font-semibold shadow-2xl "
           >
-            <div className="w-5 h-5 rounded-full bg-[#fd932f] flex items-center justify-center shrink-0">
+            <div className="w-5 h-5 rounded-full bg-[#4cc2ff] flex items-center justify-center shrink-0">
               <SfCheckmark className="w-3 h-3" />
             </div>
             <span>{toastMessage}</span>

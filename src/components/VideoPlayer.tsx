@@ -304,7 +304,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             transition={{ duration: 0.18 }}
             className="absolute top-14 sm:top-18 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-3.5 py-1.5 rounded-full bg-black/80 border border-white/20 text-white font-mono text-xs sm:text-sm font-semibold shadow-2xl flex items-center gap-2"
           >
-            <Ratio className="w-4 h-4 text-[#fd932f]" />
+            <Ratio className="w-4 h-4 text-[#4cc2ff]" />
             <span>{aspectRatioToast}</span>
           </motion.div>
         )}
@@ -337,7 +337,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               handleToggleAspectRatio();
             }}
             className={`glass-player-btn h-7 px-2 sm:h-8.5 sm:px-2.5 rounded-full flex items-center gap-1 cursor-default transition-all duration-200 text-white select-none ${
-              aspectRatio === '4:3' ? 'border-[#fd932f] text-[#fd932f]' : ''
+              aspectRatio === '4:3' ? 'border-[#4cc2ff] text-[#4cc2ff]' : ''
             }`}
             title={`Tỉ lệ luồng: ${aspectRatio} (Bấm để chuyển sang ${aspectRatio === '16:9' ? '4:3 Squish' : '16:9'})`}
             aria-label={`Tỉ lệ luồng ${aspectRatio}`}
@@ -468,7 +468,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 onClick={onOpenCustomStreamModal}
                 className="video-player-glass-btn flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-full text-white text-[11px] sm:text-xs font-medium transition-colors cursor-default"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#fd932f]" />
+                <Sparkles className="w-3.5 h-3.5 text-[#4cc2ff]" />
                 <span>Dán URL M3U8</span>
               </button>
             )}

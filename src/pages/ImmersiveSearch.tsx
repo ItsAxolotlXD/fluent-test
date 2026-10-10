@@ -291,7 +291,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('all')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'all'
-                      ? 'bg-[#fd932f] text-white shadow-md'
+                      ? 'bg-[#4cc2ff] text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white'
                   }`}
                 >
@@ -302,7 +302,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('channels')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'channels'
-                      ? 'bg-[#fd932f] text-white shadow-md'
+                      ? 'bg-[#4cc2ff] text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white'
                   }`}
                 >
@@ -313,7 +313,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('news')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'news'
-                      ? 'bg-[#fd932f] text-white shadow-md'
+                      ? 'bg-[#4cc2ff] text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white'
                   }`}
                 >
@@ -377,7 +377,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                             {ch.category}
                           </span>
 
-                          <div className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1 px-2.5 rounded-full bg-[#fd932f]/10 group-hover:bg-[#fd932f] text-[11px] font-semibold text-[#fd932f] group-hover:text-white transition-all">
+                          <div className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1 px-2.5 rounded-full bg-[#4cc2ff]/10 group-hover:bg-[#4cc2ff] text-[11px] font-semibold text-[#4cc2ff] group-hover:text-black transition-all">
                             <Play className="w-3 h-3 fill-current" />
                             <span>Watch Live</span>
                           </div>

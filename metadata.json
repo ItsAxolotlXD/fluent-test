@@ -1,6 +1,6 @@
 {
   "name": "fluent",
-  "description": "Imported from GitHub: ItsAxolotlXD/waves-2610",
+  "description": "Nền tảng cộng đồng dành cho những người yêu thích, theo dõi và lưu trữ nội dung về truyền hình Việt Nam với giao diện streaming hiện đại.",
   "requestFramePermissions": [
     "microphone"
   ],

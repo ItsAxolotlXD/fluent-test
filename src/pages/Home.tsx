@@ -135,7 +135,7 @@ export const Home: React.FC<HomeProps> = ({
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#fd932f] text-white hover:bg-[#e68428] transition-colors cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
               >
                 Clear Search
               </button>
@@ -283,7 +283,7 @@ export const Home: React.FC<HomeProps> = ({
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#fd932f] text-white hover:bg-[#e68428] transition-colors cursor-pointer"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
               >
                 Clear Search
               </button>

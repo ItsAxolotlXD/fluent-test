@@ -47,23 +47,21 @@ export const UnderConstructionModal: React.FC<UnderConstructionModalProps> = ({
           {/* 2. Dialog Modal Box - Fluent Design ContentDialog */}
           <motion.div
             id="under-construction-modal-dialog"
-            initial={{ opacity: 0, scale: 0.98, y: 8 }}
+            initial={{ opacity: 0, scale: 1.10 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
-              y: 0,
               transition: {
-                duration: 0.22,
-                ease: [0.1, 0.9, 0.2, 1]
+                duration: 0.28,
+                ease: [0.16, 1, 0.3, 1]
               }
             }}
             exit={{ 
               opacity: 0, 
-              scale: 0.98,
-              y: 6,
+              scale: 1.08,
               transition: {
-                duration: 0.16,
-                ease: 'easeIn'
+                duration: 0.20,
+                ease: [0.16, 1, 0.3, 1]
               }
             }}
             className="fluent-modal-dialog relative z-10 w-full max-w-[460px] bg-white dark:bg-[#202020] rounded-[14px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"

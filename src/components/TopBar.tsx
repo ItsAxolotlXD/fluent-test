@@ -76,34 +76,21 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] border-b border-[#e5e5e5] dark:border-[#2e2e2e] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
-      {/* TOP BAR MODE: Navigation Links with Search Box (Web logo removed next to search box) */}
-      {isTopBarMode ? (
-        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2 relative z-10">
-          {/* Fluent Search Box matching Settings: rounded-[6px], border-b-2 line, no outline around box */}
-          <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-[420px] min-w-0">
-            <div
-              id="topbar-search-box"
-              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
-            >
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search in Vplay"
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
-              />
-              <button
-                type="submit"
-                title="Search"
-                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-              >
-                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
-              </button>
-            </div>
-          </form>
+      {/* 1. Left Section */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
+        {settings.navigationMode !== 'floaty' && !isTopBarMode && (
+          <button
+            id="btn-mobile-menu-toggle"
+            onClick={onOpenMobileMenu}
+            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
 
-          {/* Navigation links */}
-          <nav className="hidden xl:flex items-center gap-1 ml-auto shrink-0" aria-label="Main Navigation">
+        {isTopBarMode && (
+          <nav className="hidden xl:flex items-center gap-1 shrink-0" aria-label="Main Navigation">
             {/* Home */}
             <button
               id="btn-topbar-nav-home"
@@ -200,48 +187,36 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </button>
           </nav>
-        </div>
-      ) : (
-        /* STANDARD MODE Left Side: Search Box (Web logo removed next to search box) */
-        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2 relative z-10">
-          {settings.navigationMode !== 'floaty' && (
+        )}
+      </div>
+
+      {/* 2. Center Search Box (Căn giữa thanh search) */}
+      <div className="flex-1 flex items-center justify-center min-w-0 px-2 sm:px-4 z-10 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px] md:pointer-events-none">
+        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[460px] min-w-0 mx-auto md:pointer-events-auto">
+          <div
+            id="topbar-search-box"
+            className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
+          >
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search in Vplay"
+              className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
+            />
             <button
-              id="btn-mobile-menu-toggle"
-              onClick={onOpenMobileMenu}
-              className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
-              aria-label="Open navigation menu"
+              type="submit"
+              title="Search"
+              className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
             >
-              <Menu className="w-5 h-5" />
+              <Search className="w-3.5 h-3.5 stroke-[1.75]" />
             </button>
-          )}
+          </div>
+        </form>
+      </div>
 
-          {/* Fluent Search Box matching Settings: rounded-[6px], border-b-2 line, no outline around box */}
-          <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-[420px] min-w-0">
-            <div
-              id="topbar-search-box"
-              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
-            >
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search in Vplay"
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
-              />
-              <button
-                type="submit"
-                title="Search"
-                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-              >
-                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Right Action Icons: Settings Gear */}
-      <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0 relative z-10">
+      {/* 3. Right Action Icons: Settings Gear */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
         {/* TopBar Mode: Settings Gear Icon */}
         {isTopBarMode && (
           <button

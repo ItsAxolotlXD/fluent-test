@@ -6,11 +6,15 @@ const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/4/4b/Vplay_no_
 interface SplashScreenProps {
   duration?: number; // duration in ms, default 3000 (3 seconds)
   onFinish?: () => void;
+  subtitle?: string;
+  isClosable?: boolean;
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   duration = 3000,
-  onFinish
+  onFinish,
+  subtitle,
+  isClosable = true
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [logoError, setLogoError] = useState(false);
@@ -21,8 +25,20 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       onFinish?.();
     }, duration);
 
-    return () => clearTimeout(timer);
-  }, [duration, onFinish]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isClosable && e.key === 'Escape') {
+        setIsVisible(false);
+        onFinish?.();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [duration, onFinish, isClosable]);
 
   if (!isVisible) return null;
 
@@ -48,9 +64,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           )}
         </div>
 
-        {/* Thick spinning ring (colored #4cc2ff) positioned lower */}
-        <div className="absolute bottom-16 sm:bottom-24 md:bottom-28 flex items-center justify-center">
+        {/* Thick spinning ring (colored #4cc2ff) positioned lower with subtitle text */}
+        <div className="absolute bottom-14 sm:bottom-20 md:bottom-24 flex flex-col items-center justify-center gap-3 text-center px-4">
           <SpinningRing size={52} strokeWidth={5.5} color="#4cc2ff" />
+          {subtitle && (
+            <p className="text-[13.5px] sm:text-[14.5px] text-[#FFFFFF] font-normal tracking-wide max-w-md">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </div>

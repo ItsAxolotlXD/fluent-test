@@ -31,6 +31,7 @@ interface BottomDockProps {
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   onOpenSpotlight?: () => void;
+  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
 }
 
 const HOME_ICON = 'https://static.wikia.nocookie.net/ep-deo/images/e/ee/Icons8-home-64.png/revision/latest?cb=20260925115253';
@@ -82,7 +83,8 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   onChangeFontSize,
   searchQuery = '',
   onSearchChange,
-  onOpenSpotlight
+  onOpenSpotlight,
+  onOpenOfficeTool
 }) => {
   const { settings, draftSettings } = useSettings();
   const currentOpacity = typeof draftSettings?.spatialGlassOpacity === 'number'
@@ -408,17 +410,17 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                           >
                             {/* Subtle contained glow around selected tab within tab view bar perimeter */}
                             <div 
-                              className="absolute -inset-1 rounded-full bg-[#fd932f]/45 blur-[5px] pointer-events-none" 
+                              className="absolute -inset-1 rounded-full bg-[#4cc2ff]/45 blur-[5px] pointer-events-none" 
                               aria-hidden="true" 
                             />
-                            <div className="absolute inset-0 rounded-full bg-[#fd932f] border border-[#fd932f] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]" />
+                            <div className="absolute inset-0 rounded-full bg-[#4cc2ff] border border-[#4cc2ff] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]" />
                           </motion.div>
                         )}
                         <div className="relative z-10 flex flex-col items-center justify-center w-full">
                           <div className="w-full h-[27px] sm:h-[29px] flex items-center justify-center shrink-0 relative">
                             {renderTabIcon(item, active, isSelectedOrHovered)}
                             {item.id === 'dock-search' && !!searchQuery?.trim() && (
-                              <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-[#fd932f] ring-1.5 ring-black/40 shadow-sm" />
+                              <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-[#4cc2ff] ring-1.5 ring-black/40 shadow-sm" />
                             )}
                           </div>
                           <span
@@ -467,6 +469,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                   onOpenTextToSpeech={(article) => {
                     setIsToolsOpen(false);
                     onOpenTextToSpeech?.(article);
+                  }}
+                  onOpenOfficeTool={(tool) => {
+                    setIsToolsOpen(false);
+                    onOpenOfficeTool?.(tool);
                   }}
                   onOpenFindWords={() => {
                     setIsToolsOpen(false);

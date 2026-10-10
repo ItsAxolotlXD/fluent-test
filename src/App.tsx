@@ -13,6 +13,7 @@ import { FindWordsBar } from './components/FindWordsBar';
 import { AddStreamModal } from './components/AddStreamModal';
 import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
+import { OfficeSuiteModal, OfficeToolType } from './components/OfficeSuiteModal';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { Home } from './pages/Home';
@@ -131,6 +132,14 @@ export default function App() {
   const [ttsArticle, setTtsArticle] = useState<NewsArticle>(NEWS_DATA[0]);
   const [isFindWordsOpen, setIsFindWordsOpen] = useState(false);
   const [isAddStreamOpen, setIsAddStreamOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isOfficeSuiteOpen, setIsOfficeSuiteOpen] = useState(false);
+  const [officeSuiteTool, setOfficeSuiteTool] = useState<OfficeToolType>('write');
+
+  const handleOpenOfficeTool = (tool: OfficeToolType) => {
+    setOfficeSuiteTool(tool);
+    setIsOfficeSuiteOpen(true);
+  };
   const [articleFontSize, setArticleFontSize] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('vplay_font_size');
@@ -470,6 +479,8 @@ export default function App() {
           <Settings
             searchQuery={currentTabSearchQuery}
             onSearchChange={handleTabSearchChange}
+            onOpenUpdate={() => setIsUpdating(true)}
+            onOpenOfficeTool={handleOpenOfficeTool}
           />
         );
 
@@ -539,6 +550,8 @@ export default function App() {
           onOpenNotifications={() => setIsUnderConstructionOpen(true)}
           fontSize={articleFontSize}
           onChangeFontSize={handleFontSizeChange}
+          onOpenUpdate={() => setIsUpdating(true)}
+          onOpenOfficeTool={handleOpenOfficeTool}
         />
       )}
 
@@ -596,21 +609,19 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={currentRoute}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{
-                duration: 0.26,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="w-full h-full"
-            >
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
+          {/* Dynamic Page Content: only animation in (slide up), no animation out of previous page */}
+          <motion.div
+            key={currentRoute}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.28,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="w-full h-full"
+          >
+            {renderContent()}
+          </motion.div>
         </main>
       </div>
 
@@ -642,6 +653,7 @@ export default function App() {
           searchQuery={currentTabSearchQuery}
           onSearchChange={handleTabSearchChange}
           onOpenSpotlight={() => setIsSpotlightOpen(true)}
+          onOpenOfficeTool={handleOpenOfficeTool}
         />
       )}
 
@@ -705,11 +717,27 @@ export default function App() {
         onClose={() => setIsUnderConstructionOpen(false)}
       />
 
+      {/* Office Suite Modal (Write, Table, Present) */}
+      <OfficeSuiteModal
+        isOpen={isOfficeSuiteOpen}
+        initialTool={officeSuiteTool}
+        onClose={() => setIsOfficeSuiteOpen(false)}
+      />
+
       {/* App Native Virtual Keyboard for Touch Devices */}
       <NativeKeyboard />
 
       {/* Startup Splash Screen (3 seconds) */}
       <SplashScreen duration={3000} />
+
+      {/* Update Vplay Splash Screen (1 minute: 60s) */}
+      {isUpdating && (
+        <SplashScreen
+          duration={60000}
+          subtitle="Vplay needs an update - Working on it"
+          onFinish={() => setIsUpdating(false)}
+        />
+      )}
     </div>
   </NativeKeyboardProvider>
   );

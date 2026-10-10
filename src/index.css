@@ -26,10 +26,10 @@
 
 @layer base {
   :root {
-    --primary-red: #fd932f;
-    --solid-red: #fd932f;
-    --accent-red: #e68428;
-    --dark-red: #d17520;
+    --primary-red: #4cc2ff;
+    --solid-red: #4cc2ff;
+    --accent-red: #6bd0ff;
+    --dark-red: #3bb2ef;
     --dark-bg: #0f0712;
     --sidebar-bg: #250F1A;
     --card-bg: #280e32;
@@ -384,34 +384,34 @@ html.light-mode [id^="settings-section-"] .grid.rounded-full {
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
-html.light-mode .settings-segmented-group button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]),
-html.light-mode #setting-theme-mode .grid button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]),
-html.light-mode [id^="settings-section-"] .grid.rounded-full button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]) {
+html.light-mode .settings-segmented-group button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]),
+html.light-mode #setting-theme-mode .grid button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]),
+html.light-mode [id^="settings-section-"] .grid.rounded-full button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]) {
   color: #4B5563 !important;
 }
 
-html.light-mode .settings-segmented-group button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]):hover,
-html.light-mode #setting-theme-mode .grid button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]):hover,
-html.light-mode [id^="settings-section-"] .grid.rounded-full button:not(.bg-\[\#fd932f\]):not([class*="bg-[#fd932f]"]):hover {
+html.light-mode .settings-segmented-group button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]):hover,
+html.light-mode #setting-theme-mode .grid button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]):hover,
+html.light-mode [id^="settings-section-"] .grid.rounded-full button:not(.bg-\[\#4cc2ff\]):not([class*="bg-[#4cc2ff]"]):hover {
   color: #111827 !important;
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-html.light-mode .settings-segmented-group button.bg-\[\#fd932f\],
-html.light-mode .settings-segmented-group button[class*="bg-[#fd932f]"],
-html.light-mode #setting-theme-mode .grid button.bg-\[\#fd932f\],
-html.light-mode #setting-theme-mode .grid button[class*="bg-[#fd932f]"],
-html.light-mode [id^="settings-section-"] .grid.rounded-full button.bg-\[\#fd932f\],
-html.light-mode [id^="settings-section-"] .grid.rounded-full button[class*="bg-[#fd932f]"] {
-  background-color: #fd932f !important;
+html.light-mode .settings-segmented-group button.bg-\[\#4cc2ff\],
+html.light-mode .settings-segmented-group button[class*="bg-[#4cc2ff]"],
+html.light-mode #setting-theme-mode .grid button.bg-\[\#4cc2ff\],
+html.light-mode #setting-theme-mode .grid button[class*="bg-[#4cc2ff]"],
+html.light-mode [id^="settings-section-"] .grid.rounded-full button.bg-\[\#4cc2ff\],
+html.light-mode [id^="settings-section-"] .grid.rounded-full button[class*="bg-[#4cc2ff]"] {
+  background-color: #4cc2ff !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 8px rgba(253, 147, 47, 0.35) !important;
+  box-shadow: 0 2px 8px rgba(76, 194, 255, 0.35) !important;
 }
 
-html.light-mode .settings-segmented-group button.bg-\[\#fd932f\] *,
-html.light-mode .settings-segmented-group button[class*="bg-[#fd932f]"] *,
-html.light-mode #setting-theme-mode .grid button.bg-\[\#fd932f\] *,
-html.light-mode #setting-theme-mode .grid button[class*="bg-[#fd932f]"] * {
+html.light-mode .settings-segmented-group button.bg-\[\#4cc2ff\] *,
+html.light-mode .settings-segmented-group button[class*="bg-[#4cc2ff]"] *,
+html.light-mode #setting-theme-mode .grid button.bg-\[\#4cc2ff\] *,
+html.light-mode #setting-theme-mode .grid button[class*="bg-[#4cc2ff]"] * {
   color: #FFFFFF !important;
 }
 
@@ -1120,14 +1120,14 @@ button:hover > .settings-icon-hoverable,
   transform: rotate(180deg);
 }
 
-/* Settings TopBar Save Button: Exact style, color and spatial glass border as Switch & Read buttons (#fd932f) */
+/* Settings TopBar Save Button: Exact style, color and spatial glass border as Switch & Read buttons (#4cc2ff) */
 #btn-top-settings-apply-checkbox {
   position: relative !important;
   overflow: hidden !important;
-  background-color: #fd932f !important;
+  background-color: #4cc2ff !important;
   background-image: none !important;
   border: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(253, 147, 47, 0.38) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
   color: #FFFFFF !important;
   transform: scale(1);
   transition: transform 0.38s cubic-bezier(0.34, 1.65, 0.64, 1), box-shadow 0.24s ease-out, background-color 0.18s ease-in-out !important;
@@ -1151,9 +1151,9 @@ button:hover > .settings-icon-hoverable,
 }
 
 #btn-top-settings-apply-checkbox:hover {
-  background-color: #e68428 !important;
+  background-color: #6bd0ff !important;
   background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(253, 147, 47, 0.48) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
   transform: scale(1.05) !important;
 }
 
@@ -1163,21 +1163,21 @@ button:hover > .settings-icon-hoverable,
 }
 
 #btn-top-settings-apply-checkbox:active {
-  background-color: #d8751c !important;
+  background-color: #3bb2ef !important;
   transform: scale(0.96) !important;
   transition: transform 0.1s ease-out !important;
 }
 
 html.light-mode #btn-top-settings-apply-checkbox {
-  background-color: #fd932f !important;
+  background-color: #4cc2ff !important;
   background-image: none !important;
   border: none !important;
   color: #FFFFFF !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(253, 147, 47, 0.38) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
 }
 
 html.light-mode #btn-top-settings-apply-checkbox:hover {
-  background-color: #e68428 !important;
+  background-color: #6bd0ff !important;
   background-image: none !important;
 }
 
@@ -1465,8 +1465,8 @@ html.light-mode #floating-search-build-info .build-info-line-2 {
 #news-category-tabs button,
 #channels-category-tabs button,
 .category-tab-btn,
-button.bg-\[\#fd932f\],
-button[class*="bg-[#fd932f]"],
+button.bg-\[\#4cc2ff\],
+button[class*="bg-[#4cc2ff]"],
 .btn-fd932f,
 button[role="switch"],
 .toggle-switch-btn,
@@ -1568,8 +1568,8 @@ button[role="switch"],
 #news-category-tabs button::after,
 #channels-category-tabs button::after,
 .category-tab-btn::after,
-button.bg-\[\#fd932f\]::after,
-button[class*="bg-[#fd932f]"]::after,
+button.bg-\[\#4cc2ff\]::after,
+button[class*="bg-[#4cc2ff]"]::after,
 .btn-fd932f::after,
 button[role="switch"]::after,
 .toggle-switch-btn::after,
@@ -1662,12 +1662,12 @@ img[src*="imgur.com"],
 #btn-devmode-close,
 #btn-hero-watch-now,
 #btn-add-stream-submit,
-#livetv-category-tabs button.bg-[#fd932f],
-#news-category-tabs button.bg-[#fd932f],
-#btn-theme-light.bg-[#fd932f],
-#btn-theme-dark.bg-[#fd932f],
-button.bg-\[\#fd932f\],
-button[class*="bg-[#fd932f]"],
+#livetv-category-tabs button.bg-[#4cc2ff],
+#news-category-tabs button.bg-[#4cc2ff],
+#btn-theme-light.bg-[#4cc2ff],
+#btn-theme-dark.bg-[#4cc2ff],
+button.bg-\[\#4cc2ff\],
+button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
   position: relative !important;
   overflow: hidden !important;
@@ -1699,15 +1699,15 @@ button[class*="bg-[#fd932f]"],
 #btn-devmode-close,
 #btn-hero-watch-now,
 #btn-add-stream-submit,
-#livetv-category-tabs button.bg-[#fd932f],
-#news-category-tabs button.bg-[#fd932f],
-#btn-theme-light.bg-[#fd932f],
-#btn-theme-dark.bg-[#fd932f],
-button.bg-\[\#fd932f\],
-button[class*="bg-[#fd932f]"],
+#livetv-category-tabs button.bg-[#4cc2ff],
+#news-category-tabs button.bg-[#4cc2ff],
+#btn-theme-light.bg-[#4cc2ff],
+#btn-theme-dark.bg-[#4cc2ff],
+button.bg-\[\#4cc2ff\],
+button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
-  background-color: #fd932f !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(253, 147, 47, 0.38) !important;
+  background-color: #4cc2ff !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
   color: #FFFFFF !important;
 }
 
@@ -1719,15 +1719,15 @@ button[class*="bg-[#fd932f]"],
 #btn-devmode-close:hover,
 #btn-hero-watch-now:hover,
 #btn-add-stream-submit:hover,
-#livetv-category-tabs button.bg-[#fd932f]:hover,
-#news-category-tabs button.bg-[#fd932f]:hover,
-#btn-theme-light.bg-[#fd932f]:hover,
-#btn-theme-dark.bg-[#fd932f]:hover,
-button.bg-\[\#fd932f\]:hover,
-button[class*="bg-[#fd932f]"]:hover,
+#livetv-category-tabs button.bg-[#4cc2ff]:hover,
+#news-category-tabs button.bg-[#4cc2ff]:hover,
+#btn-theme-light.bg-[#4cc2ff]:hover,
+#btn-theme-dark.bg-[#4cc2ff]:hover,
+button.bg-\[\#4cc2ff\]:hover,
+button[class*="bg-[#4cc2ff]"]:hover,
 .btn-fd932f:hover {
-  background-color: #e68428 !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(253, 147, 47, 0.48) !important;
+  background-color: #6bd0ff !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
   transform: scale(1.05) !important;
 }
 
@@ -1741,8 +1741,8 @@ button[class*="bg-[#fd932f]"]:hover,
 #btn-devmode-close:active,
 #btn-hero-watch-now:active,
 #btn-add-stream-submit:active,
-button.bg-\[\#fd932f\]:active,
-button[class*="bg-[#fd932f]"]:active,
+button.bg-\[\#4cc2ff\]:active,
+button[class*="bg-[#4cc2ff]"]:active,
 .btn-fd932f:active {
   transform: scale(0.95) !important;
   transition: transform 0.1s ease-out !important;
@@ -1794,9 +1794,9 @@ button[role="switch"]:active,
 
 button[role="switch"][aria-checked="true"],
 .toggle-switch-btn[aria-checked="true"] {
-  background-color: #fd932f !important;
+  background-color: #4cc2ff !important;
   background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25), 0 2px 10px rgba(253, 147, 47, 0.35) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25), 0 2px 10px rgba(76, 194, 255, 0.35) !important;
 }
 
 button[role="switch"][aria-checked="false"],
@@ -1958,18 +1958,22 @@ html.light-mode [id^="news-cat-btn-"]:active {
 }
 
 /* Sidebar Navigation Tabs & Channel Items - Pure static layout, ABSOLUTELY NO scale/zoom/bounce on hover or unhover */
-#waves-desktop-sidebar,
-#waves-desktop-sidebar *,
-#waves-mobile-sidebar,
-#waves-mobile-sidebar *,
+#waves-desktop-sidebar .sidebar-nav-item,
+#waves-mobile-sidebar .sidebar-nav-item,
 .sidebar-nav-item,
-[id^="sidebar-nav-"],
-[id^="mobile-nav-"],
+[id^="sidebar-nav-"]:not(.signin-toggle-btn),
+[id^="mobile-nav-"]:not(.signin-toggle-btn),
 [id^="nav-item-"],
 [id^="mobile-nav-item-"] {
   transform: none !important;
   scale: 1 !important;
   will-change: auto !important;
+}
+
+/* Allow smooth slide-up transforms on sign-in flyout */
+.signin-flyout-container {
+  transform-origin: bottom center !important;
+  will-change: transform, opacity !important;
 }
 
 #waves-desktop-sidebar button:hover,
@@ -2046,10 +2050,10 @@ html.light-mode #slider-prev-btn,
 html.light-mode #slider-next-btn,
 html.light-mode #btn-welcome-close-icon,
 html.light-mode #btn-under-construction-close-icon,
-html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#fd932f\]),
-html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#fd932f\]),
-html.light-mode #btn-theme-light:not(.bg-\[\#fd932f\]),
-html.light-mode #btn-theme-dark:not(.bg-\[\#fd932f\]),
+html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]),
+html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]),
+html.light-mode #btn-theme-light:not(.bg-\[\#4cc2ff\]),
+html.light-mode #btn-theme-dark:not(.bg-\[\#4cc2ff\]),
 html.light-mode .spotlight-bubble-box,
 html.light-mode .spotlight-input-container,
 html.light-mode .search-box-capsule,
@@ -2075,10 +2079,10 @@ html.light-mode #slider-prev-btn:hover,
 html.light-mode #slider-next-btn:hover,
 html.light-mode #btn-welcome-close-icon:hover,
 html.light-mode #btn-under-construction-close-icon:hover,
-html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#fd932f\]):hover,
-html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#fd932f\]):hover,
-html.light-mode #btn-theme-light:not(.bg-\[\#fd932f\]):hover,
-html.light-mode #btn-theme-dark:not(.bg-\[\#fd932f\]):hover,
+html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]):hover,
+html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]):hover,
+html.light-mode #btn-theme-light:not(.bg-\[\#4cc2ff\]):hover,
+html.light-mode #btn-theme-dark:not(.bg-\[\#4cc2ff\]):hover,
 html.light-mode .spotlight-bubble-box:hover,
 html.light-mode .spotlight-input-container:hover,
 html.light-mode .search-box-capsule:hover {
@@ -2102,12 +2106,12 @@ html.light-mode #btn-discord-close,
 html.light-mode #btn-devmode-close,
 html.light-mode #btn-hero-watch-now,
 html.light-mode #btn-add-stream-submit,
-html.light-mode #livetv-category-tabs button.bg-[#fd932f],
-html.light-mode #news-category-tabs button.bg-[#fd932f],
-html.light-mode #btn-theme-light.bg-[#fd932f],
-html.light-mode #btn-theme-dark.bg-[#fd932f],
-html.light-mode button.bg-\[\#fd932f\],
-html.light-mode button[class*="bg-[#fd932f]"],
+html.light-mode #livetv-category-tabs button.bg-[#4cc2ff],
+html.light-mode #news-category-tabs button.bg-[#4cc2ff],
+html.light-mode #btn-theme-light.bg-[#4cc2ff],
+html.light-mode #btn-theme-dark.bg-[#4cc2ff],
+html.light-mode button.bg-\[\#4cc2ff\],
+html.light-mode button[class*="bg-[#4cc2ff]"],
 html.light-mode .btn-fd932f {
   position: relative !important;
   overflow: hidden !important;
@@ -2136,16 +2140,16 @@ html.light-mode #btn-discord-close,
 html.light-mode #btn-devmode-close,
 html.light-mode #btn-hero-watch-now,
 html.light-mode #btn-add-stream-submit,
-html.light-mode #livetv-category-tabs button.bg-[#fd932f],
-html.light-mode #news-category-tabs button.bg-[#fd932f],
-html.light-mode #btn-theme-light.bg-[#fd932f],
-html.light-mode #btn-theme-dark.bg-[#fd932f],
-html.light-mode button.bg-\[\#fd932f\],
-html.light-mode button[class*="bg-[#fd932f]"],
+html.light-mode #livetv-category-tabs button.bg-[#4cc2ff],
+html.light-mode #news-category-tabs button.bg-[#4cc2ff],
+html.light-mode #btn-theme-light.bg-[#4cc2ff],
+html.light-mode #btn-theme-dark.bg-[#4cc2ff],
+html.light-mode button.bg-\[\#4cc2ff\],
+html.light-mode button[class*="bg-[#4cc2ff]"],
 html.light-mode .btn-fd932f {
-  background-color: #fd932f !important;
+  background-color: #4cc2ff !important;
   background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.35), 0 3px 12px rgba(253, 147, 47, 0.30) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.35), 0 3px 12px rgba(76, 194, 255, 0.30) !important;
   color: #FFFFFF !important;
 }
 
@@ -2157,16 +2161,16 @@ html.light-mode #btn-discord-close:hover,
 html.light-mode #btn-devmode-close:hover,
 html.light-mode #btn-hero-watch-now:hover,
 html.light-mode #btn-add-stream-submit:hover,
-html.light-mode #livetv-category-tabs button.bg-[#fd932f]:hover,
-html.light-mode #news-category-tabs button.bg-[#fd932f]:hover,
-html.light-mode #btn-theme-light.bg-[#fd932f]:hover,
-html.light-mode #btn-theme-dark.bg-[#fd932f]:hover,
-html.light-mode button.bg-\[\#fd932f\]:hover,
-html.light-mode button[class*="bg-[#fd932f]"]:hover,
+html.light-mode #livetv-category-tabs button.bg-[#4cc2ff]:hover,
+html.light-mode #news-category-tabs button.bg-[#4cc2ff]:hover,
+html.light-mode #btn-theme-light.bg-[#4cc2ff]:hover,
+html.light-mode #btn-theme-dark.bg-[#4cc2ff]:hover,
+html.light-mode button.bg-\[\#4cc2ff\]:hover,
+html.light-mode button[class*="bg-[#4cc2ff]"]:hover,
 html.light-mode .btn-fd932f:hover {
-  background-color: #e68428 !important;
+  background-color: #6bd0ff !important;
   background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.45), 0 5px 16px rgba(253, 147, 47, 0.40) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.45), 0 5px 16px rgba(76, 194, 255, 0.40) !important;
   transform: scale(1.05) !important;
 }
 
@@ -2477,15 +2481,15 @@ html.spatial-glass-dark-content .floaty-bar__surface:hover::after {
 }
 
 /* Sidebar tabs hover and active states */
-html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover,
-html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover {
+html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover,
+html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover {
   background-color: #F1F3F5 !important;
   color: #111827 !important;
 }
-html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover span,
-html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover svg,
-html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover span,
-html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#fd932f\]):hover svg {
+html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover span,
+html.light-mode #waves-desktop-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover svg,
+html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover span,
+html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#4cc2ff\]):hover svg {
   color: #111827 !important;
 }
 
@@ -2494,11 +2498,11 @@ html.light-mode #waves-mobile-sidebar button:not(.bg-\[\#E6005A\]):not(.bg-\[\#f
 #waves-mobile-sidebar .bg-\[\#E6005A\],
 html.light-mode #waves-desktop-sidebar .bg-\[\#E6005A\],
 html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\],
-#waves-desktop-sidebar .bg-\[\#fd932f\],
-#waves-mobile-sidebar .bg-\[\#fd932f\],
-html.light-mode #waves-desktop-sidebar .bg-\[\#fd932f\],
-html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] {
-  background-color: #fd932f !important;
+#waves-desktop-sidebar .bg-\[\#4cc2ff\],
+#waves-mobile-sidebar .bg-\[\#4cc2ff\],
+html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\],
+html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] {
+  background-color: #4cc2ff !important;
   color: #FFFFFF !important;
 }
 
@@ -2514,18 +2518,18 @@ html.light-mode #waves-desktop-sidebar .bg-\[\#E6005A\] *,
 html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\] span,
 html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\] svg,
 html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\] *,
-#waves-desktop-sidebar .bg-\[\#fd932f\] span,
-#waves-desktop-sidebar .bg-\[\#fd932f\] svg,
-#waves-desktop-sidebar .bg-\[\#fd932f\] *,
-#waves-mobile-sidebar .bg-\[\#fd932f\] span,
-#waves-mobile-sidebar .bg-\[\#fd932f\] svg,
-#waves-mobile-sidebar .bg-\[\#fd932f\] *,
-html.light-mode #waves-desktop-sidebar .bg-\[\#fd932f\] span,
-html.light-mode #waves-desktop-sidebar .bg-\[\#fd932f\] svg,
-html.light-mode #waves-desktop-sidebar .bg-\[\#fd932f\] *,
-html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] span,
-html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] svg,
-html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] * {
+#waves-desktop-sidebar .bg-\[\#4cc2ff\] span,
+#waves-desktop-sidebar .bg-\[\#4cc2ff\] svg,
+#waves-desktop-sidebar .bg-\[\#4cc2ff\] *,
+#waves-mobile-sidebar .bg-\[\#4cc2ff\] span,
+#waves-mobile-sidebar .bg-\[\#4cc2ff\] svg,
+#waves-mobile-sidebar .bg-\[\#4cc2ff\] *,
+html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\] span,
+html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\] svg,
+html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\] *,
+html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] span,
+html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] svg,
+html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] * {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
   fill: none;
@@ -2535,10 +2539,10 @@ html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] * {
 #waves-mobile-sidebar .bg-\[\#E6005A\] img,
 html.light-mode #waves-desktop-sidebar .bg-\[\#E6005A\] img,
 html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\] img,
-#waves-desktop-sidebar .bg-\[\#fd932f\] img,
-#waves-mobile-sidebar .bg-\[\#fd932f\] img,
-html.light-mode #waves-desktop-sidebar .bg-\[\#fd932f\] img,
-html.light-mode #waves-mobile-sidebar .bg-\[\#fd932f\] img {
+#waves-desktop-sidebar .bg-\[\#4cc2ff\] img,
+#waves-mobile-sidebar .bg-\[\#4cc2ff\] img,
+html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\] img,
+html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] img {
   filter: brightness(0) invert(1) !important;
   opacity: 1 !important;
 }
@@ -3544,9 +3548,9 @@ html.light-mode .toggle-switch-btn {
 
 html.light-mode button[role="switch"][aria-checked="true"],
 html.light-mode .toggle-switch-btn[aria-checked="true"] {
-  background-color: #fd932f !important;
+  background-color: #4cc2ff !important;
   background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.35), 0 2px 10px rgba(253, 147, 47, 0.3) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.35), 0 2px 10px rgba(76, 194, 255, 0.3) !important;
 }
 
 html.light-mode button[role="switch"][aria-checked="false"],
@@ -4718,13 +4722,13 @@ html.light-mode #home-about-community-card p {
 .floaty-bar-pill-indicator {
   border-radius: 9999px !important;
   /* Soft glow around the selected tab, contained strictly within the tab bar bounds */
-  box-shadow: 0 0 10px 1px rgba(253, 147, 47, 0.42) !important;
+  box-shadow: 0 0 10px 1px rgba(76, 194, 255, 0.42) !important;
   z-index: 5 !important;
 }
 
 html.light-mode .floaty-bar-pill-indicator {
   /* Soft glow around the selected tab in light mode, contained within tab bar */
-  box-shadow: 0 0 8px 1px rgba(253, 147, 47, 0.35) !important;
+  box-shadow: 0 0 8px 1px rgba(76, 194, 255, 0.35) !important;
   z-index: 5 !important;
 }
 
@@ -5418,3 +5422,18 @@ html.no-shiny-outline .hero-carousel-slide * {
 
 
 
+
+
+/* Remove divider / separate lines from sidebar */
+#waves-desktop-sidebar,
+#waves-mobile-sidebar {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+}
+#waves-desktop-sidebar .border-t,
+#waves-mobile-sidebar .border-t,
+#waves-desktop-sidebar .border-l,
+#waves-mobile-sidebar .border-l {
+  border: none !important;
+}

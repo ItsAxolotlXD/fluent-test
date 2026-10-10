@@ -356,7 +356,7 @@ export const TextToSpeechPlayer: React.FC<TextToSpeechPlayerProps> = ({
                           }}
                           className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs truncate transition-colors ${
                             selectedVoiceURI === v.voiceURI
-                              ? 'bg-[#fd932f] text-white font-bold'
+                              ? 'bg-[#4cc2ff] text-black font-bold'
                               : 'text-white/80 hover:bg-white/10'
                           }`}
                         >
@@ -382,7 +382,7 @@ export const TextToSpeechPlayer: React.FC<TextToSpeechPlayerProps> = ({
                   <button
                     type="button"
                     onClick={isPlaying ? handlePause : handlePlay}
-                    className="w-11 h-11 rounded-full bg-[#fd932f] hover:bg-[#e68428] active:scale-95 flex items-center justify-center text-white shadow-lg shadow-[#fd932f]/40 cursor-default transition-all"
+                    className="w-11 h-11 rounded-full bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-95 flex items-center justify-center text-black shadow-lg shadow-[#4cc2ff]/40 cursor-default transition-all"
                     title={isPlaying ? "Pause" : "Play"}
                   >
                     {isPlaying ? (
@@ -447,7 +447,7 @@ export const TextToSpeechPlayer: React.FC<TextToSpeechPlayerProps> = ({
                 <button
                   type="button"
                   onClick={isPlaying ? handlePause : handlePlay}
-                  className="w-8 h-8 rounded-full bg-[#fd932f] flex items-center justify-center text-white cursor-default shadow-md"
+                  className="w-8 h-8 rounded-full bg-[#4cc2ff] flex items-center justify-center text-black cursor-default shadow-md"
                 >
                   {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
                 </button>

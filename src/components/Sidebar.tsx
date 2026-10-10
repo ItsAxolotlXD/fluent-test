@@ -22,6 +22,10 @@ import {
   DownloadCloud,
   Sparkles,
   Volume2,
+  RefreshCw,
+  FileText,
+  Table,
+  Presentation,
   User,
   UserX
 } from 'lucide-react';
@@ -162,6 +166,8 @@ interface SidebarProps {
   onOpenNotifications?: () => void;
   fontSize?: number;
   onChangeFontSize?: (size: number) => void;
+  onOpenUpdate?: () => void;
+  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -184,7 +190,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onImportChannels = (_channels: Channel[]) => {},
   onOpenNotifications = () => {},
   fontSize = 16,
-  onChangeFontSize = (_size: number) => {}
+  onChangeFontSize = (_size: number) => {},
+  onOpenUpdate = () => {},
+  onOpenOfficeTool = (_tool: 'write' | 'table' | 'present') => {}
 }) => {
   const { settings } = useSettings();
   const { favoriteChannelIds } = useFavorites();
@@ -502,6 +510,63 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </button>
 
+        {/* Office Tools Section */}
+        <div className="my-1 mx-1 h-[1px] bg-white/10" />
+        <div className="px-3 py-1 text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
+          Office Tools
+        </div>
+
+        {/* Write (Word clone) */}
+        <button
+          type="button"
+          id="tool-office-write"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            onOpenOfficeTool('write');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FileText className="w-4 h-4 text-[#4cc2ff] stroke-[1.75]" />
+            <span>Write</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#185abd]/30 text-[#4cc2ff] font-medium">Word</span>
+        </button>
+
+        {/* Table (Excel clone) */}
+        <button
+          type="button"
+          id="tool-office-table"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            onOpenOfficeTool('table');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <Table className="w-4 h-4 text-[#107c41] stroke-[1.75]" />
+            <span>Table</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#107c41]/30 text-[#2ecc71] font-medium">Excel</span>
+        </button>
+
+        {/* Present (PowerPoint clone) */}
+        <button
+          type="button"
+          id="tool-office-present"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            onOpenOfficeTool('present');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <Presentation className="w-4 h-4 text-[#d24726] stroke-[1.75]" />
+            <span>Present</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#d24726]/30 text-[#ff7849] font-medium">Slides</span>
+        </button>
+
         {/* Article contextual tools */}
         {(currentRoute === '/news' || currentRoute.startsWith('/article')) && (
           <>
@@ -523,14 +588,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  // Render Flyout Menu for Sign in with smooth slide-up animation
+  // Render Flyout Menu for Sign in with distinct pure slide-up animation
   const renderSignInFlyout = (isCollapsedMode = false) => {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 18 }}
+        key="signin-flyout-panel"
+        initial={{ opacity: 0, y: 70 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 12 }}
-        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        exit={{ opacity: 0, y: 40 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         className={`signin-flyout-container absolute z-50 w-[264px] bg-[#242424]/95 dark:bg-[#1f1f1f]/95 backdrop-blur-2xl border border-white/10 rounded-[10px] shadow-[0_12px_40px_rgba(0,0,0,0.65),0_2px_8px_rgba(0,0,0,0.4)] p-1.5 space-y-0.5 text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
@@ -540,6 +606,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
         style={{
           boxShadow: '0 16px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.4)',
+          willChange: 'transform, opacity',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -786,7 +853,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Live TV Channels Quick Submenu */}
                 {item.hasSubmenu && isLiveTvExpanded && (
-                  <div className="ml-4 pl-2.5 border-l border-white/10 space-y-0.5 py-1">
+                  <div className="ml-4 pl-2.5 space-y-0.5 py-1">
                     {channels.slice(0, 8).map((ch) => (
                       <button
                         key={ch.id}
@@ -815,7 +882,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Favorites Quick Submenu */}
                 {item.hasFavoritesSubmenu && isFavoritesExpanded && (
-                  <div className="ml-4 pl-2.5 border-l border-white/10 space-y-0.5 py-1">
+                  <div className="ml-4 pl-2.5 space-y-0.5 py-1">
                     {favoriteChannels.map((ch) => (
                       <button
                         key={ch.id}
@@ -877,10 +944,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </svg>
             <span className="truncate text-[13.5px]">Discord Community</span>
           </button>
+
+          {/* Update Vplay Option */}
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-update' : 'sidebar-nav-update'}
+            onClick={onOpenUpdate}
+            title="Update Vplay"
+            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#cccccc] hover:bg-white/[0.05] hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+            <span className="truncate text-[13.5px]">Update Vplay</span>
+          </button>
         </div>
 
         {/* Bottom Section: Sign In (placed directly above Settings) & Settings */}
-        <div className="px-2.5 py-2 shrink-0 border-t border-white/10 mt-auto space-y-1 relative signin-flyout-container">
+        <div className="px-2.5 py-2 shrink-0 mt-auto space-y-1 relative signin-flyout-container">
           {/* Sign In item placed directly ABOVE Settings tab */}
           <div className="relative">
             <button
@@ -938,8 +1017,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`hidden md:flex flex-col h-screen bg-[#202020] text-white border-r border-[#2e2e2e] select-none shrink-0 fixed top-0 z-40 overflow-hidden shadow-2xl ${
-            settings.sidebarPosition === 'right' ? 'right-0 border-l border-r-0' : 'left-0'
+          className={`hidden md:flex flex-col h-screen bg-[#202020] text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-2xl ${
+            settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
             shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
           } ${
@@ -1048,6 +1127,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </AnimatePresence>
               </div>
 
+              {/* Update Vplay Collapsed Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-update"
+                onClick={onOpenUpdate}
+                title="Update Vplay"
+                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-[#cccccc] hover:bg-white/[0.05] hover:text-white"
+              >
+                <RefreshCw className="w-4 h-4 stroke-[1.5] text-white" />
+              </button>
+
               {/* Bottom Sign In & Settings Icons */}
               <div className="mt-auto pt-2 space-y-1 relative signin-flyout-container">
                 {/* Sign In Collapsed Button placed directly above Settings */}
@@ -1111,7 +1201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id="waves-mobile-sidebar"
             onTouchStart={handleDrawerTouchStart}
             onTouchEnd={handleDrawerTouchEnd}
-            className="relative w-[280px] max-w-[85vw] h-full bg-[#202020] text-white border-r border-[#2e2e2e] shadow-2xl flex flex-col z-10"
+            className="relative w-[280px] max-w-[85vw] h-full bg-[#202020] text-white shadow-2xl flex flex-col z-10"
             style={{
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',

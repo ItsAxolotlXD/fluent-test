@@ -194,23 +194,21 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
           {/* 2. Dialog Modal Box - Fluent Design */}
           <motion.div 
             id="spotlight-popup-card"
-            initial={shouldAnimateModal ? { opacity: 0, scale: 0.98, y: 8 } : { opacity: 1, scale: 1 }}
+            initial={shouldAnimateModal ? { opacity: 0, scale: 1.10 } : { opacity: 1, scale: 1 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
-              y: 0,
               transition: {
-                duration: 0.22,
-                ease: [0.1, 0.9, 0.2, 1]
+                duration: 0.28,
+                ease: [0.16, 1, 0.3, 1]
               }
             }}
             exit={shouldAnimateModal ? { 
               opacity: 0, 
-              scale: 0.98,
-              y: 6,
+              scale: 1.08,
               transition: {
-                duration: 0.16,
-                ease: 'easeIn'
+                duration: 0.20,
+                ease: [0.16, 1, 0.3, 1]
               }
             } : { opacity: 0 }}
             className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[14px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"

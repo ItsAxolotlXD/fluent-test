@@ -62,7 +62,7 @@ export const Channels: React.FC<ChannelsProps> = ({
 
         <button
           onClick={onOpenCustomStreamModal}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#fd932f] hover:bg-[#e68428] text-white text-xs font-bold shadow-md shrink-0 cursor-pointer"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#4cc2ff] hover:bg-[#6bd0ff] text-black text-xs font-bold shadow-md shrink-0 cursor-pointer"
         >
           <Sparkles className="w-4 h-4" />
           <span>Import M3U8 Stream</span>
@@ -79,7 +79,7 @@ export const Channels: React.FC<ChannelsProps> = ({
               onClick={() => setSelectedGroup(grp)}
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedGroup === grp
-                  ? 'bg-[#fd932f] text-white shadow-md'
+                  ? 'bg-[#4cc2ff] text-black shadow-md'
                   : 'bg-[#F3F4F6] text-[#4B5563] hover:text-[#111827] hover:bg-[#E5E7EB] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-[#2D2D35]'
               }`}
             >
