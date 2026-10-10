@@ -8,6 +8,7 @@ import {
   Hash,
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 
 interface LiveTVProps {
   currentChannel: Channel;
@@ -16,6 +17,7 @@ interface LiveTVProps {
   onOpenCustomStreamModal: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  navigate?: (route: string) => void;
 }
 
 export const LiveTV: React.FC<LiveTVProps> = ({
@@ -24,7 +26,8 @@ export const LiveTV: React.FC<LiveTVProps> = ({
   channels,
   onOpenCustomStreamModal,
   searchQuery,
-  onSearchChange
+  onSearchChange,
+  navigate = () => {}
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isTheaterMode, setIsTheaterMode] = useState(false);
@@ -55,6 +58,9 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
   return (
     <div className="space-y-4 sm:space-y-8 pb-16">
+      {/* Support Ceased Banner */}
+      <DiscontinuedBanner navigate={navigate} />
+
       {/* Top Banner / Channel Title */}
       <div>
         <div className="flex items-center gap-2">

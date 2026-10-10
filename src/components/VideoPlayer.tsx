@@ -17,8 +17,7 @@ import { Channel } from '../types';
 import { useHLS } from '../hooks/useHLS';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
-import { TriangleLoader } from './TriangleLoader';
-import { WINDOWS_LOADING_GIF } from '../constants/assets';
+import { SpinningRing } from './SpinningRing';
 
 interface VideoPlayerProps {
   channel: Channel;
@@ -431,18 +430,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
       </div>
 
-      {/* Buffering & Loading Spinner */}
+      {/* Buffering & Loading Spinner - Thick Spinning Ring in #4cc2ff */}
       {(isLoading || isBuffering) && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10 pointer-events-none p-4">
-          {settings.triangleExperiment ? (
-            <TriangleLoader size={66} glow={false} />
-          ) : (
-            <img
-              src={WINDOWS_LOADING_GIF}
-              alt="Loading..."
-              className="w-12 h-12 sm:w-14 sm:h-14 object-contain pointer-events-none select-none animate-[spin_5s_linear_infinite]"
-            />
-          )}
+          <SpinningRing size={58} strokeWidth={5.5} color="#4cc2ff" />
         </div>
       )}
 

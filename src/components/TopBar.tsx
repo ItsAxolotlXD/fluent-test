@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
-import { ToolsMenu } from './ToolsMenu';
 import { Channel, NewsArticle } from '../types';
 
 const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/4/4b/Vplay_no_wordmark.png/revision/latest/scale-to-width-down/1000?cb=20260829062616';
@@ -10,7 +9,6 @@ const HOME_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/e/ee/Icon
 const TV_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/d/df/Cool_tv.png/revision/latest?cb=20260927105318';
 const NEWS_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/f/f2/Icons8-megaphone-64.png/revision/latest?cb=20260925115252';
 const SETTINGS_ICON_SRC = 'https://static.wikia.nocookie.net/ftv/images/9/97/Settungs.png/revision/latest?cb=20260411085024&path-prefix=vi';
-const SF_SEARCH_ICON_URL = '/icons/sf-magnifyingglass.png';
 
 interface TopBarProps {
   currentRoute: string;
@@ -54,6 +52,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   const { settings, hasChanges, applyDraftSettings } = useSettings();
   const [logoError, setLogoError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const isTopBarMode = settings.navigationMode === 'topbar';
 
@@ -66,34 +65,45 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDismissUnsavedTooltip();
   };
 
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/channels?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      onOpenSearch();
+    }
+  };
+
   return (
-    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] border-b border-[#e5e5e5] dark:border-[#2e2e2e] px-3 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 select-none">
-      {/* TOP BAR MODE: Brand Logo & Navigation Links (Truyền hình, News) */}
+    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] border-b border-[#e5e5e5] dark:border-[#2e2e2e] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
+      {/* TOP BAR MODE: Navigation Links with Search Box (Web logo removed next to search box) */}
       {isTopBarMode ? (
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0 relative z-10">
-          {/* Logo web - chuẩn WinUI */}
-          <button
-            id="btn-topbar-brand"
-            type="button"
-            onClick={() => navigate('/')}
-            className="cursor-default flex items-center justify-center p-0 border-0 bg-transparent hover:opacity-85 active:scale-95 transition-opacity shrink-0 select-none outline-none focus:outline-none"
-            title="Home"
-          >
-            {!logoError ? (
-              <img 
-                src={LOGO_SRC}
-                alt="Vplay Logo" 
-                referrerPolicy="no-referrer"
-                className="h-7.5 max-w-[125px] w-auto object-contain shrink-0 drop-shadow-sm"
-                onError={() => setLogoError(true)}
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2 relative z-10">
+          {/* Fluent Search Box matching Settings: rounded-[6px], border-b-2 line, no outline around box */}
+          <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-[420px] min-w-0">
+            <div
+              id="topbar-search-box"
+              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
+            >
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search in Vplay"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
               />
-            ) : (
-              <span className="text-[#4cc2ff] font-black text-2xl tracking-tighter">V</span>
-            )}
-          </button>
+              <button
+                type="submit"
+                title="Search"
+                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+              </button>
+            </div>
+          </form>
 
           {/* Navigation links */}
-          <nav className="flex items-center gap-1 ml-1 sm:ml-2" aria-label="Main Navigation">
+          <nav className="hidden xl:flex items-center gap-1 ml-auto shrink-0" aria-label="Main Navigation">
             {/* Home */}
             <button
               id="btn-topbar-nav-home"
@@ -192,89 +202,52 @@ export const TopBar: React.FC<TopBarProps> = ({
           </nav>
         </div>
       ) : (
-        /* STANDARD MODE Left Side (Mobile Only Logo & Hamburger) */
-        <>
-          <div className="flex items-center gap-2 md:hidden relative z-10">
-            {settings.navigationMode !== 'floaty' && (
-              <button
-                id="btn-mobile-menu-toggle"
-                onClick={onOpenMobileMenu}
-                className="w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-default"
-                aria-label="Open navigation menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            )}
-
-            <button 
-              id="btn-mobile-brand-logo"
-              type="button"
-              onClick={() => navigate('/')}
-              className="cursor-default flex items-center justify-center p-0 border-0 bg-transparent hover:opacity-85 active:scale-95 transition-opacity shrink-0 outline-none"
-              title="Home (Vplay)"
+        /* STANDARD MODE Left Side: Search Box (Web logo removed next to search box) */
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2 relative z-10">
+          {settings.navigationMode !== 'floaty' && (
+            <button
+              id="btn-mobile-menu-toggle"
+              onClick={onOpenMobileMenu}
+              className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+              aria-label="Open navigation menu"
             >
-              {!logoError ? (
-                <img 
-                  src={LOGO_SRC} 
-                  alt="Vplay Logo" 
-                  referrerPolicy="no-referrer"
-                  className="h-7 max-w-[120px] w-auto object-contain shrink-0"
-                  onError={() => setLogoError(true)}
-                />
-              ) : (
-                <span className="text-[#4cc2ff] font-black text-lg">V</span>
-              )}
+              <Menu className="w-5 h-5" />
             </button>
-          </div>
+          )}
 
-          <div className="hidden md:flex items-center gap-3 relative z-10" />
-        </>
+          {/* Fluent Search Box matching Settings: rounded-[6px], border-b-2 line, no outline around box */}
+          <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-[420px] min-w-0">
+            <div
+              id="topbar-search-box"
+              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
+            >
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search in Vplay"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
+              />
+              <button
+                type="submit"
+                title="Search"
+                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
-      {/* Right Action Icons: Search, Tools Menu, Settings Gear */}
+      {/* Right Action Icons: Settings Gear */}
       <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0 relative z-10">
-        {/* Quick Spotlight Search trigger */}
-        <button
-          id="btn-top-search"
-          onClick={onOpenSearch}
-          className="h-8.5 px-2.5 rounded-[4px] flex items-center gap-2 text-xs text-[#555555] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-default"
-          title="Spotlight Search (⌘K)"
-        >
-          <img
-            src={SF_SEARCH_ICON_URL}
-            alt="Search"
-            className="w-4 h-4 object-contain brightness-0 dark:brightness-0 dark:invert opacity-75"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/icons/sf-magnifyingglass.png';
-            }}
-          />
-          <span className="hidden sm:inline text-xs font-normal text-[#666666] dark:text-[#999999]">Search</span>
-        </button>
-
-        {/* Tools Menu Icon */}
-        <ToolsMenu
-          currentRoute={currentRoute}
-          currentChannel={currentChannel}
-          channels={channels}
-          isLightMode={settings.theme === 'light'}
-          onNavigate={navigate}
-          onOpenHelp={onOpenHelp}
-          onOpenDiscord={onOpenDiscord}
-          onOpenSummarize={onOpenSummarize}
-          onOpenTextToSpeech={onOpenTextToSpeech}
-          onOpenFindWords={onOpenFindWords}
-          onOpenAddStream={onOpenAddStream}
-          onImportChannels={onImportChannels}
-          fontSize={fontSize}
-          onChangeFontSize={onChangeFontSize}
-        />
-
         {/* TopBar Mode: Settings Gear Icon */}
         {isTopBarMode && (
           <button
             id="btn-top-settings-gear"
             onClick={handleSettingsClick}
-            className={`w-9 h-9 rounded-md flex items-center justify-center transition-colors cursor-default ${
+            className={`w-9 h-9 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
               currentRoute === '/settings'
                 ? 'bg-black/10 dark:bg-white/15'
                 : 'hover:bg-black/5 dark:hover:bg-white/10'

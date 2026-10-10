@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Channel } from '../types';
 import { ChannelCard } from '../components/ChannelCard';
 import { CategoryIcon } from '../components/CategoryIcon';
+import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { Tag, Search, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite } from 'lucide-react';
 
 interface ChannelsProps {
@@ -40,7 +41,10 @@ export const Channels: React.FC<ChannelsProps> = ({
   });
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-6 sm:space-y-8 pb-16">
+      {/* Support Ceased Banner */}
+      <DiscontinuedBanner navigate={navigate} />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

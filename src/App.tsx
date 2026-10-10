@@ -12,7 +12,7 @@ import { NewsSummaryModal } from './components/NewsSummaryModal';
 import { FindWordsBar } from './components/FindWordsBar';
 import { AddStreamModal } from './components/AddStreamModal';
 import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
-import { TabLoadingScreen } from './components/TabLoadingScreen';
+import { SplashScreen } from './components/SplashScreen';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { Home } from './pages/Home';
@@ -29,16 +29,9 @@ import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
 import { useSettings } from './hooks/useSettings';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { initGlobalRevealEngine } from './utils/revealEngine';
 
 export default function App() {
   const { settings, draftSettings, hasChanges } = useSettings();
-
-  // Initialize app-wide Fluent Reveal Highlight Engine
-  useEffect(() => {
-    const cleanup = initGlobalRevealEngine();
-    return cleanup;
-  }, []);
 
   // Tooltip & navigation block for unsaved settings
   const [showUnsavedTooltip, setShowUnsavedTooltip] = useState(false);
@@ -72,17 +65,7 @@ export default function App() {
   const [routeState, setRouteState] = useState<any>(null);
   const previousRouteRef = useRef<string>('/');
 
-  // Tab Switching Loading State (2-second loading animation before new tab loads)
-  const [isTabLoading, setIsTabLoading] = useState(false);
-  const tabLoadingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (tabLoadingTimerRef.current) {
-        clearTimeout(tabLoadingTimerRef.current);
-      }
-    };
-  }, []);
 
   // Tab-specific search state for Floating Search Bar
   const [tabSearchQueries, setTabSearchQueries] = useState<Record<string, string>>({});
@@ -271,17 +254,6 @@ export default function App() {
 
     // Scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Snappy loading animation before the tab loads
-    if (isTabSwitch) {
-      if (tabLoadingTimerRef.current) {
-        clearTimeout(tabLoadingTimerRef.current);
-      }
-      setIsTabLoading(true);
-      tabLoadingTimerRef.current = setTimeout(() => {
-        setIsTabLoading(false);
-      }, 800);
-    }
   };
 
   // Open search handler (respects navigation mode and immersive search experiment)
@@ -357,16 +329,6 @@ export default function App() {
         if (matched) setCurrentChannel(matched);
       }
       setCurrentRoute(path);
-
-      if (isTabSwitch) {
-        if (tabLoadingTimerRef.current) {
-          clearTimeout(tabLoadingTimerRef.current);
-        }
-        setIsTabLoading(true);
-        tabLoadingTimerRef.current = setTimeout(() => {
-          setIsTabLoading(false);
-        }, 2000);
-      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -444,6 +406,7 @@ export default function App() {
             onOpenCustomStreamModal={() => setIsCustomStreamModalOpen(true)}
             searchQuery={currentTabSearchQuery}
             onSearchChange={handleTabSearchChange}
+            navigate={navigate}
           />
         );
 
@@ -558,22 +521,40 @@ export default function App() {
           onToggleCollapse={toggleSidebarCollapse}
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          channels={channels}
+          currentChannel={currentChannel}
+          onOpenHelp={() => setIsHelpModalOpen(true)}
+          onOpenDiscord={() => setIsWelcomeModalOpen(true)}
+          onOpenSummarize={(art) => {
+            setSummarizeArticle(art);
+            setIsNewsSummaryOpen(true);
+          }}
+          onOpenTextToSpeech={(art) => {
+            setTtsArticle(art);
+            setIsTtsOpen(true);
+          }}
+          onOpenFindWords={() => setIsFindWordsOpen(true)}
+          onOpenAddStream={() => setIsAddStreamOpen(true)}
+          onImportChannels={handleImportPlaylist}
+          onOpenNotifications={() => setIsUnderConstructionOpen(true)}
+          fontSize={articleFontSize}
+          onChangeFontSize={handleFontSizeChange}
         />
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 ${
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f3f3f3] dark:bg-[#272727] ${
         settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
           : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'
             ? 'md:pl-0 md:pr-0 pb-20'
             : settings.sidebarPosition === 'right'
               ? isEffectiveCollapsed
-                ? 'md:pr-[60px]'
-                : 'md:pr-[270px]'
+                ? 'md:pr-[48px]'
+                : 'md:pr-[260px]'
               : isEffectiveCollapsed
-                ? 'md:pl-[60px]'
-                : 'md:pl-[270px]'
+                ? 'md:pl-[48px]'
+                : 'md:pl-[260px]'
       }`}>
         {/* TopBar Header */}
         <TopBar
@@ -615,13 +596,21 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          {isTabLoading ? (
-            <TabLoadingScreen />
-          ) : (
-            <div key={currentRoute} className="w-full h-full">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={currentRoute}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{
+                duration: 0.26,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="w-full h-full"
+            >
               {renderContent()}
-            </div>
-          )}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -718,6 +707,9 @@ export default function App() {
 
       {/* App Native Virtual Keyboard for Touch Devices */}
       <NativeKeyboard />
+
+      {/* Startup Splash Screen (3 seconds) */}
+      <SplashScreen duration={3000} />
     </div>
   </NativeKeyboardProvider>
   );

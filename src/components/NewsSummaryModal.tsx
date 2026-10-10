@@ -4,7 +4,7 @@ import { X, Copy, CheckCircle2, FileText } from 'lucide-react';
 import { NewsArticle } from '../types';
 import { exportArticleToDocx } from '../utils/docxExport';
 import { useSettings } from '../hooks/useSettings';
-import { WINDOWS_LOADING_GIF } from '../constants/assets';
+import { SpinningRing } from './SpinningRing';
 
 interface NewsSummaryModalProps {
   isOpen: boolean;
@@ -103,11 +103,7 @@ export const NewsSummaryModal: React.FC<NewsSummaryModalProps> = ({
               {isLoading ? (
                 <div className="py-10 px-4 flex flex-col items-center justify-center text-center space-y-4 my-2">
                   <div className="flex items-center justify-center py-2">
-                    <img
-                      src={WINDOWS_LOADING_GIF}
-                      alt="Loading..."
-                      className="w-12 h-12 object-contain pointer-events-none select-none animate-[spin_5s_linear_infinite]"
-                    />
+                    <SpinningRing size={52} strokeWidth={5} color="#4cc2ff" />
                   </div>
 
                   <div className="space-y-1">
