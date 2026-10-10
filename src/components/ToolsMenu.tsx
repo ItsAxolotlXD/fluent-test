@@ -17,8 +17,7 @@ import {
   Volume2,
   Wrench,
   FileText,
-  Table,
-  Presentation
+  StickyNote
 } from 'lucide-react';
 import { Channel, NewsArticle } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
@@ -43,7 +42,7 @@ interface ToolsMenuProps {
   onImportChannels: (newChannels: Channel[]) => void;
   fontSize: number;
   onChangeFontSize: (size: number) => void;
-  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
+  onOpenOfficeTool?: (tool: string) => void;
   placement?: 'top' | 'bottom';
   isOpen?: boolean;
   onClose?: () => void;
@@ -103,8 +102,12 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
     const handleToggleTools = () => {
       setIsOpen((prev) => !prev);
     };
+    window.addEventListener('vone:toggle-tools', handleToggleTools);
     window.addEventListener('vplay:toggle-tools', handleToggleTools);
-    return () => window.removeEventListener('vplay:toggle-tools', handleToggleTools);
+    return () => {
+      window.removeEventListener('vone:toggle-tools', handleToggleTools);
+      window.removeEventListener('vplay:toggle-tools', handleToggleTools);
+    };
   }, []);
 
   const { isChannelFavorite, toggleFavoriteChannel } = useFavorites();
@@ -177,7 +180,7 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
   // Handler for Export M3U8
   const handleExportM3U8 = () => {
     try {
-      downloadPlaylistFile(channels, 'vplay_playlist.m3u8');
+      downloadPlaylistFile(channels, 'v_one_playlist.m3u8');
       showToast(`Exported ${channels.length} channels to .m3u8!`);
     } catch (e) {
       console.error(e);
@@ -258,8 +261,8 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
           className={`fluent-reveal-item w-9 h-9 rounded-md flex items-center justify-center transition-colors cursor-default relative text-neutral-800 dark:text-neutral-200 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/5 ${
             isOpen ? 'bg-black/10 dark:bg-white/10' : ''
           }`}
-          title={isRelevant ? "Tools & Utilities (Vplay Tools)" : "No tools available"}
-          aria-label="Vplay Tools Menu"
+          title={isRelevant ? "Tools & Utilities (V-One Tools)" : "No tools available"}
+          aria-label="V-One Tools Menu"
           aria-expanded={isOpen}
           {...revealProps}
         >
@@ -408,64 +411,6 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                     <span className="truncate">Text to Speech</span>
                   </div>
                   <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-500">TTS</span>
-                </button>
-
-                {/* Office Tools Section */}
-                <div className="my-1 mx-1 h-[1px] bg-black/[0.08] dark:bg-white/[0.08]" />
-
-                <div className="px-2.5 py-0.5 text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                  Office Tools
-                </div>
-
-                <button
-                  id="tool-home-write"
-                  type="button"
-                  onClick={() => {
-                    setIsOpen(false);
-                    onOpenOfficeTool?.('write');
-                  }}
-                  className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
-                  {...revealProps}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <FileText className="w-4 h-4 text-[#185abd] dark:text-[#4cc2ff] shrink-0" />
-                    <span className="truncate">Write</span>
-                  </div>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#185abd]/15 text-[#185abd] dark:text-[#4cc2ff] font-medium">Word</span>
-                </button>
-
-                <button
-                  id="tool-home-table"
-                  type="button"
-                  onClick={() => {
-                    setIsOpen(false);
-                    onOpenOfficeTool?.('table');
-                  }}
-                  className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
-                  {...revealProps}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Table className="w-4 h-4 text-[#107c41] shrink-0" />
-                    <span className="truncate">Table</span>
-                  </div>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#107c41]/15 text-[#107c41] font-medium">Excel</span>
-                </button>
-
-                <button
-                  id="tool-home-present"
-                  type="button"
-                  onClick={() => {
-                    setIsOpen(false);
-                    onOpenOfficeTool?.('present');
-                  }}
-                  className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
-                  {...revealProps}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Presentation className="w-4 h-4 text-[#d24726] shrink-0" />
-                    <span className="truncate">Present</span>
-                  </div>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#d24726]/15 text-[#d24726] font-medium">Slides</span>
                 </button>
               </div>
             )}
@@ -711,6 +656,34 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                 </button>
               </div>
             )}
+
+            {/* Notes Tool Section */}
+            <div className="my-1 mx-1 h-[1px] bg-black/[0.08] dark:bg-white/[0.08]" />
+
+            <div className="px-2.5 py-0.5 text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider flex items-center justify-between">
+              <span>Ứng dụng</span>
+              <span className="text-[9px] text-[#4cc2ff] font-semibold tracking-wide">V-ONE</span>
+            </div>
+
+            <div className="space-y-0.5">
+              {/* Notes */}
+              <button
+                id="tool-notes"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onNavigate('/notes');
+                }}
+                className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
+                {...revealProps}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <StickyNote className="w-4 h-4 text-[#4cc2ff] shrink-0" />
+                  <span className="truncate">Notes</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#0078d4]/15 text-[#0078d4] dark:text-[#4cc2ff] font-medium">Ghi chú</span>
+              </button>
+            </div>
 
             {/* Quick feedback toast inside flyout */}
             {copiedToast && (

@@ -52,7 +52,7 @@ export const NewsSummaryModal: React.FC<NewsSummaryModalProps> = ({
   const handleCopySummary = () => {
     const pointsFormatted = bulletPoints.map((b) => `- ${b}`).join('\n');
     const conclusionText = article.summary?.conclusion ? `\n\n${article.summary.conclusion}` : '';
-    const summaryText = `[ARTICLE SUMMARY - ${article.title}]\n\n• ${leadText}\n\nKey Highlights:\n${pointsFormatted}${conclusionText}\n\nSource: Vplay News (${article.publishedAt})`;
+    const summaryText = `[ARTICLE SUMMARY - ${article.title}]\n\n• ${leadText}\n\nKey Highlights:\n${pointsFormatted}${conclusionText}\n\nSource: V-One News (${article.publishedAt})`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(summaryText);
       setCopied(true);

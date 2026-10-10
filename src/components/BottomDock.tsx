@@ -472,7 +472,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                   }}
                   onOpenOfficeTool={(tool) => {
                     setIsToolsOpen(false);
-                    onOpenOfficeTool?.(tool);
+                    navigate(`/${tool}`);
                   }}
                   onOpenFindWords={() => {
                     setIsToolsOpen(false);

@@ -95,7 +95,7 @@ export function exportToM3U(channels: Channel[]): string {
   return output;
 }
 
-export function downloadPlaylistFile(channels: Channel[], filename = 'vplay_channels.m3u8') {
+export function downloadPlaylistFile(channels: Channel[], filename = 'v_one_channels.m3u8') {
   const content = exportToM3U(channels);
   const blob = new Blob([content], { type: 'audio/x-mpegurl;charset=utf-8' });
   const url = URL.createObjectURL(blob);

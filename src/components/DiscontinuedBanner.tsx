@@ -22,13 +22,13 @@ export const DiscontinuedBanner: React.FC<DiscontinuedBannerProps> = ({
             style={{ fontWeight: 600 }}
             className="text-sm sm:text-[15px] font-semibold text-[#111827] dark:text-white leading-tight"
           >
-            Vplay is no longer supported
+            The next chapter is coming... (V-One)
           </div>
           <p
             style={{ fontWeight: 400 }}
             className="text-xs sm:text-[13px] font-normal text-[#4b5563] dark:text-[#a1a1aa] leading-relaxed mt-1"
           >
-            Vplay streaming platform officially ceased support on October 2, 2026. This project was intended solely for developers to experiment with a Fluent Design interface based on the legacy Vplay application's codebase, not an effort to revive Vplay, and will receive no further updates. Please visit the homepage for more details.
+            Kế thừa sự thành công của Vplay, dự án mới V-One chính thức được hình thành. Đón chờ những điều bất ngờ tiếp theo!
           </p>
         </div>
       </div>

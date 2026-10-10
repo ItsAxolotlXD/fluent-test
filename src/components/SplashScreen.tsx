@@ -47,28 +47,28 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       id="vplay-splash-screen"
       className="fixed inset-0 z-[99999] bg-[#202020] text-white flex flex-col items-center justify-center select-none"
     >
-      {/* Splash content: ONLY 2 things — logo in center and spinning ring positioned lower */}
+      {/* Splash content: logo in center and spinning ring positioned lower */}
       <div className="relative w-full h-full flex flex-col items-center justify-center px-6">
-        {/* Logo web in the center (bigger) */}
+        {/* Logo web in the center - compact size */}
         <div className="flex items-center justify-center">
           {!logoError ? (
             <img
               src={LOGO_SRC}
-              alt="Vplay"
+              alt="V-One"
               referrerPolicy="no-referrer"
-              className="h-28 sm:h-36 md:h-44 w-auto max-w-[340px] sm:max-w-[440px] object-contain drop-shadow-xl"
+              className="h-16 sm:h-20 md:h-24 w-auto max-w-[180px] sm:max-w-[220px] object-contain drop-shadow-md transition-all"
               onError={() => setLogoError(true)}
             />
           ) : (
-            <span className="text-[#4cc2ff] font-black text-7xl sm:text-8xl tracking-tighter">V</span>
+            <span className="text-[#4cc2ff] font-black text-5xl sm:text-6xl tracking-tighter">V</span>
           )}
         </div>
 
-        {/* Thick spinning ring (colored #4cc2ff) positioned lower with subtitle text */}
-        <div className="absolute bottom-14 sm:bottom-20 md:bottom-24 flex flex-col items-center justify-center gap-3 text-center px-4">
-          <SpinningRing size={52} strokeWidth={5.5} color="#4cc2ff" />
+        {/* Thick spinning ring (colored #4cc2ff) positioned lower - compact size (size 34, strokeWidth 4) */}
+        <div className="absolute bottom-12 sm:bottom-16 md:bottom-20 flex flex-col items-center justify-center gap-2.5 text-center px-4">
+          <SpinningRing size={34} strokeWidth={4} color="#4cc2ff" />
           {subtitle && (
-            <p className="text-[13.5px] sm:text-[14.5px] text-[#FFFFFF] font-normal tracking-wide max-w-md">
+            <p className="text-[12.5px] sm:text-[13.5px] text-[#FFFFFF]/90 font-normal tracking-wide max-w-md">
               {subtitle}
             </p>
           )}

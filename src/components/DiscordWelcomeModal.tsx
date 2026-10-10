@@ -61,7 +61,7 @@ export const DiscordWelcomeModal: React.FC<DiscordWelcomeModalProps> = ({
                 id="discord-welcome-title"
                 className="text-[19px] sm:text-[20px] font-semibold text-[#111827] dark:text-[#FFFFFF] tracking-tight leading-snug font-sans"
               >
-                Welcome to Vplay Community
+                Welcome to V-One Community
               </h2>
 
               <p

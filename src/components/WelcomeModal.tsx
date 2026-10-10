@@ -79,7 +79,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
                 id="welcome-modal-description"
                 className="text-[13.5px] sm:text-[14px] text-[#4b5563] dark:text-[#a1a1aa] leading-relaxed mt-2.5 font-normal"
               >
-                Your Vplay experience has been updated with the Microsoft Fluent Design System, featuring seamless navigation, smooth animations, and high-definition live streaming.
+                Your V-One experience has been updated with the Microsoft Fluent Design System, featuring seamless navigation, smooth animations, and high-definition live streaming.
               </p>
 
               {/* Version Specs in Fluent Card */}

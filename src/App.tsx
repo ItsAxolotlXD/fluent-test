@@ -13,9 +13,10 @@ import { FindWordsBar } from './components/FindWordsBar';
 import { AddStreamModal } from './components/AddStreamModal';
 import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
-import { OfficeSuiteModal, OfficeToolType } from './components/OfficeSuiteModal';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
+import { NotesProvider } from './context/NotesContext';
+import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { Home } from './pages/Home';
 import { LiveTV } from './pages/LiveTV';
 import { TestChannels } from './pages/TestChannels';
@@ -25,6 +26,7 @@ import { Channels } from './pages/Channels';
 import { Favorites } from './pages/Favorites';
 import { Settings } from './pages/Settings';
 import { ImmersiveSearch } from './pages/ImmersiveSearch';
+import { NotesApp } from './pages/NotesApp';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -133,12 +135,12 @@ export default function App() {
   const [isFindWordsOpen, setIsFindWordsOpen] = useState(false);
   const [isAddStreamOpen, setIsAddStreamOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isOfficeSuiteOpen, setIsOfficeSuiteOpen] = useState(false);
-  const [officeSuiteTool, setOfficeSuiteTool] = useState<OfficeToolType>('write');
-
-  const handleOpenOfficeTool = (tool: OfficeToolType) => {
-    setOfficeSuiteTool(tool);
-    setIsOfficeSuiteOpen(true);
+  const handleOpenOfficeTool = (tool: string) => {
+    if (tool === 'notes' || tool === 'write' || tool === 'present' || tool === 'table') {
+      navigate('/notes');
+    } else {
+      navigate(`/${tool}`);
+    }
   };
   const [articleFontSize, setArticleFontSize] = useState<number>(() => {
     try {
@@ -300,6 +302,7 @@ export default function App() {
       handleOpenSearch();
     }, [handleOpenSearch]),
     onTools: useCallback(() => {
+      window.dispatchEvent(new CustomEvent('vone:toggle-tools'));
       window.dispatchEvent(new CustomEvent('vplay:toggle-tools'));
     }, []),
     onSettings: useCallback(() => {
@@ -496,6 +499,12 @@ export default function App() {
           />
         );
 
+      case '/notes':
+      case '/write':
+      case '/present':
+      case '/table':
+        return <NotesApp navigate={navigate} />;
+
       default:
         return (
           <Home
@@ -507,9 +516,12 @@ export default function App() {
     }
   };
 
+  const isOfficeRoute = currentRoute === '/notes' || currentRoute === '/write';
+
   return (
     <NativeKeyboardProvider>
-      <div
+      <NotesProvider>
+        <div
         data-immersive-sidebar={settings.immersiveSidebar}
       data-sidebar-position={settings.sidebarPosition}
       className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f3f3f3] dark:bg-[#202020]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
@@ -570,42 +582,44 @@ export default function App() {
                 : 'md:pl-[260px]'
       }`}>
         {/* TopBar Header */}
-        <TopBar
-          currentRoute={currentRoute}
-          navigate={navigate}
-          onOpenSearch={handleOpenSearch}
-          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
-          currentChannel={currentChannel}
-          channels={channels}
-          onOpenHelp={() => setIsHelpModalOpen(true)}
-          onOpenDiscord={() => setIsWelcomeModalOpen(true)}
-          onOpenSummarize={(art) => {
-            setSummarizeArticle(art);
-            setIsNewsSummaryOpen(true);
-          }}
-          onOpenTextToSpeech={(art) => {
-            setTtsArticle(art);
-            setIsTtsOpen(true);
-          }}
-          onOpenFindWords={() => {
-            setIsFindWordsOpen(true);
-          }}
-          onOpenAddStream={() => setIsAddStreamOpen(true)}
-          onImportChannels={handleImportPlaylist}
-          onOpenNotifications={() => setIsUnderConstructionOpen(true)}
-          fontSize={articleFontSize}
-          onChangeFontSize={handleFontSizeChange}
-          showUnsavedTooltip={showUnsavedTooltip}
-          onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
-        />
+        {!isOfficeRoute && (
+          <TopBar
+            currentRoute={currentRoute}
+            navigate={navigate}
+            onOpenSearch={handleOpenSearch}
+            onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+            currentChannel={currentChannel}
+            channels={channels}
+            onOpenHelp={() => setIsHelpModalOpen(true)}
+            onOpenDiscord={() => setIsWelcomeModalOpen(true)}
+            onOpenSummarize={(art) => {
+              setSummarizeArticle(art);
+              setIsNewsSummaryOpen(true);
+            }}
+            onOpenTextToSpeech={(art) => {
+              setTtsArticle(art);
+              setIsTtsOpen(true);
+            }}
+            onOpenFindWords={() => {
+              setIsFindWordsOpen(true);
+            }}
+            onOpenAddStream={() => setIsAddStreamOpen(true)}
+            onImportChannels={handleImportPlaylist}
+            onOpenNotifications={() => setIsUnderConstructionOpen(true)}
+            fontSize={articleFontSize}
+            onChangeFontSize={handleFontSizeChange}
+            showUnsavedTooltip={showUnsavedTooltip}
+            onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
+          />
+        )}
 
         {/* Dynamic Page Content with smooth slide-up transition */}
         <main className={`flex-1 w-full mx-auto ${
-          currentRoute === '/' || currentRoute === '/home' 
-            ? 'p-0 max-w-none pt-1 sm:pt-2' 
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute
+            ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${
-          settings.navigationMode === 'floaty'
+          settings.navigationMode === 'floaty' && !isOfficeRoute
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
@@ -717,12 +731,8 @@ export default function App() {
         onClose={() => setIsUnderConstructionOpen(false)}
       />
 
-      {/* Office Suite Modal (Write, Table, Present) */}
-      <OfficeSuiteModal
-        isOpen={isOfficeSuiteOpen}
-        initialTool={officeSuiteTool}
-        onClose={() => setIsOfficeSuiteOpen(false)}
-      />
+      {/* Floating Movable Sticky Note Widget */}
+      <StickyNoteWidget onNavigateNotes={() => navigate('/notes')} />
 
       {/* App Native Virtual Keyboard for Touch Devices */}
       <NativeKeyboard />
@@ -730,15 +740,16 @@ export default function App() {
       {/* Startup Splash Screen (3 seconds) */}
       <SplashScreen duration={3000} />
 
-      {/* Update Vplay Splash Screen (1 minute: 60s) */}
+      {/* Update V-One Splash Screen (1 minute: 60s) */}
       {isUpdating && (
         <SplashScreen
           duration={60000}
-          subtitle="Vplay needs an update - Working on it"
+          subtitle="V-One needs an update - Working on it"
           onFinish={() => setIsUpdating(false)}
         />
       )}
     </div>
-  </NativeKeyboardProvider>
+      </NotesProvider>
+    </NativeKeyboardProvider>
   );
 }

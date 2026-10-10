@@ -24,8 +24,7 @@ import {
   Volume2,
   RefreshCw,
   FileText,
-  Table,
-  Presentation,
+  StickyNote,
   User,
   UserX
 } from 'lucide-react';
@@ -167,7 +166,7 @@ interface SidebarProps {
   fontSize?: number;
   onChangeFontSize?: (size: number) => void;
   onOpenUpdate?: () => void;
-  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
+  onOpenOfficeTool?: (tool: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -192,7 +191,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   fontSize = 16,
   onChangeFontSize = (_size: number) => {},
   onOpenUpdate = () => {},
-  onOpenOfficeTool = (_tool: 'write' | 'table' | 'present') => {}
+  onOpenOfficeTool = (_tool: string) => {}
 }) => {
   const { settings } = useSettings();
   const { favoriteChannelIds } = useFavorites();
@@ -510,61 +509,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </button>
 
-        {/* Office Tools Section */}
+        {/* Notes Tool Section */}
         <div className="my-1 mx-1 h-[1px] bg-white/10" />
         <div className="px-3 py-1 text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
-          Office Tools
+          Ứng dụng
         </div>
 
-        {/* Write (Word clone) */}
+        {/* Notes */}
         <button
           type="button"
-          id="tool-office-write"
+          id="tool-notes"
           onClick={() => {
             setIsToolsFlyoutOpen(false);
-            onOpenOfficeTool('write');
+            handleNavClick('/notes');
           }}
           className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <FileText className="w-4 h-4 text-[#4cc2ff] stroke-[1.75]" />
-            <span>Write</span>
+            <StickyNote className="w-4 h-4 text-[#4cc2ff] stroke-[1.75]" />
+            <span>Notes</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#185abd]/30 text-[#4cc2ff] font-medium">Word</span>
-        </button>
-
-        {/* Table (Excel clone) */}
-        <button
-          type="button"
-          id="tool-office-table"
-          onClick={() => {
-            setIsToolsFlyoutOpen(false);
-            onOpenOfficeTool('table');
-          }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
-        >
-          <div className="flex items-center gap-2.5">
-            <Table className="w-4 h-4 text-[#107c41] stroke-[1.75]" />
-            <span>Table</span>
-          </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#107c41]/30 text-[#2ecc71] font-medium">Excel</span>
-        </button>
-
-        {/* Present (PowerPoint clone) */}
-        <button
-          type="button"
-          id="tool-office-present"
-          onClick={() => {
-            setIsToolsFlyoutOpen(false);
-            onOpenOfficeTool('present');
-          }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
-        >
-          <div className="flex items-center gap-2.5">
-            <Presentation className="w-4 h-4 text-[#d24726] stroke-[1.75]" />
-            <span>Present</span>
-          </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#d24726]/30 text-[#ff7849] font-medium">Slides</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0078d4]/30 text-[#4cc2ff] font-medium">Ghi chú</span>
         </button>
 
         {/* Article contextual tools */}
@@ -632,16 +597,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* 1. Sign in with Vplay */}
+        {/* 1. Sign in with V-One */}
         <button
           type="button"
-          onClick={() => handleSignInAction('Vplay')}
+          onClick={() => handleSignInAction('V-One')}
           className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[#0078d4] to-[#4cc2ff] flex items-center justify-center shrink-0 border border-[#4cc2ff]/40 shadow-xs">
             <span className="text-white font-black text-xs leading-none">V</span>
           </div>
-          <span className="font-medium truncate">Sign in with Vplay</span>
+          <span className="font-medium truncate">Sign in with V-One</span>
         </button>
 
         {/* 2. Sign in with Apple */}
@@ -748,7 +713,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <img 
               src={LOGO_SRC}
-              alt="Vplay" 
+              alt="V-One" 
               referrerPolicy="no-referrer"
               className="h-6 w-auto object-contain drop-shadow-sm"
             />
@@ -905,6 +870,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
 
+          {/* Office Apps Section on Sidebar */}
+          <div className="px-1.5 pt-3 pb-1 shrink-0">
+            <h2 className="text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none flex items-center justify-between">
+              <span>Office Tools</span>
+              <span className="text-[9px] text-[#4cc2ff] font-semibold">V-ONE</span>
+            </h2>
+          </div>
+
+          {/* Notes */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-notes' : 'sidebar-nav-notes'}
+              data-nav-active={currentRoute === '/notes' ? 'true' : undefined}
+              onClick={() => handleNavClick('/notes')}
+              title="Notes (Ghi chú)"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                currentRoute === '/notes'
+                  ? 'bg-white/[0.08] dark:bg-white/[0.08] text-white font-medium shadow-xs'
+                  : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <StickyNote className="w-4 h-4 stroke-[1.5] shrink-0 text-[#4cc2ff]" />
+                <span className="truncate text-[13.5px]">Notes</span>
+              </div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0078d4]/30 text-[#4cc2ff] font-medium">Ghi chú</span>
+            </button>
+          </div>
+
           {/* Tools Item that toggles the Tools Flyout */}
           <div className="relative tools-flyout-container">
             <button
@@ -945,16 +940,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">Discord Community</span>
           </button>
 
-          {/* Update Vplay Option */}
+          {/* Update V-One Option */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-update' : 'sidebar-nav-update'}
             onClick={onOpenUpdate}
-            title="Update Vplay"
+            title="Update V-One"
             className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#cccccc] hover:bg-white/[0.05] hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
           >
             <RefreshCw className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
-            <span className="truncate text-[13.5px]">Update Vplay</span>
+            <span className="truncate text-[13.5px]">Update V-One</span>
           </button>
         </div>
 
@@ -1106,6 +1101,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 );
               })}
 
+              <div className="w-6 h-[1px] bg-white/10 my-1" />
+
+              {/* Collapsed Notes Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-notes"
+                data-nav-active={currentRoute === '/notes' ? 'true' : undefined}
+                onClick={() => handleNavClick('/notes')}
+                title="Notes (Ghi chú)"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  currentRoute === '/notes'
+                    ? 'bg-white/[0.08] text-white shadow-xs'
+                    : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                }`}
+              >
+                <StickyNote className="w-4 h-4 stroke-[1.5] text-[#4cc2ff]" />
+              </button>
+
               {/* Tools Icon Button with flyout */}
               <div className="relative tools-flyout-container">
                 <button
@@ -1127,12 +1140,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </AnimatePresence>
               </div>
 
-              {/* Update Vplay Collapsed Icon */}
+              {/* Update V-One Collapsed Icon */}
               <button
                 type="button"
                 id="sidebar-collapsed-update"
                 onClick={onOpenUpdate}
-                title="Update Vplay"
+                title="Update V-One"
                 className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-[#cccccc] hover:bg-white/[0.05] hover:text-white"
               >
                 <RefreshCw className="w-4 h-4 stroke-[1.5] text-white" />

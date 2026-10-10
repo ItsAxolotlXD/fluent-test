@@ -100,7 +100,7 @@ interface SettingsProps {
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   onOpenUpdate?: () => void;
-  onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
+  onOpenOfficeTool?: (tool: string) => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({
@@ -229,7 +229,7 @@ export const Settings: React.FC<SettingsProps> = ({
             )}
           </div>
           <p className="text-xs sm:text-sm text-[#9CA3AF]">
-            Customize your Vplay streaming and display experience.
+            Customize your V-One streaming and display experience.
           </p>
 
           {/* Search Header */}
@@ -503,14 +503,14 @@ export const Settings: React.FC<SettingsProps> = ({
                 </button>
               </div>
 
-              {/* Update Vplay Option Card */}
+              {/* Update V-One Option Card */}
               <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
                 <div>
                   <div className="font-bold text-white text-xs sm:text-sm">
-                    Update Vplay
+                    Update V-One
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Vplay.
+                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng V-One.
                   </div>
                 </div>
 
@@ -1005,57 +1005,29 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-bold text-white text-sm flex items-center gap-2">
-                            <span>Office Productivity Tools</span>
+                            <span>V-One Notes</span>
                             <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
-                              Fluent 365
+                              Ghi chú
                             </span>
                           </div>
                           <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                            Truy cập bộ công cụ văn phòng: Write (Word), Table (Excel) và Present (PowerPoint).
+                            Ứng dụng ghi chú & soạn thảo văn bản, hỗ trợ hiển thị dưới dạng Sticky Note nổi di động.
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                      <div className="pt-1">
                         <button
                           type="button"
-                          onClick={() => onOpenOfficeTool?.('write')}
-                          className="p-3 rounded-xl bg-white/5 hover:bg-[#185abd]/20 border border-white/10 hover:border-[#185abd] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
+                          onClick={() => onOpenOfficeTool?.('notes')}
+                          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/5 hover:bg-[#0078d4]/20 border border-white/10 hover:border-[#4cc2ff] transition-all flex items-center gap-3 text-left cursor-pointer group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-[#185abd] flex items-center justify-center shrink-0">
-                            <span className="text-white text-xs font-bold">W</span>
+                          <div className="w-9 h-9 rounded-lg bg-[#0078d4] flex items-center justify-center shrink-0 shadow-sm">
+                            <span className="text-white text-sm font-bold">N</span>
                           </div>
                           <div>
-                            <div className="text-xs font-bold text-white group-hover:text-[#4cc2ff]">Write</div>
-                            <div className="text-[10px] text-neutral-400">Word Editor</div>
-                          </div>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => onOpenOfficeTool?.('table')}
-                          className="p-3 rounded-xl bg-white/5 hover:bg-[#107c41]/20 border border-white/10 hover:border-[#107c41] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-[#107c41] flex items-center justify-center shrink-0">
-                            <span className="text-white text-xs font-bold">T</span>
-                          </div>
-                          <div>
-                            <div className="text-xs font-bold text-white group-hover:text-[#2ecc71]">Table</div>
-                            <div className="text-[10px] text-neutral-400">Excel Grid</div>
-                          </div>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => onOpenOfficeTool?.('present')}
-                          className="p-3 rounded-xl bg-white/5 hover:bg-[#d24726]/20 border border-white/10 hover:border-[#d24726] transition-all flex items-center gap-2.5 text-left cursor-pointer group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-[#d24726] flex items-center justify-center shrink-0">
-                            <span className="text-white text-xs font-bold">P</span>
-                          </div>
-                          <div>
-                            <div className="text-xs font-bold text-white group-hover:text-[#ff7849]">Present</div>
-                            <div className="text-[10px] text-neutral-400">Slides Deck</div>
+                            <div className="text-xs font-bold text-white group-hover:text-[#4cc2ff]">Mở V-One Notes</div>
+                            <div className="text-[10px] text-neutral-400">Ghi chú & Sticky Note</div>
                           </div>
                         </button>
                       </div>
