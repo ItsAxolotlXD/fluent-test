@@ -227,7 +227,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
   return (
     <div 
       id="immersive-search-page"
-      className="w-full min-h-[calc(100vh-80px)] text-white px-3 sm:px-6 md:px-10 py-4 sm:py-6 select-none"
+      className="w-full min-h-[calc(100vh-80px)] text-[#111827] dark:text-white px-3 sm:px-6 md:px-10 py-4 sm:py-6 select-none"
     >
       <div className="max-w-6xl mx-auto space-y-7 sm:space-y-9">
         {/* Top Search Bar Row */}
@@ -259,7 +259,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                     setQuery('');
                     inputRef.current?.focus();
                   }}
-                  className="p-1 rounded-full text-[#9CA3AF] hover:text-white transition-colors cursor-pointer shrink-0"
+                  className="p-1 rounded-full text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer shrink-0"
                   title="Clear search"
                 >
                   <X className="w-4 h-4" />
@@ -274,10 +274,10 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
           /* Search Results View */
           <div className="space-y-6">
             {/* Filter Tabs & Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3b1540] pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 dark:border-[#3b1540] pb-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-[#D4CAD6]">
-                  Results for &ldquo;<span className="text-white font-bold">{query}</span>&rdquo;
+                <span className="text-sm font-semibold text-[#6b7280] dark:text-[#D4CAD6]">
+                  Results for &ldquo;<span className="text-[#111827] dark:text-white font-bold">{query}</span>&rdquo;
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#E6005A]/20 text-[#FF4D8B] border border-[#E6005A]/30">
                   {totalMatches} results
@@ -324,11 +324,11 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
 
             {totalMatches === 0 ? (
               /* Empty state */
-              <div className="py-16 text-center space-y-3 bg-[#200d23]/40 rounded-3xl border border-[#3b1540]/60 p-8">
+              <div className="py-16 text-center space-y-3 bg-white dark:bg-[#200d23]/40 rounded-3xl border border-black/10 dark:border-[#3b1540]/60 p-8">
                 <div className="w-14 h-14 rounded-full bg-[#E6005A]/10 text-[#E6005A] flex items-center justify-center mx-auto border border-[#E6005A]/20">
                   <FluentSearchIcon className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-white">No matching results found</h3>
+                <h3 className="text-base font-bold text-[#111827] dark:text-white">No matching results found</h3>
                 <p className="text-xs sm:text-sm text-[#8A798C] max-w-md mx-auto">
                   Try checking for spelling errors or searching with broader keywords like &ldquo;VTV&rdquo;, &ldquo;Sports&rdquo;, &ldquo;News&rdquo;.
                 </p>
@@ -370,7 +370,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                               }}
                             />
                           </div>
-                          <span className="text-xs font-bold text-white group-hover:text-[#E6005A] transition-colors line-clamp-1">
+                          <span className="text-xs font-bold text-[#111827] dark:text-white group-hover:text-[#E6005A] transition-colors line-clamp-1">
                             {ch.shortName || ch.name}
                           </span>
                           <span className="text-[10px] text-[#8A798C] mt-0.5">
@@ -400,9 +400,9 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                         <div
                           key={news.id}
                           onClick={() => navigate(`/news/${news.slug}`)}
-                          className="group p-3.5 rounded-2xl bg-[#200d23] hover:bg-[#2e1233] border border-[#3b1540] hover:border-[#E6005A]/60 flex gap-3.5 cursor-pointer transition-all shadow-md"
+                          className="group p-3.5 rounded-2xl bg-white dark:bg-[#200d23] hover:bg-black/5 dark:hover:bg-[#2e1233] border border-black/10 dark:border-[#3b1540] hover:border-[#E6005A]/60 flex gap-3.5 cursor-pointer transition-all shadow-md"
                         >
-                          <div className="w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden bg-[#1B0912] shrink-0 relative">
+                          <div className="w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden bg-black/5 dark:bg-[#1B0912] shrink-0 relative">
                             <img
                               src={news.coverImage}
                               alt={news.title}
@@ -415,7 +415,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                           </div>
 
                           <div className="flex-1 min-w-0 flex flex-col justify-between">
-                            <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#E6005A] line-clamp-2 leading-snug transition-colors">
+                            <h4 className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#E6005A] line-clamp-2 leading-snug transition-colors">
                               {news.title}
                             </h4>
                             <div className="flex items-center gap-1.5 text-[10px] text-[#8A798C] mt-2">
@@ -435,7 +435,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
           /* Default Immersive View with circular popular searches */
           <div className="space-y-4 pt-1">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm sm:text-base font-bold font-square text-white tracking-wide flex items-center gap-2.5">
+              <h3 className="text-sm sm:text-base font-bold font-square text-[#111827] dark:text-white tracking-wide flex items-center gap-2.5">
                 <CategoryIcon className="w-6.5 h-6.5 sm:w-7 sm:h-7 shrink-0" />
                 <span>Trending Searches</span>
               </h3>

@@ -18,6 +18,7 @@ import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
+import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { Home } from './pages/Home';
 import { LiveTV } from './pages/LiveTV';
 import { TestChannels } from './pages/TestChannels';
@@ -28,6 +29,8 @@ import { Favorites } from './pages/Favorites';
 import { Settings } from './pages/Settings';
 import { ImmersiveSearch } from './pages/ImmersiveSearch';
 import { NotesApp } from './pages/NotesApp';
+import { Craftmine } from './pages/Craftmine';
+import { Updates } from './pages/Updates';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -68,6 +71,14 @@ export default function App() {
   });
   const [routeState, setRouteState] = useState<any>(null);
   const previousRouteRef = useRef<string>('/');
+  const [isTabLoading, setIsTabLoading] = useState(false);
+  const tabLoadingTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
+    };
+  }, []);
 
 
 
@@ -231,6 +242,9 @@ export default function App() {
 
   // Perform actual navigation
   const executeNavigation = useCallback((path: string, state?: any) => {
+    const targetRoute = path.includes('?') ? path.split('?')[0] : path;
+    const isDifferentTab = targetRoute !== currentRoute;
+
     if (currentRoute !== '/search') {
       previousRouteRef.current = currentRoute;
     }
@@ -255,6 +269,15 @@ export default function App() {
 
     // Scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 3-second loading state when switching between tabs to avoid performance issues
+    if (isDifferentTab) {
+      if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
+      setIsTabLoading(true);
+      tabLoadingTimerRef.current = setTimeout(() => {
+        setIsTabLoading(false);
+      }, 3000);
+    }
   }, [channels, currentRoute]);
 
   // Navigation handler
@@ -370,6 +393,14 @@ export default function App() {
         if (matched) setCurrentChannel(matched);
       }
       setCurrentRoute(path);
+
+      if (isTabSwitch) {
+        if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
+        setIsTabLoading(true);
+        tabLoadingTimerRef.current = setTimeout(() => {
+          setIsTabLoading(false);
+        }, 3000);
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -534,6 +565,12 @@ export default function App() {
       case '/table':
         return <NotesApp navigate={navigate} />;
 
+      case '/craftmine':
+        return <Craftmine />;
+
+      case '/updates':
+        return <Updates navigate={navigate} onOpenUpdate={() => setIsUpdating(true)} />;
+
       default:
         return (
           <Home
@@ -644,7 +681,7 @@ export default function App() {
 
         {/* Dynamic Page Content with smooth slide-up transition */}
         <main className={`flex-1 w-full mx-auto ${
-          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${
@@ -652,19 +689,19 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          {/* Dynamic Page Content: only animation in (slide up), no animation out of previous page */}
-          <motion.div
-            key={currentRoute}
-            initial={{ opacity: 0, y: 56 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.38,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="w-full h-full"
-          >
-            {renderContent()}
-          </motion.div>
+          {/* Dynamic Page Content: Slide up individual elements of the loaded tab, not the entire page as a block */}
+          {isTabLoading ? (
+            <div key={`tab-loading-${currentRoute}`} className="w-full h-full">
+              <TabLoadingScreen />
+            </div>
+          ) : (
+            <div
+              key={`tab-loaded-${currentRoute}`}
+              className="tab-element-slide-up-container w-full h-full"
+            >
+              {renderContent()}
+            </div>
+          )}
         </main>
       </div>
 

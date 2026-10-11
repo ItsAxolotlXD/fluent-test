@@ -214,7 +214,7 @@ export const Settings: React.FC<SettingsProps> = ({
       {activeCategory === null ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
               Settings
             </h1>
             {hasChanges && (
@@ -429,18 +429,18 @@ export const Settings: React.FC<SettingsProps> = ({
             id="settings-section-version"
             className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none"
           >
-            <div className="p-3.5 sm:p-4 rounded-[18px] bg-white/5 space-y-3 select-text">
+            <div className="p-3.5 sm:p-4 rounded-[18px] bg-black/[0.03] dark:bg-white/5 space-y-3 select-text">
               <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="font-medium text-white">Software Update</span>
+                <span className="font-medium text-[#111827] dark:text-white">Software Update</span>
                 <span className="font-semibold text-[#9CA3AF]">26.10.0</span>
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="font-medium text-white">Software Build</span>
+                <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
                 <span className="font-semibold text-[#9CA3AF]">26v1009</span>
               </div>
               {/* Compatible with Fluent Design */}
-              <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-white/10 flex items-center">
-                <p className="text-sm sm:text-base font-semibold tracking-tight text-white">
+              <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">
+                <p className="text-sm sm:text-base font-semibold tracking-tight text-[#111827] dark:text-white">
                   Compatible with{' '}
                   <span className="text-[#4cc2ff] font-semibold">
                     Microsoft Fluent Design.
@@ -451,9 +451,9 @@ export const Settings: React.FC<SettingsProps> = ({
 
             <div className="space-y-2 pt-0.5">
               {/* Test VNRT Online Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
-                  <div className="font-bold text-white text-xs sm:text-sm">
+                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
                     Test VNRT Online
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
@@ -473,9 +473,9 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
 
               {/* Changelogs Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
-                  <div className="font-bold text-white text-xs sm:text-sm">
+                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
                     Changelogs
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
@@ -494,9 +494,9 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
 
               {/* Update V-One Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-white/5">
+              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
-                  <div className="font-bold text-white text-xs sm:text-sm">
+                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
                     Update V-One
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">

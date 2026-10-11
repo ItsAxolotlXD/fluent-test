@@ -53,10 +53,10 @@ export const Channels: React.FC<ChannelsProps> = ({
             <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
             <span>Broadcasting Infrastructure Directory</span>
           </div>
-          <h1 className="text-3xl font-bold font-['Segoe_UI',_sans-serif] text-[#111827] dark:text-white tracking-tight">
+          <h1 className="text-3xl font-bold font-['Segoe_UI',_sans-serif] text-black dark:text-white tracking-tight">
             Television Channels Directory
           </h1>
-          <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
+          <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-1">
             National essential broadcast networks, entertainment, news, regional and international channels.
           </p>
         </div>

@@ -119,11 +119,11 @@ export const Favorites: React.FC<FavoritesProps> = ({
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 p-8 rounded-[30px] bg-[#1E1E22] border border-[#2D2D35]">
-              <div className="w-16 h-16 rounded-full bg-[#26262C] flex items-center justify-center text-[#A1A1AA] mx-auto mb-4">
+            <div className="text-center py-16 p-8 rounded-[30px] bg-white dark:bg-[#1E1E22] border border-[#e5e5e5] dark:border-[#2D2D35]">
+              <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-[#26262C] flex items-center justify-center text-[#A1A1AA] mx-auto mb-4">
                 <Heart className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">No favorite channels yet</h3>
+              <h3 className="text-lg font-bold text-[#111827] dark:text-white mb-2">No favorite channels yet</h3>
               <p className="text-xs text-[#9CA3AF] max-w-md mx-auto mb-6">
                 Click the heart icon on any television channel to save it to your quick access list.
               </p>
@@ -152,11 +152,11 @@ export const Favorites: React.FC<FavoritesProps> = ({
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 p-8 rounded-[30px] bg-[#1E1E22] border border-[#2D2D35]">
-              <div className="w-16 h-16 rounded-full bg-[#26262C] flex items-center justify-center text-[#A1A1AA] mx-auto mb-4">
+            <div className="text-center py-16 p-8 rounded-[30px] bg-white dark:bg-[#1E1E22] border border-[#e5e5e5] dark:border-[#2D2D35]">
+              <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-[#26262C] flex items-center justify-center text-[#A1A1AA] mx-auto mb-4">
                 <Bookmark className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">No saved articles yet</h3>
+              <h3 className="text-lg font-bold text-[#111827] dark:text-white mb-2">No saved articles yet</h3>
               <p className="text-xs text-[#9CA3AF] max-w-md mx-auto mb-6">
                 Save broadcasting tech and television history articles to read anytime.
               </p>

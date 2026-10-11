@@ -54,7 +54,7 @@
   }
 
   html, body, *, *::before, *::after {
-    font-family: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-family: 'Segoe UI Variable Display', 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   }
 
   /* Global typography: Segoe UI Variable for headers, headings, h1-h6, titles & big titles */
@@ -140,9 +140,160 @@ input[type="reset"],
 /* Light Mode Global Overrides */
 html.light-mode,
 html.light-mode body,
-html.light-mode #root {
+html.light-mode #root,
+html.light-mode main,
+html.light-mode .tab-element-slide-up-container {
   background-color: #f3f3f3 !important;
   color: #000000 !important;
+}
+
+/* Light mode: toàn bộ chữ trên toàn bộ các tab đổi hết sang màu đen (#000000) */
+html.light-mode :is(h1, h2, h3, h4, h5, h6, p, label, li, dt, dd, blockquote):not(.fluent-btn-primary):not(#btn-discord-join):not(#btn-home-join-discord):not([class*="bg-[#5865F2]"]):not([class*="bg-[#0078d4]"]):not([class*="bg-[#4cc2ff]"]):not([class*="bg-[#E6005A]"]):not([class*="bg-[#E50914]"]) {
+  color: #000000 !important;
+}
+
+html.light-mode span:not([class*="bg-[#"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-indigo"]):not(.fluent-btn-primary *):not(#btn-discord-join *):not(#btn-home-join-discord *):not([class*="text-[#4cc2ff]"]):not([class*="text-[#0078d4]"]):not([class*="text-[#E6005A]"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-red"]) {
+  color: #000000 !important;
+}
+
+html.light-mode a:not([class*="bg-[#"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-indigo"]):not(.fluent-btn-primary):not(#btn-discord-join):not(#btn-home-join-discord) {
+  color: #000000 !important;
+}
+
+/* Fix icon update, craftmine và hamburger menu chưa đổi sang màu đen khi ở light mode */
+html.light-mode #btn-desktop-sidebar-toggle,
+html.light-mode #btn-mobile-sidebar-toggle,
+html.light-mode #btn-sidebar-expand-toggle,
+html.light-mode #btn-mobile-menu-toggle,
+html.light-mode #sidebar-nav-updates,
+html.light-mode #mobile-nav-updates,
+html.light-mode #sidebar-collapsed-updates,
+html.light-mode #sidebar-nav-craftmine,
+html.light-mode #mobile-nav-craftmine,
+html.light-mode #sidebar-collapsed-craftmine {
+  color: #000000 !important;
+}
+
+html.light-mode #btn-desktop-sidebar-toggle svg,
+html.light-mode #btn-mobile-sidebar-toggle svg,
+html.light-mode #btn-sidebar-expand-toggle svg,
+html.light-mode #btn-mobile-menu-toggle svg,
+html.light-mode #sidebar-nav-updates svg,
+html.light-mode #mobile-nav-updates svg,
+html.light-mode #sidebar-collapsed-updates svg,
+html.light-mode #sidebar-nav-craftmine svg,
+html.light-mode #mobile-nav-craftmine svg,
+html.light-mode #sidebar-collapsed-craftmine svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+html.light-mode #btn-desktop-sidebar-toggle svg *,
+html.light-mode #btn-mobile-sidebar-toggle svg *,
+html.light-mode #btn-sidebar-expand-toggle svg *,
+html.light-mode #btn-mobile-menu-toggle svg *,
+html.light-mode #sidebar-nav-updates svg *,
+html.light-mode #mobile-nav-updates svg *,
+html.light-mode #sidebar-collapsed-updates svg *,
+html.light-mode #sidebar-nav-craftmine svg *,
+html.light-mode #mobile-nav-craftmine svg *,
+html.light-mode #sidebar-collapsed-craftmine svg * {
+  stroke: #000000 !important;
+}
+
+/* Tab Elements Slide-Up Animation: Sau loading state tab khi load cac content se co hieu ung slide up tung element */
+@keyframes tabElementSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-element-slide-up-container > * > *:not(style):not(script):not(.fixed),
+.tab-element-slide-up-container > * > div > *:not(style):not(script):not(.fixed),
+.tab-element-slide-up-container > *:not(div):not(style):not(script):not(.fixed) {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(1),
+.tab-element-slide-up-container > * > div > *:nth-child(1) {
+  animation-delay: 0.03s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(2),
+.tab-element-slide-up-container > * > div > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(3),
+.tab-element-slide-up-container > * > div > *:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(4),
+.tab-element-slide-up-container > * > div > *:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(5),
+.tab-element-slide-up-container > * > div > *:nth-child(5) {
+  animation-delay: 0.26s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(6),
+.tab-element-slide-up-container > * > div > *:nth-child(6) {
+  animation-delay: 0.32s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(7),
+.tab-element-slide-up-container > * > div > *:nth-child(7) {
+  animation-delay: 0.38s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(8),
+.tab-element-slide-up-container > * > div > *:nth-child(8) {
+  animation-delay: 0.44s;
+}
+
+.tab-element-slide-up-container > * > *:nth-child(n+9),
+.tab-element-slide-up-container > * > div > *:nth-child(n+9) {
+  animation-delay: 0.50s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-element-slide-up-container > * > *,
+  .tab-element-slide-up-container > * > div > * {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Line dưới chân các nút (giống search bar) có màu nền của các nút nhưng tối hơn */
+.fluent-btn-primary,
+button.fluent-btn-primary {
+  border-bottom: 2px solid #005a9e !important;
+}
+
+html:not(.light-mode) button[class*="bg-[#4cc2ff]"],
+html:not(.light-mode) .fluent-btn-primary.bg-\[\#4cc2ff\] {
+  border-bottom: 2px solid #0078d4 !important;
+}
+
+.fluent-btn-secondary,
+button.fluent-btn-secondary,
+.fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-discord-join) {
+  border-bottom: 2px solid #141414 !important;
+}
+
+html.light-mode .fluent-btn-secondary,
+html.light-mode button.fluent-btn-secondary,
+html.light-mode .fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-discord-join) {
+  border-bottom: 2px solid #c4c4c4 !important;
 }
 
 /* Tab Switching Loading Spinner - Clean with no glow */
@@ -1762,7 +1913,10 @@ button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
   position: relative !important;
   overflow: hidden !important;
-  border: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 2px solid #0078d4 !important;
   background-image: none !important;
   transform: scale(1);
   transition: transform 0.38s cubic-bezier(0.34, 1.65, 0.64, 1), box-shadow 0.24s ease-out, background-color 0.18s ease-in-out !important;
@@ -1771,6 +1925,7 @@ button[class*="bg-[#4cc2ff]"],
 #btn-discord-join,
 #btn-home-join-discord {
   background-color: #5865F2 !important;
+  border-bottom: 2px solid #3c45a5 !important;
   box-shadow: 0 4px 14px rgba(88, 101, 242, 0.42) !important;
   color: #FFFFFF !important;
 }
@@ -1778,6 +1933,7 @@ button[class*="bg-[#4cc2ff]"],
 #btn-discord-join:hover,
 #btn-home-join-discord:hover {
   background-color: #4752C4 !important;
+  border-bottom: 2px solid #353ca0 !important;
   box-shadow: 0 6px 20px rgba(88, 101, 242, 0.55) !important;
   transform: scale(1.05) !important;
 }
@@ -1786,7 +1942,6 @@ button[class*="bg-[#4cc2ff]"],
 #btn-test-vplay-switch,
 #btn-welcome-close,
 #btn-under-construction-close,
-#btn-discord-close,
 #btn-devmode-close,
 #btn-hero-watch-now,
 #btn-add-stream-submit,
@@ -1798,8 +1953,21 @@ button.bg-\[\#4cc2ff\],
 button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
   background-color: #4cc2ff !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
+  border-bottom: 2px solid #0078d4 !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
   color: #FFFFFF !important;
+}
+
+#btn-discord-close {
+  background-color: #2c2c2c !important;
+  border-bottom: 2px solid #141414 !important;
+  color: #FFFFFF !important;
+}
+
+html.light-mode #btn-discord-close {
+  background-color: #ffffff !important;
+  border-bottom: 2px solid #c4c4c4 !important;
+  color: #111827 !important;
 }
 
 #btn-changelogs-read:hover,
@@ -3462,9 +3630,14 @@ html.light-mode .text-\[\#E0D8E2\],
 html.light-mode .text-\[\#eee\],
 html.light-mode .text-\[\#e5e5e5\],
 html.light-mode .text-\[\#111827\],
+html.light-mode .text-\[\#18181B\],
 html.light-mode .text-\[\#1F2937\],
 html.light-mode .text-\[\#374151\],
-html.light-mode .text-\[\#4B5563\] {
+html.light-mode .text-\[\#4B5563\],
+html.light-mode .text-\[\#4b5563\],
+html.light-mode .text-\[\#6B7280\],
+html.light-mode .text-\[\#6b7280\],
+html.light-mode .text-\[\#a1a1aa\] {
   color: #000000 !important;
 }
 

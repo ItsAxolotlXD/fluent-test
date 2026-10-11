@@ -26,7 +26,9 @@ import {
   FluentUserIcon, 
   FluentPersonDeleteIcon, 
   FluentSearchIcon,
-  FluentSettingsIcon
+  FluentSettingsIcon,
+  FluentCraftmineIcon,
+  FluentUpdatesIcon
 } from './FluentIcons';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -374,8 +376,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isCurrentActive = (route: string) => {
     if (route === '/' && (currentRoute === '/' || currentRoute === '/home')) return true;
-    if (route === '/news' && (currentRoute === '/news' || currentRoute.startsWith('/article'))) return true;
+    if (route === '/news' && (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))) return true;
+    if (route === '/updates' && (currentRoute === '/updates' || currentRoute.startsWith('/updates'))) return true;
     if (route === '/live-tv' && (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))) return true;
+    if (route === '/notes' && (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')) return true;
+    if (route === '/craftmine' && currentRoute === '/craftmine') return true;
     if (route === '/settings' && (currentRoute === '/settings' || currentRoute.startsWith('/settings'))) return true;
     if (route === '/about' && (currentRoute === '/about' || currentRoute.startsWith('/about'))) return true;
     if (route !== '/' && currentRoute.startsWith(route)) return true;
@@ -535,16 +540,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  // Render Flyout Menu for Sign in with distinct pure slide-up animation
+  // Render Flyout Menu for Sign in with distinct pure slide-up animation and acrylic blur
   const renderSignInFlyout = (isCollapsedMode = false) => {
     return (
       <motion.div
         key="signin-flyout-panel"
-        initial={{ opacity: 0, y: 70 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 40 }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/95 dark:bg-[#1f1f1f]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_12px_40px_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.65),0_2px_8px_rgba(0,0,0,0.4)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
+        initial={{ opacity: 0, y: 32, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 22, scale: 0.98 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/80 dark:bg-[#1f1f1f]/80 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
               ? 'right-[54px] bottom-0'
@@ -552,7 +557,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             : 'bottom-full mb-2 left-0 right-0 sm:left-0 sm:right-auto sm:w-[264px]'
         }`}
         style={{
-          boxShadow: '0 16px 40px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.1)',
+          backdropFilter: 'blur(28px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.1)',
           willChange: 'transform, opacity',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -681,9 +688,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'btn-mobile-sidebar-toggle' : 'btn-desktop-sidebar-toggle'}
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
             title={isMobile ? 'Close menu' : 'Collapse menu'}
-            className="w-9 h-9 rounded-[6px] flex items-center justify-center text-[#111827] dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors"
+            className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors"
           >
-            {isMobile ? <X className="w-5 h-5 stroke-[1.75]" /> : <Menu className="w-5 h-5 stroke-[1.75]" />}
+            {isMobile ? <X className="w-5 h-5 stroke-[1.75] text-black dark:text-white" /> : <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />}
           </button>
 
           {/* Logo placed right next to hamburger menu icon */}
@@ -714,7 +721,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${currentRoute}`}
           />
 
-          {/* 1. Home Item */}
+          {/* 1. Home */}
           <div className="shrink-0">
             <button
               type="button"
@@ -724,177 +731,192 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Home"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/'
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
-                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <FluentHomeIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
+              <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               <span className="truncate text-[13.5px]">Home</span>
             </button>
           </div>
 
-          {/* 2. Category Heading: "Navigation & Content" */}
-          <div className="px-1.5 pt-2 pb-1 shrink-0">
-            <h2 className="text-[#6b7280] dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none">
-              Navigation & Content
+          {/* 2. Articles */}
+          <div className="shrink-0">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-articles' : 'sidebar-nav-articles'}
+              data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/news')}
+              title="Articles"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <FluentArticlesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              <span className="truncate text-[13.5px]">Articles</span>
+            </button>
+          </div>
+
+          {/* 3. Updates */}
+          <div className="shrink-0">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-updates' : 'sidebar-nav-updates'}
+              data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/updates')}
+              title="Updates"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <FluentUpdatesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              <span className="truncate text-[13.5px]">Updates</span>
+            </button>
+          </div>
+
+          {/* Divider & Category Heading: Apps */}
+          <div className="my-2 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
+          <div className="px-1.5 pt-0.5 pb-1 shrink-0">
+            <h2 className="text-black dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none">
+              Apps
             </h2>
           </div>
 
-          {/* Primary Navigation Items */}
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isCurrentActive(item.route) && (item.route !== '/' || currentRoute === '/');
+          {/* 4. Watch */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-live-tv' : 'sidebar-nav-live-tv'}
+              data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/live-tv')}
+              title="Watch"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <span className="truncate text-[13.5px]">Watch</span>
+              </div>
 
-            return (
-              <div key={item.id} className="w-full">
-                <button
-                  type="button"
-                  id={isMobile ? `mobile-nav-${item.id}` : `sidebar-nav-${item.id}`}
-                  data-nav-active={active ? 'true' : undefined}
-                  onClick={() => handleNavClick(item.route)}
-                  title={item.label}
-                  className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                    active
-                      ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
-                      : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3.5 truncate">
-                    <Icon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
-                    <span className="truncate text-[13.5px]">{item.label}</span>
-                  </div>
-
-                  {/* Submenu toggles for Live TV */}
-                  {item.hasSubmenu && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsLiveTvExpanded(!isLiveTvExpanded);
-                      }}
-                      className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-[4px] cursor-pointer"
-                    >
-                      {isLiveTvExpanded ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
-                      ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
-                      )}
-                    </div>
-                  )}
-                </button>
-
-                {/* Live TV Channels Quick Submenu */}
-                {item.hasSubmenu && isLiveTvExpanded && (
-                  <div className="ml-4 pl-2.5 space-y-0.5 py-1">
-                    {channels.slice(0, 8).map((ch) => (
-                      <button
-                        key={ch.id}
-                        type="button"
-                        onClick={() => {
-                          handleNavClick(`/live-tv?channel=${ch.slug}`);
-                          if (onSelectChannel) onSelectChannel(ch);
-                        }}
-                        className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-[#6b7280] dark:text-[#a1a1aa] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-                      >
-                        <span className="truncate">{`${String(ch.channelNumber || 1).padStart(3, '0')} | ${ch.shortName || ch.name}`}</span>
-                        <span className="px-1.5 py-0.2 text-[9px] bg-[#0078d4] dark:bg-[#4cc2ff] text-white rounded-[2px] font-bold">
-                          Play
-                        </span>
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => handleNavClick('/live-tv')}
-                      className="w-full text-left px-2.5 py-1 text-[11px] text-[#0078d4] dark:text-[#4cc2ff] hover:underline font-normal cursor-pointer rounded-[4px]"
-                    >
-                      + View all channels
-                    </button>
-                  </div>
+              {/* Submenu toggle */}
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLiveTvExpanded(!isLiveTvExpanded);
+                }}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-[4px] cursor-pointer"
+              >
+                {isLiveTvExpanded ? (
+                  <ChevronDown className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
+                ) : (
+                  <ChevronRight className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
                 )}
               </div>
-            );
-          })}
+            </button>
 
-          {/* Office Apps Section on Sidebar */}
-          <div className="px-1.5 pt-3 pb-1 shrink-0">
-            <h2 className="text-[#6b7280] dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none flex items-center justify-between">
-              <span>Office Tools</span>
-              <span className="text-[9px] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">V-ONE</span>
-            </h2>
+            {/* Live TV Channels Quick Submenu */}
+            {isLiveTvExpanded && (
+              <div className="ml-4 pl-2.5 space-y-0.5 py-1">
+                {channels.slice(0, 8).map((ch) => (
+                  <button
+                    key={ch.id}
+                    type="button"
+                    onClick={() => {
+                      handleNavClick(`/live-tv?channel=${ch.slug}`);
+                      if (onSelectChannel) onSelectChannel(ch);
+                    }}
+                    className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-black dark:text-[#a1a1aa] hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  >
+                    <span className="truncate">{`${String(ch.channelNumber || 1).padStart(3, '0')} | ${ch.shortName || ch.name}`}</span>
+                    <span className="px-1.5 py-0.2 text-[9px] bg-[#0078d4] dark:bg-[#4cc2ff] text-white rounded-[2px] font-bold">
+                      Play
+                    </span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('/live-tv')}
+                  className="w-full text-left px-2.5 py-1 text-[11px] text-[#0078d4] dark:text-[#4cc2ff] hover:underline font-normal cursor-pointer rounded-[4px]"
+                >
+                  + View all channels
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Notes */}
+          {/* 5. Notes */}
           <div className="w-full">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-notes' : 'sidebar-nav-notes'}
-              data-nav-active={currentRoute === '/notes' ? 'true' : undefined}
+              data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
               onClick={() => handleNavClick('/notes')}
-              title="Notes (Ghi chú)"
+              title="Notes"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                currentRoute === '/notes'
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
-                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentNotesIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
+                <FluentNotesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 <span className="truncate text-[13.5px]">Notes</span>
               </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
             </button>
           </div>
 
-          {/* Tools Item that toggles the Tools Flyout */}
-          <div className="relative tools-flyout-container">
+          {/* Divider & Category Heading: LAC's project */}
+          <div className="my-2 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
+          <div className="px-1.5 pt-0.5 pb-1 shrink-0">
+            <h2 className="text-black dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none">
+              LAC's project
+            </h2>
+          </div>
+
+          {/* 6. Craftmine */}
+          <div className="w-full">
             <button
               type="button"
-              id={isMobile ? 'mobile-nav-tools' : 'sidebar-nav-tools'}
-              onClick={() => setIsToolsFlyoutOpen(!isToolsFlyoutOpen)}
-              title="Tools"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer text-left rounded-[6px] transition-colors ${
-                isToolsFlyoutOpen
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
-                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+              id={isMobile ? 'mobile-nav-craftmine' : 'sidebar-nav-craftmine'}
+              data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
+              onClick={() => handleNavClick('/craftmine')}
+              title="Craftmine"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                currentRoute === '/craftmine'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <Wrench className="w-5 h-5 stroke-[1.5] shrink-0 text-[#111827] dark:text-white" />
-                <span className="truncate text-[13.5px]">Tools</span>
+                <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <span className="truncate text-[13.5px]">Craftmine</span>
               </div>
-              <ChevronRight className={`w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 transition-transform ${isToolsFlyoutOpen ? 'rotate-90' : ''}`} />
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Web</span>
             </button>
-
-            {/* Render Flyout Menu */}
-            <AnimatePresence>
-              {isToolsFlyoutOpen && renderToolsFlyout(false)}
-            </AnimatePresence>
           </div>
 
-          {/* Discord Community Button */}
-          <button
-            type="button"
-            id={isMobile ? 'mobile-nav-discord' : 'sidebar-nav-discord'}
-            onClick={() => setIsDiscordModalOpen(true)}
-            title="Discord Community"
-            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
-          >
-            <svg className="w-5 h-5 fill-current shrink-0 text-[#111827] dark:text-white" viewBox="0 0 24 24">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-            </svg>
-            <span className="truncate text-[13.5px]">Discord Community</span>
-          </button>
-
-          {/* Update V-One Option */}
-          <button
-            type="button"
-            id={isMobile ? 'mobile-nav-update' : 'sidebar-nav-update'}
-            onClick={onOpenUpdate}
-            title="Update V-One"
-            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
-          >
-            <RefreshCw className="w-5 h-5 stroke-[1.5] shrink-0 text-[#111827] dark:text-white" />
-            <span className="truncate text-[13.5px]">Update V-One</span>
-          </button>
+          {/* 7. Discord */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-discord' : 'sidebar-nav-discord'}
+              onClick={() => setIsDiscordModalOpen(true)}
+              title="Discord"
+              className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
+            >
+              <svg className="w-5 h-5 fill-current shrink-0 text-black dark:text-white" viewBox="0 0 24 24">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+              </svg>
+              <span className="truncate text-[13.5px]">Discord</span>
+            </button>
+          </div>
         </div>
 
         {/* Bottom Section: Sign In (placed directly above Settings) & Settings */}
@@ -908,12 +930,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Sign in"
               className={`sidebar-nav-item signin-toggle-btn w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 isSignInFlyoutOpen
-                  ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white font-medium shadow-xs'
-                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  ? 'bg-black/10 dark:bg-white/[0.12] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentUserIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
+                <FluentUserIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 <span className="truncate text-[13.5px]">
                   {signedInAccount ? signedInAccount : 'Sign in'}
                 </span>
@@ -936,11 +958,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             title="Settings"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               currentRoute === '/settings'
-                ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
-                : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
             }`}
           >
-            <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-[#111827] dark:text-white" />
+            <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-black dark:text-white" />
             <span className="truncate text-[13.5px]">Settings</span>
           </button>
         </div>
@@ -987,10 +1009,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 id="btn-sidebar-expand-toggle"
                 type="button"
                 onClick={onToggleCollapse} 
-                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-[#111827] dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white mb-1.5 cursor-pointer transition-colors"
+                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white mb-1.5 cursor-pointer transition-colors"
                 title="Expand menu"
               >
-                <Menu className="w-5 h-5 stroke-[1.75]" />
+                <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
               </button>
 
               {/* Home Icon */}
@@ -1002,97 +1024,110 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 title="Home"
                 className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                   currentRoute === '/'
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
-                    : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                 }`}
               >
-                <FluentHomeIcon className="w-5 h-5 text-[#111827] dark:text-white" />
+                <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
               </button>
 
-              {/* Search Icon */}
+              {/* 2. Articles Icon */}
               <button
                 type="button"
-                onClick={onOpenSearch}
-                title="Search"
-                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer"
+                id="sidebar-collapsed-articles"
+                data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/news')}
+                title="Articles"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
               >
-                <FluentSearchIcon className="w-5 h-5 text-[#111827] dark:text-white" />
+                <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
               </button>
 
+              {/* 3. Updates Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-updates"
+                data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/updates')}
+                title="Updates"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* Divider: Apps */}
               <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
 
-              {/* Primary Navigation Icons */}
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const active = isCurrentActive(item.route) && (item.route !== '/' || currentRoute === '/');
+              {/* 4. Watch Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-watch"
+                data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/live-tv')}
+                title="Watch"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
 
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    id={`sidebar-collapsed-${item.id}`}
-                    data-nav-active={active ? 'true' : undefined}
-                    onClick={() => handleNavClick(item.route)}
-                    title={item.label}
-                    className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                      active
-                        ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
-                        : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5 text-[#111827] dark:text-white" />
-                  </button>
-                );
-              })}
-
-              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
-
-              {/* Collapsed Notes Icon */}
+              {/* 5. Notes Icon */}
               <button
                 type="button"
                 id="sidebar-collapsed-notes"
-                data-nav-active={currentRoute === '/notes' ? 'true' : undefined}
+                data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
                 onClick={() => handleNavClick('/notes')}
-                title="Notes (Ghi chú)"
+                title="Notes"
                 className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  currentRoute === '/notes'
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
-                    : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                 }`}
               >
-                <FluentNotesIcon className="w-5 h-5 text-[#111827] dark:text-white" />
+                <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
               </button>
 
-              {/* Tools Icon Button with flyout */}
-              <div className="relative tools-flyout-container">
-                <button
-                  type="button"
-                  id="sidebar-collapsed-tools"
-                  onClick={() => setIsToolsFlyoutOpen(!isToolsFlyoutOpen)}
-                  title="Tools"
-                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                    isToolsFlyoutOpen
-                      ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
-                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
-                  }`}
-                >
-                  <Wrench className="w-5 h-5 stroke-[1.5] text-[#111827] dark:text-white" />
-                </button>
+              {/* Divider: LAC's project */}
+              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
 
-                <AnimatePresence>
-                  {isToolsFlyoutOpen && renderToolsFlyout(true)}
-                </AnimatePresence>
-              </div>
-
-              {/* Update V-One Collapsed Icon */}
+              {/* 6. Craftmine Icon */}
               <button
                 type="button"
-                id="sidebar-collapsed-update"
-                onClick={onOpenUpdate}
-                title="Update V-One"
-                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white"
+                id="sidebar-collapsed-craftmine"
+                data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
+                onClick={() => handleNavClick('/craftmine')}
+                title="Craftmine"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  currentRoute === '/craftmine'
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
               >
-                <RefreshCw className="w-5 h-5 stroke-[1.5] text-[#111827] dark:text-white" />
+                <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* 7. Discord Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-discord"
+                onClick={() => setIsDiscordModalOpen(true)}
+                title="Discord"
+                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
+              >
+                <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
               </button>
 
               {/* Bottom Sign In & Settings Icons */}

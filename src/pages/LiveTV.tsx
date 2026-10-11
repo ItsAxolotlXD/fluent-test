@@ -64,11 +64,11 @@ export const LiveTV: React.FC<LiveTVProps> = ({
       {/* Top Banner / Channel Title */}
       <div>
         <div className="flex items-center gap-2">
-          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-[#111827] dark:text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight flex items-center gap-2">
             <span>{`${String(currentChannel.channelNumber || 1).padStart(3, '0')} | ${currentChannel.name}`}</span>
           </h1>
         </div>
-        <p className="text-xs sm:text-sm text-[#4B5563] dark:text-[#9CA3AF] mt-0.5 font-medium flex items-center gap-2">
+        <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-0.5 font-medium flex items-center gap-2">
           <span>{currentChannel.category}</span>
         </p>
       </div>
@@ -89,10 +89,10 @@ export const LiveTV: React.FC<LiveTVProps> = ({
         <div className="flex flex-col gap-3 sm:gap-3.5">
           <div className="flex items-center gap-2.5">
             <CategoryIcon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
-            <h2 className="text-lg sm:text-xl font-bold font-square text-[#111827] dark:text-white">
+            <h2 className="text-lg sm:text-xl font-bold font-square text-black dark:text-white">
               Channels
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F1F3F5] dark:bg-[#26262C] text-[#4B5563] dark:text-[#9CA3AF] border border-[#E5E7EB] dark:border-[#383842]">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F1F3F5] dark:bg-[#26262C] text-black dark:text-[#9CA3AF] border border-[#E5E7EB] dark:border-[#383842]">
               {filteredChannels.length} channels
             </span>
           </div>

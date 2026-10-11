@@ -177,7 +177,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
       {isOpen && (
         <div
           id="spotlight-container"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
         >
           {/* 1. Backdrop */}
           <motion.div 
@@ -186,31 +186,31 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             onClick={onClose}
           />
 
           {/* 2. Dialog Modal Box - Fluent Design */}
           <motion.div 
             id="spotlight-popup-card"
-            initial={shouldAnimateModal ? { opacity: 0, scale: 1.10 } : { opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 1.05 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
               transition: {
-                duration: 0.28,
+                duration: 0.24,
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
-            exit={shouldAnimateModal ? { 
+            exit={{ 
               opacity: 0, 
-              scale: 1.08,
+              scale: 1.04,
               transition: {
-                duration: 0.20,
+                duration: 0.18,
                 ease: [0.16, 1, 0.3, 1]
               }
-            } : { opacity: 0 }}
-            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[14px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
+            }}
+            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
           >
             {viewMode === 'settings' ? (
               /* View 2: Search Settings Menu (Without navigating to Settings tab) */

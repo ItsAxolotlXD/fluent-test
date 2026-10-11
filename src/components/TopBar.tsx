@@ -82,7 +82,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] border-b border-[#e5e5e5] dark:border-[#2e2e2e] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
+    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
       {/* 1. Left Section */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
         {settings.navigationMode !== 'floaty' && (
@@ -91,10 +91,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={onOpenMobileMenu}
-            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer shrink-0"
+            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer shrink-0"
             aria-label="Open navigation menu"
           >
-            <Menu className="w-5 h-5 transition-transform" />
+            <Menu className="w-5 h-5 transition-transform text-black dark:text-white" />
           </motion.button>
         )}
 

@@ -79,7 +79,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
       {/* Back Button */}
       <button
         onClick={() => navigate('/news')}
-        className="flex items-center gap-2 text-xs font-bold text-[#6B7280] dark:text-[#A1A1AA] hover:text-[#111827] dark:hover:text-white transition-colors cursor-default"
+        className="flex items-center gap-2 text-xs font-bold text-black dark:text-[#A1A1AA] hover:text-black dark:hover:text-white transition-colors cursor-default"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to News Feed</span>
@@ -93,10 +93,10 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
           </div>
 
           <div className="max-w-md mx-auto space-y-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#111827] dark:text-white">
+            <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white">
               Password-Protected Article
             </h2>
-            <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
+            <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] leading-relaxed">
               This article is protected by a passcode. Please enter the correct passcode to unlock its content.
             </p>
           </div>
@@ -115,7 +115,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   passwordError 
                     ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/20' 
                     : 'border-[#D1D5DB] dark:border-[#383842] focus:border-[#E50914]'
-                } text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] focus:outline-none transition-all text-center`}
+                } text-sm text-black dark:text-white placeholder-[#9CA3AF] focus:outline-none transition-all text-center`}
               />
             </div>
 
@@ -142,7 +142,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
             <span className="px-3.5 py-1 rounded-full bg-[#E50914]/10 dark:bg-[#FF2020]/20 text-[#E50914] dark:text-[#FF4D4D] border border-[#E50914]/30 dark:border-[#FF2020]/40 text-xs font-bold uppercase tracking-wider">
               {article.category}
             </span>
-            <span className="text-xs text-[#6B7280] dark:text-[#8E8E93] flex items-center gap-1 font-medium">
+            <span className="text-xs text-black dark:text-[#8E8E93] flex items-center gap-1 font-medium">
               <Calendar className="w-3.5 h-3.5" />
               {article.publishedAt}
             </span>
@@ -155,7 +155,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
           </div>
 
           {/* Main Title */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#111827] dark:text-white tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight">
             {article.title}
           </h1>
 

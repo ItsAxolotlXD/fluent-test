@@ -30,30 +30,30 @@ export const DiscordWelcomeModal: React.FC<DiscordWelcomeModalProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
           />
 
           {/* 2. Dialog Modal Box - Fluent Design ContentDialog */}
           <motion.div
             id="discord-welcome-dialog"
-            initial={{ opacity: 0, scale: 1.10 }}
+            initial={{ opacity: 0, scale: 1.05 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
               transition: {
-                duration: 0.28,
+                duration: 0.24,
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
             exit={{ 
               opacity: 0, 
-              scale: 1.08,
+              scale: 1.04,
               transition: {
-                duration: 0.20,
+                duration: 0.18,
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
-            className="fluent-modal-dialog relative z-10 w-full max-w-[460px] bg-white dark:bg-[#202020] rounded-[14px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] select-none border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            className="fluent-modal-dialog relative z-10 w-full max-w-[460px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] select-none border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
           >
             {/* Header & Body Content Area */}
             <div className="p-6 pb-5">
@@ -76,22 +76,22 @@ export const DiscordWelcomeModal: React.FC<DiscordWelcomeModalProps> = ({
             <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
 
             {/* Bottom Actions Footer */}
-            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-4 flex items-center justify-start gap-3">
-              <button
-                type="button"
-                id="btn-discord-join"
-                onClick={handleJoin}
-                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#5865F2] hover:bg-[#4752C4] active:bg-[#3C45A5] text-white text-[13.5px] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-[#4752C4] flex items-center justify-center cursor-default"
-              >
-                Join Discord
-              </button>
+            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-4 flex items-center justify-end gap-3">
               <button
                 type="button"
                 id="btn-discord-close"
                 onClick={onClose}
-                className="fluent-btn-secondary px-6 h-9 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[13.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-default"
+                className="fluent-btn-secondary px-6 h-9 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[13.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
               >
                 Not Now
+              </button>
+              <button
+                type="button"
+                id="btn-discord-join"
+                onClick={handleJoin}
+                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#5865F2] hover:bg-[#4752C4] active:bg-[#3C45A5] text-white text-[13.5px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-[#4752C4] flex items-center justify-center cursor-pointer"
+              >
+                Join Discord
               </button>
             </div>
           </motion.div>

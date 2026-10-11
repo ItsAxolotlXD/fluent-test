@@ -103,7 +103,7 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
       {isOpen && (
         <div
           id="custom-stream-modal-container"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
         >
           {/* 1. Backdrop / Lớp nền mờ */}
           <motion.div 
@@ -112,18 +112,31 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             onClick={onClose}
           />
 
           {/* 2. Dialog Modal Box - Fluent Design ContentDialog */}
           <motion.div 
             id="custom-stream-dialog"
-            initial={shouldAnimate ? { opacity: 0, scale: 1.10 } : { opacity: 1, scale: 1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={shouldAnimate ? { opacity: 0, scale: 1.08 } : { opacity: 0 }}
-            transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="fluent-modal-dialog relative z-10 w-full max-w-[500px] bg-white dark:bg-[#202020] rounded-[14px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              transition: {
+                duration: 0.24,
+                ease: [0.16, 1, 0.3, 1]
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              scale: 1.04,
+              transition: {
+                duration: 0.18,
+                ease: [0.16, 1, 0.3, 1]
+              }
+            }}
+            className="fluent-modal-dialog relative z-10 w-full max-w-[500px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
           >
             {/* Header Area */}
             <div className="p-6 pb-3">

@@ -109,7 +109,7 @@ export const Home: React.FC<HomeProps> = ({
                 {totalMatches} results across the application
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight mt-1">
               Results for "{searchQuery}"
             </h1>
           </div>
@@ -157,7 +157,7 @@ export const Home: React.FC<HomeProps> = ({
                       <IconComponent className="w-5 h-5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-white group-hover:text-[#FF4D8B] transition-colors truncate">
+                      <div className="text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#FF4D8B] transition-colors truncate">
                         {page.title}
                       </div>
                       <div className="text-xs text-[#9CA3AF] truncate">
@@ -189,7 +189,7 @@ export const Home: React.FC<HomeProps> = ({
                     <SettingsIcon className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-white group-hover:text-[#FF4D8B] transition-colors truncate">
+                    <div className="text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#FF4D8B] transition-colors truncate">
                       {set.title}
                     </div>
                     <div className="text-xs text-[#9CA3AF] truncate">
@@ -256,7 +256,7 @@ export const Home: React.FC<HomeProps> = ({
                   <span className="text-[10px] font-bold text-[#E6005A] uppercase tracking-wider">
                     {article.category}
                   </span>
-                  <h3 className="font-bold text-white text-sm line-clamp-2">
+                  <h3 className="font-bold text-[#111827] dark:text-white text-sm line-clamp-2">
                     {article.title}
                   </h3>
                   <p className="text-xs text-[#9CA3AF] line-clamp-2">
@@ -312,14 +312,14 @@ export const Home: React.FC<HomeProps> = ({
         <section id="home-about-section" className="space-y-8 pt-4 border-t border-[#26262E]">
           {/* Hero Intro */}
           <div className="text-center space-y-4 pt-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight">
               VNRT Online -{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2020] via-[#FF3366] to-[#E6005A]">
                 Bringing Vietnam to Your Screen
               </span>
             </h2>
 
-            <div className="text-sm sm:text-base text-[#9CA3AF] max-w-3xl mx-auto leading-relaxed text-left space-y-3 pt-2">
+            <div className="text-sm sm:text-base text-black dark:text-[#9CA3AF] max-w-3xl mx-auto leading-relaxed text-left space-y-3 pt-2">
               <p className="flex items-start gap-2">
                 <span className="text-[#E6005A] font-bold select-none">•</span>
                 <span>
@@ -342,11 +342,11 @@ export const Home: React.FC<HomeProps> = ({
           >
             <div className="flex items-center gap-2.5">
               <Shield className="w-5 h-5 text-[#4cc2ff] shrink-0" />
-              <h3 id="about-disclaimer-title" className="text-base font-semibold text-[#111827] dark:text-white">
+              <h3 id="about-disclaimer-title" className="text-base font-semibold text-black dark:text-white">
                 Copyright & Broadcast Source Disclaimer
               </h3>
             </div>
-            <p id="about-disclaimer-text" className="text-xs sm:text-sm text-[#4b5563] dark:text-[#a1a1aa] leading-relaxed">
+            <p id="about-disclaimer-text" className="text-xs sm:text-sm text-black dark:text-[#a1a1aa] leading-relaxed">
               All television logos, trademarks, studio images, and broadcast feeds are the intellectual property of their respective broadcasters (Vietnam Television VTV, Ho Chi Minh City Television HTV, VTC Digital Television, and local radio-television stations). VNRT Online serves non-commercial, academic research, and technical archive purposes only.
             </p>
           </div>
@@ -356,8 +356,8 @@ export const Home: React.FC<HomeProps> = ({
             id="home-about-community-card"
             className="fluent-reveal-item setting-card text-center p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 transition-colors"
           >
-            <h3 className="text-base sm:text-lg font-semibold text-[#111827] dark:text-white">Join the Waves Community</h3>
-            <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#a1a1aa] max-w-2xl mx-auto leading-relaxed">
+            <h3 className="text-base sm:text-lg font-semibold text-black dark:text-white">Join the Waves Community</h3>
+            <p className="text-xs sm:text-sm text-black dark:text-[#a1a1aa] max-w-2xl mx-auto leading-relaxed">
               “Waves of Our Time” — connecting people from across all regions to meet, share, and discuss stories of our era. A space to preserve media memories, iconic broadcasts, and cultural milestones of television.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
