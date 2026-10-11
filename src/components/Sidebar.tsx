@@ -35,7 +35,7 @@ import { Channel, NewsArticle } from '../types';
 import { DiscordWelcomeModal } from './DiscordWelcomeModal';
 import { parseM3UPlaylist, downloadPlaylistFile } from '../utils/m3uParser';
 
-const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/4/4b/Vplay_no_wordmark.png/revision/latest/scale-to-width-down/1000?cb=20260829062616';
+const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 
 interface MorphingIndicatorProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -1203,12 +1203,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             role="dialog"
             aria-modal="true"
           >
-            {/* Backdrop */}
+            {/* Backdrop with smooth fade */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
               onClick={onCloseMobile}
               className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
               aria-hidden="true"
@@ -1217,13 +1217,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Slide-out Sidebar Drawer with smooth spring transition */}
             <motion.div 
               id="waves-mobile-sidebar"
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 320, mass: 0.85 }}
+              initial={{ x: '-100%', opacity: 0.8 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '-100%', opacity: 0.8 }}
+              transition={{ 
+                type: 'spring', 
+                damping: 26, 
+                stiffness: 290, 
+                mass: 0.8 
+              }}
               onTouchStart={handleDrawerTouchStart}
               onTouchEnd={handleDrawerTouchEnd}
-              className="relative w-[280px] max-w-[85vw] h-full bg-[#202020] text-white shadow-2xl flex flex-col z-10"
+              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white shadow-2xl flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333]"
               style={{
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',

@@ -77,7 +77,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   animatePageTransitions: true,
   immersiveSearch: true,
   nativeKeyboard: true,
-  nativeKeyboardVersion: 1,
+  nativeKeyboardVersion: 2,
   keyboardNumberRow: false,
   keyboardClipboard: true,
   keyboardSoundEnabled: true,
@@ -150,10 +150,10 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.floatingSearchBar === 'boolean' ? parsed.floatingSearchBar : true)
           : true,
         floatingSearchBarVersion: 1,
-        nativeKeyboard: parsed.nativeKeyboardVersion === 1
+        nativeKeyboard: parsed.nativeKeyboardVersion === 2
           ? (typeof parsed.nativeKeyboard === 'boolean' ? parsed.nativeKeyboard : true)
           : true,
-        nativeKeyboardVersion: 1,
+        nativeKeyboardVersion: 2,
         keyboardNumberRow: typeof parsed.keyboardNumberRow === 'boolean' ? parsed.keyboardNumberRow : DEFAULT_SETTINGS.keyboardNumberRow,
         keyboardClipboard: typeof parsed.keyboardClipboard === 'boolean' ? parsed.keyboardClipboard : DEFAULT_SETTINGS.keyboardClipboard,
         keyboardSoundEnabled: typeof parsed.keyboardSoundEnabled === 'boolean' ? parsed.keyboardSoundEnabled : DEFAULT_SETTINGS.keyboardSoundEnabled,
@@ -373,7 +373,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
   if (key === 'theme' && value === 'light') {
     extraUpdates.spatialGlassOpacity = 43;
   }
-  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3 };
+  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 2 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));
@@ -393,7 +393,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
 };
 
 export const updateMultipleSettings = (newSettings: Partial<SystemSettings>) => {
-  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3 };
+  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 2 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));

@@ -81,7 +81,7 @@ export const Favorites: React.FC<FavoritesProps> = ({
           onClick={() => setActiveTab('channels')}
           className={`flex-1 py-2 px-4 rounded-full text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'channels'
-              ? 'bg-[#4cc2ff] text-black shadow-md'
+              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
           }`}
         >
@@ -93,7 +93,7 @@ export const Favorites: React.FC<FavoritesProps> = ({
           onClick={() => setActiveTab('news')}
           className={`flex-1 py-2 px-4 rounded-full text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'news'
-              ? 'bg-[#4cc2ff] text-black shadow-md'
+              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
           }`}
         >

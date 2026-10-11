@@ -264,19 +264,19 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
                 <button
                   type="submit"
                   form="form-single-stream"
-                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
+                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
                 >
-                  <Play className="w-3.5 h-3.5 fill-black text-black" />
-                  <span className="text-black font-semibold">Play Stream</span>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span className="font-semibold">Play Stream</span>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleImportM3U}
-                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
+                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
                 >
-                  <Upload className="w-3.5 h-3.5 text-black" />
-                  <span className="text-black font-semibold">Import Playlist</span>
+                  <Upload className="w-3.5 h-3.5" />
+                  <span className="font-semibold">Import Playlist</span>
                 </button>
               )}
               <button

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SpinningRing } from './SpinningRing';
 
-const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/4/4b/Vplay_no_wordmark.png/revision/latest/scale-to-width-down/1000?cb=20260829062616';
+const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 
 interface SplashScreenProps {
   duration?: number; // duration in ms, default 3000 (3 seconds)

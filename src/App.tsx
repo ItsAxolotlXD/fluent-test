@@ -534,7 +534,7 @@ export default function App() {
       />
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {settings.navigationMode === 'sidebar' && (
+      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (
         <Sidebar
           currentRoute={currentRoute}
           navigate={navigate}

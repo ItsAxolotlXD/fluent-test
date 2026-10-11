@@ -87,7 +87,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black text-[13.5px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/15 flex items-center justify-center cursor-default"
+                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black text-[13.5px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/15 flex items-center justify-center cursor-default"
               >
                 Got It
               </button>

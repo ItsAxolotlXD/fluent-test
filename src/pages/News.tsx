@@ -149,7 +149,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-white dark:text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
             >
               Clear Search
             </button>

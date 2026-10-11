@@ -86,11 +86,11 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
   },
   {
     id: 'experimental',
-    title: 'Experimental',
-    subtitle: 'Laboratory preview features and diagnostic tests',
+    title: 'Insider Flags',
+    subtitle: 'Preview features and diagnostic flags',
     icon: FlaskConical,
     badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
-    keywords: ['experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader'],
+    keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader'],
   },
 ];
 
@@ -222,7 +222,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 type="button"
                 id="btn-settings-save"
                 onClick={handleApplySettings}
-                className="px-5 py-2 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                className="px-5 py-2 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
               >
                 <span>Save</span>
               </button>
@@ -232,7 +232,7 @@ export const Settings: React.FC<SettingsProps> = ({
             Customize your V-One streaming and display experience.
           </p>
 
-          {/* Search Header */}
+          {/* Search Header - Styled and laid out exactly like TopBar search bar */}
           <div className="pt-2">
             <div 
               id="settings-search-box"
@@ -240,74 +240,64 @@ export const Settings: React.FC<SettingsProps> = ({
                 setIsFocused(true);
                 inputRef.current?.focus();
               }}
-              className="relative w-full h-[48px] flex items-center px-4 rounded-[6px] bg-white/5 dark:bg-[#2b2b2b] text-sm transition-all shadow-lg overflow-hidden cursor-text select-none border border-black/10 dark:border-white/10 border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff]"
+              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden transition-colors cursor-text select-none"
             >
-                <motion.div 
-                  animate={{
-                    x: isFocused || searchQuery ? 0 : 'calc(50% - 75px)',
-                  }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 400,
-                    damping: 30,
-                  }}
-                  className="flex items-center gap-2 pointer-events-none"
-                >
-                  <Search className="w-4 h-4 text-[#8E8E93] shrink-0" />
-                  {!isFocused && !searchQuery && (
-                    <span className="text-[#8E8E93] text-sm font-medium">
-                      Search...
-                    </span>
-                  )}
-                </motion.div>
+              <input
+                ref={inputRef}
+                id="settings-search-input"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder="Search in Settings"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-14 no-fluent-line"
+              />
 
-                <input
-                  ref={inputRef}
-                  id="settings-search-input"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  placeholder={isFocused ? 'Search settings...' : ''}
-                  className={`w-full h-full bg-transparent border-none outline-none text-white placeholder-[#8E8E93] text-sm pl-2 pr-8 ${
-                    !isFocused && !searchQuery ? 'opacity-0' : 'opacity-100'
-                  }`}
-                />
-
-                <div className="absolute right-3 flex items-center gap-1">
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSearchQuery('');
-                        inputRef.current?.focus();
-                      }}
-                      className="p-1 rounded-full text-[#8E8E93] hover:text-white hover:bg-white/10 transition-colors"
-                      title="Clear search"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
+              <div className="absolute right-2.5 flex items-center gap-1">
+                {searchQuery && (
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleListening();
+                      setSearchQuery('');
+                      inputRef.current?.focus();
                     }}
-                    className={`p-1.5 rounded-full transition-colors ${
-                      isListening
-                        ? 'text-[#E6005A] bg-[#E6005A]/20 animate-pulse'
-                        : 'text-[#8E8E93] hover:text-white hover:bg-white/10'
-                    }`}
-                    title={isListening ? 'Stop listening' : 'Voice search'}
+                    className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                    title="Clear search"
                   >
-                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    <X className="w-3.5 h-3.5" />
                   </button>
-                </div>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleListening();
+                  }}
+                  className={`p-0.5 transition-colors cursor-pointer ${
+                    isListening
+                      ? 'text-[#E6005A] animate-pulse'
+                      : 'text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                  title={isListening ? 'Stop listening' : 'Voice search'}
+                >
+                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    inputRef.current?.focus();
+                  }}
+                  className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                  title="Search"
+                >
+                  <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+                </button>
               </div>
             </div>
+          </div>
         </div>
       ) : (
         /* Subpage Minimal Header: Back button (no redundant title/description) */
@@ -357,11 +347,11 @@ export const Settings: React.FC<SettingsProps> = ({
                     className="flex items-center justify-between p-2.5 sm:p-3 rounded-[18px] bg-white/5 hover:bg-white/10 text-left transition-colors cursor-default"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`settings-category-badge w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${cat.badgeColor}`}>
-                        <cat.icon className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 flex items-center justify-center shrink-0">
+                        <cat.icon className="w-5 h-5 text-[#111827] dark:text-white stroke-[1.75]" />
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-white">{cat.title}</div>
+                        <div className="text-sm font-semibold text-[#111827] dark:text-white">{cat.title}</div>
                         <div className="text-xs text-[#9CA3AF]">{cat.subtitle}</div>
                       </div>
                     </div>
@@ -381,20 +371,20 @@ export const Settings: React.FC<SettingsProps> = ({
                   onClick={() => setActiveCategory(item.id)}
                   className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
                 >
-                  {/* Icon Badge without outline - 100% border radius */}
-                  <div className={`settings-category-badge w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-full flex items-center justify-center shrink-0 shadow-sm ${item.badgeColor}`}>
-                    <item.icon className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] text-white" />
+                  {/* Clean Icon without background */}
+                  <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
                   <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
-                    <div className="text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
+                    <div className="text-[#111827] dark:text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
                       {item.title}
                     </div>
                   </div>
 
                   {/* Chevron Right */}
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-white transition-colors shrink-0 ml-2" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-[#111827] dark:group-hover:text-white transition-colors shrink-0 ml-2" />
                 </div>
                 {idx < SETTINGS_GROUP_1.length - 1 && (
                   <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
@@ -403,7 +393,7 @@ export const Settings: React.FC<SettingsProps> = ({
             ))}
           </div>
 
-          {/* Group 2: Công cụ, Thử nghiệm */}
+          {/* Group 2: Tools, Insider Flags */}
           <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
             {SETTINGS_GROUP_2.map((item, idx) => (
               <React.Fragment key={item.id}>
@@ -412,20 +402,20 @@ export const Settings: React.FC<SettingsProps> = ({
                   onClick={() => setActiveCategory(item.id)}
                   className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
                 >
-                  {/* Icon Badge without outline - 100% border radius */}
-                  <div className={`settings-category-badge w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-full flex items-center justify-center shrink-0 shadow-sm ${item.badgeColor}`}>
-                    <item.icon className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] text-white" />
+                  {/* Clean Icon without background */}
+                  <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
                   <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
-                    <div className="text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
+                    <div className="text-[#111827] dark:text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
                       {item.title}
                     </div>
                   </div>
 
                   {/* Chevron Right */}
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-white transition-colors shrink-0 ml-2" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-[#111827] dark:group-hover:text-white transition-colors shrink-0 ml-2" />
                 </div>
                 {idx < SETTINGS_GROUP_2.length - 1 && (
                   <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
@@ -476,9 +466,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   href="https://test-vplay.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
                 >
-                  <span className="text-black font-bold">Switch</span>
+                  <span className="font-bold">Switch</span>
                 </a>
               </div>
 
@@ -497,9 +487,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-changelogs-read"
                   type="button"
                   onClick={() => setIsWelcomeModalOpen(true)}
-                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="text-black font-bold">Read</span>
+                  <span className="font-bold">Read</span>
                 </button>
               </div>
 
@@ -518,9 +508,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-update-vplay"
                   type="button"
                   onClick={onOpenUpdate}
-                  className="px-4 py-1.5 rounded-full font-bold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="text-black font-bold">Update</span>
+                  <span className="font-bold">Update</span>
                 </button>
               </div>
             </div>
@@ -733,7 +723,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           }}
                           className={`flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-default ${
                             (draftSettings.theme || 'dark') === val
-                              ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
+                              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                               : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                           }`}
                           aria-pressed={(draftSettings.theme || 'dark') === val}
@@ -773,7 +763,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           }} 
                           className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center truncate ${
                             draftSettings.navigationMode === value
-                              ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
+                              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                               : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                           }`} 
                           aria-pressed={draftSettings.navigationMode === value}
@@ -885,7 +875,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
                             className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center ${
                               draftSettings.sidebarPosition === pos
-                                ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
+                                ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                                 : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                             }`}
                           >
@@ -964,7 +954,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
                             className={`h-9 sm:h-10 rounded-full font-semibold text-xs sm:text-sm transition-all cursor-default flex items-center justify-center ${
                               draftSettings.streamAspectRatio === value
-                                ? 'bg-[#4cc2ff] text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
+                                ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
                                 : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                             }`}
                             aria-pressed={draftSettings.streamAspectRatio === value}
@@ -1668,7 +1658,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
             )}
 
-            {/* SUBPAGE 6: THỬ NGHIỆM */}
+            {/* SUBPAGE 6: INSIDER FLAGS */}
             {activeCategory === 'experimental' && (
               <section 
                 id="settings-section-experimental"

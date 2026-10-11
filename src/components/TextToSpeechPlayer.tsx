@@ -382,7 +382,7 @@ export const TextToSpeechPlayer: React.FC<TextToSpeechPlayerProps> = ({
                   <button
                     type="button"
                     onClick={isPlaying ? handlePause : handlePlay}
-                    className="w-11 h-11 rounded-full bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-95 flex items-center justify-center text-black shadow-lg shadow-[#4cc2ff]/40 cursor-default transition-all"
+                    className="w-11 h-11 rounded-full bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-95 flex items-center justify-center text-white dark:text-black shadow-lg shadow-[#4cc2ff]/40 cursor-default transition-all"
                     title={isPlaying ? "Pause" : "Play"}
                   >
                     {isPlaying ? (
@@ -447,7 +447,7 @@ export const TextToSpeechPlayer: React.FC<TextToSpeechPlayerProps> = ({
                 <button
                   type="button"
                   onClick={isPlaying ? handlePause : handlePlay}
-                  className="w-8 h-8 rounded-full bg-[#4cc2ff] flex items-center justify-center text-black cursor-default shadow-md"
+                  className="w-8 h-8 rounded-full bg-[#4cc2ff] flex items-center justify-center text-white dark:text-black cursor-default shadow-md"
                 >
                   {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
                 </button>

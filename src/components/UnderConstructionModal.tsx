@@ -92,9 +92,9 @@ export const UnderConstructionModal: React.FC<UnderConstructionModalProps> = ({
                 type="button"
                 id="btn-under-construction-close"
                 onClick={onClose}
-                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default"
+                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default"
               >
-                <span className="text-black font-semibold">Got It</span>
+                <span className="font-semibold">Got It</span>
               </button>
               <button
                 type="button"

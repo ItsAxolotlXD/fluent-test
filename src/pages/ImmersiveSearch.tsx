@@ -291,8 +291,8 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('all')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'all'
-                      ? 'bg-[#4cc2ff] text-black shadow-md'
-                      : 'text-[#8A798C] hover:text-white'
+                      ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
+                      : 'text-[#8A798C] hover:text-white dark:hover:text-white'
                   }`}
                 >
                   All ({totalMatches})
@@ -302,8 +302,8 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('channels')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'channels'
-                      ? 'bg-[#4cc2ff] text-black shadow-md'
-                      : 'text-[#8A798C] hover:text-white'
+                      ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
+                      : 'text-[#8A798C] hover:text-white dark:hover:text-white'
                   }`}
                 >
                   Channels ({matchedChannels.length})
@@ -313,8 +313,8 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   onClick={() => setActiveTab('news')}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'news'
-                      ? 'bg-[#4cc2ff] text-black shadow-md'
-                      : 'text-[#8A798C] hover:text-white'
+                      ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
+                      : 'text-[#8A798C] hover:text-white dark:hover:text-white'
                   }`}
                 >
                   News ({matchedNews.length})

@@ -90,6 +90,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   const currentOpacity = typeof draftSettings?.spatialGlassOpacity === 'number'
     ? draftSettings.spatialGlassOpacity
     : (settings.spatialGlassOpacity ?? 20);
+  const currentBlur = typeof draftSettings?.spatialGlassBlur === 'number'
+    ? draftSettings.spatialGlassBlur
+    : (settings.spatialGlassBlur ?? 10);
+  const blurPx = Math.round((currentBlur / 100) * 40);
   const isSpatialGlassActive = (draftSettings?.spatialGlass ?? settings.spatialGlass) !== false;
   // When spatial glass opacity < 40%, user wants text & icons in tab bar / float search to be monochrome white
   const isLightMode = settings.theme === 'light';
@@ -366,6 +370,11 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                   transition: { duration: 0.15 }
                 }}
                 whileTap={{ scale: 0.98 }}
+                style={{
+                  backdropFilter: isSpatialGlassActive ? `blur(${blurPx}px)` : 'none',
+                  WebkitBackdropFilter: isSpatialGlassActive ? `blur(${blurPx}px)` : 'none',
+                  backgroundColor: isSpatialGlassActive ? `rgba(255, 255, 255, ${currentOpacity / 100})` : undefined,
+                }}
                 className="floaty-bar floaty-bar__surface h-[56px] sm:h-[58px] w-[336px] sm:w-[396px] max-w-[calc(100vw-20px)] flex items-center justify-between gap-1 px-2 rounded-xl shadow-[0_8px_20px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.36)] select-none pointer-events-auto overflow-hidden bg-white dark:bg-[#2c2c2c] border border-[#e5e5e5] dark:border-[#3e3e3e] text-[#1b1b1b] dark:text-[#f3f3f3]"
                 aria-label="Tab View"
               >

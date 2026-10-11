@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { Channel, NewsArticle } from '../types';
 
-const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/4/4b/Vplay_no_wordmark.png/revision/latest/scale-to-width-down/1000?cb=20260829062616';
+const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 const HOME_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/e/ee/Icons8-home-64.png/revision/latest?cb=20260925115253';
 const TV_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/d/df/Cool_tv.png/revision/latest?cb=20260927105318';
 const NEWS_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/f/f2/Icons8-megaphone-64.png/revision/latest?cb=20260925115252';
@@ -78,15 +78,17 @@ export const TopBar: React.FC<TopBarProps> = ({
     <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] border-b border-[#e5e5e5] dark:border-[#2e2e2e] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
       {/* 1. Left Section */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
-        {settings.navigationMode !== 'floaty' && !isTopBarMode && (
-          <button
+        {settings.navigationMode !== 'floaty' && (
+          <motion.button
             id="btn-mobile-menu-toggle"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onOpenMobileMenu}
-            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-[#18181B] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer shrink-0"
             aria-label="Open navigation menu"
           >
-            <Menu className="w-5 h-5" />
-          </button>
+            <Menu className="w-5 h-5 transition-transform" />
+          </motion.button>
         )}
 
         {isTopBarMode && (
@@ -247,7 +249,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               id="btn-top-settings-apply-checkbox"
               type="button"
               onClick={handleApplySettings}
-              className={`px-4 py-1.5 rounded-[4px] font-semibold text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] transition-colors text-xs sm:text-[13px] cursor-default flex items-center justify-center shrink-0 border-b-2 border-black/25 shadow-xs select-none ${
+              className={`px-4 py-1.5 rounded-[4px] font-semibold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] transition-colors text-xs sm:text-[13px] cursor-default flex items-center justify-center shrink-0 border-b-2 border-black/25 shadow-xs select-none ${
                 hasChanges 
                   ? 'ring-2 ring-[#4cc2ff]/50' 
                   : ''
@@ -259,7 +261,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               }
               aria-label={hasChanges ? "Save settings" : "Settings saved"}
             >
-              <span className="text-black font-semibold">Save</span>
+              <span className="font-semibold">Save</span>
             </button>
 
             {/* Unsaved Settings Warning Tooltip */}

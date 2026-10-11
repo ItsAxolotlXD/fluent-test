@@ -192,10 +192,10 @@ export const NewsSummaryModal: React.FC<NewsSummaryModalProps> = ({
                   <button
                     type="button"
                     onClick={handleCopySummary}
-                    className="fluent-btn-primary px-5 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
+                    className="fluent-btn-primary px-5 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
                   >
-                    {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-black" /> : <Copy className="w-3.5 h-3.5 text-black" />}
-                    <span className="text-black font-semibold">{copied ? 'Copied' : 'Copy'}</span>
+                    {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span className="font-semibold">{copied ? 'Copied' : 'Copy'}</span>
                   </button>
                   <button
                     type="button"
