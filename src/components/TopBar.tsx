@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Menu, History } from 'lucide-react';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -10,12 +10,31 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { Channel, NewsArticle } from '../types';
+import { NEWS_DATA } from '../data/news';
 
 const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 const HOME_ICON_SRC = FLUENT_ICON_URLS.home;
 const TV_ICON_SRC = FLUENT_ICON_URLS.liveTv;
 const NEWS_ICON_SRC = FLUENT_ICON_URLS.news;
 const SETTINGS_ICON_SRC = 'https://static.wikia.nocookie.net/ftv/images/9/97/Settungs.png/revision/latest?cb=20260411085024&path-prefix=vi';
+
+const DEFAULT_HISTORY_ITEMS = [
+  'minecraft preview for windows',
+  'mail and calendar',
+  'calculator',
+  'microsoft maps',
+  'notepad',
+  'watch live tv',
+  'vtv1 hd thoi su 19h'
+];
+
+interface SearchAspectItem {
+  id: string;
+  title: string;
+  type: 'history' | 'page' | 'channel' | 'news' | 'setting' | 'tool';
+  logo?: string;
+  onSelect: () => void;
+}
 
 interface TopBarProps {
   currentRoute: string;
@@ -24,6 +43,7 @@ interface TopBarProps {
   onOpenMobileMenu?: () => void;
   currentChannel?: Channel;
   channels?: Channel[];
+  onSelectChannel?: (channel: Channel) => void;
   onOpenHelp?: () => void;
   onOpenDiscord?: () => void;
   onOpenSummarize?: (article: NewsArticle) => void;
@@ -45,10 +65,11 @@ export const TopBar: React.FC<TopBarProps> = ({
   onOpenMobileMenu,
   currentChannel,
   channels = [],
+  onSelectChannel,
   onOpenHelp = () => {},
   onOpenDiscord = () => {},
-  onOpenSummarize = () => {},
-  onOpenTextToSpeech = () => {},
+  onOpenSummarize = (_art?: NewsArticle) => {},
+  onOpenTextToSpeech = (_art?: NewsArticle) => {},
   onOpenFindWords = () => {},
   onOpenAddStream = () => {},
   onImportChannels = () => {},
@@ -60,6 +81,52 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { settings, hasChanges, applyDraftSettings } = useSettings();
   const [logoError, setLogoError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Search History from localStorage
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('vone_search_history');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return DEFAULT_HISTORY_ITEMS;
+  });
+
+  const saveToHistory = (query: string) => {
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) return;
+    setSearchHistory((prev) => {
+      const next = [trimmed, ...prev.filter((item) => item.toLowerCase() !== trimmed)].slice(0, 15);
+      try {
+        localStorage.setItem('vone_search_history', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  // Close flyout on click outside or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchFlyoutOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSearchFlyoutOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const isTopBarMode = settings.navigationMode === 'topbar';
 
@@ -72,11 +139,132 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDismissUnsavedTooltip();
   };
 
+  // Pre-configured App Aspects (Pages, Settings, Tools)
+  const appAspects = useMemo(() => {
+    const aspects: SearchAspectItem[] = [
+      // Pages
+      { id: 'page-home', title: 'Home (Trang chủ)', type: 'page', onSelect: () => navigate('/') },
+      { id: 'page-watch', title: 'Watch Live TV (Xem truyền hình)', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-news', title: 'Articles & News (Tin tức & Bài viết)', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-channels', title: 'Channel Directory (Danh sách kênh)', type: 'page', onSelect: () => navigate('/channels') },
+      { id: 'page-favs', title: 'Favorites (Kênh yêu thích)', type: 'page', onSelect: () => navigate('/favorites') },
+      { id: 'page-updates', title: 'Updates (Cập nhật phiên bản)', type: 'page', onSelect: () => navigate('/updates') },
+      { id: 'page-craftmine', title: 'Craftmine Web (Minecraft Preview)', type: 'page', onSelect: () => navigate('/craftmine') },
+      { id: 'page-notes', title: 'Notes & Office (Ghi chú & Soạn thảo)', type: 'page', onSelect: () => navigate('/notes') },
+      { id: 'page-settings', title: 'Settings (Cài đặt hệ thống)', type: 'page', onSelect: () => navigate('/settings') },
+      { id: 'page-about', title: 'About V-One (Giới thiệu)', type: 'page', onSelect: () => navigate('/about') },
+
+      // Settings Shortcuts
+      { id: 'set-sideview', title: 'Settings: Side View (Thanh bên)', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-darkmode', title: 'Settings: Dark / Light Mode', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-spatialglass', title: 'Settings: Spatial Glass & Blur', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-fontscale', title: 'Settings: Text Scaling & Typography', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-keyboard', title: 'Settings: Native Virtual Keyboard', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-aspect', title: 'Settings: Stream Aspect Ratio 16:9 / 4:3', type: 'setting', onSelect: () => navigate('/settings') },
+
+      // Tools
+      { id: 'tool-sticky', title: 'Tools: Sticky Note (Ghi chú)', type: 'tool', onSelect: () => navigate('/notes') },
+      { id: 'tool-tts', title: 'Tools: Text-to-Speech Player', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
+      { id: 'tool-findwords', title: 'Tools: Find Words in Page', type: 'tool', onSelect: () => onOpenFindWords() },
+      { id: 'tool-addstream', title: 'Tools: Add Custom Stream', type: 'tool', onSelect: () => onOpenAddStream() },
+      { id: 'tool-discord', title: 'Community: Discord V-One', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
+    ];
+
+    // Channels
+    channels.forEach((ch) => {
+      aspects.push({
+        id: `channel-${ch.id}`,
+        title: `${ch.name} (${ch.category})`,
+        type: 'channel',
+        logo: ch.logo,
+        onSelect: () => {
+          if (onSelectChannel) onSelectChannel(ch);
+          navigate(`/live-tv?channel=${ch.slug}`);
+        }
+      });
+    });
+
+    // News
+    NEWS_DATA.forEach((art) => {
+      aspects.push({
+        id: `article-${art.id}`,
+        title: art.title,
+        type: 'news',
+        onSelect: () => navigate(`/article/${art.id}`)
+      });
+    });
+
+    return aspects;
+  }, [channels, navigate, onSelectChannel, onOpenTextToSpeech, onOpenFindWords, onOpenAddStream]);
+
+  // Filtered search results for flyout
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) {
+      // Empty input: render recent search history (matches user screenshot)
+      return searchHistory.map((hist, idx) => ({
+        id: `history-${idx}`,
+        title: hist,
+        type: 'history' as const,
+        onSelect: () => {
+          setSearchQuery(hist);
+          saveToHistory(hist);
+          // If query matches a known page/aspect
+          const match = appAspects.find((a) => a.title.toLowerCase().includes(hist.toLowerCase()));
+          if (match) {
+            match.onSelect();
+          } else {
+            navigate(`/channels?search=${encodeURIComponent(hist)}`);
+          }
+          setIsSearchFlyoutOpen(false);
+        }
+      }));
+    }
+
+    // When query is typed: match every aspect of the app
+    const matches: SearchAspectItem[] = [];
+
+    // History matches
+    searchHistory.forEach((hist, idx) => {
+      if (hist.toLowerCase().includes(q)) {
+        matches.push({
+          id: `hist-match-${idx}`,
+          title: hist,
+          type: 'history',
+          onSelect: () => {
+            setSearchQuery(hist);
+            saveToHistory(hist);
+            navigate(`/channels?search=${encodeURIComponent(hist)}`);
+            setIsSearchFlyoutOpen(false);
+          }
+        });
+      }
+    });
+
+    // App aspects matches
+    appAspects.forEach((item) => {
+      if (item.title.toLowerCase().includes(q)) {
+        matches.push(item);
+      }
+    });
+
+    return matches.slice(0, 10);
+  }, [searchQuery, searchHistory, appAspects, navigate]);
+
+  const handleSelectSearchResult = (item: SearchAspectItem) => {
+    saveToHistory(item.title);
+    item.onSelect();
+    setIsSearchFlyoutOpen(false);
+  };
+
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (searchQuery.trim()) {
+      saveToHistory(searchQuery.trim());
+      setIsSearchFlyoutOpen(false);
       navigate(`/channels?search=${encodeURIComponent(searchQuery.trim())}`);
     } else {
+      setIsSearchFlyoutOpen(false);
       onOpenSearch();
     }
   };
@@ -163,29 +351,82 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
       </div>
 
-      {/* 2. Center Search Box (Căn giữa thanh search) */}
-      <div className="flex-1 flex items-center justify-center min-w-0 px-2 sm:px-4 z-10 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px] md:pointer-events-none">
-        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[460px] min-w-0 mx-auto md:pointer-events-auto">
-          <div
-            id="topbar-search-box"
-            className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden"
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search in V-One"
-              className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
-            />
-            <button
-              type="submit"
-              title="Search"
-              className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+      {/* 2. Center Search Box with Flyout matching Microsoft Fluent Design and reference image */}
+      <div 
+        ref={searchContainerRef}
+        className="flex-1 flex items-center justify-center min-w-0 px-2 sm:px-4 z-40 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]"
+      >
+        <div className="relative w-full max-w-[460px] min-w-0 mx-auto">
+          <form onSubmit={handleSearchSubmit} className="w-full">
+            <div
+              id="topbar-search-box"
+              className={`group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
+                isSearchFlyoutOpen
+                  ? 'rounded-t-[6px] rounded-b-none border-b-2 border-b-[#4cc2ff] dark:border-b-[#4cc2ff]'
+                  : 'rounded-[6px]'
+              }`}
             >
-              <FluentSearchIcon className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </form>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchFlyoutOpen(true);
+                }}
+                onFocus={() => setIsSearchFlyoutOpen(true)}
+                placeholder="Search in V-One"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
+              />
+              <button
+                type="submit"
+                title="Search"
+                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+              >
+                <FluentSearchIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </form>
+
+          {/* Flyout Result Dropdown Styled Exactly Like User Reference Image */}
+          <AnimatePresence>
+            {isSearchFlyoutOpen && searchResults.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute top-full left-0 right-0 z-50 bg-[#1c1c1c]/95 dark:bg-[#1c1c1c]/95 backdrop-blur-2xl rounded-b-[8px] border border-white/10 dark:border-white/10 border-t-0 shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 overflow-hidden max-h-[360px] overflow-y-auto no-scrollbar"
+                style={{
+                  backdropFilter: 'blur(28px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+                }}
+              >
+                {searchResults.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleSelectSearchResult(item)}
+                    className="w-full h-11 px-2.5 rounded-[6px] flex items-center gap-3.5 text-left text-white dark:text-white hover:bg-white/[0.08] dark:hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
+                  >
+                    {/* Dark rounded square box containing the icon (exactly matching user reference image) */}
+                    <div className="w-8 h-8 rounded-[6px] bg-[#000000] dark:bg-[#000000] flex items-center justify-center shrink-0 border border-white/5 shadow-xs">
+                      {item.logo ? (
+                        <img src={item.logo} alt="" className="max-h-5 max-w-5 object-contain" />
+                      ) : (
+                        <History className="w-4 h-4 text-white/85 group-hover:text-white transition-colors" />
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1 truncate">
+                      <div className="text-[13px] font-normal text-white/95 truncate">
+                        {item.title}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* 3. Right Action Icons: Settings Gear */}

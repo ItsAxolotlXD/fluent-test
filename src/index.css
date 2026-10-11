@@ -148,19 +148,29 @@ html.light-mode .tab-element-slide-up-container {
 }
 
 /* Light mode: toàn bộ chữ trên toàn bộ các tab đổi hết sang màu đen (#000000) */
-html.light-mode :is(h1, h2, h3, h4, h5, h6, p, label, li, dt, dd, blockquote):not(.fluent-btn-primary):not(#btn-discord-join):not(#btn-home-join-discord):not([class*="bg-[#5865F2]"]):not([class*="bg-[#0078d4]"]):not([class*="bg-[#4cc2ff]"]):not([class*="bg-[#E6005A]"]):not([class*="bg-[#E50914]"]) {
+html.light-mode :is(h1, h2, h3, h4, h5, h6, p, label, li, dt, dd, blockquote, div, span, b, strong, i, em, td, th, time, small, caption, button, a):not(.fluent-btn-primary):not(.fluent-btn-primary *):not(#btn-discord-join):not(#btn-discord-join *):not(#btn-home-join-discord):not(#btn-home-join-discord *):not([class*="bg-[#5865F2]"]):not([class*="bg-[#0078d4]"]):not([class*="bg-[#4cc2ff]"]):not([class*="bg-[#E6005A]"]):not([class*="bg-[#E50914]"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-amber"]):not([class*="bg-blue"]):not([class*="text-[#0078d4]"]):not([class*="text-[#4cc2ff]"]):not([class*="text-[#E6005A]"]):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-amber"]):not([class*="text-blue"]) {
   color: #000000 !important;
 }
 
-html.light-mode span:not([class*="bg-[#"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-indigo"]):not(.fluent-btn-primary *):not(#btn-discord-join *):not(#btn-home-join-discord *):not([class*="text-[#4cc2ff]"]):not([class*="text-[#0078d4]"]):not([class*="text-[#E6005A]"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-red"]) {
+html.light-mode [class*="text-gray-"],
+html.light-mode [class*="text-neutral-"],
+html.light-mode [class*="text-zinc-"],
+html.light-mode [class*="text-slate-"],
+html.light-mode [class*="text-stone-"],
+html.light-mode [class*="text-white"],
+html.light-mode [class*="text-[#cccccc]"],
+html.light-mode [class*="text-[#a0a0a0]"],
+html.light-mode [class*="text-[#a1a1aa]"],
+html.light-mode [class*="text-[#9ca3af]"],
+html.light-mode [class*="text-[#6b7280]"],
+html.light-mode [class*="text-[#4b5563]"],
+html.light-mode [class*="text-[#d1d5db]"],
+html.light-mode [class*="text-[#e5e7eb]"],
+html.light-mode [class*="text-[#f3f4f6]"] {
   color: #000000 !important;
 }
 
-html.light-mode a:not([class*="bg-[#"]):not([class*="bg-red"]):not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-purple"]):not([class*="bg-indigo"]):not(.fluent-btn-primary):not(#btn-discord-join):not(#btn-home-join-discord) {
-  color: #000000 !important;
-}
-
-/* Fix icon update, craftmine và hamburger menu chưa đổi sang màu đen khi ở light mode */
+/* Fix icon update, craftmine và hamburger menu đổi sang màu đen khi ở light mode */
 html.light-mode #btn-desktop-sidebar-toggle,
 html.light-mode #btn-mobile-sidebar-toggle,
 html.light-mode #btn-sidebar-expand-toggle,
@@ -183,7 +193,9 @@ html.light-mode #mobile-nav-updates svg,
 html.light-mode #sidebar-collapsed-updates svg,
 html.light-mode #sidebar-nav-craftmine svg,
 html.light-mode #mobile-nav-craftmine svg,
-html.light-mode #sidebar-collapsed-craftmine svg {
+html.light-mode #sidebar-collapsed-craftmine svg,
+html.light-mode [class*="FluentUpdatesIcon"],
+html.light-mode [class*="FluentCraftmineIcon"] {
   color: #000000 !important;
   stroke: #000000 !important;
 }
@@ -197,15 +209,17 @@ html.light-mode #mobile-nav-updates svg *,
 html.light-mode #sidebar-collapsed-updates svg *,
 html.light-mode #sidebar-nav-craftmine svg *,
 html.light-mode #mobile-nav-craftmine svg *,
-html.light-mode #sidebar-collapsed-craftmine svg * {
+html.light-mode #sidebar-collapsed-craftmine svg *,
+html.light-mode [class*="FluentUpdatesIcon"] *,
+html.light-mode [class*="FluentCraftmineIcon"] * {
   stroke: #000000 !important;
 }
 
-/* Tab Elements Slide-Up Animation: Sau loading state tab khi load cac content se co hieu ung slide up tung element */
+/* Tab Elements Slide-Up Animation: Sau loading state tab khi load các content sẽ có hiệu ứng slide up từng element (không slide cả trang) */
 @keyframes tabElementSlideUp {
   0% {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(26px);
   }
   100% {
     opacity: 1;
@@ -213,55 +227,77 @@ html.light-mode #sidebar-collapsed-craftmine svg * {
   }
 }
 
+.tab-element-slide-up-container {
+  animation: none !important;
+  transform: none !important;
+}
+
+.tab-element-slide-up-container > *:not(style):not(script) {
+  animation: none !important;
+  transform: none !important;
+}
+
 .tab-element-slide-up-container > * > *:not(style):not(script):not(.fixed),
 .tab-element-slide-up-container > * > div > *:not(style):not(script):not(.fixed),
-.tab-element-slide-up-container > *:not(div):not(style):not(script):not(.fixed) {
+.tab-element-slide-up-container > * > section,
+.tab-element-slide-up-container > * > header,
+.tab-element-slide-up-container > * > article,
+.tab-element-slide-up-container > * > main {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(1),
-.tab-element-slide-up-container > * > div > *:nth-child(1) {
-  animation-delay: 0.03s;
+.tab-element-slide-up-container > * > div > *:nth-child(1),
+.tab-element-slide-up-container > * > section:nth-child(1) {
+  animation-delay: 0.04s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(2),
-.tab-element-slide-up-container > * > div > *:nth-child(2) {
+.tab-element-slide-up-container > * > div > *:nth-child(2),
+.tab-element-slide-up-container > * > section:nth-child(2) {
   animation-delay: 0.08s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(3),
-.tab-element-slide-up-container > * > div > *:nth-child(3) {
-  animation-delay: 0.14s;
+.tab-element-slide-up-container > * > div > *:nth-child(3),
+.tab-element-slide-up-container > * > section:nth-child(3) {
+  animation-delay: 0.12s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(4),
-.tab-element-slide-up-container > * > div > *:nth-child(4) {
-  animation-delay: 0.20s;
+.tab-element-slide-up-container > * > div > *:nth-child(4),
+.tab-element-slide-up-container > * > section:nth-child(4) {
+  animation-delay: 0.16s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(5),
-.tab-element-slide-up-container > * > div > *:nth-child(5) {
-  animation-delay: 0.26s;
+.tab-element-slide-up-container > * > div > *:nth-child(5),
+.tab-element-slide-up-container > * > section:nth-child(5) {
+  animation-delay: 0.20s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(6),
-.tab-element-slide-up-container > * > div > *:nth-child(6) {
-  animation-delay: 0.32s;
+.tab-element-slide-up-container > * > div > *:nth-child(6),
+.tab-element-slide-up-container > * > section:nth-child(6) {
+  animation-delay: 0.24s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(7),
-.tab-element-slide-up-container > * > div > *:nth-child(7) {
-  animation-delay: 0.38s;
+.tab-element-slide-up-container > * > div > *:nth-child(7),
+.tab-element-slide-up-container > * > section:nth-child(7) {
+  animation-delay: 0.28s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(8),
-.tab-element-slide-up-container > * > div > *:nth-child(8) {
-  animation-delay: 0.44s;
+.tab-element-slide-up-container > * > div > *:nth-child(8),
+.tab-element-slide-up-container > * > section:nth-child(8) {
+  animation-delay: 0.32s;
 }
 
 .tab-element-slide-up-container > * > *:nth-child(n+9),
-.tab-element-slide-up-container > * > div > *:nth-child(n+9) {
-  animation-delay: 0.50s;
+.tab-element-slide-up-container > * > div > *:nth-child(n+9),
+.tab-element-slide-up-container > * > section:nth-child(n+9) {
+  animation-delay: 0.36s;
 }
 
 @media (prefers-reduced-motion: reduce) {

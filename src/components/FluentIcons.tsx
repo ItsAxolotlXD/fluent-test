@@ -66,7 +66,7 @@ export const FluentSettingsIcon: React.FC<{ className?: string; style?: React.CS
 );
 
 export const FluentCraftmineIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
     <path d="M12 2.25L3.75 6.75V17.25L12 21.75L20.25 17.25V6.75L12 2.25Z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M12 2.25V11.25M12 11.25L3.75 6.75M12 11.25L20.25 6.75M12 11.25V21.75" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M7.5 4.5L16.5 9.5M7.5 19.5V14M16.5 19.5V14" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1.5 2"/>
@@ -74,13 +74,13 @@ export const FluentCraftmineIcon: React.FC<{ className?: string; style?: React.C
 );
 
 export const FluentUpdatesIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
     {/* Upper arrow with wide separation */}
-    <path d="M7.5 9.5C8.8 6.8 11.5 5 14.5 5C17.5 5 20.1 6.8 21 9.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
-    <path d="M16.5 10H21V5.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 8.5C5.8 4.8 9.5 2.5 14 2.5C17.8 2.5 20.8 4.5 22 7.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+    <path d="M17.5 8H22V3.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round"/>
     {/* Lower arrow with wide separation */}
-    <path d="M16.5 14.5C15.2 17.2 12.5 19 9.5 19C6.5 19 3.9 17.2 3 14.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
-    <path d="M7.5 14H3V18.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M20 15.5C18.2 19.2 14.5 21.5 10 21.5C6.2 21.5 3.2 19.5 2 16.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+    <path d="M6.5 16H2V20.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 

@@ -46,10 +46,7 @@ export interface SystemSettings {
 }
 
 export const getDefaultNavigationMode = (): 'sidebar' | 'topbar' | 'floaty' => {
-  if (typeof window !== 'undefined' && window.innerWidth < 768) {
-    return 'floaty';
-  }
-  return 'topbar';
+  return 'sidebar';
 };
 
 export const DEFAULT_SETTINGS: SystemSettings = {
@@ -83,8 +80,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   keyboardSoundEnabled: true,
   immersiveSidebar: false,
   sidebarPosition: 'left',
-  navigationMode: getDefaultNavigationMode(),
-  navModeVersion: 2,
+  navigationMode: 'sidebar',
+  navModeVersion: 3,
   floatingSearchBar: true,
   floatingSearchBarVersion: 1,
   streamAspectRatio: '16:9',
@@ -127,9 +124,9 @@ export const getStoredSettings = (): SystemSettings => {
       if (navigationMode === 'immersive' || navigationMode === 'immersive_floaty') {
         navigationMode = 'floaty';
       }
-      // Migrate old default 'sidebar' or unversioned nav mode to new platform defaults (topbar desktop / floaty mobile)
-      if (!navigationMode || (parsed.navModeVersion !== 2 && navigationMode === 'sidebar')) {
-        navigationMode = getDefaultNavigationMode();
+      // Side View (sidebar) is the default navigation mode
+      if (!navigationMode || parsed.navModeVersion !== 3) {
+        navigationMode = 'sidebar';
       }
       const immersiveSearch = parsed.immersiveSearchVersion === 2
         ? parsed.immersiveSearch

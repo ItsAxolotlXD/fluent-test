@@ -47,9 +47,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       id="vplay-splash-screen"
       className="fixed inset-0 z-[99999] bg-[#202020] text-white flex flex-col items-center justify-center select-none"
     >
-      {/* Splash content: logo in center and spinning ring positioned lower */}
-      <div className="relative w-full h-full flex flex-col items-center justify-center px-6">
-        {/* Logo web in the center - compact size */}
+      {/* Splash content: logo, spinning ring and subtitle all centered together */}
+      <div className="flex flex-col items-center justify-center gap-6 sm:gap-7 text-center px-6 max-w-md w-full">
+        {/* Logo web in the center */}
         <div className="flex items-center justify-center">
           {!logoError ? (
             <img
@@ -64,8 +64,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           )}
         </div>
 
-        {/* Thick spinning ring (colored #4cc2ff) positioned lower - compact size (size 34, strokeWidth 4) */}
-        <div className="absolute bottom-12 sm:bottom-16 md:bottom-20 flex flex-col items-center justify-center gap-2.5 text-center px-4">
+        {/* Spinning ring and subtitle centered right below logo */}
+        <div className="flex flex-col items-center justify-center gap-2.5 text-center px-4">
           <SpinningRing size={34} strokeWidth={4} color="#4cc2ff" />
           {subtitle && (
             <p className="text-[12.5px] sm:text-[13.5px] text-[#FFFFFF]/90 font-normal tracking-wide max-w-md">

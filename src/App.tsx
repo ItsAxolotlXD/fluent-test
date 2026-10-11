@@ -72,6 +72,7 @@ export default function App() {
   const [routeState, setRouteState] = useState<any>(null);
   const previousRouteRef = useRef<string>('/');
   const [isTabLoading, setIsTabLoading] = useState(false);
+  const [tabLoadCount, setTabLoadCount] = useState(0);
   const tabLoadingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -276,6 +277,7 @@ export default function App() {
       setIsTabLoading(true);
       tabLoadingTimerRef.current = setTimeout(() => {
         setIsTabLoading(false);
+        setTabLoadCount((c) => c + 1);
       }, 3000);
     }
   }, [channels, currentRoute]);
@@ -399,6 +401,7 @@ export default function App() {
         setIsTabLoading(true);
         tabLoadingTimerRef.current = setTimeout(() => {
           setIsTabLoading(false);
+          setTabLoadCount((c) => c + 1);
         }, 3000);
       }
     };
@@ -656,6 +659,7 @@ export default function App() {
             onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
             currentChannel={currentChannel}
             channels={channels}
+            onSelectChannel={setCurrentChannel}
             onOpenHelp={() => setIsHelpModalOpen(true)}
             onOpenDiscord={() => setIsWelcomeModalOpen(true)}
             onOpenSummarize={(art) => {
@@ -696,7 +700,7 @@ export default function App() {
             </div>
           ) : (
             <div
-              key={`tab-loaded-${currentRoute}`}
+              key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
               className="tab-element-slide-up-container w-full h-full"
             >
               {renderContent()}

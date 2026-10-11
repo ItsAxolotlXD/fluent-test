@@ -432,11 +432,11 @@ export const Settings: React.FC<SettingsProps> = ({
             <div className="p-3.5 sm:p-4 rounded-[18px] bg-black/[0.03] dark:bg-white/5 space-y-3 select-text">
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-medium text-[#111827] dark:text-white">Software Update</span>
-                <span className="font-semibold text-[#9CA3AF]">26.10.0</span>
+                <span className="font-semibold text-[#9CA3AF]">26.11</span>
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
-                <span className="font-semibold text-[#9CA3AF]">26v1009</span>
+                <span className="font-semibold text-[#9CA3AF]">261009</span>
               </div>
               {/* Compatible with Fluent Design */}
               <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">

@@ -46,7 +46,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
               </span>
             </div>
             <p className="text-xs text-black dark:text-[#AAAAAA] mt-0.5">
-              V-One version 26.10.0 (Build 26v1009) • Microsoft Fluent Design
+              V-One version 26.11 (Build 261009) • Microsoft Fluent Design
             </p>
           </div>
         </div>
@@ -63,7 +63,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
       {/* Changelog Highlights */}
       <div className="space-y-4">
         <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-[#AAAAAA]">
-          What's New in Version 26.10.0
+          What's New in Version 26.11
         </h3>
 
         <div className="space-y-3">

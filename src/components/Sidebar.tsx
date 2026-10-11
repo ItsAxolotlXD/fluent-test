@@ -549,7 +549,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 22, scale: 0.98 }}
         transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/80 dark:bg-[#1f1f1f]/80 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
+        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/70 dark:bg-[#1c1c1c]/80 backdrop-blur-3xl backdrop-saturate-150 border-0 border-none rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
               ? 'right-[54px] bottom-0'
@@ -557,8 +557,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             : 'bottom-full mb-2 left-0 right-0 sm:left-0 sm:right-auto sm:w-[264px]'
         }`}
         style={{
-          backdropFilter: 'blur(28px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          border: 'none',
+          outline: 'none',
           boxShadow: '0 16px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.1)',
           willChange: 'transform, opacity',
         }}
@@ -566,7 +568,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Signed in status header */}
         {signedInAccount && (
-          <div className="px-3 py-2 mb-1 rounded-[6px] bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between">
+          <div className="px-3 py-2 mb-1 rounded-[6px] bg-black/[0.04] dark:bg-white/[0.04] border-0 border-none flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-6 h-6 rounded-full bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] flex items-center justify-center text-xs font-bold shrink-0 border border-[#0078d4]/30 dark:border-[#4cc2ff]/30">
                 {signedInAccount[0]}
@@ -907,7 +909,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               id={isMobile ? 'mobile-nav-discord' : 'sidebar-nav-discord'}
-              onClick={() => setIsDiscordModalOpen(true)}
+              onClick={() => {
+                if (isMobile) onCloseMobile?.();
+                window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer');
+              }}
               title="Discord"
               className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
             >
@@ -978,7 +983,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-2xl border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
+          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
             settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
             shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
@@ -986,8 +991,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             effectiveCollapsed ? 'w-[48px]' : 'w-[260px]'
           }`}
           style={{
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+            boxShadow: 'none',
           }}
         >
           {!effectiveCollapsed ? (
@@ -1121,7 +1127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 type="button"
                 id="sidebar-collapsed-discord"
-                onClick={() => setIsDiscordModalOpen(true)}
+                onClick={() => window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer')}
                 title="Discord"
                 className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
               >
@@ -1207,10 +1213,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               onTouchStart={handleDrawerTouchStart}
               onTouchEnd={handleDrawerTouchEnd}
-              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white shadow-2xl flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333]"
+              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3]/90 dark:bg-[#202020]/90 text-[#111827] dark:text-white shadow-none flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333] backdrop-blur-2xl"
               style={{
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                boxShadow: 'none',
               }}
             >
               {renderSidebarBody(true)}

@@ -86,11 +86,11 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               <div className="mt-4 p-3.5 rounded-lg bg-[#F9F9F9] dark:bg-[#2B2B2B] border border-black/[0.06] dark:border-white/[0.08] space-y-2 select-text text-[13px]">
                 <div className="flex items-center justify-between">
                   <span className="text-[#666666] dark:text-[#AAAAAA]">Software Version</span>
-                  <span className="font-semibold text-[#111827] dark:text-[#FFFFFF]">26.10.0</span>
+                  <span className="font-semibold text-[#111827] dark:text-[#FFFFFF]">26.11</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[#666666] dark:text-[#AAAAAA]">Release Build</span>
-                  <span className="font-semibold text-[#111827] dark:text-[#FFFFFF]">26v1009</span>
+                  <span className="font-semibold text-[#111827] dark:text-[#FFFFFF]">261009</span>
                 </div>
                 <div className="pt-2 mt-1 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between">
                   <span className="text-[#666666] dark:text-[#AAAAAA]">Design System</span>
