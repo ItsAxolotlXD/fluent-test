@@ -588,6 +588,7 @@ html.light-mode #settings-section-version,
 html.light-mode #settings-section-spatial-glass,
 html.light-mode #settings-section-interface,
 html.light-mode #settings-section-accessibility,
+html.light-mode #settings-section-page-loading,
 html.light-mode #settings-section-tools,
 html.light-mode #settings-section-motion,
 html.light-mode #settings-section-search,
@@ -2265,10 +2266,22 @@ html.light-mode [id^="news-cat-btn-"]:active {
   will-change: auto !important;
 }
 
-/* Allow smooth slide-up transforms on sign-in flyout */
+/* Allow smooth slide-up transforms & crisp acrylic blur on sign-in flyout */
+.signin-flyout-panel {
+  transform-origin: bottom center !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+}
+html.light-mode .signin-flyout-panel {
+  background-color: rgba(255, 255, 255, 0.70) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html:not(.light-mode) .signin-flyout-panel {
+  background-color: rgba(30, 30, 30, 0.70) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
 .signin-flyout-container {
   transform-origin: bottom center !important;
-  will-change: transform, opacity !important;
 }
 
 #waves-desktop-sidebar button:hover,
@@ -2952,8 +2965,8 @@ html.light-mode main .text-\[\#E0E0E6\] {
 }
 
 /* Form controls in light mode */
-html.light-mode input[type="text"]:not(#floating-search-input),
-html.light-mode input[type="search"]:not(#floating-search-input),
+html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input),
+html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input),
 html.light-mode input[type="url"]:not(#floating-search-input),
 html.light-mode input[type="password"],
 html.light-mode textarea,
@@ -2961,6 +2974,47 @@ html.light-mode select {
   background-color: #FFFFFF !important;
   border-color: #D1D5DB !important;
   color: #111827 !important;
+}
+
+/* TopBar search in V-One must NEVER have a white background */
+#topbar-search-box input,
+html.light-mode #topbar-search-box input,
+html:not(.light-mode) #topbar-search-box input {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+}
+
+html.light-mode #topbar-search-box {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Category Icons ở Light Mode đổi thành màu đen (#000000) */
+html.light-mode .category-icon-svg path,
+html.light-mode .category-icon-path,
+html.light-mode svg.category-icon-svg path,
+html.light-mode [class*="CategoryIcon"] path {
+  stroke: #000000 !important;
+}
+
+/* TopBar Search Results Flyout with 50% Opacity and Light Mode */
+.topbar-search-results-dropdown {
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+}
+html.light-mode .topbar-search-results-dropdown {
+  background-color: rgba(255, 255, 255, 0.50) !important;
+  border-color: rgba(0, 0, 0, 0.10) !important;
+  color: #000000 !important;
+}
+html:not(.light-mode) .topbar-search-results-dropdown {
+  background-color: rgba(28, 28, 28, 0.50) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
 }
 
 /* Floating Search Bar input text box must NEVER have a background in any mode (light or dark) */

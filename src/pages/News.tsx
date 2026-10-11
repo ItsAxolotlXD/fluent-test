@@ -3,6 +3,8 @@ import { NEWS_DATA } from '../data/news';
 import { NewsCard } from '../components/NewsCard';
 import { TrendingUp, Lock } from 'lucide-react';
 import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
+import { SequentialSection } from '../components/SequentialSection';
+import { useSettings } from '../hooks/useSettings';
 
 interface NewsProps {
   navigate: (route: string) => void;
@@ -11,6 +13,7 @@ interface NewsProps {
 }
 
 export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChange }) => {
+  const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const distinctCats = Array.from(new Set(NEWS_DATA.map((a) => a.category)));
@@ -130,17 +133,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
       </div>
 
       {/* Articles Grid */}
-      {filteredNews.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredNews.map((article) => (
-            <NewsCard
-              key={article.id}
-              article={article}
-              onClick={(a) => navigate(`/news/${a.slug}`)}
-            />
-          ))}
-        </div>
-      ) : (
+      {filteredNews.length === 0 ? (
         <div className="py-16 text-center space-y-3 rounded-2xl bg-[#1E1E22]/60 border border-white/10 p-6">
           <p className="text-sm font-medium text-[#9CA3AF]">
             No news articles found matching "{query}"
@@ -154,6 +147,44 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
               Clear Search
             </button>
           )}
+        </div>
+      ) : filteredNews.length <= 6 || !settings.loadPagesSequentially ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredNews.map((article) => (
+            <NewsCard
+              key={article.id}
+              article={article}
+              onClick={(a) => navigate(`/news/${a.slug}`)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Initial batch (First 6 articles) */}
+          <SequentialSection order={0} enabled={settings.loadPagesSequentially}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredNews.slice(0, 6).map((article) => (
+                <NewsCard
+                  key={article.id}
+                  article={article}
+                  onClick={(a) => navigate(`/news/${a.slug}`)}
+                />
+              ))}
+            </div>
+          </SequentialSection>
+
+          {/* Subsequent articles */}
+          <SequentialSection order={1} enabled={settings.loadPagesSequentially}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredNews.slice(6).map((article) => (
+                <NewsCard
+                  key={article.id}
+                  article={article}
+                  onClick={(a) => navigate(`/news/${a.slug}`)}
+                />
+              ))}
+            </div>
+          </SequentialSection>
         </div>
       )}
     </div>

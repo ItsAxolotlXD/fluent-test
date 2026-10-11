@@ -549,7 +549,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 22, scale: 0.98 }}
         transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/70 dark:bg-[#1c1c1c]/80 backdrop-blur-3xl backdrop-saturate-150 border-0 border-none rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
+        className={`signin-flyout-panel signin-flyout-container absolute z-50 w-[264px] bg-white/70 dark:bg-[#1c1c1c]/70 backdrop-blur-3xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
               ? 'right-[54px] bottom-0'
@@ -559,10 +559,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         style={{
           backdropFilter: 'blur(32px) saturate(180%)',
           WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-          border: 'none',
-          outline: 'none',
           boxShadow: '0 16px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.1)',
-          willChange: 'transform, opacity',
         }}
         onClick={(e) => e.stopPropagation()}
       >

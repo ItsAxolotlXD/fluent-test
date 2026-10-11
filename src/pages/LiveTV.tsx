@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
+import { SequentialSection } from '../components/SequentialSection';
+import { useSettings } from '../hooks/useSettings';
 
 interface LiveTVProps {
   currentChannel: Channel;
@@ -29,6 +31,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
   onSearchChange,
   navigate = () => {}
 }) => {
+  const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isTheaterMode, setIsTheaterMode] = useState(false);
 
@@ -126,59 +129,65 @@ export const LiveTV: React.FC<LiveTVProps> = ({
           </div>
         ) : (
           <div className="space-y-8">
-            {groupedCategories.map((group) => (
-              <section key={group.category} className="space-y-3">
-                {/* Category Section Header & Divider */}
-                <div className="livetv-category-divider flex items-center justify-between border-b border-[#E5E7EB] dark:border-[#2D2D35] pb-2">
-                  <div className="flex items-center gap-2.5">
-                    <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
-                    <h3 className="text-sm sm:text-base font-bold font-square text-[#111827] dark:text-white">
-                      {group.category}
-                    </h3>
-                    <span className="text-[11px] font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
-                      ({group.channels.length})
-                    </span>
+            {groupedCategories.map((group, groupIdx) => (
+              <SequentialSection
+                key={group.category}
+                order={groupIdx}
+                enabled={settings.loadPagesSequentially}
+              >
+                <section className="space-y-3">
+                  {/* Category Section Header & Divider */}
+                  <div className="livetv-category-divider flex items-center justify-between border-b border-[#E5E7EB] dark:border-[#2D2D35] pb-2">
+                    <div className="flex items-center gap-2.5">
+                      <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
+                      <h3 className="text-sm sm:text-base font-bold font-square text-[#111827] dark:text-white">
+                        {group.category}
+                      </h3>
+                      <span className="text-[11px] font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+                        ({group.channels.length})
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Channel Grid: Unified fixed width & height cards, 6 cols on desktop, 3 cols on mobile */}
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
-                  {group.channels.map((ch) => {
-                    const isSelected = ch.id === currentChannel.id;
+                  {/* Channel Grid: Unified fixed width & height cards, 6 cols on desktop, 3 cols on mobile */}
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
+                    {group.channels.map((ch) => {
+                      const isSelected = ch.id === currentChannel.id;
 
-                    return (
-                      <div
-                        key={ch.id}
-                        id={`livetv-channel-card-${ch.id}`}
-                        onClick={() => onSelectChannel(ch)}
-                        className={`fluent-reveal-item channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#353535] ${
-                          isSelected ? 'is-selected' : ''
-                        }`}
-                        title={ch.name}
-                      >
-                        {/* Channel Logo Box without background (strictly only logo) */}
-                        <div className="w-full h-full flex items-center justify-center p-1 relative">
-                          <img
-                            src={ch.logo}
-                            alt={ch.name}
-                            referrerPolicy="no-referrer"
-                            className={`${
-                              ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                                ? 'max-h-[78%] max-w-[92%] scale-110'
-                                : ch.category === 'Kênh VTV'
-                                  ? 'max-h-[56%] max-w-[80%]'
-                                  : 'max-h-[58%] max-w-[82%]'
-                            } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
+                      return (
+                        <div
+                          key={ch.id}
+                          id={`livetv-channel-card-${ch.id}`}
+                          onClick={() => onSelectChannel(ch)}
+                          className={`fluent-reveal-item channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#353535] ${
+                            isSelected ? 'is-selected' : ''
+                          }`}
+                          title={ch.name}
+                        >
+                          {/* Channel Logo Box without background (strictly only logo) */}
+                          <div className="w-full h-full flex items-center justify-center p-1 relative">
+                            <img
+                              src={ch.logo}
+                              alt={ch.name}
+                              referrerPolicy="no-referrer"
+                              className={`${
+                                ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                                  ? 'max-h-[78%] max-w-[92%] scale-110'
+                                  : ch.category === 'Kênh VTV'
+                                    ? 'max-h-[56%] max-w-[80%]'
+                                    : 'max-h-[58%] max-w-[82%]'
+                              } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
+                      );
+                    })}
+                  </div>
+                </section>
+              </SequentialSection>
             ))}
           </div>
         )}

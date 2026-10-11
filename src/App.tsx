@@ -271,16 +271,21 @@ export default function App() {
     // Scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 3-second loading state when switching between tabs to avoid performance issues
+    // Page loading: displays a spinning ring for 1 second before finishing loading if enabled
     if (isDifferentTab) {
       if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
-      setIsTabLoading(true);
-      tabLoadingTimerRef.current = setTimeout(() => {
+      if (settings.pageLoading) {
+        setIsTabLoading(true);
+        tabLoadingTimerRef.current = setTimeout(() => {
+          setIsTabLoading(false);
+          setTabLoadCount((c) => c + 1);
+        }, 1000);
+      } else {
         setIsTabLoading(false);
         setTabLoadCount((c) => c + 1);
-      }, 3000);
+      }
     }
-  }, [channels, currentRoute]);
+  }, [channels, currentRoute, settings.pageLoading]);
 
   // Navigation handler
   const navigate = useCallback((path: string, state?: any) => {
@@ -398,17 +403,22 @@ export default function App() {
 
       if (isTabSwitch) {
         if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
-        setIsTabLoading(true);
-        tabLoadingTimerRef.current = setTimeout(() => {
+        if (settings.pageLoading) {
+          setIsTabLoading(true);
+          tabLoadingTimerRef.current = setTimeout(() => {
+            setIsTabLoading(false);
+            setTabLoadCount((c) => c + 1);
+          }, 1000);
+        } else {
           setIsTabLoading(false);
           setTabLoadCount((c) => c + 1);
-        }, 3000);
+        }
       }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [channels, currentRoute, hasChanges, triggerUnsavedTooltip]);
+  }, [channels, currentRoute, hasChanges, triggerUnsavedTooltip, settings.pageLoading]);
 
   // Handle page reload / unload when settings are unsaved
   useEffect(() => {
@@ -695,7 +705,7 @@ export default function App() {
         }`}>
           {/* Dynamic Page Content: Slide up individual elements of the loaded tab, not the entire page as a block */}
           {isTabLoading ? (
-            <div key={`tab-loading-${currentRoute}`} className="w-full h-full">
+            <div key={`tab-loading-${currentRoute}`} className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
               <TabLoadingScreen />
             </div>
           ) : (

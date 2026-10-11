@@ -5,6 +5,8 @@ import { CategoryIcon } from '../components/CategoryIcon';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite } from 'lucide-react';
 import { FluentSearchIcon } from '../components/FluentIcons';
+import { SequentialSection } from '../components/SequentialSection';
+import { useSettings } from '../hooks/useSettings';
 
 interface ChannelsProps {
   channels: Channel[];
@@ -23,6 +25,7 @@ export const Channels: React.FC<ChannelsProps> = ({
   searchQuery: externalSearchQuery,
   onSearchChange: externalOnSearchChange
 }) => {
+  const { settings } = useSettings();
   const [selectedGroup, setSelectedGroup] = useState<string>('All');
   const [internalSearchQuery, setInternalSearchQuery] = useState<string>('');
 
@@ -103,18 +106,74 @@ export const Channels: React.FC<ChannelsProps> = ({
       </div>
 
       {/* Grid of channels */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredChannels.map((channel) => (
-          <ChannelCard
-            key={channel.id}
-            channel={channel}
-            onSelect={(ch) => {
-              onSelectChannel(ch);
-              navigate(`/live-tv?channel=${ch.slug}`);
-            }}
-          />
-        ))}
-      </div>
+      {filteredChannels.length <= 16 || !settings.loadPagesSequentially ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredChannels.map((channel) => (
+            <ChannelCard
+              key={channel.id}
+              channel={channel}
+              onSelect={(ch) => {
+                onSelectChannel(ch);
+                navigate(`/live-tv?channel=${ch.slug}`);
+              }}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {/* Initial Section 0 (First 16 channels) */}
+          <SequentialSection order={0} enabled={settings.loadPagesSequentially}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredChannels.slice(0, 16).map((channel) => (
+                <ChannelCard
+                  key={channel.id}
+                  channel={channel}
+                  onSelect={(ch) => {
+                    onSelectChannel(ch);
+                    navigate(`/live-tv?channel=${ch.slug}`);
+                  }}
+                />
+              ))}
+            </div>
+          </SequentialSection>
+
+          {/* Section 1 (Next 16 channels) */}
+          {filteredChannels.length > 16 && (
+            <SequentialSection order={1} enabled={settings.loadPagesSequentially}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredChannels.slice(16, 32).map((channel) => (
+                  <ChannelCard
+                    key={channel.id}
+                    channel={channel}
+                    onSelect={(ch) => {
+                      onSelectChannel(ch);
+                      navigate(`/live-tv?channel=${ch.slug}`);
+                    }}
+                  />
+                ))}
+              </div>
+            </SequentialSection>
+          )}
+
+          {/* Section 2 (Remaining channels) */}
+          {filteredChannels.length > 32 && (
+            <SequentialSection order={2} enabled={settings.loadPagesSequentially}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredChannels.slice(32).map((channel) => (
+                  <ChannelCard
+                    key={channel.id}
+                    channel={channel}
+                    onSelect={(ch) => {
+                      onSelectChannel(ch);
+                      navigate(`/live-tv?channel=${ch.slug}`);
+                    }}
+                  />
+                ))}
+              </div>
+            </SequentialSection>
+          )}
+        </div>
+      )}
     </div>
   );
 };

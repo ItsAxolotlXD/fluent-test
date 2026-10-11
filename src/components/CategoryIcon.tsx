@@ -12,7 +12,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`inline-block shrink-0 align-middle ${className}`}
+      className={`inline-block shrink-0 align-middle category-icon-svg text-black dark:text-transparent ${className}`}
       aria-hidden="true"
     >
       <defs>
@@ -28,10 +28,11 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
           <stop offset="100%" stopColor="#FF8800" />
         </linearGradient>
       </defs>
-      {/* Tam giác ngược to rõ, có lỗ tam giác bên trong (hollow inverted triangle) */}
+      {/* Tam giác ngược: ở Light mode là màu đen (#000000), ở Dark mode là gradient */}
       <path
         d="M 2.2 3.6 H 21.8 L 12 21.6 Z"
-        stroke="url(#vplay-cat-inverted-triangle-grad)"
+        className="category-icon-path stroke-black dark:stroke-[url(#vplay-cat-inverted-triangle-grad)]"
+        stroke="currentColor"
         strokeWidth="3.6"
         strokeLinejoin="round"
         strokeLinecap="round"

@@ -362,7 +362,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               id="topbar-search-box"
               className={`group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen
-                  ? 'rounded-t-[6px] rounded-b-none border-b-2 border-b-[#4cc2ff] dark:border-b-[#4cc2ff]'
+                  ? 'rounded-t-[6px] rounded-b-none border-b-2 border-b-[#005fb8] dark:border-b-[#4cc2ff]'
                   : 'rounded-[6px]'
               }`}
             >
@@ -387,7 +387,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           </form>
 
-          {/* Flyout Result Dropdown Styled Exactly Like User Reference Image */}
+          {/* Flyout Result Dropdown: 50% opacity with Light Mode & Dark Mode acrylic blur */}
           <AnimatePresence>
             {isSearchFlyoutOpen && searchResults.length > 0 && (
               <motion.div
@@ -395,7 +395,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute top-full left-0 right-0 z-50 bg-[#1c1c1c]/95 dark:bg-[#1c1c1c]/95 backdrop-blur-2xl rounded-b-[8px] border border-white/10 dark:border-white/10 border-t-0 shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 overflow-hidden max-h-[360px] overflow-y-auto no-scrollbar"
+                className="topbar-search-results-dropdown absolute top-full left-0 right-0 z-50 bg-white/50 dark:bg-[#1c1c1c]/50 backdrop-blur-2xl rounded-b-[8px] border border-black/10 dark:border-white/10 border-t-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 overflow-hidden max-h-[360px] overflow-y-auto no-scrollbar"
                 style={{
                   backdropFilter: 'blur(28px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
@@ -405,19 +405,19 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <div
                     key={item.id}
                     onClick={() => handleSelectSearchResult(item)}
-                    className="w-full h-11 px-2.5 rounded-[6px] flex items-center gap-3.5 text-left text-white dark:text-white hover:bg-white/[0.08] dark:hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
+                    className="w-full h-11 px-2.5 rounded-[6px] flex items-center gap-3.5 text-left text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
                   >
-                    {/* Dark rounded square box containing the icon (exactly matching user reference image) */}
-                    <div className="w-8 h-8 rounded-[6px] bg-[#000000] dark:bg-[#000000] flex items-center justify-center shrink-0 border border-white/5 shadow-xs">
+                    {/* Rounded square box containing the icon with Light & Dark mode support */}
+                    <div className="w-8 h-8 rounded-[6px] bg-black/[0.06] dark:bg-[#000000] flex items-center justify-center shrink-0 border border-black/[0.08] dark:border-white/5 shadow-xs">
                       {item.logo ? (
                         <img src={item.logo} alt="" className="max-h-5 max-w-5 object-contain" />
                       ) : (
-                        <History className="w-4 h-4 text-white/85 group-hover:text-white transition-colors" />
+                        <History className="w-4 h-4 text-black/70 dark:text-white/85 group-hover:text-black dark:group-hover:text-white transition-colors" />
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1 truncate">
-                      <div className="text-[13px] font-normal text-white/95 truncate">
+                      <div className="text-[13px] font-normal text-[#111827] dark:text-white/95 truncate">
                         {item.title}
                       </div>
                     </div>

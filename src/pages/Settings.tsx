@@ -68,10 +68,10 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
   {
     id: 'accessibility',
     title: 'Accessibility',
-    subtitle: 'Motion animations, search scope, and virtual keyboard',
+    subtitle: 'Page loading, motion animations, search scope, and virtual keyboard',
     icon: Key,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
-    keywords: ['accessibility', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts'],
+    keywords: ['accessibility', 'page loading', 'load pages sequentially', 'sequential', 'performance', 'spinning ring', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts'],
   },
 ];
 
@@ -1030,6 +1030,86 @@ export const Settings: React.FC<SettingsProps> = ({
             {/* SUBPAGE: TRỢ NĂNG (HIỆU ỨNG CHUYỂN ĐỘNG, NỘI DUNG TÌM KIẾM, BÀN PHÍM VÀ TỔ HỢP PHÍM) */}
             {activeCategory === 'accessibility' && (
               <div className="space-y-6">
+                {/* Section 1: Tải trang & Hiệu năng (Page loading & Sequential loading) */}
+                <section 
+                  id="settings-section-page-loading"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                >
+                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
+                    <div className="font-bold text-[#111827] dark:text-white text-[15px] sm:text-[16px] tracking-tight">
+                      Tải trang & Hiệu năng (Page Loading & Performance)
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {/* Option 1: Page loading */}
+                    <div 
+                      id="setting-page-loading"
+                      onClick={() => updateDraft('pageLoading', !draftSettings.pageLoading)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-[#111827] dark:text-white text-sm">
+                          Page loading
+                        </div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1 leading-normal">
+                          Displays a spinning ring for 1 second before the page finishes loading to improve perceived performance.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-page-loading"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.pageLoading}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('pageLoading', !draftSettings.pageLoading);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.pageLoading ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+
+                    <hr className="border-black/10 dark:border-white/10" />
+
+                    {/* Option 2: Load pages sequentially */}
+                    <div 
+                      id="setting-load-pages-sequentially"
+                      onClick={() => updateDraft('loadPagesSequentially', !draftSettings.loadPagesSequentially)}
+                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <div>
+                        <div className="font-bold text-[#111827] dark:text-white text-sm">
+                          Load pages sequentially
+                        </div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1 leading-normal">
+                          Loads page content one section at a time instead of all at once to improve performance.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-load-pages-sequentially"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.loadPagesSequentially}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('loadPagesSequentially', !draftSettings.loadPagesSequentially);
+                        }}
+                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
+                          draftSettings.loadPagesSequentially ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
+                        }`}
+                      >
+                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
                 {/* Section: Chuyển động (Reduce all animation & Sub-options) */}
                 <section 
                   id="settings-section-motion"
