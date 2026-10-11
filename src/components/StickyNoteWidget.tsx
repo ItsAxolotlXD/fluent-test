@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
-  StickyNote as StickyIcon, 
   Palette, 
   X, 
   Minus, 
@@ -9,6 +8,7 @@ import {
   GripHorizontal,
   Check
 } from 'lucide-react';
+import { FluentNotesIcon as StickyIcon } from './FluentIcons';
 import { useNotes, STICKY_COLORS } from '../context/NotesContext';
 
 interface StickyNoteWidgetProps {

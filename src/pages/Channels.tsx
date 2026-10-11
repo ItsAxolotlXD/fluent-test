@@ -3,7 +3,8 @@ import { Channel } from '../types';
 import { ChannelCard } from '../components/ChannelCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
-import { Tag, Search, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite } from 'lucide-react';
+import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite } from 'lucide-react';
+import { FluentSearchIcon } from '../components/FluentIcons';
 
 interface ChannelsProps {
   channels: Channel[];
@@ -90,7 +91,7 @@ export const Channels: React.FC<ChannelsProps> = ({
 
         {/* Search */}
         <div id="channels-search-container" className="relative w-full md:w-72">
-          <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-[#8E8E93]" />
+          <FluentSearchIcon className="absolute left-3.5 top-2.5 w-4 h-4 text-[#8E8E93]" />
           <input
             type="text"
             value={searchQuery}

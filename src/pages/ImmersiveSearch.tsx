@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { 
-  Search,
   X, 
   Flame, 
   Play, 
@@ -11,6 +10,7 @@ import {
   Clock,
   Sparkles
 } from 'lucide-react';
+import { FluentSearchIcon } from '../components/FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { CHANNELS_DATA } from '../data/channels';
 import { NEWS_DATA } from '../data/news';
@@ -241,7 +241,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
             className="relative w-full max-w-md sm:max-w-lg h-[44px] md:h-[48px] flex items-center px-3.5 md:px-4 rounded-[6px] overflow-hidden cursor-text select-none bg-white dark:bg-[#2c2c2c] border border-[#e5e5e5] dark:border-[#3e3e3e] border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff] transition-colors shadow-xs"
           >
             <div className="flex items-center gap-3 w-full">
-              <Search className="w-5 h-5 text-[#9CA3AF] shrink-0" />
+              <FluentSearchIcon className="w-5 h-5 text-[#9CA3AF] shrink-0" />
               <input
                 ref={inputRef}
                 id="immersive-search-input"
@@ -326,7 +326,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               /* Empty state */
               <div className="py-16 text-center space-y-3 bg-[#200d23]/40 rounded-3xl border border-[#3b1540]/60 p-8">
                 <div className="w-14 h-14 rounded-full bg-[#E6005A]/10 text-[#E6005A] flex items-center justify-center mx-auto border border-[#E6005A]/20">
-                  <Search className="w-6 h-6" />
+                  <FluentSearchIcon className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-bold text-white">No matching results found</h3>
                 <p className="text-xs sm:text-sm text-[#8A798C] max-w-md mx-auto">

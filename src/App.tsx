@@ -7,6 +7,7 @@ import { SpotlightModal } from './components/SpotlightModal';
 import { CustomStreamModal } from './components/CustomStreamModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { UnderConstructionModal } from './components/UnderConstructionModal';
+import { UnsavedSettingsModal } from './components/UnsavedSettingsModal';
 import { HelpModal } from './components/HelpModal';
 import { NewsSummaryModal } from './components/NewsSummaryModal';
 import { FindWordsBar } from './components/FindWordsBar';
@@ -34,7 +35,7 @@ import { useSettings } from './hooks/useSettings';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 export default function App() {
-  const { settings, draftSettings, hasChanges } = useSettings();
+  const { settings, draftSettings, hasChanges, applyDraftSettings, discardDraftSettings } = useSettings();
 
   // Tooltip & navigation block for unsaved settings
   const [showUnsavedTooltip, setShowUnsavedTooltip] = useState(false);
@@ -225,22 +226,11 @@ export default function App() {
   // Determine effective sidebar width for page adaptation
   const isEffectiveCollapsed = settings.autoHideSidebar || isSidebarCollapsed;
 
-  // Navigation handler
-  const navigate = (path: string, state?: any) => {
-    // If currently on settings and there are unsaved changes, block switching to any other tab
-    if (currentRoute === '/settings' && hasChanges) {
-      const isStillSettings = path === '/settings' || path.startsWith('/settings?') || path.startsWith('/settings#');
-      if (!isStillSettings) {
-        triggerUnsavedTooltip();
-        return;
-      }
-    }
+  const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
 
-    const baseRoute = path.includes('?') ? path.split('?')[0] : path;
-    const currentBaseRoute = currentRoute.includes('?') ? currentRoute.split('?')[0] : currentRoute;
-    const currentFullLoc = window.location.pathname + window.location.search;
-    const isTabSwitch = baseRoute !== currentBaseRoute || (path.includes('?') && path !== currentFullLoc);
-
+  // Perform actual navigation
+  const executeNavigation = useCallback((path: string, state?: any) => {
     if (currentRoute !== '/search') {
       previousRouteRef.current = currentRoute;
     }
@@ -265,6 +255,44 @@ export default function App() {
 
     // Scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [channels, currentRoute]);
+
+  // Navigation handler
+  const navigate = useCallback((path: string, state?: any) => {
+    // If currently on settings and there are unsaved changes, prompt before leaving
+    if (currentRoute === '/settings' && hasChanges) {
+      const isStillSettings = path === '/settings' || path.startsWith('/settings?') || path.startsWith('/settings#');
+      if (!isStillSettings) {
+        setPendingNavigation({ path, state });
+        setIsUnsavedSettingsModalOpen(true);
+        return;
+      }
+    }
+
+    executeNavigation(path, state);
+  }, [currentRoute, hasChanges, executeNavigation]);
+
+  const handleSaveAndNavigate = () => {
+    applyDraftSettings();
+    setIsUnsavedSettingsModalOpen(false);
+    if (pendingNavigation) {
+      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleDiscardAndNavigate = () => {
+    discardDraftSettings();
+    setIsUnsavedSettingsModalOpen(false);
+    if (pendingNavigation) {
+      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancelNavigate = () => {
+    setIsUnsavedSettingsModalOpen(false);
+    setPendingNavigation(null);
   };
 
   // Open search handler (respects navigation mode and immersive search experiment)
@@ -329,7 +357,8 @@ export default function App() {
     const handlePopState = () => {
       if (currentRoute === '/settings' && hasChanges) {
         window.history.pushState(null, '', '/settings');
-        triggerUnsavedTooltip();
+        setPendingNavigation({ path: window.location.pathname });
+        setIsUnsavedSettingsModalOpen(true);
         return;
       }
       const path = window.location.pathname;
@@ -626,10 +655,10 @@ export default function App() {
           {/* Dynamic Page Content: only animation in (slide up), no animation out of previous page */}
           <motion.div
             key={currentRoute}
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 56 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: 0.28,
+              duration: 0.38,
               ease: [0.16, 1, 0.3, 1],
             }}
             className="w-full h-full"
@@ -677,6 +706,14 @@ export default function App() {
         onClose={() => setIsSpotlightOpen(false)}
         navigate={navigate}
         onSelectChannel={setCurrentChannel}
+      />
+
+      {/* Unsaved Settings Confirmation Modal */}
+      <UnsavedSettingsModal
+        isOpen={isUnsavedSettingsModalOpen}
+        onSave={handleSaveAndNavigate}
+        onDiscard={handleDiscardAndNavigate}
+        onCancel={handleCancelNavigate}
       />
 
       <CustomStreamModal

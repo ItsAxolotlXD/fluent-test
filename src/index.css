@@ -5350,44 +5350,75 @@ html.light-mode:not(.spatial-glass-under-40) .floaty-bar__item:not(.is-active) s
   stroke: #000000 !important;
 }
 
-/* Invert image icons back to black only for inactive tabs or trigger */
+/* Invert image icons back to black only for inactive tabs or trigger in Light Mode */
 html.spatial-glass-dark-content .floaty-bar__item:not(.is-active) img,
 html.spatial-glass-dark-content #btn-floaty-search-trigger img,
 html.spatial-glass-dark-content #floating-search-bar-container img,
-html.light-mode:not(.spatial-glass-under-40) .floaty-bar__item:not(.is-active) img {
+html.light-mode .floaty-bar__item:not(.is-active) img,
+html.light-mode #dock-search img,
+html.light-mode #floating-search-bar-pill img,
+html.light-mode #floating-search-bar-container img {
   filter: brightness(0) !important;
 }
 
-/* SPATIAL GLASS UNDER 40%: All text & icons in tab bar / floaty search are monochrome white */
-html.spatial-glass-under-40 .floaty-bar__item:not(.is-active),
-html.spatial-glass-under-40 .floaty-bar__item:not(.is-active) button,
-html.spatial-glass-under-40 .floaty-bar__item:not(.is-active) span,
-html.spatial-glass-under-40 #floating-search-bar-pill,
-html.spatial-glass-under-40 #floating-search-bar-container,
-html.spatial-glass-under-40 #floating-search-input {
+/* LIGHT MODE: All text & icons in tab bar / floaty search must be BLACK for inactive items */
+html.light-mode .floaty-bar__item:not(.is-active),
+html.light-mode .floaty-bar__item:not(.is-active) button,
+html.light-mode .floaty-bar__item:not(.is-active) span,
+html.light-mode #floating-search-bar-pill,
+html.light-mode #floating-search-bar-container,
+html.light-mode #floating-search-input {
+  color: #000000 !important;
+}
+
+html.light-mode .floaty-bar__item:not(.is-active) svg,
+html.light-mode #floating-search-bar-pill svg,
+html.light-mode #floating-search-bar-container svg {
+  stroke: #000000 !important;
+  color: #000000 !important;
+  fill: #000000 !important;
+}
+
+html.light-mode #floating-search-input {
+  color: #000000 !important;
+  caret-color: #000000 !important;
+}
+
+html.light-mode #floating-search-input::placeholder {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* SPATIAL GLASS UNDER 40% (DARK MODE ONLY): White overlay icons and white text */
+html:not(.light-mode).spatial-glass-under-40 .floaty-bar__item:not(.is-active),
+html:not(.light-mode).spatial-glass-under-40 .floaty-bar__item:not(.is-active) button,
+html:not(.light-mode).spatial-glass-under-40 .floaty-bar__item:not(.is-active) span,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-pill,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-container,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-input {
   color: #FFFFFF !important;
 }
 
-html.spatial-glass-under-40 .floaty-bar__item:not(.is-active) svg,
-html.spatial-glass-under-40 #floating-search-bar-pill svg,
-html.spatial-glass-under-40 #floating-search-bar-container svg {
+html:not(.light-mode).spatial-glass-under-40 .floaty-bar__item:not(.is-active) svg,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-pill svg,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-container svg {
   stroke: #FFFFFF !important;
   color: #FFFFFF !important;
+  fill: #FFFFFF !important;
 }
 
-html.spatial-glass-under-40 .floaty-bar__item:not(.is-active) img,
-html.spatial-glass-under-40 #dock-search img,
-html.spatial-glass-under-40 #floating-search-bar-pill img,
-html.spatial-glass-under-40 #floating-search-bar-container img {
+html:not(.light-mode).spatial-glass-under-40 .floaty-bar__item:not(.is-active) img,
+html:not(.light-mode).spatial-glass-under-40 #dock-search img,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-pill img,
+html:not(.light-mode).spatial-glass-under-40 #floating-search-bar-container img {
   filter: brightness(0) invert(1) !important;
 }
 
-html.spatial-glass-under-40 #floating-search-input {
+html:not(.light-mode).spatial-glass-under-40 #floating-search-input {
   color: #FFFFFF !important;
   caret-color: #FFFFFF !important;
 }
 
-html.spatial-glass-under-40 #floating-search-input::placeholder {
+html:not(.light-mode).spatial-glass-under-40 #floating-search-input::placeholder {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
@@ -5905,4 +5936,16 @@ html.no-shiny-outline .hero-carousel-slide * {
 #waves-desktop-sidebar .border-l,
 #waves-mobile-sidebar .border-l {
   border: none !important;
+}
+
+/* Fluent Settings Icon ease-in/ease-out 360deg spin on hover */
+.settings-spin-icon {
+  transform-origin: center center;
+  transition: transform 0.65s cubic-bezier(0.42, 0, 0.58, 1);
+}
+button:hover .settings-spin-icon,
+.group:hover .settings-spin-icon,
+a:hover .settings-spin-icon,
+.settings-spin-icon:hover {
+  transform: rotate(360deg);
 }

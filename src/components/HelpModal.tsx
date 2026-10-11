@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Keyboard, HelpCircle, Tv, Search, Moon, Bookmark, Share2 } from 'lucide-react';
+import { X, Keyboard, HelpCircle, Tv, Moon, Bookmark, Share2 } from 'lucide-react';
 import { useSettings } from '../hooks/useSettings';
 
 interface HelpModalProps {

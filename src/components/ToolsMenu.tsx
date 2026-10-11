@@ -16,9 +16,9 @@ import {
   Check,
   Volume2,
   Wrench,
-  FileText,
-  StickyNote
+  FileText
 } from 'lucide-react';
+import { FluentNotesIcon, FluentSearchIcon } from './FluentIcons';
 import { Channel, NewsArticle } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -488,7 +488,7 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                   {...revealProps}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <Search className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
+                    <FluentSearchIcon className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
                     <span className="truncate">Find in Article</span>
                   </div>
                   <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-500">⌘F</span>
@@ -678,10 +678,10 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                 {...revealProps}
               >
                 <div className="flex items-center gap-2.5 truncate">
-                  <StickyNote className="w-4 h-4 text-[#4cc2ff] shrink-0" />
+                  <FluentNotesIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
                   <span className="truncate">Notes</span>
                 </div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-[#0078d4]/15 text-[#0078d4] dark:text-[#4cc2ff] font-medium">Ghi chú</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
               </button>
             </div>
 

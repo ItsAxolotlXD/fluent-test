@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Search, 
   X, 
-  Tv, 
-  Megaphone, 
-  Box, 
   Play, 
-  Home, 
-  Heart, 
   Info, 
   Settings as SettingsIcon,
   ChevronLeft,
@@ -20,6 +14,12 @@ import {
   Mic,
   MicOff
 } from 'lucide-react';
+import { 
+  FluentHomeIcon, 
+  FluentLiveTvIcon, 
+  FluentNewsIcon, 
+  FluentSearchIcon 
+} from './FluentIcons';
 import { CHANNELS_DATA } from '../data/channels';
 import { NEWS_DATA } from '../data/news';
 import { Channel } from '../types';
@@ -35,10 +35,9 @@ interface SpotlightModalProps {
 }
 
 const CATEGORY_ITEMS = [
-  { id: 'cat-home', title: 'Home', route: '/', icon: Home, color: '#4cc2ff' },
-  { id: 'cat-livetv', title: 'Live TV', route: '/live-tv', icon: Tv, color: '#4cc2ff' },
-  { id: 'cat-news', title: 'News & Articles', route: '/news', icon: Megaphone, color: '#4cc2ff' },
-  { id: 'cat-fav', title: 'Favorites', route: '/favorites', icon: Heart, color: '#4cc2ff' },
+  { id: 'cat-home', title: 'Home', route: '/', icon: FluentHomeIcon, color: '#4cc2ff' },
+  { id: 'cat-livetv', title: 'Live TV', route: '/live-tv', icon: FluentLiveTvIcon, color: '#4cc2ff' },
+  { id: 'cat-news', title: 'News & Articles', route: '/news', icon: FluentNewsIcon, color: '#4cc2ff' },
   { id: 'cat-settings', title: 'Settings', route: '/settings', icon: SettingsIcon, color: '#4cc2ff' },
 ];
 
@@ -451,7 +450,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     className={`flex items-center gap-2.5 w-full ${isFocused || isListening || query ? 'pr-24' : 'pr-14'}`}
                   >
                     <div className="w-[18px] h-[18px] min-w-[18px] min-h-[18px] max-w-[18px] max-h-[18px] flex items-center justify-center shrink-0">
-                      <Search className="w-4 h-4 text-[#888888]" />
+                      <FluentSearchIcon className="w-4 h-4 text-[#888888] dark:text-[#AAAAAA]" />
                     </div>
                     <input
                       ref={inputRef}

@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { Menu, Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { 
+  FluentHomeIcon, 
+  FluentLiveTvIcon, 
+  FluentNewsIcon, 
+  FluentSearchIcon, 
+  FLUENT_ICON_URLS 
+} from './FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { Channel, NewsArticle } from '../types';
 
 const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
-const HOME_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/e/ee/Icons8-home-64.png/revision/latest?cb=20260925115253';
-const TV_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/d/df/Cool_tv.png/revision/latest?cb=20260927105318';
-const NEWS_ICON_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/f/f2/Icons8-megaphone-64.png/revision/latest?cb=20260925115252';
+const HOME_ICON_SRC = FLUENT_ICON_URLS.home;
+const TV_ICON_SRC = FLUENT_ICON_URLS.liveTv;
+const NEWS_ICON_SRC = FLUENT_ICON_URLS.news;
 const SETTINGS_ICON_SRC = 'https://static.wikia.nocookie.net/ftv/images/9/97/Settungs.png/revision/latest?cb=20260411085024&path-prefix=vi';
 
 interface TopBarProps {
@@ -105,19 +112,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               }`}
               title="Home"
             >
-              <img
-                src={HOME_ICON_SRC}
-                alt="Home"
-                referrerPolicy="no-referrer"
-                className={`w-4 h-4 object-contain shrink-0 transition-opacity ${
-                  currentRoute === '/' || currentRoute === '/home'
-                    ? 'brightness-0 dark:brightness-0 dark:invert opacity-100'
-                    : 'brightness-0 dark:brightness-0 dark:invert opacity-70 group-hover:opacity-100'
-                }`}
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
+              <FluentHomeIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
               <span>Home</span>
 
               {(currentRoute === '/' || currentRoute === '/home') && (
@@ -125,39 +120,27 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </button>
 
-            {/* Live TV */}
+            {/* Watch */}
             <button
               id="btn-topbar-nav-tv"
               type="button"
               onClick={() => navigate('/live-tv')}
               className={`group relative flex items-center gap-2 px-3 h-8.5 rounded-[4px] text-xs sm:text-[13px] font-normal transition-colors cursor-default whitespace-nowrap outline-none select-none ${
-                currentRoute === '/live-tv' || currentRoute === '/channels'
+                currentRoute === '/live-tv'
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Live TV"
+              title="Watch"
             >
-              <img
-                src={TV_ICON_SRC}
-                alt="Live TV"
-                referrerPolicy="no-referrer"
-                className={`w-4 h-4 object-contain shrink-0 transition-opacity ${
-                  currentRoute === '/live-tv' || currentRoute === '/channels'
-                    ? 'brightness-0 dark:brightness-0 dark:invert opacity-100'
-                    : 'brightness-0 dark:brightness-0 dark:invert opacity-70 group-hover:opacity-100'
-                }`}
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
-              <span>Live TV</span>
+              <FluentLiveTvIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
+              <span>Watch</span>
 
-              {(currentRoute === '/live-tv' || currentRoute === '/channels') && (
+              {currentRoute === '/live-tv' && (
                 <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
               )}
             </button>
 
-            {/* News */}
+            {/* Articles */}
             <button
               id="btn-topbar-nav-news"
               type="button"
@@ -167,22 +150,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="News"
+              title="Articles"
             >
-              <img
-                src={NEWS_ICON_SRC}
-                alt="News"
-                referrerPolicy="no-referrer"
-                className={`w-4 h-4 object-contain shrink-0 transition-opacity ${
-                  currentRoute === '/news' || currentRoute.startsWith('/article')
-                    ? 'brightness-0 dark:brightness-0 dark:invert opacity-100'
-                    : 'brightness-0 dark:brightness-0 dark:invert opacity-70 group-hover:opacity-100'
-                }`}
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
-              <span>News</span>
+              <FluentNewsIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
+              <span>Articles</span>
 
               {(currentRoute === '/news' || currentRoute.startsWith('/article')) && (
                 <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
@@ -211,7 +182,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               title="Search"
               className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
             >
-              <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+              <FluentSearchIcon className="w-3.5 h-3.5" />
             </button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, X } from 'lucide-react';
+import { FluentSearchIcon } from './FluentIcons';
 
 interface FindWordsBarProps {
   isOpen: boolean;
@@ -135,7 +136,7 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
           className="fixed top-20 right-6 sm:right-10 z-50 flex items-center gap-2 p-2 rounded-2xl bg-[#1E1D22] border border-[#3E3E48] shadow-2xl text-white"
         >
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-[#141318] border border-[#2A2A32] border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff] transition-colors">
-            <Search className="w-4 h-4 text-[#8E8E93] shrink-0" />
+            <FluentSearchIcon className="w-4 h-4 text-[#8E8E93] shrink-0" />
             <input
               ref={inputRef}
               type="text"

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
-  StickyNote, 
   Bold, 
   Italic, 
   Underline, 
@@ -28,6 +27,7 @@ import {
   FileText,
   Type
 } from 'lucide-react';
+import { FluentNotesIcon } from '../components/FluentIcons';
 import { exportDocx, exportWritePdf } from '../utils/officeExport';
 import { useNotes, STICKY_COLORS } from '../context/NotesContext';
 
@@ -543,7 +543,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
           
           {/* App Branding Badge */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0078d4]/15 border border-[#4cc2ff]/30 text-white">
-            <StickyNote className="w-4 h-4 text-[#4cc2ff]" />
+            <FluentNotesIcon className="w-4 h-4 text-[#4cc2ff]" />
             <span className="font-semibold text-sm">V-One Notes</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/20 text-[#4cc2ff] font-medium hidden sm:inline">
               Ghi chú
@@ -572,7 +572,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
             }`}
             title="Hiển thị ghi chú dưới dạng Sticky Note nổi trên màn hình"
           >
-            <StickyNote className="w-3.5 h-3.5" style={{ color: currentStickyColor.accent }} />
+            <FluentNotesIcon className="w-3.5 h-3.5" style={{ color: currentStickyColor.accent }} />
             <span className="hidden xs:inline">Show as stickies</span>
             <span className="xs:hidden">Stickies</span>
             {isStickyVisible && (

@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { 
-  Home,
-  Tv,
-  Megaphone,
-  Search,
   Settings as SettingsIcon,
   LayoutGrid
 } from 'lucide-react';
+import { 
+  FluentHomeIcon, 
+  FluentLiveTvIcon, 
+  FluentNewsIcon, 
+  FluentSearchIcon, 
+  FluentSettingsIcon,
+  FLUENT_ICON_URLS 
+} from './FluentIcons';
 import { useSettings } from '../hooks/useSettings';
 import { useNativeKeyboard } from '../context/NativeKeyboardContext';
 import { ToolsMenu } from './ToolsMenu';
@@ -34,12 +38,8 @@ interface BottomDockProps {
   onOpenOfficeTool?: (tool: 'write' | 'table' | 'present') => void;
 }
 
-const HOME_ICON = 'https://static.wikia.nocookie.net/ep-deo/images/e/ee/Icons8-home-64.png/revision/latest?cb=20260925115253';
-const WATCH_ICON = 'https://static.wikia.nocookie.net/ep-deo/images/d/df/Cool_tv.png/revision/latest?cb=20260927105318';
-const NEWS_ICON = 'https://static.wikia.nocookie.net/ep-deo/images/f/f2/Icons8-megaphone-64.png/revision/latest?cb=20260925115252';
 const SETTINGS_ICON = 'https://static.wikia.nocookie.net/ftv/images/9/97/Settungs.png/revision/latest?cb=20260411085024&path-prefix=vi';
 const MORE_ICON = 'https://static.wikia.nocookie.net/ep-deo/images/7/78/Icons8-apps-90.png/revision/latest?cb=20260925115254';
-const SF_SEARCH_ICON_URL = '/icons/sf-magnifyingglass.png';
 
 interface TabItem {
   id: string;
@@ -51,11 +51,11 @@ interface TabItem {
 }
 
 const DOCK_TABS: TabItem[] = [
-  { id: 'dock-home', label: 'Home', route: '/', image: HOME_ICON, icon: Home },
-  { id: 'dock-tv', label: 'Watch', route: '/live-tv', image: WATCH_ICON, icon: Tv },
-  { id: 'dock-news', label: 'Articles', route: '/news', image: NEWS_ICON, icon: Megaphone },
-  { id: 'dock-settings', label: 'Settings', route: '/settings', image: SETTINGS_ICON, icon: SettingsIcon },
-  { id: 'dock-search', label: 'Search', isAction: true, image: SF_SEARCH_ICON_URL, icon: Search },
+  { id: 'dock-home', label: 'Home', route: '/', image: FLUENT_ICON_URLS.home, icon: FluentHomeIcon },
+  { id: 'dock-tv', label: 'Watch', route: '/live-tv', image: FLUENT_ICON_URLS.liveTv, icon: FluentLiveTvIcon },
+  { id: 'dock-news', label: 'Articles', route: '/news', image: FLUENT_ICON_URLS.news, icon: FluentNewsIcon },
+  { id: 'dock-settings', label: 'Settings', route: '/settings', image: FLUENT_ICON_URLS.settings, icon: FluentSettingsIcon },
+  { id: 'dock-search', label: 'Search', isAction: true, image: FLUENT_ICON_URLS.search, icon: FluentSearchIcon },
   { id: 'dock-more', label: 'More', isAction: true, image: MORE_ICON, icon: LayoutGrid },
 ];
 
@@ -99,8 +99,8 @@ export const BottomDock: React.FC<BottomDockProps> = ({
   const isLightMode = settings.theme === 'light';
   const isDarkContent = isSpatialGlassActive && currentOpacity > 40;
   const isUnder40 = isSpatialGlassActive && currentOpacity < 40;
-  // If isUnder40 is true, force light content (white icons & text) even in light mode
-  const useDarkContent = !isUnder40 && (isDarkContent || isLightMode);
+  // In light mode, inactive content is always black. In dark mode, it's white.
+  const useDarkContent = isLightMode;
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [gesturingTabId, setGesturingTabId] = useState<string | null>(null);
@@ -274,12 +274,14 @@ export const BottomDock: React.FC<BottomDockProps> = ({
         ? 'w-[24px] h-[24px] sm:w-[26.5px] sm:h-[26.5px]'
         : 'w-[28px] h-[28px] sm:w-[31px] sm:h-[31px]';
 
+    const spinClass = item.id === 'dock-settings' ? 'settings-spin-icon' : '';
+
     if (active) {
-      const activeColor = (!isUnder40 && isLightMode) ? '#000000' : '#FFFFFF';
+      const activeColor = '#FFFFFF';
       if (hasImage) {
         return (
           <div
-            className={`${iconSizeClasses} shrink-0 transition-transform duration-200`}
+            className={`${iconSizeClasses} ${spinClass} shrink-0 transition-transform duration-200`}
             style={{
               maskImage: `url(${item.image})`,
               WebkitMaskImage: `url(${item.image})`,
@@ -296,17 +298,14 @@ export const BottomDock: React.FC<BottomDockProps> = ({
       }
       return (
         <Icon
-          className={`${iconSizeClasses} shrink-0 ${
-            (!isUnder40 && isLightMode) ? 'text-black stroke-black' : 'text-white stroke-white'
-          } transition-all duration-200`}
+          className={`${iconSizeClasses} ${spinClass} shrink-0 text-white fill-white stroke-white transition-all duration-200`}
         />
       );
     }
 
     // Inactive tab icon:
-    // If spatial glass opacity < 40%, icons must be monochrome white.
-    // Otherwise if useDarkContent is true (opacity > 40% or light mode), it's black.
-    const isBlackIcon = useDarkContent;
+    // In light mode, inactive icons must be black. In dark mode, white.
+    const isBlackIcon = isLightMode;
 
     if (hasImage) {
       return (
@@ -315,7 +314,7 @@ export const BottomDock: React.FC<BottomDockProps> = ({
           alt={item.label}
           referrerPolicy="no-referrer"
           onError={() => setImageErrors((prev) => ({ ...prev, [item.id]: true }))}
-          className={`${iconSizeClasses} object-contain shrink-0 transition-all duration-150 ${
+          className={`${iconSizeClasses} ${spinClass} object-contain shrink-0 transition-all duration-150 ${
             isBlackIcon
               ? 'brightness-0'
               : 'filter brightness-0 invert'
@@ -326,10 +325,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
 
     return (
       <Icon
-        className={`${iconSizeClasses} shrink-0 transition-all duration-150 ${
+        className={`${iconSizeClasses} ${spinClass} shrink-0 transition-all duration-150 ${
           isBlackIcon
-            ? 'text-black stroke-black'
-            : 'text-white stroke-white'
+            ? 'text-black fill-black stroke-black'
+            : 'text-white fill-white stroke-white'
         } ${isSelectedOrHovered ? 'opacity-100' : 'opacity-75'}`}
       />
     );
@@ -399,10 +398,10 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                         onClick={() => handleTabClick(item)}
                         className={`floaty-bar__item relative flex-1 h-[48px] sm:h-[52px] min-w-0 px-0.5 sm:px-1 rounded-full flex flex-col items-center justify-center cursor-default transition-all duration-150 outline-none select-none shrink-0 ${
                           active
-                            ? (useDarkContent ? 'is-active text-black z-20' : 'is-active text-white z-20')
+                            ? 'is-active text-white z-20'
                             : isSelectedOrHovered
-                              ? (useDarkContent ? 'text-black z-10' : 'text-white z-10')
-                              : (useDarkContent ? 'text-black/75 hover:text-black hover:bg-black/5 z-10' : 'text-white/75 hover:text-white hover:bg-white/10 z-10')
+                              ? (isLightMode ? 'text-black z-10' : 'text-white z-10')
+                              : (isLightMode ? 'text-black/80 hover:text-black hover:bg-black/5 z-10' : 'text-white/80 hover:text-white hover:bg-white/10 z-10')
                         }`}
                       >
                         {active && (
@@ -433,12 +432,12 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                             )}
                           </div>
                           <span
-                            className={`text-[8px] sm:text-[8.5px] font-semibold leading-none tracking-tight transition-colors duration-150 select-none text-center whitespace-nowrap block mt-0.5 -translate-y-[1.5px] ${
+                            className={`text-[8px] sm:text-[8.5px] leading-none tracking-tight transition-colors duration-150 select-none text-center whitespace-nowrap block mt-0.5 -translate-y-[1.5px] ${
                               active
-                                ? (useDarkContent ? 'font-bold text-black' : 'font-bold text-white')
-                                : useDarkContent
-                                  ? 'text-black/85 group-hover:text-black'
-                                  : 'text-white/85 group-hover:text-white'
+                                ? 'font-bold text-white'
+                                : isLightMode
+                                  ? 'font-medium text-black/85 group-hover:text-black'
+                                  : 'font-medium text-white/85 group-hover:text-white'
                             }`}
                           >
                             {item.label}

@@ -1,12 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Home,
-  Search,
-  Tv,
-  LayoutGrid,
-  Megaphone,
-  Heart,
   Sliders,
   FlaskConical,
   Menu,
@@ -20,19 +14,26 @@ import {
   PlusCircle,
   UploadCloud,
   DownloadCloud,
-  Sparkles,
-  Volume2,
-  RefreshCw,
-  FileText,
-  StickyNote,
-  User,
-  UserX
+  RefreshCw
 } from 'lucide-react';
+import { 
+  FluentHomeIcon, 
+  FluentWatchIcon,
+  FluentLiveTvIcon, 
+  FluentArticlesIcon,
+  FluentNewsIcon, 
+  FluentNotesIcon, 
+  FluentUserIcon, 
+  FluentPersonDeleteIcon, 
+  FluentSearchIcon,
+  FluentSettingsIcon
+} from './FluentIcons';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
 import { CHANNELS_DATA } from '../data/channels';
 import { Channel, NewsArticle } from '../types';
 import { DiscordWelcomeModal } from './DiscordWelcomeModal';
+import { UnderConstructionModal } from './UnderConstructionModal';
 import { parseM3UPlaylist, downloadPlaylistFile } from '../utils/m3uParser';
 
 const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
@@ -207,6 +208,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isToolsFlyoutOpen, setIsToolsFlyoutOpen] = useState(false);
   const [isSignInFlyoutOpen, setIsSignInFlyoutOpen] = useState(false);
+  const [isSignInUnderConstructionOpen, setIsSignInUnderConstructionOpen] = useState(false);
   const [signedInAccount, setSignedInAccount] = useState<string | null>(null);
   const [signInToast, setSignInToast] = useState<string | null>(null);
 
@@ -225,13 +227,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (provider === 'Sign out') {
       setSignedInAccount(null);
       setSignInToast('Signed out of account');
-    } else if (provider === 'Guest') {
-      setSignedInAccount(null);
-      setSignInToast('Continuing without account');
-    } else {
-      setSignedInAccount(`${provider} Account`);
-      setSignInToast(`Signed in with ${provider}`);
+      return;
     }
+    // Any sign in attempt opens the under construction dialog
+    setIsSignInUnderConstructionOpen(true);
   };
 
   useEffect(() => {
@@ -345,33 +344,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const list = [
       {
         id: 'live-tv',
-        label: 'Live TV',
-        secondary: 'Taskbar / Live TV',
+        label: 'Watch',
+        secondary: 'Watch',
         route: '/live-tv',
-        icon: Tv,
+        icon: FluentWatchIcon,
         hasSubmenu: true,
       },
       {
-        id: 'channels',
-        label: 'Channels',
-        secondary: 'Channels',
-        route: '/channels',
-        icon: LayoutGrid,
-      },
-      {
         id: 'news',
-        label: 'News',
-        secondary: 'News',
+        label: 'Articles',
+        secondary: 'Articles',
         route: '/news',
-        icon: Megaphone,
-      },
-      {
-        id: 'favorites',
-        label: 'Favorites',
-        secondary: 'Favorites',
-        route: '/favorites',
-        icon: Heart,
-        hasFavoritesSubmenu: true,
+        icon: FluentArticlesIcon,
       },
     ];
 
@@ -392,8 +376,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (route === '/' && (currentRoute === '/' || currentRoute === '/home')) return true;
     if (route === '/news' && (currentRoute === '/news' || currentRoute.startsWith('/article'))) return true;
     if (route === '/live-tv' && (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))) return true;
-    if (route === '/channels' && (currentRoute === '/channels' || currentRoute.startsWith('/channels'))) return true;
-    if (route === '/favorites' && (currentRoute === '/favorites' || currentRoute.startsWith('/favorites'))) return true;
     if (route === '/settings' && (currentRoute === '/settings' || currentRoute.startsWith('/settings'))) return true;
     if (route === '/about' && (currentRoute === '/about' || currentRoute.startsWith('/about'))) return true;
     if (route !== '/' && currentRoute.startsWith(route)) return true;
@@ -408,11 +390,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: isCollapsedMode ? 0 : 4 }}
         transition={{ duration: 0.14, ease: 'easeOut' }}
-        className={`tools-flyout-container absolute z-50 w-[230px] bg-[#202020] border border-[#3e3e3e] rounded-[6px] shadow-2xl p-1.5 space-y-0.5 text-white select-none ${
+        className={`tools-flyout-container absolute z-50 w-[230px] bg-white dark:bg-[#202020] border border-black/10 dark:border-[#3e3e3e] rounded-[6px] shadow-2xl p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode ? 'left-[52px] bottom-14' : 'left-3 right-3 sm:left-[265px] sm:right-auto bottom-12'
         }`}
         style={{
-          boxShadow: '0 16px 40px rgba(0,0,0,0.65), 0 2px 8px rgba(0,0,0,0.4)',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.1)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -423,10 +405,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             onOpenHelp();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <Info className="w-4 h-4 text-white stroke-[1.75]" />
+            <Info className="w-4 h-4 text-[#111827] dark:text-white stroke-[1.75]" />
             <span>About</span>
           </div>
           <ChevronRight className="w-4 h-4 text-neutral-400 stroke-[1.5]" />
@@ -439,10 +421,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             onOpenDiscord();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <MessageSquarePlus className="w-4 h-4 text-white stroke-[1.75]" />
+            <MessageSquarePlus className="w-4 h-4 text-[#111827] dark:text-white stroke-[1.75]" />
             <span>Send feedback</span>
           </div>
         </button>
@@ -454,15 +436,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             onOpenNotifications();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <MessageSquare className="w-4 h-4 text-white stroke-[1.75]" />
+            <MessageSquare className="w-4 h-4 text-[#111827] dark:text-white stroke-[1.75]" />
             <span>Notification settings</span>
           </div>
         </button>
 
-        <div className="my-1 mx-1 h-[1px] bg-white/10" />
+        <div className="my-1 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
 
         {/* 4. Add stream */}
         <button
@@ -471,10 +453,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             onOpenAddStream();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <PlusCircle className="w-4 h-4 text-[#4cc2ff] stroke-[1.75]" />
+            <PlusCircle className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff] stroke-[1.75]" />
             <span>Add stream</span>
           </div>
         </button>
@@ -486,10 +468,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             fileInputRef.current?.click();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <UploadCloud className="w-4 h-4 text-neutral-300 stroke-[1.75]" />
+            <UploadCloud className="w-4 h-4 text-neutral-500 dark:text-neutral-300 stroke-[1.75]" />
             <span>Import playlist</span>
           </div>
         </button>
@@ -501,17 +483,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             handleExportM3U8();
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <DownloadCloud className="w-4 h-4 text-neutral-300 stroke-[1.75]" />
+            <DownloadCloud className="w-4 h-4 text-neutral-500 dark:text-neutral-300 stroke-[1.75]" />
             <span>Export playlist</span>
           </div>
         </button>
 
         {/* Notes Tool Section */}
-        <div className="my-1 mx-1 h-[1px] bg-white/10" />
-        <div className="px-3 py-1 text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
+        <div className="my-1 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
+        <div className="px-3 py-1 text-[10px] font-semibold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
           Ứng dụng
         </div>
 
@@ -523,28 +505,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             setIsToolsFlyoutOpen(false);
             handleNavClick('/notes');
           }}
-          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <StickyNote className="w-4 h-4 text-[#4cc2ff] stroke-[1.75]" />
+            <FluentNotesIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
             <span>Notes</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0078d4]/30 text-[#4cc2ff] font-medium">Ghi chú</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
         </button>
 
         {/* Article contextual tools */}
         {(currentRoute === '/news' || currentRoute.startsWith('/article')) && (
           <>
-            <div className="my-1 mx-1 h-[1px] bg-white/10" />
+            <div className="my-1 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
             <button
               type="button"
               onClick={() => {
                 setIsToolsFlyoutOpen(false);
                 onOpenFindWords();
               }}
-              className="w-full h-[36px] px-3 rounded-[4px] flex items-center gap-2.5 text-[13px] text-white hover:bg-white/10 active:bg-white/15 transition-colors cursor-pointer text-left"
+              className="w-full h-[36px] px-3 rounded-[4px] flex items-center gap-2.5 text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
             >
-              <Search className="w-4 h-4 text-neutral-300 stroke-[1.75]" />
+              <FluentSearchIcon className="w-4 h-4 text-neutral-500 dark:text-neutral-300 shrink-0" />
               <span>Find words</span>
             </button>
           </>
@@ -562,7 +544,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className={`signin-flyout-container absolute z-50 w-[264px] bg-[#242424]/95 dark:bg-[#1f1f1f]/95 backdrop-blur-2xl border border-white/10 rounded-[10px] shadow-[0_12px_40px_rgba(0,0,0,0.65),0_2px_8px_rgba(0,0,0,0.4)] p-1.5 space-y-0.5 text-white select-none ${
+        className={`signin-flyout-container absolute z-50 w-[264px] bg-white/95 dark:bg-[#1f1f1f]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_12px_40px_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.65),0_2px_8px_rgba(0,0,0,0.4)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
               ? 'right-[54px] bottom-0'
@@ -570,27 +552,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             : 'bottom-full mb-2 left-0 right-0 sm:left-0 sm:right-auto sm:w-[264px]'
         }`}
         style={{
-          boxShadow: '0 16px 40px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.4)',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.1)',
           willChange: 'transform, opacity',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Signed in status header */}
         {signedInAccount && (
-          <div className="px-3 py-2 mb-1 rounded-[6px] bg-white/[0.04] border border-white/[0.08] flex items-center justify-between">
+          <div className="px-3 py-2 mb-1 rounded-[6px] bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-6 h-6 rounded-full bg-[#4cc2ff]/20 text-[#4cc2ff] flex items-center justify-center text-xs font-bold shrink-0 border border-[#4cc2ff]/30">
+              <div className="w-6 h-6 rounded-full bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] flex items-center justify-center text-xs font-bold shrink-0 border border-[#0078d4]/30 dark:border-[#4cc2ff]/30">
                 {signedInAccount[0]}
               </div>
               <div className="min-w-0 truncate">
-                <div className="text-[12px] font-medium text-white truncate">{signedInAccount}</div>
-                <div className="text-[10px] text-emerald-400 font-medium">Active account</div>
+                <div className="text-[12px] font-medium text-[#111827] dark:text-white truncate">{signedInAccount}</div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Active account</div>
               </div>
             </div>
             <button
               type="button"
               onClick={() => handleSignInAction('Sign out')}
-              className="text-[11px] text-neutral-400 hover:text-rose-400 hover:underline px-1.5 py-0.5 rounded cursor-pointer transition-colors"
+              className="text-[11px] text-neutral-500 hover:text-rose-500 hover:underline px-1.5 py-0.5 rounded cursor-pointer transition-colors"
             >
               Sign out
             </button>
@@ -601,7 +583,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           onClick={() => handleSignInAction('V-One')}
-          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
+          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[#0078d4] to-[#4cc2ff] flex items-center justify-center shrink-0 border border-[#4cc2ff]/40 shadow-xs">
             <span className="text-white font-black text-xs leading-none">V</span>
@@ -613,10 +595,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           onClick={() => handleSignInAction('Apple')}
-          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
+          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 fill-current text-[#111827] dark:text-white" viewBox="0 0 24 24">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.58.67-1.09 1.74-.96 2.77 1 .08 2.05-.52 2.67-1.27z"/>
             </svg>
           </div>
@@ -627,7 +609,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           onClick={() => handleSignInAction('Google')}
-          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
+          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -644,7 +626,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           onClick={() => handleSignInAction('Microsoft')}
-          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
+          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -658,16 +640,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         {/* Divider */}
-        <div className="my-1.5 mx-1 h-[1px] bg-white/[0.08]" />
+        <div className="my-1.5 mx-1 h-[1px] bg-black/[0.08] dark:bg-white/[0.08]" />
 
         {/* 5. Continue without account */}
         <button
           type="button"
           onClick={() => handleSignInAction('Guest')}
-          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-neutral-300 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors cursor-pointer text-left"
+          className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 flex items-center justify-center shrink-0">
-            <UserX className="w-4 h-4 text-neutral-400 stroke-[1.75]" />
+            <FluentPersonDeleteIcon className="w-4 h-4 text-neutral-500 dark:text-neutral-400 shrink-0" />
           </div>
           <span className="font-normal truncate">Continue without account</span>
         </button>
@@ -699,9 +681,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'btn-mobile-sidebar-toggle' : 'btn-desktop-sidebar-toggle'}
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
             title={isMobile ? 'Close menu' : 'Collapse menu'}
-            className="w-9 h-9 rounded-[6px] flex items-center justify-center text-white/90 hover:text-white hover:bg-white/10 active:bg-white/15 cursor-pointer transition-colors"
+            className="w-9 h-9 rounded-[6px] flex items-center justify-center text-[#111827] dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors"
           >
-            {isMobile ? <X className="w-4 h-4 stroke-[1.75]" /> : <Menu className="w-4 h-4 stroke-[1.75]" />}
+            {isMobile ? <X className="w-5 h-5 stroke-[1.75]" /> : <Menu className="w-5 h-5 stroke-[1.75]" />}
           </button>
 
           {/* Logo placed right next to hamburger menu icon */}
@@ -729,7 +711,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <MorphingVerticalIndicator
             containerRef={containerRef}
             currentRoute={currentRoute}
-            dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${isFavoritesExpanded}-${currentRoute}`}
+            dependencyKey={`${navItems.length}-${isLiveTvExpanded}-${currentRoute}`}
           />
 
           {/* 1. Home Item */}
@@ -742,18 +724,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Home"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/'
-                  ? 'bg-white/[0.08] dark:bg-white/[0.08] text-white font-medium shadow-xs'
-                  : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
+                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
               }`}
             >
-              <Home className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+              <FluentHomeIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
               <span className="truncate text-[13.5px]">Home</span>
             </button>
           </div>
 
           {/* 2. Category Heading: "Navigation & Content" */}
           <div className="px-1.5 pt-2 pb-1 shrink-0">
-            <h2 className="text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none">
+            <h2 className="text-[#6b7280] dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none">
               Navigation & Content
             </h2>
           </div>
@@ -773,44 +755,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title={item.label}
                   className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                     active
-                      ? 'bg-white/[0.08] dark:bg-white/[0.08] text-white font-medium shadow-xs'
-                      : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
+                      : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-3.5 truncate">
-                    <Icon className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+                    <Icon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
                     <span className="truncate text-[13.5px]">{item.label}</span>
                   </div>
 
-                  {/* Submenu toggles for Live TV or Favorites */}
+                  {/* Submenu toggles for Live TV */}
                   {item.hasSubmenu && (
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsLiveTvExpanded(!isLiveTvExpanded);
                       }}
-                      className="p-1 hover:bg-white/10 rounded-[4px] cursor-pointer"
+                      className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-[4px] cursor-pointer"
                     >
                       {isLiveTvExpanded ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
+                        <ChevronDown className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
                       ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-                      )}
-                    </div>
-                  )}
-
-                  {item.hasFavoritesSubmenu && favoriteChannels.length > 0 && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsFavoritesExpanded(!isFavoritesExpanded);
-                      }}
-                      className="p-1 hover:bg-white/10 rounded-[4px] cursor-pointer"
-                    >
-                      {isFavoritesExpanded ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
-                      ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
+                        <ChevronRight className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
                       )}
                     </div>
                   )}
@@ -827,10 +793,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           handleNavClick(`/live-tv?channel=${ch.slug}`);
                           if (onSelectChannel) onSelectChannel(ch);
                         }}
-                        className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-[#a1a1aa] hover:text-white hover:bg-white/10 cursor-pointer"
+                        className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-[#6b7280] dark:text-[#a1a1aa] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                       >
                         <span className="truncate">{`${String(ch.channelNumber || 1).padStart(3, '0')} | ${ch.shortName || ch.name}`}</span>
-                        <span className="px-1.5 py-0.2 text-[9px] bg-[#4cc2ff] text-white rounded-[2px] font-bold">
+                        <span className="px-1.5 py-0.2 text-[9px] bg-[#0078d4] dark:bg-[#4cc2ff] text-white rounded-[2px] font-bold">
                           Play
                         </span>
                       </button>
@@ -838,32 +804,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <button
                       type="button"
                       onClick={() => handleNavClick('/live-tv')}
-                      className="w-full text-left px-2.5 py-1 text-[11px] text-[#4cc2ff] hover:underline font-normal cursor-pointer rounded-[4px]"
+                      className="w-full text-left px-2.5 py-1 text-[11px] text-[#0078d4] dark:text-[#4cc2ff] hover:underline font-normal cursor-pointer rounded-[4px]"
                     >
                       + View all channels
                     </button>
-                  </div>
-                )}
-
-                {/* Favorites Quick Submenu */}
-                {item.hasFavoritesSubmenu && isFavoritesExpanded && (
-                  <div className="ml-4 pl-2.5 space-y-0.5 py-1">
-                    {favoriteChannels.map((ch) => (
-                      <button
-                        key={ch.id}
-                        type="button"
-                        onClick={() => {
-                          handleNavClick(`/live-tv?channel=${ch.slug}`);
-                          if (onSelectChannel) onSelectChannel(ch);
-                        }}
-                        className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-[#a1a1aa] hover:text-white hover:bg-white/10 cursor-pointer"
-                      >
-                        <span className="truncate">{`${String(ch.channelNumber || 1).padStart(3, '0')} | ${ch.shortName || ch.name}`}</span>
-                        <span className="px-1.5 py-0.2 text-[9px] bg-[#4cc2ff] text-white rounded-[2px] font-bold">
-                          Play
-                        </span>
-                      </button>
-                    ))}
                   </div>
                 )}
               </div>
@@ -872,9 +816,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Office Apps Section on Sidebar */}
           <div className="px-1.5 pt-3 pb-1 shrink-0">
-            <h2 className="text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none flex items-center justify-between">
+            <h2 className="text-[#6b7280] dark:text-[#a1a1aa] text-[11px] font-semibold tracking-wider uppercase select-none flex items-center justify-between">
               <span>Office Tools</span>
-              <span className="text-[9px] text-[#4cc2ff] font-semibold">V-ONE</span>
+              <span className="text-[9px] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">V-ONE</span>
             </h2>
           </div>
 
@@ -888,15 +832,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Notes (Ghi chú)"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/notes'
-                  ? 'bg-white/[0.08] dark:bg-white/[0.08] text-white font-medium shadow-xs'
-                  : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
+                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <StickyNote className="w-4 h-4 stroke-[1.5] shrink-0 text-[#4cc2ff]" />
+                <FluentNotesIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
                 <span className="truncate text-[13.5px]">Notes</span>
               </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0078d4]/30 text-[#4cc2ff] font-medium">Ghi chú</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
             </button>
           </div>
 
@@ -909,15 +853,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Tools"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer text-left rounded-[6px] transition-colors ${
                 isToolsFlyoutOpen
-                  ? 'bg-white/[0.08] text-white font-medium shadow-xs'
-                  : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
+                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <Wrench className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+                <Wrench className="w-5 h-5 stroke-[1.5] shrink-0 text-[#111827] dark:text-white" />
                 <span className="truncate text-[13.5px]">Tools</span>
               </div>
-              <ChevronRight className={`w-3.5 h-3.5 text-neutral-400 transition-transform ${isToolsFlyoutOpen ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 transition-transform ${isToolsFlyoutOpen ? 'rotate-90' : ''}`} />
             </button>
 
             {/* Render Flyout Menu */}
@@ -932,9 +876,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'mobile-nav-discord' : 'sidebar-nav-discord'}
             onClick={() => setIsDiscordModalOpen(true)}
             title="Discord Community"
-            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#cccccc] hover:bg-white/[0.05] hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
+            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
           >
-            <svg className="w-4 h-4 fill-current shrink-0 text-white" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 fill-current shrink-0 text-[#111827] dark:text-white" viewBox="0 0 24 24">
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
             </svg>
             <span className="truncate text-[13.5px]">Discord Community</span>
@@ -946,9 +890,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'mobile-nav-update' : 'sidebar-nav-update'}
             onClick={onOpenUpdate}
             title="Update V-One"
-            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#cccccc] hover:bg-white/[0.05] hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
+            className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
           >
-            <RefreshCw className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+            <RefreshCw className="w-5 h-5 stroke-[1.5] shrink-0 text-[#111827] dark:text-white" />
             <span className="truncate text-[13.5px]">Update V-One</span>
           </button>
         </div>
@@ -964,17 +908,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Sign in"
               className={`sidebar-nav-item signin-toggle-btn w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 isSignInFlyoutOpen
-                  ? 'bg-white/[0.12] text-white font-medium shadow-xs'
-                  : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                  ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white font-medium shadow-xs'
+                  : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <User className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+                <FluentUserIcon className="w-5 h-5 shrink-0 text-[#111827] dark:text-white" />
                 <span className="truncate text-[13.5px]">
                   {signedInAccount ? signedInAccount : 'Sign in'}
                 </span>
               </div>
-              <ChevronRight className={`w-3.5 h-3.5 text-neutral-400 transition-transform ${isSignInFlyoutOpen ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 transition-transform ${isSignInFlyoutOpen ? 'rotate-90' : ''}`} />
             </button>
 
             {/* Render Flyout Menu for Sign in */}
@@ -992,11 +936,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             title="Settings"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               currentRoute === '/settings'
-                ? 'bg-white/[0.08] dark:bg-white/[0.08] text-white font-medium shadow-xs'
-                : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white font-medium shadow-xs'
+                : 'text-[#374151] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
             }`}
           >
-            <Sliders className="w-4 h-4 stroke-[1.5] shrink-0 text-white" />
+            <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-[#111827] dark:text-white" />
             <span className="truncate text-[13.5px]">Settings</span>
           </button>
         </div>
@@ -1012,7 +956,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`hidden md:flex flex-col h-screen bg-[#202020] text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-2xl ${
+          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-2xl border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
             settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
             shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
@@ -1043,10 +987,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 id="btn-sidebar-expand-toggle"
                 type="button"
                 onClick={onToggleCollapse} 
-                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-white/90 hover:bg-white/10 hover:text-white mb-1.5 cursor-pointer transition-colors"
+                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-[#111827] dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white mb-1.5 cursor-pointer transition-colors"
                 title="Expand menu"
               >
-                <Menu className="w-4 h-4 stroke-[1.75]" />
+                <Menu className="w-5 h-5 stroke-[1.75]" />
               </button>
 
               {/* Home Icon */}
@@ -1058,11 +1002,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 title="Home"
                 className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                   currentRoute === '/'
-                    ? 'bg-white/[0.08] text-white shadow-xs'
-                    : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
+                    : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                 }`}
               >
-                <Home className="w-4 h-4 stroke-[1.5] text-white" />
+                <FluentHomeIcon className="w-5 h-5 text-[#111827] dark:text-white" />
               </button>
 
               {/* Search Icon */}
@@ -1070,12 +1014,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 type="button"
                 onClick={onOpenSearch}
                 title="Search"
-                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center text-[#cccccc] hover:bg-white/[0.05] hover:text-white transition-colors cursor-pointer"
+                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer"
               >
-                <Search className="w-4 h-4 stroke-[1.5] text-white" />
+                <FluentSearchIcon className="w-5 h-5 text-[#111827] dark:text-white" />
               </button>
 
-              <div className="w-6 h-[1px] bg-white/10 my-1" />
+              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
 
               {/* Primary Navigation Icons */}
               {navItems.map((item) => {
@@ -1092,16 +1036,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     title={item.label}
                     className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                       active
-                        ? 'bg-white/[0.08] text-white shadow-xs'
-                        : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                        ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
+                        : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                     }`}
                   >
-                    <Icon className="w-4 h-4 stroke-[1.5] text-white" />
+                    <Icon className="w-5 h-5 text-[#111827] dark:text-white" />
                   </button>
                 );
               })}
 
-              <div className="w-6 h-[1px] bg-white/10 my-1" />
+              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
 
               {/* Collapsed Notes Icon */}
               <button
@@ -1112,11 +1056,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 title="Notes (Ghi chú)"
                 className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                   currentRoute === '/notes'
-                    ? 'bg-white/[0.08] text-white shadow-xs'
-                    : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
+                    : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                 }`}
               >
-                <StickyNote className="w-4 h-4 stroke-[1.5] text-[#4cc2ff]" />
+                <FluentNotesIcon className="w-5 h-5 text-[#111827] dark:text-white" />
               </button>
 
               {/* Tools Icon Button with flyout */}
@@ -1128,11 +1072,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Tools"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                     isToolsFlyoutOpen
-                      ? 'bg-white/[0.08] text-white shadow-xs'
-                      : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                   }`}
                 >
-                  <Wrench className="w-4 h-4 stroke-[1.5] text-white" />
+                  <Wrench className="w-5 h-5 stroke-[1.5] text-[#111827] dark:text-white" />
                 </button>
 
                 <AnimatePresence>
@@ -1146,9 +1090,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 id="sidebar-collapsed-update"
                 onClick={onOpenUpdate}
                 title="Update V-One"
-                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-[#cccccc] hover:bg-white/[0.05] hover:text-white"
+                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white"
               >
-                <RefreshCw className="w-4 h-4 stroke-[1.5] text-white" />
+                <RefreshCw className="w-5 h-5 stroke-[1.5] text-[#111827] dark:text-white" />
               </button>
 
               {/* Bottom Sign In & Settings Icons */}
@@ -1162,11 +1106,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     title="Sign in"
                     className={`sidebar-nav-item signin-toggle-btn w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                       isSignInFlyoutOpen
-                        ? 'bg-white/[0.12] text-white shadow-xs'
-                        : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                        ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                        : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                     }`}
                   >
-                    <User className="w-4 h-4 stroke-[1.5] text-white" />
+                    <FluentUserIcon className="w-5 h-5 text-[#111827] dark:text-white" />
                   </button>
 
                   <AnimatePresence>
@@ -1183,11 +1127,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Settings"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/settings'
-                      ? 'bg-white/[0.08] text-white shadow-xs'
-                      : 'text-[#cccccc] hover:bg-white/[0.05] hover:text-white'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                   }`}
                 >
-                  <Sliders className="w-4 h-4 stroke-[1.5] text-white" />
+                  <FluentSettingsIcon className="w-5 h-5 settings-spin-icon text-[#111827] dark:text-white" />
                 </button>
               </div>
             </div>
@@ -1244,6 +1188,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <DiscordWelcomeModal
         isOpen={isDiscordModalOpen}
         onClose={() => setIsDiscordModalOpen(false)}
+      />
+
+      {/* Under Construction Modal for Sign In attempts */}
+      <UnderConstructionModal
+        isOpen={isSignInUnderConstructionOpen}
+        onClose={() => setIsSignInUnderConstructionOpen(false)}
+        title="Under construction"
+        description="This feature is working in progress and might be available in future builds."
+        buttonText="Understood"
       />
 
       {/* Toast Feedback for Sign In Actions */}

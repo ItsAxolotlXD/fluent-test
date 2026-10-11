@@ -6,19 +6,15 @@ import { CategoryIcon } from '../components/CategoryIcon';
 import { NEWS_DATA } from '../data/news';
 import { Channel } from '../types';
 import { 
-  Megaphone, 
   Shield, 
   ExternalLink,
-  Tv, 
-  Home as HomeIcon,
-  Box, 
-  Heart, 
   Settings as SettingsIcon,
   Search,
   SlidersHorizontal,
   Compass,
   Layers
 } from 'lucide-react';
+import { FluentHomeIcon, FluentLiveTvIcon, FluentNewsIcon } from '../components/FluentIcons';
 
 interface HomeProps {
   navigate: (route: string, state?: any) => void;
@@ -30,12 +26,10 @@ interface HomeProps {
 }
 
 const APP_PAGES = [
-  { id: 'page-home', title: 'Home', desc: 'Overview, trending & featured channels', route: '/', icon: HomeIcon, keywords: 'home overview trending' },
-  { id: 'page-livetv', title: 'Live TV', desc: 'Watch live broadcasts from VTV, HTV, VTC, Local channels', route: '/live-tv', icon: Tv, keywords: 'live tv vtv htv vtc broadcasting' },
+  { id: 'page-home', title: 'Home', desc: 'Overview, trending & featured channels', route: '/', icon: FluentHomeIcon, keywords: 'home overview trending' },
+  { id: 'page-livetv', title: 'Watch', desc: 'Watch live broadcasts from VTV, HTV, VTC, Local channels', route: '/live-tv', icon: FluentLiveTvIcon, keywords: 'watch live tv vtv htv vtc broadcasting' },
+  { id: 'page-news', title: 'Articles & Announcements', desc: 'Broadcasting technology news, branding & articles', route: '/news', icon: FluentNewsIcon, keywords: 'articles news announcements updates' },
   { id: 'page-test', title: 'Test Channels', desc: 'Experimental feeds and test stream laboratory', route: '/test', icon: Compass, keywords: 'test channels lab developer' },
-  { id: 'page-channels', title: 'Channels', desc: 'Explore all categorized broadcast stations', route: '/channels', icon: Box, keywords: 'channels sports movies entertainment' },
-  { id: 'page-news', title: 'News & Announcements', desc: 'Broadcasting technology news, branding & articles', route: '/news', icon: Megaphone, keywords: 'news articles announcements updates' },
-  { id: 'page-fav', title: 'Favorites', desc: 'Your saved channels and bookmarked articles', route: '/favorites', icon: Heart, keywords: 'favorites bookmarks saved' },
   { id: 'page-settings', title: 'Settings', desc: 'Customize theme, navigation bar, and keybinds', route: '/settings', icon: SettingsIcon, keywords: 'settings personalization font display' },
 ];
 
