@@ -37,7 +37,7 @@ export const About: React.FC = () => {
       {/* Disclaimer and Ethics Card */}
       <div
         id="about-disclaimer-card"
-        className="p-8 rounded-[30px] bg-white dark:bg-gradient-to-br dark:from-[#1E1E24] dark:to-[#161618] border border-[#E5E7EB] dark:border-[#34343E] shadow-sm dark:shadow-xl space-y-4 transition-all"
+        className="p-8 rounded-[30px] bg-white dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#34343E] shadow-sm dark:shadow-xl space-y-4 transition-all"
       >
         <div className="flex items-center gap-3">
           <Shield className="w-6 h-6 text-[#E6005A] shrink-0" />
@@ -53,7 +53,7 @@ export const About: React.FC = () => {
       {/* Community Connect */}
       <div
         id="about-community-card"
-        className="text-center p-8 rounded-[30px] bg-white dark:bg-[#1E1E22] border border-[#E5E7EB] dark:border-[#2D2D35] shadow-sm dark:shadow-none space-y-4 transition-all"
+        className="text-center p-8 rounded-[30px] bg-white dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35] shadow-sm dark:shadow-none space-y-4 transition-all"
       >
         <h3 className="text-xl font-bold text-[#111827] dark:text-white">Join the Waves Community</h3>
         <p className="text-xs sm:text-sm text-[#4B5563] dark:text-[#9CA3AF] max-w-lg mx-auto">

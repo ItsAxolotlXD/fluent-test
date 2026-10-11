@@ -13,7 +13,7 @@ export const DiscontinuedBanner: React.FC<DiscontinuedBannerProps> = ({
   return (
     <div
       role="alert"
-      className={`fluent-reveal-item w-full rounded-[6px] bg-[#ffffff] dark:bg-[#2b2b2b] border border-black/10 dark:border-[#3d3d3d] border-l-4 border-l-[#f59e0b] dark:border-l-[#f59e0b] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-xs transition-colors ${className}`}
+      className={`fluent-reveal-item w-full rounded-[6px] bg-[#ffffff] dark:bg-[#38383d] border border-black/10 dark:border-[#48484e] border-l-4 border-l-[#f59e0b] dark:border-l-[#f59e0b] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-xs transition-colors ${className}`}
     >
       <div className="flex items-start gap-3 min-w-0">
         <AlertCircle className="w-5 h-5 text-[#f59e0b] shrink-0 mt-0.5" />

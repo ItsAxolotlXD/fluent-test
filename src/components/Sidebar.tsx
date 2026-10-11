@@ -395,7 +395,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: isCollapsedMode ? 0 : 4 }}
         transition={{ duration: 0.14, ease: 'easeOut' }}
-        className={`tools-flyout-container absolute z-50 w-[230px] bg-white dark:bg-[#202020] border border-black/10 dark:border-[#3e3e3e] rounded-[6px] shadow-2xl p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
+        className={`tools-flyout-container absolute z-50 w-[230px] bg-white dark:bg-[#1b1f24] border border-black/10 dark:border-[#3e3e3e] rounded-[6px] shadow-2xl p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode ? 'left-[52px] bottom-14' : 'left-3 right-3 sm:left-[265px] sm:right-auto bottom-12'
         }`}
         style={{
@@ -980,7 +980,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
+          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
             settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
             shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
@@ -988,6 +988,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             effectiveCollapsed ? 'w-[48px]' : 'w-[260px]'
           }`}
           style={{
+            backgroundColor: settings.theme === 'light' ? '#f3f3f3' : '#1b1f24',
             backdropFilter: 'none',
             WebkitBackdropFilter: 'none',
             boxShadow: 'none',
@@ -1210,7 +1211,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               onTouchStart={handleDrawerTouchStart}
               onTouchEnd={handleDrawerTouchEnd}
-              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3]/90 dark:bg-[#202020]/90 text-[#111827] dark:text-white shadow-none flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333] backdrop-blur-2xl"
+              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3]/90 dark:bg-[#1b1f24]/90 text-[#111827] dark:text-white shadow-none flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333] backdrop-blur-2xl"
               style={{
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',

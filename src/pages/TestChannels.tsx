@@ -190,7 +190,7 @@ export const TestChannels: React.FC<TestChannelsProps> = ({
 
         {/* Channel Categories & Grids */}
         {filteredChannels.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#1E1E22] border border-[#E5E7EB] dark:border-[#2D2D35]">
+          <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35]">
             <Tv className="w-10 h-10 mx-auto text-[#9CA3AF] mb-2" />
             <p className="text-sm font-semibold text-[#111827] dark:text-white">No channels found</p>
             <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1">Please try searching with a different keyword or channel number</p>
@@ -263,7 +263,7 @@ export const TestChannels: React.FC<TestChannelsProps> = ({
         )}
 
         {filteredChannels.length === 0 && (
-          <div className="py-16 text-center space-y-3 rounded-2xl bg-[#1E1E22]/60 border border-white/10 p-6">
+          <div className="py-16 text-center space-y-3 rounded-2xl bg-[#38383d]/60 border border-white/10 p-6">
             <p className="text-sm font-medium text-[#9CA3AF]">
               No test channels found matching "{query}"
             </p>

@@ -30,18 +30,18 @@ interface HomeProps {
 const APP_PAGES = [
   { id: 'page-home', title: 'Home', desc: 'Overview, trending & featured channels', route: '/', icon: FluentHomeIcon, keywords: 'home overview trending' },
   { id: 'page-livetv', title: 'Watch', desc: 'Watch live broadcasts from VTV, HTV, VTC, Local channels', route: '/live-tv', icon: FluentLiveTvIcon, keywords: 'watch live tv vtv htv vtc broadcasting' },
-  { id: 'page-news', title: 'Articles & Announcements', desc: 'Broadcasting technology news, branding & articles', route: '/news', icon: FluentNewsIcon, keywords: 'articles news announcements updates' },
+  { id: 'page-news', title: 'Articles', desc: 'Broadcasting technology news, branding & articles', route: '/news', icon: FluentNewsIcon, keywords: 'articles news announcements updates' },
   { id: 'page-test', title: 'Test Channels', desc: 'Experimental feeds and test stream laboratory', route: '/test', icon: Compass, keywords: 'test channels lab developer' },
   { id: 'page-settings', title: 'Settings', desc: 'Customize theme, navigation bar, and keybinds', route: '/settings', icon: SettingsIcon, keywords: 'settings personalization font display' },
 ];
 
 const SETTINGS_SHORTCUTS = [
-  { id: 'set-font', title: 'Settings: Text Scaling & Typography', desc: 'Adjust font size scale from 78% to 124%', route: '/settings', keywords: 'font size zoom text scale' },
-  { id: 'set-nav', title: 'Settings: Navigation Mode', desc: 'Switch between Top View, Side View, and Tab View', route: '/settings', keywords: 'navigation mode topbar sidebar floaty tab view' },
-  { id: 'set-autohide', title: 'Settings: Auto-hide Side View', desc: 'Automatically collapse sidebar when watching content', route: '/settings', keywords: 'auto-hide sidebar collapse' },
-  { id: 'set-motion', title: 'Settings: Motion & Movements', desc: 'Reduce animations or enable fluid transitions', route: '/settings', keywords: 'motion reduce animations movements' },
-  { id: 'set-keybinds', title: 'Settings: Custom Keybinds', desc: 'Configure keyboard shortcuts for quick actions', route: '/settings', keywords: 'keybinds shortcuts keyboard alt' },
-  { id: 'set-search-cats', title: 'Settings: Search Categories', desc: 'Choose which content types show in search', route: '/settings', keywords: 'search spotlight categories customize' },
+  { id: 'set-font', title: 'Text Scaling & Typography', desc: 'Adjust font size scale from 78% to 124%', route: '/settings', keywords: 'font size zoom text scale' },
+  { id: 'set-nav', title: 'Navigation Mode', desc: 'Switch between Top View, Side View, and Tab View', route: '/settings', keywords: 'navigation mode topbar sidebar floaty tab view' },
+  { id: 'set-autohide', title: 'Auto-hide Side View', desc: 'Automatically collapse sidebar when watching content', route: '/settings', keywords: 'auto-hide sidebar collapse' },
+  { id: 'set-motion', title: 'Motion & Movements', desc: 'Reduce animations or enable fluid transitions', route: '/settings', keywords: 'motion reduce animations movements' },
+  { id: 'set-keybinds', title: 'Custom Keybinds', desc: 'Configure keyboard shortcuts for quick actions', route: '/settings', keywords: 'keybinds shortcuts keyboard alt' },
+  { id: 'set-search-cats', title: 'Search Categories', desc: 'Choose which content types show in search', route: '/settings', keywords: 'search spotlight categories customize' },
 ];
 
 export const Home: React.FC<HomeProps> = ({
@@ -154,7 +154,7 @@ export const Home: React.FC<HomeProps> = ({
                   <div
                     key={page.id}
                     onClick={() => navigate(page.route)}
-                    className="p-3.5 rounded-2xl bg-[#1E1E22] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
+                    className="p-3.5 rounded-2xl bg-[#38383d] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
                   >
                     <div className="w-10 h-10 rounded-xl bg-[#E6005A]/15 text-[#E6005A] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                       <IconComponent className="w-5 h-5" />
@@ -186,7 +186,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div
                   key={set.id}
                   onClick={() => navigate(set.route)}
-                  className="p-3.5 rounded-2xl bg-[#1E1E22] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
+                  className="p-3.5 rounded-2xl bg-[#38383d] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0 group-hover:bg-[#E6005A] transition-colors">
                     <SettingsIcon className="w-5 h-5" />
@@ -218,7 +218,7 @@ export const Home: React.FC<HomeProps> = ({
                   key={ch.id}
                   id={`home-channel-card-${ch.id}`}
                   onClick={() => onSelectChannel(ch)}
-                  className="group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#353535]"
+                  className="group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d]"
                   title={ch.name}
                 >
                   <img
@@ -254,7 +254,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div
                   key={article.id}
                   onClick={() => navigate(`/news/${article.slug}`)}
-                  className="rounded-2xl bg-[#1E1E22] border border-white/10 p-4 hover:border-[#E6005A] cursor-pointer space-y-2 transition-colors"
+                  className="rounded-2xl bg-[#38383d] border border-white/10 p-4 hover:border-[#E6005A] cursor-pointer space-y-2 transition-colors"
                 >
                   <span className="text-[10px] font-bold text-[#E6005A] uppercase tracking-wider">
                     {article.category}
@@ -272,7 +272,7 @@ export const Home: React.FC<HomeProps> = ({
         )}
 
         {totalMatches === 0 && (
-          <div className="py-16 text-center space-y-3 rounded-2xl bg-[#1E1E22]/60 border border-white/10 p-6">
+          <div className="py-16 text-center space-y-3 rounded-2xl bg-[#38383d]/60 border border-white/10 p-6">
             <p className="text-sm font-medium text-[#9CA3AF]">
               No results found matching "{searchQuery}" across the app
             </p>
@@ -348,7 +348,7 @@ export const Home: React.FC<HomeProps> = ({
             {/* Disclaimer and Ethics Card */}
             <div
               id="home-about-disclaimer-card"
-              className="fluent-reveal-item setting-card p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2.5 transition-colors"
+              className="fluent-reveal-item setting-card p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs space-y-2.5 transition-colors"
             >
               <div className="flex items-center gap-2.5">
                 <Shield className="w-5 h-5 text-[#4cc2ff] shrink-0" />
@@ -364,7 +364,7 @@ export const Home: React.FC<HomeProps> = ({
             {/* Community Connect */}
             <div
               id="home-about-community-card"
-              className="fluent-reveal-item setting-card text-center p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 transition-colors"
+              className="fluent-reveal-item setting-card text-center p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs space-y-3.5 transition-colors"
             >
               <h3 className="text-base sm:text-lg font-semibold text-black dark:text-white">Join the Waves Community</h3>
               <p className="text-xs sm:text-sm text-black dark:text-[#a1a1aa] max-w-2xl mx-auto leading-relaxed">

@@ -240,7 +240,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 setIsFocused(true);
                 inputRef.current?.focus();
               }}
-              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden transition-colors cursor-text select-none"
+              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#38383d] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden transition-colors cursor-text select-none"
             >
               <input
                 ref={inputRef}
@@ -330,7 +330,7 @@ export const Settings: React.FC<SettingsProps> = ({
           >
           {/* Quick Search Jump Results if user typed a search query */}
           {searchQuery.trim() && (
-            <div className="p-4 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
+            <div className="p-4 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
               <div className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider px-1">
                 Search results for "{searchQuery}"
               </div>
@@ -363,7 +363,7 @@ export const Settings: React.FC<SettingsProps> = ({
           )}
 
           {/* Group 1: Spatial Glass, Giao diện, Trợ năng */}
-          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
+          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
             {SETTINGS_GROUP_1.map((item, idx) => (
               <React.Fragment key={item.id}>
                 <div
@@ -394,7 +394,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
 
           {/* Group 2: Tools, Insider Flags */}
-          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
+          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
             {SETTINGS_GROUP_2.map((item, idx) => (
               <React.Fragment key={item.id}>
                 <div
@@ -427,7 +427,7 @@ export const Settings: React.FC<SettingsProps> = ({
           {/* Thông tin phần mềm & Giới thiệu (Chuyển xuống cuối trang Cài đặt) */}
           <section 
             id="settings-section-version"
-            className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none"
+            className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none"
           >
             <div className="p-3.5 sm:p-4 rounded-[18px] bg-black/[0.03] dark:bg-white/5 space-y-3 select-text">
               <div className="flex items-center justify-between text-xs sm:text-sm">
@@ -533,7 +533,7 @@ export const Settings: React.FC<SettingsProps> = ({
             {activeCategory === 'spatial-glass' && (
               <section 
                 id="settings-section-spatial-glass"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
               >
                 <div className="space-y-4 select-none">
                   {/* 1. Fluent Design Master Toggle */}
@@ -693,7 +693,7 @@ export const Settings: React.FC<SettingsProps> = ({
             {activeCategory === 'interface' && (
               <section 
                 id="settings-section-interface"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
               >
                 <div className="space-y-4">
                   {/* 1. Chế độ ứng dụng (Ban ngày / Ban đêm) */}
@@ -923,7 +923,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* 4.1 Section Trợ năng */}
                 <section 
                   id="settings-section-accessibility"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="space-y-3">
                     {/* Tỉ lệ khung hình */}
@@ -1033,7 +1033,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section 1: Tải trang & Hiệu năng (Page loading & Sequential loading) */}
                 <section 
                   id="settings-section-page-loading"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
                     <div className="font-bold text-[#111827] dark:text-white text-[15px] sm:text-[16px] tracking-tight">
@@ -1113,7 +1113,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section: Chuyển động (Reduce all animation & Sub-options) */}
                 <section 
                   id="settings-section-motion"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
                     <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
@@ -1278,7 +1278,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section 2: Nội dung Tìm kiếm */}
                 <section 
                   id="settings-section-search"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
                     <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
@@ -1461,7 +1461,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section 2: Bàn phím */}
                 <section 
                   id="settings-section-keyboard"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
                     <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
@@ -1571,7 +1571,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section 3: Tổ hợp phím */}
                 <section 
                   id="settings-section-keybinds"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
                 >
                   <div className="flex items-center justify-between px-3.5 sm:px-4 pt-0.5 pb-1">
                     <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
@@ -1742,7 +1742,7 @@ export const Settings: React.FC<SettingsProps> = ({
             {activeCategory === 'experimental' && (
               <section 
                 id="settings-section-experimental"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
               >
                 <div className="space-y-3">
                   {/* Native keyboard */}

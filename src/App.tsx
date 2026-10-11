@@ -603,7 +603,7 @@ export default function App() {
         <div
         data-immersive-sidebar={settings.immersiveSidebar}
       data-sidebar-position={settings.sidebarPosition}
-      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f3f3f3] dark:bg-[#202020]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
+      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f3f3f3] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
     >
       {/* Fixed atmospheric cosmic background matching custom nebula gradient */}
       <div 
@@ -647,7 +647,7 @@ export default function App() {
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f3f3f3] dark:bg-[#272727] ${
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f3f3f3] dark:bg-[#282c31] ${
         settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
           : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'

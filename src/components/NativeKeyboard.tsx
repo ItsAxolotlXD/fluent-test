@@ -357,10 +357,11 @@ export const NativeKeyboard: React.FC = () => {
       aria-label="VNRT Online Native Keyboard"
       style={{
         height: `${keyboardHeight}px`,
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.70)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
       }}
-      className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-xl bg-[#f3f3f3]/80 dark:bg-[#202020]/80 backdrop-blur-[10px] border-t border-[#e5e5e5]/70 dark:border-[#383838]/80 shadow-[0_-8px_30px_rgba(0,0,0,0.25)] transition-transform duration-[300ms] ease-out will-change-transform select-none flex flex-col justify-between ${
+      className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-xl bg-white/70 backdrop-blur-[20px] border-t border-black/10 shadow-[0_-8px_30px_rgba(0,0,0,0.25)] transition-transform duration-[300ms] ease-out will-change-transform select-none flex flex-col justify-between ${
         isOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full pointer-events-none'
       }`}
     >

@@ -22,14 +22,14 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({
     <div
       id={`channel-card-${channel.id}`}
       onClick={() => onSelect(channel)}
-      className={`fluent-reveal-item channel-card group relative rounded-[8px] bg-white dark:bg-[#2b2b2b] border transition-colors overflow-hidden cursor-default shadow-xs ${
+      className={`fluent-reveal-item channel-card group relative rounded-[8px] bg-white dark:bg-[#38383d] border transition-colors overflow-hidden cursor-default shadow-xs ${
         isActive
           ? 'border-[#4cc2ff] ring-1 ring-[#4cc2ff]'
-          : 'border-[#e5e5e5] dark:border-[#383838] hover:border-[#cccccc] dark:hover:border-[#505050] hover:bg-[#fafafa] dark:hover:bg-[#323232]'
+          : 'border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248]'
       }`}
     >
       {/* Top Banner / Logo Area */}
-      <div className="relative h-32 bg-neutral-100 dark:bg-[#202020] flex items-center justify-center p-4 overflow-hidden">
+      <div className="relative h-32 bg-neutral-100 dark:bg-[#38383d] flex items-center justify-center p-4 overflow-hidden">
         <img
           src={channel.bannerImage || DEFAULT_BANNER_PLACEHOLDER}
           alt={channel.name}
@@ -111,7 +111,7 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({
         </div>
 
         {/* Current Program on Air */}
-        <div className="mt-2 p-2 rounded-[4px] bg-black/5 dark:bg-[#202020] border border-black/5 dark:border-white/5">
+        <div className="mt-2 p-2 rounded-[4px] bg-black/5 dark:bg-[#38383d] border border-black/5 dark:border-white/5">
           <div className="flex items-center justify-between text-[11px] text-[#555555] dark:text-[#a1a1aa] mb-1">
             <span className="font-medium text-[#111827] dark:text-white truncate max-w-[170px]">
               {channel.currentProgram?.title || 'Live Broadcast'}

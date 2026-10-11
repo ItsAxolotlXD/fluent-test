@@ -6,7 +6,7 @@ export const FarewellAnnouncement: React.FC = () => {
     <section
       id="home-farewell-announcement"
       aria-label="Announcement: The next chapter is coming - V-One"
-      className="fluent-reveal-item setting-card relative w-full rounded-[8px] sm:rounded-[10px] overflow-hidden bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs p-5 sm:p-7 md:p-8 select-text transition-colors duration-200"
+      className="fluent-reveal-item setting-card relative w-full rounded-[8px] sm:rounded-[10px] overflow-hidden bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs p-5 sm:p-7 md:p-8 select-text transition-colors duration-200"
     >
       <div className="relative z-10 max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Header Tag */}

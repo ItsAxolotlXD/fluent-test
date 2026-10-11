@@ -31,7 +31,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
       </div>
 
       {/* Current Version Card */}
-      <div className="p-5 sm:p-6 rounded-[10px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-5 sm:p-6 rounded-[10px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-lg bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
             <CheckCircle2 className="w-6 h-6" />
@@ -67,7 +67,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
         </h3>
 
         <div className="space-y-3">
-          <div className="p-4 rounded-[10px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
+          <div className="p-4 rounded-[10px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#0078d4] dark:text-[#4cc2ff]">
               <Sparkles className="w-4 h-4" />
               <span>Unified Fluent Dialog Experience</span>
@@ -80,7 +80,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
             </p>
           </div>
 
-          <div className="p-4 rounded-[10px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
+          <div className="p-4 rounded-[10px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#0078d4] dark:text-[#4cc2ff]">
               <Clock className="w-4 h-4" />
               <span>Performance Guard Tab Switching</span>
@@ -93,7 +93,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
             </p>
           </div>
 
-          <div className="p-4 rounded-[10px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
+          <div className="p-4 rounded-[10px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#0078d4] dark:text-[#4cc2ff]">
               <ShieldCheck className="w-4 h-4" />
               <span>Acrylic Blur & Fluid Motion</span>

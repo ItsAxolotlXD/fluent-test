@@ -36,17 +36,17 @@ interface SpotlightModalProps {
 
 const CATEGORY_ITEMS = [
   { id: 'cat-home', title: 'Home', route: '/', icon: FluentHomeIcon, color: '#4cc2ff' },
-  { id: 'cat-livetv', title: 'Live TV', route: '/live-tv', icon: FluentLiveTvIcon, color: '#4cc2ff' },
-  { id: 'cat-news', title: 'News & Articles', route: '/news', icon: FluentNewsIcon, color: '#4cc2ff' },
+  { id: 'cat-livetv', title: 'Watch', route: '/live-tv', icon: FluentLiveTvIcon, color: '#4cc2ff' },
+  { id: 'cat-news', title: 'Articles', route: '/news', icon: FluentNewsIcon, color: '#4cc2ff' },
   { id: 'cat-settings', title: 'Settings', route: '/settings', icon: SettingsIcon, color: '#4cc2ff' },
 ];
 
 const SETTINGS_SHORTCUTS = [
-  { id: 'set-font', title: 'Settings: Text Scaling & Typography', keyword: 'font scale zoom size text' },
-  { id: 'set-autohide', title: 'Settings: Auto-hide Side View', keyword: 'auto-hide sidebar collapse' },
-  { id: 'set-motion', title: 'Settings: Motion & Movements', keyword: 'motion movements animation reduce' },
-  { id: 'set-search', title: 'Settings: Customize Search Categories', keyword: 'search spotlight categories' },
-  { id: 'set-keybinds', title: 'Settings: Custom Keybinds & Shortcuts', keyword: 'keybinds shortcuts keyboard alt' },
+  { id: 'set-font', title: 'Text Scaling & Typography', keyword: 'font scale zoom size text' },
+  { id: 'set-autohide', title: 'Auto-hide Side View', keyword: 'auto-hide sidebar collapse' },
+  { id: 'set-motion', title: 'Motion & Movements', keyword: 'motion movements animation reduce' },
+  { id: 'set-search', title: 'Customize Search Categories', keyword: 'search spotlight categories' },
+  { id: 'set-keybinds', title: 'Custom Keybinds & Shortcuts', keyword: 'keybinds shortcuts keyboard alt' },
 ];
 
 export const SpotlightModal: React.FC<SpotlightModalProps> = ({
@@ -210,7 +210,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
-            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
+            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#38383d] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
           >
             {viewMode === 'settings' ? (
               /* View 2: Search Settings Menu (Without navigating to Settings tab) */
@@ -547,9 +547,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                       <div className="space-y-1">
                         <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#4cc2ff] flex items-center gap-1.5">
                           <CategoryIcon className="w-4 h-4 shrink-0" />
-                          <span>Live TV Channels ({matchedChannels.length})</span>
+                          <span>Channels ({matchedChannels.length})</span>
                         </div>
-                        {matchedChannels.slice(0, 5).map((ch) => (
+                        {matchedChannels.map((ch) => (
                           <div
                             key={ch.id}
                             onClick={() => {
@@ -571,7 +571,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-xs font-semibold text-[#111827] dark:text-white group-hover:text-[#4cc2ff] truncate">
-                                    {`${String(ch.channelNumber || 1).padStart(3, '0')} | ${ch.name}`}
+                                    {ch.name}
                                   </span>
                                 </div>
                                 <div className="text-[10px] text-[#666666] dark:text-[#AAAAAA] truncate">
@@ -620,9 +620,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                       <div className="space-y-1">
                         <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#4cc2ff] flex items-center gap-1.5">
                           <CategoryIcon className="w-4 h-4 shrink-0" />
-                          <span>News & Articles ({matchedNews.length})</span>
+                          <span>Articles ({matchedNews.length})</span>
                         </div>
-                        {matchedNews.slice(0, 3).map((n) => (
+                        {matchedNews.map((n) => (
                           <div
                             key={n.id}
                             onClick={() => {

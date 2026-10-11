@@ -112,7 +112,7 @@
   }
 
   body {
-    background-color: #202020;
+    background-color: #282c31;
     background-image: none;
     color: #F3F4F6;
     overflow-x: hidden;
@@ -146,6 +146,142 @@ html.light-mode .tab-element-slide-up-container {
   background-color: #f3f3f3 !important;
   color: #000000 !important;
 }
+
+/* Dark Mode Overrides for Sidebar / TopBar (#1b1f24) and Main Tab Page (#282c31) */
+#waves-desktop-sidebar,
+#waves-mobile-sidebar,
+html.dark #waves-desktop-sidebar,
+html.dark #waves-mobile-sidebar,
+html:not(.light-mode) #waves-desktop-sidebar,
+html:not(.light-mode) #waves-mobile-sidebar {
+  background-color: #1b1f24 !important;
+  background: #1b1f24 !important;
+}
+
+html.light-mode #waves-desktop-sidebar,
+html.light-mode #waves-mobile-sidebar {
+  background-color: #f3f3f3 !important;
+  background: #f3f3f3 !important;
+}
+
+header,
+html.dark header,
+html:not(.light-mode) header {
+  background-color: #1b1f24 !important;
+  background: #1b1f24 !important;
+}
+
+html.light-mode header {
+  background-color: #f3f3f3 !important;
+  background: #f3f3f3 !important;
+}
+
+html.dark main,
+html.dark .tab-element-slide-up-container,
+html:not(.light-mode) main,
+html:not(.light-mode) .tab-element-slide-up-container {
+  background-color: #282c31 !important;
+}
+
+/* Dark Mode: các ô kênh, các khung, các ô nội dung là màu #38383d */
+html.dark .channel-card,
+html.dark [class*="channel-card"],
+html.dark .news-card,
+html.dark .news-card-featured,
+html.dark #featured-news-card,
+html.dark .onair-card,
+html.dark .setting-card,
+html.dark .settings-fluent-group,
+html.dark [id^="recommended-channel-"],
+html.dark [id^="livetv-channel-card-"]:not(.is-selected),
+html.dark [id^="home-channel-card-"],
+html.dark [id^="channel-card-"]:not(.is-selected),
+html.dark [id^="test-channel-card-"]:not(.is-selected),
+html.dark [id^="news-card-"],
+html.dark .banner-card,
+html.dark #home-about-disclaimer-card,
+html.dark #home-about-community-card,
+html.dark #about-disclaimer-card,
+html.dark #about-community-card,
+html.dark #home-farewell-announcement,
+html.dark .fluent-modal-dialog,
+html.dark .spatial-glass-modal,
+html.dark #welcome-modal-dialog,
+html.dark #discord-welcome-dialog,
+html.dark #under-construction-modal-dialog,
+html.dark #developer-mode-modal-dialog,
+html.dark #custom-stream-dialog,
+html.dark #help-modal-dialog,
+html.dark #news-summary-dialog,
+html.dark #add-stream-dialog,
+html.dark #unsaved-settings-modal-dialog,
+html.dark #spotlight-popup-card,
+html.dark #vplay-tools-dropdown-card,
+html:not(.light-mode) .channel-card,
+html:not(.light-mode) [class*="channel-card"],
+html:not(.light-mode) .news-card,
+html:not(.light-mode) .news-card-featured,
+html:not(.light-mode) #featured-news-card,
+html:not(.light-mode) .onair-card,
+html:not(.light-mode) .setting-card,
+html:not(.light-mode) .settings-fluent-group,
+html:not(.light-mode) [id^="recommended-channel-"],
+html:not(.light-mode) [id^="livetv-channel-card-"]:not(.is-selected),
+html:not(.light-mode) [id^="home-channel-card-"],
+html:not(.light-mode) [id^="channel-card-"]:not(.is-selected),
+html:not(.light-mode) [id^="test-channel-card-"]:not(.is-selected),
+html:not(.light-mode) [id^="news-card-"],
+html:not(.light-mode) .banner-card,
+html:not(.light-mode) #home-about-disclaimer-card,
+html:not(.light-mode) #home-about-community-card,
+html:not(.light-mode) #about-disclaimer-card,
+html:not(.light-mode) #about-community-card,
+html:not(.light-mode) #home-farewell-announcement,
+html:not(.light-mode) .fluent-modal-dialog,
+html:not(.light-mode) .spatial-glass-modal,
+html:not(.light-mode) #welcome-modal-dialog,
+html:not(.light-mode) #discord-welcome-dialog,
+html:not(.light-mode) #under-construction-modal-dialog,
+html:not(.light-mode) #developer-mode-modal-dialog,
+html:not(.light-mode) #custom-stream-dialog,
+html:not(.light-mode) #help-modal-dialog,
+html:not(.light-mode) #news-summary-dialog,
+html:not(.light-mode) #add-stream-dialog,
+html:not(.light-mode) #unsaved-settings-modal-dialog,
+html:not(.light-mode) #spotlight-popup-card,
+html:not(.light-mode) #vplay-tools-dropdown-card {
+  background-color: #38383d !important;
+}
+
+html.dark .channel-card:hover,
+html.dark [class*="channel-card"]:hover,
+html.dark .news-card:hover,
+html.dark .news-card-featured:hover,
+html.dark #featured-news-card:hover,
+html.dark .onair-card:hover,
+html.dark .setting-card:hover,
+html.dark [id^="recommended-channel-"]:hover,
+html.dark [id^="livetv-channel-card-"]:not(.is-selected):hover,
+html.dark [id^="home-channel-card-"]:hover,
+html.dark [id^="channel-card-"]:not(.is-selected):hover,
+html.dark [id^="test-channel-card-"]:not(.is-selected):hover,
+html.dark [id^="news-card-"]:hover,
+html:not(.light-mode) .channel-card:hover,
+html:not(.light-mode) [class*="channel-card"]:hover,
+html:not(.light-mode) .news-card:hover,
+html:not(.light-mode) .news-card-featured:hover,
+html:not(.light-mode) #featured-news-card:hover,
+html:not(.light-mode) .onair-card:hover,
+html:not(.light-mode) .setting-card:hover,
+html:not(.light-mode) [id^="recommended-channel-"]:hover,
+html:not(.light-mode) [id^="livetv-channel-card-"]:not(.is-selected):hover,
+html:not(.light-mode) [id^="home-channel-card-"]:hover,
+html:not(.light-mode) [id^="channel-card-"]:not(.is-selected):hover,
+html:not(.light-mode) [id^="test-channel-card-"]:not(.is-selected):hover,
+html:not(.light-mode) [id^="news-card-"]:hover {
+  background-color: #424248 !important;
+}
+
 
 /* Light mode: toàn bộ chữ trên toàn bộ các tab đổi hết sang màu đen (#000000) */
 html.light-mode :is(h1, h2, h3, h4, h5, h6, p, label, li, dt, dd, blockquote, div, span, b, strong, i, em, td, th, time, small, caption, button, a):not(.fluent-btn-primary):not(.fluent-btn-primary *):not(#btn-discord-join):not(#btn-discord-join *):not(#btn-home-join-discord):not(#btn-home-join-discord *):not([class*="bg-[#5865F2]"]):not([class*="bg-[#0078d4]"]):not([class*="bg-[#4cc2ff]"]):not([class*="bg-[#E6005A]"]):not([class*="bg-[#E50914]"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-amber"]):not([class*="bg-blue"]):not([class*="text-[#0078d4]"]):not([class*="text-[#4cc2ff]"]):not([class*="text-[#E6005A]"]):not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-amber"]):not([class*="text-blue"]) {
@@ -699,12 +835,12 @@ html.light-mode #settings-section-search hr {
 
 /* Theme Surface Overrides in Dark Mode */
 html:not(.light-mode) body {
-  background-color: #202020 !important;
+  background-color: #282c31 !important;
   background-image: none !important;
 }
 
 #fixed-app-background-solid {
-  background-color: #202020 !important;
+  background-color: #282c31 !important;
   background-image: none !important;
 }
 
@@ -744,9 +880,11 @@ html.super-dark .to-\[\#181818\]\/85 {
   --tw-gradient-to: rgb(0 0 0 / 0.85) var(--tw-gradient-to-position) !important;
 }
 
-#home-about-disclaimer-card,
-#home-about-community-card {
-  background-color: rgba(255, 255, 255, 0.10) !important;
+html.dark #home-about-disclaimer-card,
+html.dark #home-about-community-card,
+html:not(.light-mode) #home-about-disclaimer-card,
+html:not(.light-mode) #home-about-community-card {
+  background-color: #38383d !important;
   background-image: none !important;
   border: none !important;
 }
@@ -760,12 +898,6 @@ html.light-mode #fixed-app-background-solid {
 html:not(.light-mode) .bg-\[\#141416\],
 html:not(.light-mode) .bg-\[\#141418\],
 html:not(.light-mode) .bg-\[\#202020\],
-html:not(.light-mode) .bg-\[\#202020\],
-html:not(.light-mode) .bg-\[\#202020\],
-html:not(.light-mode) .bg-\[\#202020\] {
-  background-color: #202020 !important;
-}
-
 html:not(.light-mode) .bg-\[\#1E1D22\],
 html:not(.light-mode) .bg-\[\#1E1E22\],
 html:not(.light-mode) .bg-\[\#1E1E24\],
@@ -779,7 +911,7 @@ html:not(.light-mode) .bg-\[\#2A2A32\],
 html:not(.light-mode) .bg-\[\#2b2b2b\],
 html:not(.light-mode) .bg-\[\#252525\],
 html:not(.light-mode) .bg-\[\#222127\] {
-  background-color: #2b2b2b !important;
+  background-color: #38383d !important;
 }
 
 html:not(.light-mode) button.bg-\[\#28272E\]:hover,
@@ -787,12 +919,12 @@ html:not(.light-mode) button.bg-\[\#26262C\]:hover,
 html:not(.light-mode) button.bg-\[\#28282E\]:hover,
 html:not(.light-mode) button.bg-\[\#24242A\]:hover,
 html:not(.light-mode) button.bg-\[\#2A2A32\]:hover {
-  background-color: #323232 !important;
+  background-color: #424248 !important;
 }
 
 html:not(.light-mode) #waves-desktop-sidebar,
 html:not(.light-mode) #waves-mobile-sidebar {
-  background-color: #202020 !important;
+  background-color: #1b1f24 !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border-color: #2e2e2e !important;
@@ -1794,7 +1926,7 @@ button[role="switch"],
 [id^="test-channel-card-"]:not(.is-selected) {
   border: none !important;
   background-image: none !important;
-  background-color: #353535 !important;
+  background-color: #38383d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
@@ -3385,7 +3517,7 @@ html.light-mode .bg-\[\#1E1E22\].text-\[\#A1A1AA\] {
 .spatial-glass-modal {
   position: relative !important;
   box-sizing: border-box !important;
-  background-color: #202020 !important;
+  background-color: #38383d !important;
   color: #FFFFFF !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 12px !important;
@@ -4021,10 +4153,11 @@ html.light-mode .settings-ios-group .text-white {
 }
 
 /* Category icon badges must always retain pure white icons and 100% circular radius */
-/* Native keyboard blur (10px blur / 10% blur effect with 80% background opacity) */
+/* Native keyboard: white background 70% opacity and 20% blur (20px) */
 #vplay-native-keyboard {
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  background-color: rgba(255, 255, 255, 0.70) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 
 /* Category icons in settings */
@@ -4664,7 +4797,7 @@ html:not(.light-mode) #vplay-tools-dropdown-card {
 }
 
 html:not(.light-mode).no-spatial-glass #vplay-tools-dropdown-card {
-  background-color: #1E1E24 !important;
+  background-color: #38383d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }

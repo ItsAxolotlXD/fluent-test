@@ -33,6 +33,7 @@ interface SearchAspectItem {
   title: string;
   type: 'history' | 'page' | 'channel' | 'news' | 'setting' | 'tool';
   logo?: string;
+  keywords?: string;
   onSelect: () => void;
 }
 
@@ -139,42 +140,43 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDismissUnsavedTooltip();
   };
 
-  // Pre-configured App Aspects (Pages, Settings, Tools)
+  // Pre-configured App Aspects (Pages, Settings, Tools) with exact original naming
   const appAspects = useMemo(() => {
     const aspects: SearchAspectItem[] = [
       // Pages
-      { id: 'page-home', title: 'Home (Trang chủ)', type: 'page', onSelect: () => navigate('/') },
-      { id: 'page-watch', title: 'Watch Live TV (Xem truyền hình)', type: 'page', onSelect: () => navigate('/live-tv') },
-      { id: 'page-news', title: 'Articles & News (Tin tức & Bài viết)', type: 'page', onSelect: () => navigate('/news') },
-      { id: 'page-channels', title: 'Channel Directory (Danh sách kênh)', type: 'page', onSelect: () => navigate('/channels') },
-      { id: 'page-favs', title: 'Favorites (Kênh yêu thích)', type: 'page', onSelect: () => navigate('/favorites') },
-      { id: 'page-updates', title: 'Updates (Cập nhật phiên bản)', type: 'page', onSelect: () => navigate('/updates') },
-      { id: 'page-craftmine', title: 'Craftmine Web (Minecraft Preview)', type: 'page', onSelect: () => navigate('/craftmine') },
-      { id: 'page-notes', title: 'Notes & Office (Ghi chú & Soạn thảo)', type: 'page', onSelect: () => navigate('/notes') },
-      { id: 'page-settings', title: 'Settings (Cài đặt hệ thống)', type: 'page', onSelect: () => navigate('/settings') },
-      { id: 'page-about', title: 'About V-One (Giới thiệu)', type: 'page', onSelect: () => navigate('/about') },
+      { id: 'page-home', title: 'Home', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
+      { id: 'page-watch', title: 'Watch', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-news', title: 'Articles', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-channels', title: 'Channels', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
+      { id: 'page-favs', title: 'Favorites', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
+      { id: 'page-updates', title: 'Updates', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
+      { id: 'page-craftmine', title: 'Craftmine', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
+      { id: 'page-notes', title: 'Notes', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
+      { id: 'page-settings', title: 'Settings', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
+      { id: 'page-about', title: 'About', keywords: 'giới thiệu about v-one', type: 'page', onSelect: () => navigate('/about') },
 
       // Settings Shortcuts
-      { id: 'set-sideview', title: 'Settings: Side View (Thanh bên)', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-darkmode', title: 'Settings: Dark / Light Mode', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-spatialglass', title: 'Settings: Spatial Glass & Blur', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-fontscale', title: 'Settings: Text Scaling & Typography', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-keyboard', title: 'Settings: Native Virtual Keyboard', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-aspect', title: 'Settings: Stream Aspect Ratio 16:9 / 4:3', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-sideview', title: 'Side View', keywords: 'settings side view thanh bên', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-darkmode', title: 'Dark / Light Mode', keywords: 'settings dark light mode giao diện tối sáng', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-spatialglass', title: 'Spatial Glass & Blur', keywords: 'settings spatial glass acrylic blur kính mờ', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-fontscale', title: 'Text Scaling & Typography', keywords: 'settings text scaling font size zoom cỡ chữ', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-keyboard', title: 'Native Virtual Keyboard', keywords: 'settings native virtual keyboard bàn phím ảo', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-aspect', title: 'Stream Aspect Ratio', keywords: 'settings stream aspect ratio tỉ lệ khung hình 16:9 4:3', type: 'setting', onSelect: () => navigate('/settings') },
 
       // Tools
-      { id: 'tool-sticky', title: 'Tools: Sticky Note (Ghi chú)', type: 'tool', onSelect: () => navigate('/notes') },
-      { id: 'tool-tts', title: 'Tools: Text-to-Speech Player', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
-      { id: 'tool-findwords', title: 'Tools: Find Words in Page', type: 'tool', onSelect: () => onOpenFindWords() },
-      { id: 'tool-addstream', title: 'Tools: Add Custom Stream', type: 'tool', onSelect: () => onOpenAddStream() },
-      { id: 'tool-discord', title: 'Community: Discord V-One', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
+      { id: 'tool-sticky', title: 'Sticky Note', keywords: 'tools sticky note ghi chú dán', type: 'tool', onSelect: () => navigate('/notes') },
+      { id: 'tool-tts', title: 'Text-to-Speech Player', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
+      { id: 'tool-findwords', title: 'Find Words', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
+      { id: 'tool-addstream', title: 'Add Custom Stream', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
+      { id: 'tool-discord', title: 'Discord Community', keywords: 'community discord v-one', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
     ];
 
     // Channels
     channels.forEach((ch) => {
       aspects.push({
         id: `channel-${ch.id}`,
-        title: `${ch.name} (${ch.category})`,
+        title: ch.name,
+        keywords: `${ch.category} ${ch.shortName || ''} ${ch.slug}`,
         type: 'channel',
         logo: ch.logo,
         onSelect: () => {
@@ -189,6 +191,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       aspects.push({
         id: `article-${art.id}`,
         title: art.title,
+        keywords: `${art.category} ${art.excerpt || ''}`,
         type: 'news',
         onSelect: () => navigate(`/article/${art.id}`)
       });
@@ -243,12 +246,13 @@ export const TopBar: React.FC<TopBarProps> = ({
 
     // App aspects matches
     appAspects.forEach((item) => {
-      if (item.title.toLowerCase().includes(q)) {
+      if (item.title.toLowerCase().includes(q) || (item.keywords && item.keywords.toLowerCase().includes(q))) {
         matches.push(item);
       }
     });
 
-    return matches.slice(0, 10);
+    // Return ALL matches
+    return matches;
   }, [searchQuery, searchHistory, appAspects, navigate]);
 
   const handleSelectSearchResult = (item: SearchAspectItem) => {
@@ -270,7 +274,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#202020] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
+    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
       {/* 1. Left Section */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
         {settings.navigationMode !== 'floaty' && (
@@ -360,7 +364,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#2b2b2b] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
+              className={`group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen
                   ? 'rounded-t-[6px] rounded-b-none border-b-2 border-b-[#005fb8] dark:border-b-[#4cc2ff]'
                   : 'rounded-[6px]'
@@ -387,7 +391,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           </form>
 
-          {/* Flyout Result Dropdown: 50% opacity with Light Mode & Dark Mode acrylic blur */}
+          {/* Flyout Result Dropdown: Displays ~5 items at a time, scrollable to see all results */}
           <AnimatePresence>
             {isSearchFlyoutOpen && searchResults.length > 0 && (
               <motion.div
@@ -395,7 +399,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="topbar-search-results-dropdown absolute top-full left-0 right-0 z-50 bg-white/50 dark:bg-[#1c1c1c]/50 backdrop-blur-2xl rounded-b-[8px] border border-black/10 dark:border-white/10 border-t-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 overflow-hidden max-h-[360px] overflow-y-auto no-scrollbar"
+                className="topbar-search-results-dropdown absolute top-full left-0 right-0 z-50 bg-white/70 dark:bg-[#1b1f24]/90 backdrop-blur-2xl rounded-b-[8px] border border-black/10 dark:border-white/10 border-t-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 max-h-[240px] overflow-y-auto sidebar-scroller"
                 style={{
                   backdropFilter: 'blur(28px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',

@@ -102,7 +102,7 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
                 navigate(`/live-tv?channel=${ch.slug}`);
               }
             }}
-            className="fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] hover:border-[#cccccc] dark:hover:border-[#505050] hover:bg-[#fafafa] dark:hover:bg-[#323232] transition-colors shadow-xs"
+            className="fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248] transition-colors shadow-xs"
             title={ch.name}
             aria-label={ch.name}
           >

@@ -167,7 +167,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
           )}
 
           {/* Action Bar (Share & Bookmark) */}
-          <div className="flex items-center justify-end gap-2 p-3 sm:p-4 rounded-[20px] bg-white dark:bg-[#1E1E22] border border-[#E5E7EB] dark:border-[#2D2D35] shadow-xs">
+          <div className="flex items-center justify-end gap-2 p-3 sm:p-4 rounded-[20px] bg-white dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35] shadow-xs">
             <button
               onClick={() => toggleBookmarkNews(article.slug)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-bold transition-all cursor-default ${
@@ -195,7 +195,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               setLightboxImage(article.coverImage);
               setLightboxZoom(1);
             }}
-            className="group relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-black/5 dark:bg-[#1E1E22] border border-[#E5E7EB] dark:border-[#2D2D35] aspect-video sm:aspect-[21/9] shadow-md cursor-default"
+            className="group relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-black/5 dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35] aspect-video sm:aspect-[21/9] shadow-md cursor-default"
             title="Click to view full size"
           >
             <img
@@ -212,7 +212,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
           {/* Full Article Body Content */}
           <div 
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.75 }}
-            className="p-5 md:p-8 rounded-[8px] bg-white dark:bg-[#2b2b2b] border border-[#e5e5e5] dark:border-[#383838] shadow-xs text-[#374151] dark:text-[#d1d5db] space-y-6"
+            className="p-5 md:p-8 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs text-[#374151] dark:text-[#d1d5db] space-y-6"
           >
             {/* Excerpt Lead */}
             <p 
@@ -231,7 +231,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   return (
                     <figure 
                       key={idx} 
-                      className="my-6 rounded-[8px] overflow-hidden border border-[#e5e5e5] dark:border-[#383838] bg-neutral-100 dark:bg-[#202020] shadow-xs group relative cursor-default"
+                      className="my-6 rounded-[8px] overflow-hidden border border-[#e5e5e5] dark:border-[#383838] bg-neutral-100 dark:bg-[#38383d] shadow-xs group relative cursor-default"
                       onClick={() => {
                         setLightboxImage(imgUrl);
                         setLightboxZoom(1);

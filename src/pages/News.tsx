@@ -48,7 +48,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
         <div
           id="featured-news-card"
           onClick={() => navigate(`/news/${featured.slug}`)}
-          className="news-card-featured relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-white dark:bg-[#1E1E22] border-none hover:shadow-xl cursor-pointer group shadow-md transition-all"
+          className="news-card-featured relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-white dark:bg-[#38383d] border-none hover:shadow-xl cursor-pointer group shadow-md transition-all"
         >
           <div className="grid grid-cols-1 md:grid-cols-12 min-h-[200px] md:min-h-[220px]">
             {/* Image */}
@@ -65,7 +65,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
                   }
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-transparent via-black/20 to-black/60 md:to-[#1E1E22] hidden dark:block" />
+              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-transparent via-black/20 to-black/60 md:to-[#38383d] hidden dark:block" />
               
               <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF2020] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md">
@@ -134,7 +134,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
 
       {/* Articles Grid */}
       {filteredNews.length === 0 ? (
-        <div className="py-16 text-center space-y-3 rounded-2xl bg-[#1E1E22]/60 border border-white/10 p-6">
+        <div className="py-16 text-center space-y-3 rounded-2xl bg-[#38383d]/60 border border-white/10 p-6">
           <p className="text-sm font-medium text-[#9CA3AF]">
             No news articles found matching "{query}"
           </p>
