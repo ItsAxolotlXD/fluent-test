@@ -19,6 +19,7 @@ import { Channel, NewsArticle } from '../types';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { searchEpgSchedule, EpgSearchResultItem } from '../services/epgService';
 import { SpinningRing } from '../components/SpinningRing';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 
 interface ImmersiveSearchProps {
@@ -167,6 +168,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
   onSelectChannel,
   onClose,
 }) => {
+  const isMobile = useIsMobile();
   const [query, setQuery] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -300,7 +302,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Find and search V-One"
+              placeholder={isMobile ? "Search" : "Find and search"}
               className="w-full bg-transparent text-xs sm:text-[13.5px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-7 no-fluent-line"
             />
             {query ? (

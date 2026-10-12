@@ -9,6 +9,7 @@ import {
 } from './FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
 
@@ -80,6 +81,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   onDismissUnsavedTooltip = () => {}
 }) => {
   const { settings, hasChanges, applyDraftSettings } = useSettings();
+  const isMobile = useIsMobile();
   const [logoError, setLogoError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
@@ -378,7 +380,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   setIsSearchFlyoutOpen(true);
                 }}
                 onFocus={() => setIsSearchFlyoutOpen(true)}
-                placeholder="Find and search V-One"
+                placeholder={isMobile ? "Search" : "Find and search"}
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
               />
               {searchQuery ? (
