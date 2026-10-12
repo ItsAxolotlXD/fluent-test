@@ -257,11 +257,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       }}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       className={`relative w-full ${
-        aspectRatio === '4:3' ? 'rounded-none' : 'rounded-xl sm:rounded-2xl'
-      } overflow-hidden bg-black shadow-2xl transition-all duration-300 select-none ${
+        aspectRatio === '4:3' ? 'rounded-none' : 'rounded-[10px]'
+      } overflow-hidden bg-black shadow-none border-0 outline-none transition-all duration-300 select-none ${
         isTheaterMode ? 'aspect-[21/9] max-h-[75vh]' : 'aspect-video'
       } ${(!canShowControls && isPlaying) || isSpinnerVisible ? 'cursor-none' : ''}`}
       style={{
+        borderRadius: aspectRatio === '4:3' ? '0px' : '10px',
+        border: 'none',
+        outline: 'none',
         WebkitMaskImage: aspectRatio === '4:3' ? 'none' : '-webkit-radial-gradient(white, black)'
       }}
     >
@@ -278,16 +281,21 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 objectFit: 'fill',
                 margin: '0 auto',
                 display: 'block',
-                borderRadius: '0px'
+                borderRadius: '0px',
+                border: 'none',
+                outline: 'none'
               }
             : {
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                borderRadius: '10px',
+                border: 'none',
+                outline: 'none'
               }
         }
-        className={`h-full bg-black cursor-default ${
-          aspectRatio === '4:3' ? 'rounded-none' : 'rounded-xl sm:rounded-2xl'
+        className={`h-full bg-black cursor-default border-0 outline-none ${
+          aspectRatio === '4:3' ? 'rounded-none' : 'rounded-[10px]'
         } transition-all duration-200`}
         onClick={() => {
           if (!isSpinnerVisible && !error) togglePlay();

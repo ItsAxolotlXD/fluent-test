@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { Channel } from '../types';
-import {
-  Tv,
-  ChevronRight,
-  Hash,
-} from 'lucide-react';
-import { motion } from 'motion/react';
-import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
+import { Tv, Calendar, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
-import { SpinningRing } from '../components/SpinningRing';
 import { EpgScheduleWidget } from '../components/EpgScheduleWidget';
 
 interface LiveTVProps {
@@ -36,46 +30,43 @@ export const LiveTV: React.FC<LiveTVProps> = ({
   const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isTheaterMode, setIsTheaterMode] = useState(false);
-
-  // 3-second loading state on tab load before displaying channel logos
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [isEpgSidebarOpen, setIsEpgSidebarOpen] = useState(false);
 
   // Distinct category list maintaining natural broadcast order
-  const distinctCategories = Array.from(new Set(channels.map((c) => c.category)));
-  const categoryTabs = ['All', ...distinctCategories];
+  const distinctCategories = useMemo(() => {
+    return Array.from(new Set(channels.map((c) => c.category)));
+  }, [channels]);
 
-  // Filter channels by tab & search query
+  const categoryTabs = useMemo(() => {
+    return ['All', ...distinctCategories];
+  }, [distinctCategories]);
+
+  // Filter channels by tab & search query with memoization
   const query = (searchQuery || '').trim().toLowerCase();
-  const filteredChannels = channels.filter((c) => {
-    const matchesCat = selectedCategory === 'All' || c.category === selectedCategory;
-    const matchesSearch = !query ||
-      c.name.toLowerCase().includes(query) ||
-      c.category.toLowerCase().includes(query) ||
-      (c.channelNumber && String(c.channelNumber).includes(query)) ||
-      (c.tags && c.tags.some((t) => t.toLowerCase().includes(query)));
-    return matchesCat && matchesSearch;
-  });
+  const filteredChannels = useMemo(() => {
+    return channels.filter((c) => {
+      const matchesCat = selectedCategory === 'All' || c.category === selectedCategory;
+      const matchesSearch = !query ||
+        c.name.toLowerCase().includes(query) ||
+        c.category.toLowerCase().includes(query) ||
+        (c.channelNumber && String(c.channelNumber).includes(query)) ||
+        (c.tags && c.tags.some((t) => t.toLowerCase().includes(query)));
+      return matchesCat && matchesSearch;
+    });
+  }, [channels, selectedCategory, query]);
 
   // Group channels by category when viewing "Tất cả" (or show single category if filtered)
-  const groupedCategories = distinctCategories
-    .map((category) => ({
-      category,
-      channels: filteredChannels.filter((c) => c.category === category)
-    }))
-    .filter((group) => group.channels.length > 0);
+  const groupedCategories = useMemo(() => {
+    return distinctCategories
+      .map((category) => ({
+        category,
+        channels: filteredChannels.filter((c) => c.category === category)
+      }))
+      .filter((group) => group.channels.length > 0);
+  }, [distinctCategories, filteredChannels]);
 
   return (
     <div className="space-y-4 sm:space-y-8 pb-16">
-      {/* Support Ceased Banner */}
-      <DiscontinuedBanner navigate={navigate} />
-
       {/* Top Banner / Channel Title */}
       <div>
         <div className="flex items-center gap-2">
@@ -88,39 +79,16 @@ export const LiveTV: React.FC<LiveTVProps> = ({
         </p>
       </div>
 
-      {/* Video Player & TV Schedule (Lịch phát sóng) Section */}
+      {/* Video Player Section (Clean full width without adjacent EPG panel) */}
       <div className="w-full">
-        {isTheaterMode ? (
-          <div className="space-y-4">
-            <VideoPlayer
-              channel={currentChannel}
-              onOpenCustomStreamModal={onOpenCustomStreamModal}
-              isTheaterMode={isTheaterMode}
-              onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
-            />
-            <div className="w-full">
-              <EpgScheduleWidget currentChannel={currentChannel} />
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
-            {/* Stream Player Area */}
-            <div className="lg:col-span-8 w-full">
-              <VideoPlayer
-                channel={currentChannel}
-                onOpenCustomStreamModal={onOpenCustomStreamModal}
-                isTheaterMode={isTheaterMode}
-                onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
-              />
-            </div>
-
-            {/* EPG Broadcast Schedule (Lịch phát sóng) placed beside stream player */}
-            <div className="lg:col-span-4 w-full">
-              <EpgScheduleWidget currentChannel={currentChannel} />
-            </div>
-          </div>
-        )}
+        <VideoPlayer
+          channel={currentChannel}
+          onOpenCustomStreamModal={onOpenCustomStreamModal}
+          isTheaterMode={isTheaterMode}
+          onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
+        />
       </div>
+
 
       {/* Channel List Section */}
       <div className="space-y-6 pt-2">
@@ -138,10 +106,37 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
           {/* Category Tabs Filter */}
           <div id="livetv-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            {categoryTabs.map((cat, idx) => (
+            {/* All button */}
+            <button
+              id="livetv-cat-btn-all"
+              type="button"
+              onClick={() => setSelectedCategory('All')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
+                selectedCategory === 'All'
+                  ? 'bg-[#E50914] text-white shadow-sm'
+                  : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
+              }`}
+            >
+              All
+            </button>
+
+            {/* Colored button with calendar icon placed right next to All button to open right sidebar */}
+            <button
+              id="btn-livetv-open-epg-sidebar"
+              type="button"
+              onClick={() => setIsEpgSidebarOpen(true)}
+              className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-[#0078d4] via-[#0284c7] to-[#4cc2ff] hover:from-[#006cbd] hover:to-[#38bdf8] active:scale-95 text-white shadow-sm hover:shadow border border-white/25"
+              title="Xem lịch phát sóng các kênh (EPG)"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Lịch phát sóng</span>
+            </button>
+
+            {/* Remaining Category Tabs */}
+            {categoryTabs.filter((cat) => cat !== 'All').map((cat, idx) => (
               <button
                 key={cat}
-                id={`livetv-cat-btn-${idx}`}
+                id={`livetv-cat-btn-${idx + 1}`}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
@@ -155,6 +150,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
             ))}
           </div>
         </div>
+
 
         {/* Channel Categories & Grids */}
         {filteredChannels.length === 0 ? (
@@ -192,35 +188,33 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
                       return (
                         <div
-                          key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
+                          key={ch.id}
                           id={`livetv-channel-card-${ch.id}`}
                           onClick={() => onSelectChannel(ch)}
                           className={`fluent-reveal-item channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d] ${
                             isSelected ? 'is-selected' : ''
-                          } ${!isLoading ? 'slide-up-refresh' : ''}`}
+                          }`}
                           title={ch.name}
                         >
                           {/* Channel Logo Box without background (strictly only logo) */}
                           <div className="w-full h-full flex items-center justify-center p-1 relative">
-                            {isLoading ? (
-                              <SpinningRing size={24} strokeWidth={3.5} color="#4cc2ff" />
-                            ) : (
-                              <img
-                                src={ch.logo}
-                                alt={ch.name}
-                                referrerPolicy="no-referrer"
-                                className={`${
-                                  ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                                    ? 'max-h-[78%] max-w-[92%] scale-110'
-                                    : ch.category === 'Kênh VTV'
-                                      ? 'max-h-[56%] max-w-[80%]'
-                                      : 'max-h-[58%] max-w-[82%]'
-                                } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                                onError={(e) => {
-                                  (e.target as HTMLElement).style.display = 'none';
-                                }}
-                              />
-                            )}
+                            <img
+                              src={ch.logo}
+                              alt={ch.name}
+                              loading="lazy"
+                              decoding="async"
+                              referrerPolicy="no-referrer"
+                              className={`${
+                                ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                                  ? 'max-h-[78%] max-w-[92%] scale-110'
+                                  : ch.category === 'Kênh VTV'
+                                    ? 'max-h-[56%] max-w-[80%]'
+                                    : 'max-h-[58%] max-w-[82%]'
+                              } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                            />
                           </div>
                         </div>
                       );
@@ -249,6 +243,41 @@ export const LiveTV: React.FC<LiveTVProps> = ({
           </div>
         )}
       </div>
+
+      {/* Right Sidebar Drawer for EPG Broadcast Schedule */}
+      <AnimatePresence>
+
+        {isEpgSidebarOpen && (
+          <div className="fixed inset-0 z-50 overflow-hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setIsEpgSidebarOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            />
+
+            {/* Right Sidebar Drawer Panel with slide animation */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 26, stiffness: 260 }}
+              className="absolute top-0 right-0 h-full w-full sm:w-[460px] md:w-[480px] max-w-[95vw] bg-[#1a1d22] text-white shadow-2xl border-l border-white/10 flex flex-col z-10 overflow-hidden"
+            >
+              <EpgScheduleWidget
+                currentChannel={currentChannel}
+                isSidebarMode={true}
+                onClose={() => setIsEpgSidebarOpen(false)}
+                className="h-full"
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+

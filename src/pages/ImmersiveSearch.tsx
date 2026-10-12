@@ -8,7 +8,8 @@ import {
   SlidersHorizontal,
   ChevronRight,
   Clock,
-  Sparkles
+  Sparkles,
+  Calendar
 } from 'lucide-react';
 import { FluentSearchIcon } from '../components/FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
@@ -16,6 +17,9 @@ import { CHANNELS_DATA } from '../data/channels';
 import { NEWS_DATA } from '../data/news';
 import { Channel, NewsArticle } from '../types';
 import { CategoryIcon } from '../components/CategoryIcon';
+import { searchEpgSchedule, EpgSearchResultItem } from '../services/epgService';
+import { SpinningRing } from '../components/SpinningRing';
+
 
 interface ImmersiveSearchProps {
   navigate: (path: string, state?: any) => void;
@@ -163,9 +167,29 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
   onSelectChannel,
   onClose,
 }) => {
-  const [query, setQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'channels' | 'news'>('all');
+  const [query, setQuery] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('q') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [activeTab, setActiveTab] = useState<'all' | 'channels' | 'epg' | 'news'>('all');
+  const [epgResults, setEpgResults] = useState<EpgSearchResultItem[]>([]);
+  const [isSearchingEpg, setIsSearchingEpg] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync if location search changes
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlQ = params.get('q');
+      if (urlQ && urlQ !== query) {
+        setQuery(urlQ);
+      }
+    } catch {}
+  }, []);
 
   // Automatically focus the search input upon mounting
   useEffect(() => {
@@ -222,7 +246,37 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
     });
   }, [trimmed]);
 
-  const totalMatches = matchedChannels.length + matchedNews.length;
+  // Real-time EPG Search across channels from epg.io.vn
+  useEffect(() => {
+    if (!trimmed || trimmed.length < 2) {
+      setEpgResults([]);
+      setIsSearchingEpg(false);
+      return;
+    }
+
+    let isMounted = true;
+    setIsSearchingEpg(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const results = await searchEpgSchedule(trimmed, CHANNELS_DATA);
+        if (isMounted) {
+          setEpgResults(results);
+        }
+      } catch {
+        if (isMounted) setEpgResults([]);
+      } finally {
+        if (isMounted) setIsSearchingEpg(false);
+      }
+    }, 220);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [trimmed]);
+
+  const totalMatches = matchedChannels.length + matchedNews.length + epgResults.length;
 
   return (
     <div 
@@ -286,11 +340,11 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-1.5 bg-[#200d23] p-1 rounded-full border border-[#3b1540]">
+              <div className="flex items-center gap-1.5 bg-[#200d23] p-1 rounded-full border border-[#3b1540] overflow-x-auto no-scrollbar">
                 <button
                   type="button"
                   onClick={() => setActiveTab('all')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     activeTab === 'all'
                       ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white dark:hover:text-white'
@@ -301,7 +355,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('channels')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     activeTab === 'channels'
                       ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white dark:hover:text-white'
@@ -311,8 +365,20 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveTab('epg')}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === 'epg'
+                      ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
+                      : 'text-[#8A798C] hover:text-white dark:hover:text-white'
+                  }`}
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Lịch phát sóng ({epgResults.length})</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setActiveTab('news')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     activeTab === 'news'
                       ? 'bg-[#4cc2ff] text-white dark:text-black shadow-md'
                       : 'text-[#8A798C] hover:text-white dark:hover:text-white'
@@ -394,7 +460,112 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                   </div>
                 )}
 
-                {/* 2. Matched News */}
+                {/* 2. Matched EPG TV Schedule (Lịch phát sóng) */}
+                {(activeTab === 'all' || activeTab === 'epg') && (epgResults.length > 0 || isSearchingEpg) && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm font-bold text-[#4cc2ff]">
+                        <Calendar className="w-4 h-4" />
+                        <span>LỊCH PHÁT SÓNG / TV SCHEDULE ({epgResults.length})</span>
+                      </div>
+                      {isSearchingEpg && (
+                        <span className="text-xs text-[#9CA3AF] flex items-center gap-1.5">
+                          <SpinningRing size={13} strokeWidth={2} color="#4cc2ff" />
+                          <span>Đang tra cứu epg.io.vn...</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {epgResults.length === 0 && isSearchingEpg ? (
+                      <div className="py-8 flex flex-col items-center justify-center gap-2 bg-black/5 dark:bg-[#200d23]/40 rounded-2xl border border-black/10 dark:border-[#3b1540]/60">
+                        <SpinningRing size={26} strokeWidth={3} color="#4cc2ff" />
+                        <span className="text-xs text-[#9CA3AF]">Đang tìm chương trình trong lịch phát sóng...</span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        {(activeTab === 'epg' ? epgResults : epgResults.slice(0, 9)).map((item) => {
+                          const isLive = item.program.isLive;
+                          const isUpcoming = item.program.isUpcoming;
+                          return (
+                            <div
+                              key={`${item.channel.id}-${item.program.id}-${item.program.start}`}
+                              onClick={() => {
+                                onSelectChannel(item.channel);
+                                navigate(`/live-tv?channel=${item.channel.slug}`);
+                              }}
+                              className={`group p-3.5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between border shadow-sm ${
+                                isLive
+                                  ? 'bg-[#E50914]/10 dark:bg-[#E50914]/15 border-[#E50914]/40 hover:border-[#E50914]'
+                                  : 'bg-white dark:bg-[#200d23] hover:bg-black/5 dark:hover:bg-[#2e1233] border-black/10 dark:border-[#3b1540] hover:border-[#4cc2ff]'
+                              }`}
+                            >
+                              <div>
+                                {/* Channel & Live status header */}
+                                <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-black/5 dark:border-white/5">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="w-6 h-6 rounded-md bg-black/5 dark:bg-white/10 flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
+                                      <img
+                                        src={item.channel.logo}
+                                        alt={item.channel.name}
+                                        className="w-full h-full object-contain"
+                                        onError={(e) => {
+                                          (e.target as HTMLElement).style.display = 'none';
+                                        }}
+                                      />
+                                    </div>
+                                    <span className="text-xs font-bold text-[#111827] dark:text-white truncate">
+                                      {item.channel.name}
+                                    </span>
+                                  </div>
+
+                                  {isLive ? (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E50914] text-white flex items-center gap-1 shadow-xs">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                                      ĐANG PHÁT
+                                    </span>
+                                  ) : isUpcoming ? (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
+                                      SẮP PHÁT
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/5 dark:bg-white/10 text-[#6B7280] dark:text-[#9CA3AF]">
+                                      ĐÃ PHÁT
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Program title & description */}
+                                <h4 className="text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#4cc2ff] line-clamp-2 leading-snug transition-colors">
+                                  {item.program.title}
+                                </h4>
+                                {item.program.description && (
+                                  <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1 line-clamp-2 leading-relaxed">
+                                    {item.program.description}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Time & Action button */}
+                              <div className="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-black/5 dark:border-white/5 text-xs">
+                                <div className="flex items-center gap-1.5 font-mono text-[#6B7280] dark:text-[#A1A1AA]">
+                                  <Clock className="w-3.5 h-3.5 shrink-0 text-[#4cc2ff]" />
+                                  <span>{item.program.startTimeText} - {item.program.stopTimeText}</span>
+                                </div>
+
+                                <div className="flex items-center gap-1 text-[11px] font-semibold text-[#4cc2ff] group-hover:translate-x-0.5 transition-transform">
+                                  <Play className="w-3 h-3 fill-current" />
+                                  <span>{isLive ? 'Xem ngay' : 'Mở kênh'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 3. Matched News */}
                 {(activeTab === 'all' || activeTab === 'news') && matchedNews.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm font-bold text-[#E6005A]">

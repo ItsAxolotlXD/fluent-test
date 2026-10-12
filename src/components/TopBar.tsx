@@ -266,7 +266,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (searchQuery.trim()) {
       saveToHistory(searchQuery.trim());
       setIsSearchFlyoutOpen(false);
-      navigate(`/channels?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     } else {
       setIsSearchFlyoutOpen(false);
       onOpenSearch();

@@ -695,8 +695,8 @@ export default function App() {
           />
         )}
 
-        {/* Dynamic Page Content with smooth slide-up transition - Bo cong 20px góc trên trái */}
-        <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-[20px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
+        {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái */}
+        <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
           currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
@@ -713,12 +713,13 @@ export default function App() {
           ) : (
             <div
               key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
-              className="tab-element-slide-up-container w-full h-full rounded-tl-[20px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden"
+              className="tab-element-slide-up-container w-full h-full rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden"
             >
               {renderContent()}
             </div>
           )}
         </main>
+
       </div>
 
       {/* Floaty bar navigation (Tab View) */}

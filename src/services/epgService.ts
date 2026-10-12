@@ -361,3 +361,83 @@ function recomputeProgramStatus(guide: EpgGuideResponse): EpgGuideResponse {
     programs: updated,
   };
 }
+
+export interface EpgSearchResultItem {
+  channel: Channel;
+  program: EpgProgram;
+}
+
+export function normalizeVietnamese(str: string): string {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .trim();
+}
+
+// Major channels prioritized for fast search
+const POPULAR_SEARCH_EPG_IDS = [
+  'vtv1', 'vtv2', 'vtv3', 'vtv4', 'vtv5', 'vtv7', 'vtv8', 'vtv9',
+  'htv7', 'htv9', 'htv2', 'vinh_long_1', 'vinh_long_2', 'sctv1', 'sctv9',
+  'on_football', 'on_sports', 'ha_noi_1', 'da_nang_1'
+];
+
+export async function searchEpgSchedule(
+  query: string,
+  channels: Channel[]
+): Promise<EpgSearchResultItem[]> {
+  const normQ = normalizeVietnamese(query);
+  if (!normQ || normQ.length < 2) return [];
+
+  // Filter channels available in current channel list that have EPG support
+  const targetChannels = channels.filter((c) => {
+    const id = c.id.toLowerCase();
+    const slug = (c.slug || '').toLowerCase();
+    return !!CHANNEL_EPG_MAP[id] || !!CHANNEL_EPG_MAP[slug] || POPULAR_SEARCH_EPG_IDS.includes(id);
+  });
+
+  // Prioritize top channels first
+  targetChannels.sort((a, b) => {
+    const aTop = POPULAR_SEARCH_EPG_IDS.includes(a.id) ? 1 : 0;
+    const bTop = POPULAR_SEARCH_EPG_IDS.includes(b.id) ? 1 : 0;
+    return bTop - aTop;
+  });
+
+  // Take top 20 channels to fetch/search
+  const selectedChannels = targetChannels.slice(0, 20);
+
+  const results: EpgSearchResultItem[] = [];
+
+  const promises = selectedChannels.map(async (channel) => {
+    try {
+      const guide = await fetchChannelEpgGuide(channel);
+      if (!guide || !guide.programs) return;
+
+      for (const prog of guide.programs) {
+        const progTitleNorm = normalizeVietnamese(prog.title);
+        const progDescNorm = normalizeVietnamese(prog.description || '');
+
+        if (progTitleNorm.includes(normQ) || progDescNorm.includes(normQ)) {
+          results.push({ channel, program: prog });
+        }
+      }
+    } catch {
+      // Ignore individual channel fetch failures
+    }
+  });
+
+  await Promise.allSettled(promises);
+
+  // Sort by priority: Live first, then upcoming, then past (most recent first)
+  return results.sort((a, b) => {
+    if (a.program.isLive && !b.program.isLive) return -1;
+    if (!a.program.isLive && b.program.isLive) return 1;
+    if (a.program.isUpcoming && !b.program.isUpcoming) return -1;
+    if (!a.program.isUpcoming && b.program.isUpcoming) return 1;
+    return new Date(b.program.start).getTime() - new Date(a.program.start).getTime();
+  });
+}
+

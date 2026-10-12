@@ -187,15 +187,16 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 20px ở góc trên trái trang, các góc còn lại ko bo */
+/* Main tab page: bo cong 10px ở góc trên trái trang, các góc còn lại ko bo */
 main,
 .main-tab-page,
 .tab-element-slide-up-container {
-  border-top-left-radius: 20px !important;
+  border-top-left-radius: 10px !important;
   border-top-right-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
 }
+
 
 /* Nút Save ở settings ko có glow */
 #btn-settings-save,
@@ -3398,13 +3399,14 @@ html.light-mode #topbar-search-box {
   border-color: rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Category Icons ở Light Mode đổi thành màu đen (#000000) */
+/* Category Icons ở Light Mode dùng gradient xanh dương đậm, Dark Mode dùng gradient xanh dương nhạt */
 html.light-mode .category-icon-svg path,
 html.light-mode .category-icon-path,
 html.light-mode svg.category-icon-svg path,
 html.light-mode [class*="CategoryIcon"] path {
-  stroke: #000000 !important;
+  stroke: url(#vplay-cat-inverted-triangle-grad-light) !important;
 }
+
 
 /* TopBar Search Results Flyout with 50% Opacity and Light Mode */
 .topbar-search-results-dropdown {
@@ -5413,16 +5415,15 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
    Live TV Video Player - Spatial Glass Elements & Controls
    ========================================================================== */
 #waves-video-player-container {
-  border-radius: 16px !important;
+  border-radius: 10px !important;
   overflow: hidden !important;
-  border: 1px solid transparent !important;
-  background-image: 
-    linear-gradient(#000000, #000000), 
-    linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(160, 160, 175, 0.15) 20%, rgba(160, 160, 175, 0.05) 50%, rgba(160, 160, 175, 0.15) 80%, rgba(255, 255, 255, 0.50) 100%) !important;
-  background-origin: padding-box, border-box !important;
-  background-clip: padding-box, border-box !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.55) !important;
+  border: none !important;
+  border-width: 0 !important;
+  outline: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }
+
 
 /* VisionOS Spatial Glass Player Buttons */
 .glass-player-btn {
@@ -5512,8 +5513,11 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
 
 @media (max-width: 640px) {
   #waves-video-player-container {
-    border-radius: 12px !important;
+    border-radius: 10px !important;
+    border: none !important;
+    outline: none !important;
   }
+
   .glass-player-btn {
     box-shadow: inset 0 0.5px 1px 0 rgba(255, 255, 255, 0.4), 0 3px 8px rgba(0, 0, 0, 0.25) !important;
   }
@@ -5673,14 +5677,14 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
    Live TV & Video Player Light Mode Adaptations
    ========================================================================== */
 html.light-mode #waves-video-player-container {
-  border: 1px solid transparent !important;
-  background-image: 
-    linear-gradient(#000000, #000000), 
-    linear-gradient(180deg, rgba(100, 116, 139, 0.45) 0%, rgba(148, 163, 184, 0.15) 25%, rgba(148, 163, 184, 0.15) 75%, rgba(100, 116, 139, 0.45) 100%) !important;
-  background-origin: padding-box, border-box !important;
-  background-clip: padding-box, border-box !important;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+  border-width: 0 !important;
+  outline: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-radius: 10px !important;
 }
+
 
 html.light-mode .video-player-controls-bar {
   border: 1px solid transparent !important;
