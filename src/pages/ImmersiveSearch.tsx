@@ -232,7 +232,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
       <div className="max-w-6xl mx-auto space-y-7 sm:space-y-9">
         {/* Top Search Bar Row */}
         <div className="flex items-center justify-center gap-3 w-full">
-          {/* Search Box matching Search in V-One */}
+          {/* Search Box matching Find and search V-One */}
           <div 
             id="immersive-search-capsule"
             onClick={() => {
@@ -246,7 +246,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search in V-One"
+              placeholder="Find and search V-One"
               className="w-full bg-transparent text-xs sm:text-[13.5px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-7 no-fluent-line"
             />
             {query ? (

@@ -210,7 +210,7 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-28 pt-2 select-none">
+    <div className="w-full max-w-7xl mx-auto space-y-6 pb-28 pt-2 select-none">
       {/* 1. Top Header on Main Category View OR Minimal Back Bar on Subpage */}
       {activeCategory === null ? (
         <div className="space-y-2">
@@ -223,7 +223,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 type="button"
                 id="btn-settings-save"
                 onClick={handleApplySettings}
-                className="px-5 py-2 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                className="px-5 py-2 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
               >
                 <span>Save</span>
               </button>
@@ -482,9 +482,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   href="https://test-vplay.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
                 >
-                  <span className="font-bold">Switch</span>
+                  <span className="font-normal">Switch</span>
                 </a>
               </div>
 
@@ -503,9 +503,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-changelogs-read"
                   type="button"
                   onClick={() => setIsWelcomeModalOpen(true)}
-                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="font-bold">Read</span>
+                  <span className="font-normal">Read</span>
                 </button>
               </div>
 
@@ -524,9 +524,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-update-vplay"
                   type="button"
                   onClick={onOpenUpdate}
-                  className="px-4 py-1.5 rounded-full font-bold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="font-bold">Update</span>
+                  <span className="font-normal">Update</span>
                 </button>
               </div>
             </div>
@@ -606,17 +606,9 @@ export const Settings: React.FC<SettingsProps> = ({
                     </span>
                   </div>
 
-                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
-                  <div className="pt-7 pb-2 px-2">
+                  {/* Clean Slider matching image.png */}
+                  <div className="py-2.5 px-1">
                     <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
-                      {/* Floating Value Tooltip above thumb matching image.png */}
-                      <div 
-                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[32px] text-center z-30"
-                        style={{ left: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
-                      >
-                        {draftSettings.spatialGlassOpacity ?? 20}
-                      </div>
-
                       <input
                         id="slider-spatial-glass-opacity"
                         type="range"
@@ -629,21 +621,14 @@ export const Settings: React.FC<SettingsProps> = ({
                         aria-label="Độ trong suốt (Opacity)"
                       />
 
-                      {/* 11 Tick Marks along track matching image.png */}
-                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
-                        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((t) => (
-                          <div key={t} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
-                        ))}
-                      </div>
-
                       {/* Track */}
-                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#7f7f84] overflow-visible pointer-events-none z-10">
                         {/* Active Filled Bar */}
                         <div 
                           className="absolute left-0 top-0 h-full rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] transition-all duration-75 ease-out"
                           style={{ width: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
                         />
-                        {/* Thumb: White Puck with Blue Dot */}
+                        {/* Thumb: Concentric Dark Ring & Blue Dot matching image.png */}
                         <div 
                           id="settings-slider-thumb-opacity"
                           className="settings-slider-thumb"
@@ -681,17 +666,9 @@ export const Settings: React.FC<SettingsProps> = ({
                     </span>
                   </div>
 
-                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
-                  <div className="pt-7 pb-2 px-2">
+                  {/* Clean Slider matching image.png */}
+                  <div className="py-2.5 px-1">
                     <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
-                      {/* Floating Value Tooltip above thumb matching image.png */}
-                      <div 
-                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[32px] text-center z-30"
-                        style={{ left: `${draftSettings.spatialGlassBlur ?? 10}%` }}
-                      >
-                        {draftSettings.spatialGlassBlur ?? 10}
-                      </div>
-
                       <input
                         id="slider-spatial-glass-blur"
                         type="range"
@@ -704,21 +681,14 @@ export const Settings: React.FC<SettingsProps> = ({
                         aria-label="Độ mờ (Blur)"
                       />
 
-                      {/* 11 Tick Marks along track matching image.png */}
-                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
-                        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((t) => (
-                          <div key={t} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
-                        ))}
-                      </div>
-
                       {/* Track */}
-                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#7f7f84] overflow-visible pointer-events-none z-10">
                         {/* Active Filled Bar */}
                         <div 
-                          className="absolute left-0 top-0 h-full rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] transition-all duration-75 ease-out"
+                          className="absolute left-0 top-0 h-full rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] transition-all duration-75 ease-out"
                           style={{ width: `${draftSettings.spatialGlassBlur ?? 10}%` }}
                         />
-                        {/* Thumb: White Puck with Blue Dot */}
+                        {/* Thumb: Concentric Dark Ring & Blue Dot matching image.png */}
                         <div 
                           id="settings-slider-thumb-blur"
                           className="settings-slider-thumb"
@@ -771,7 +741,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         }}
                         className={`flex items-center justify-center gap-1.5 rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default ${
                           (draftSettings.theme || 'dark') === val
-                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                             : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                         }`}
                         aria-pressed={(draftSettings.theme || 'dark') === val}
@@ -815,9 +785,9 @@ export const Settings: React.FC<SettingsProps> = ({
                           updateDraft('navigationMode', value); 
                           updateDraft('immersiveSidebar', false); 
                         }} 
-                        className={`rounded-sm sm:rounded-[6px] px-2.5 py-1.5 text-xs font-semibold transition-all cursor-default text-center truncate ${
+                        className={`rounded-sm sm:rounded-[6px] px-2.5 py-1.5 text-xs font-normal transition-all cursor-default text-center truncate ${
                           draftSettings.navigationMode === value
-                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                             : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                         }`} 
                         aria-pressed={draftSettings.navigationMode === value}
@@ -847,17 +817,9 @@ export const Settings: React.FC<SettingsProps> = ({
                     </div>
                   </div>
 
-                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
-                  <div className="pt-7 pb-2 px-2">
+                  {/* Clean Slider matching image.png */}
+                  <div className="py-2.5 px-1">
                     <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
-                      {/* Floating Value Tooltip above thumb matching image.png */}
-                      <div 
-                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[36px] text-center z-30"
-                        style={{ left: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
-                      >
-                        {FONT_SCALE_CONFIG[draftSettings.fontScale]?.label || '100%'}
-                      </div>
-
                       <input
                         id="slider-font-scale"
                         type="range"
@@ -870,21 +832,14 @@ export const Settings: React.FC<SettingsProps> = ({
                         aria-label="Thu phóng giao diện"
                       />
 
-                      {/* Tick Marks along track matching image.png */}
-                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
-                        {FONT_SCALE_CONFIG.map((_, idx) => (
-                          <div key={idx} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
-                        ))}
-                      </div>
-
                       {/* Track */}
-                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#7f7f84] overflow-visible pointer-events-none z-10">
                         {/* Active Filled Bar */}
                         <div 
                           className="absolute left-0 top-0 h-full rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] transition-all duration-150 ease-out"
                           style={{ width: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
                         />
-                        {/* Thumb: White Puck with Blue Dot */}
+                        {/* Thumb: Concentric Dark Ring & Blue Dot matching image.png */}
                         <div 
                           id="settings-slider-thumb"
                           className="settings-slider-thumb"
@@ -897,7 +852,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       </div>
                     </div>
 
-                    <div className="relative flex items-center justify-between text-[11px] pt-1 px-1">
+                    <div className="relative flex items-center justify-between text-[11px] pt-2 px-1">
                       {FONT_SCALE_CONFIG.map((item, idx) => {
                         const isSelected = draftSettings.fontScale === idx;
                         let alignClass = 'text-center';
@@ -911,7 +866,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             onClick={() => updateDraft('fontScale', idx)}
                             className={`cursor-default transition-colors py-1 ${alignClass} ${
                               isSelected
-                                ? 'text-[#0078d4] dark:text-[#4cc2ff] font-bold text-xs'
+                                ? 'text-[#0078d4] dark:text-[#4cc2ff] font-normal text-xs'
                                 : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
                             }`}
                           >
@@ -944,9 +899,9 @@ export const Settings: React.FC<SettingsProps> = ({
                             key={pos}
                             type="button"
                             onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
-                            className={`rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default text-center ${
+                            className={`rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-normal transition-all cursor-default text-center ${
                               draftSettings.sidebarPosition === pos
-                                ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                                ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                                 : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                             }`}
                           >
@@ -1021,7 +976,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
                         className={`rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default text-center ${
                           draftSettings.streamAspectRatio === value
-                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                             : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                         }`}
                         aria-pressed={draftSettings.streamAspectRatio === value}

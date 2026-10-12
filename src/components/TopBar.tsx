@@ -378,7 +378,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   setIsSearchFlyoutOpen(true);
                 }}
                 onFocus={() => setIsSearchFlyoutOpen(true)}
-                placeholder="Search in V-One"
+                placeholder="Find and search V-One"
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
               />
               {searchQuery ? (

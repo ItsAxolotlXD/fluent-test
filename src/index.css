@@ -578,7 +578,7 @@ html.light-mode #vplay-splash-screen {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-/* All Search Boxes: text & icon white in dark mode, matching Search in V-One */
+/* All Search Boxes: text & icon white in dark mode, matching Find and search V-One */
 html.dark #topbar-search-box input,
 html.dark #channels-search-box input,
 html.dark #settings-search-box input,
@@ -612,7 +612,7 @@ html.dark #find-words-bar svg {
   fill: currentColor !important;
 }
 
-/* All Search Boxes: text & icon in light mode, matching Search in V-One */
+/* All Search Boxes: text & icon in light mode, matching Find and search V-One */
 html.light-mode #topbar-search-box input,
 html.light-mode #channels-search-box input,
 html.light-mode #settings-search-box input,
@@ -2410,7 +2410,7 @@ button[class*="bg-[#4cc2ff]"]:active,
   color: #FFFFFF !important;
 }
 
-/* WinUI 3 / Windows 11 Standard Toggle Switch Styling */
+/* WinUI 3 / Windows 11 Standard Toggle Switch Styling - No border/outline in any state */
 button[role="switch"],
 .toggle-switch-btn {
   width: 40px !important;
@@ -2419,6 +2419,7 @@ button[role="switch"],
   min-height: 20px !important;
   box-sizing: border-box !important;
   border-radius: 9999px !important;
+  border: none !important;
   padding: 0 !important;
   position: relative !important;
   overflow: hidden !important;
@@ -2431,7 +2432,7 @@ button[role="switch"],
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  transition: background-color 0.16s ease, border-color 0.16s ease !important;
+  transition: background-color 0.16s ease !important;
   cursor: default !important;
   flex-shrink: 0 !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -2450,21 +2451,24 @@ button[role="switch"]:hover,
   outline-style: none !important;
   outline-color: transparent !important;
   box-shadow: none !important;
+  border: none !important;
 }
 
-/* OFF state (Dark Mode) */
+/* OFF state (Dark Mode) - No outline, no border stroke */
 button[role="switch"][aria-checked="false"],
 .toggle-switch-btn[aria-checked="false"] {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
 button[role="switch"][aria-checked="false"]:hover,
 .toggle-switch-btn[aria-checked="false"]:hover {
-  background-color: rgba(255, 255, 255, 0.14) !important;
-  border-color: rgba(255, 255, 255, 0.65) !important;
+  background-color: rgba(255, 255, 255, 0.26) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* ON state (Dark Mode): Accent cyan-blue filled pill with NO outer border/outline */
@@ -2480,6 +2484,7 @@ button[role="switch"][aria-checked="true"]:hover,
 .toggle-switch-btn[aria-checked="true"]:hover {
   background-color: #60cdff !important;
   border: none !important;
+  outline: none !important;
 }
 
 button[role="switch"]:active,
@@ -3831,7 +3836,27 @@ html.light-mode .fluent-modal-footer {
   border-radius: 4px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
   transition: all 0.1s ease-in-out !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
+}
+
+/* Text trên toàn bộ các button KHÔNG bold (Windows 11 Fluent regular weight) */
+button,
+button *,
+[role="button"],
+[role="button"] *,
+.fluent-btn-primary,
+.fluent-btn-primary *,
+.fluent-btn-secondary,
+.fluent-btn-secondary *,
+.category-tab-btn,
+.category-tab-btn *,
+.btn-normal,
+.btn-normal *,
+.btn-fd932f,
+.btn-fd932f *,
+input[type="button"],
+input[type="submit"] {
+  font-weight: 400 !important;
 }
 
 .fluent-btn-primary:hover {
@@ -4630,82 +4655,104 @@ html.light-mode .settings-slider-capsule {
   transition: transform 0.35s cubic-bezier(0.34, 1.65, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-/* WinUI 3 Slider Styling (Windows 11) - Matching reference design */
+/* Slider Styling - Matching user dark mode reference design */
 .settings-slider-track {
   height: 4px !important;
   min-height: 4px !important;
-  background-color: #505058 !important;
+  background-color: #7f7f84 !important;
   border-radius: 9999px !important;
 }
 
 html.light-mode .settings-slider-track {
-  background-color: #8a8a8a !important;
+  background-color: #9e9e9e !important;
 }
 
-/* Outer Thumb: 18px White Circular Puck with subtle shadow */
+/* Outer Thumb: 22px Dark Disc matching image.png */
 #settings-slider-thumb,
-.settings-slider-thumb {
+.settings-slider-thumb,
+[id^="settings-slider-thumb-"] {
   position: absolute !important;
   top: 50% !important;
-  width: 18px !important;
-  height: 18px !important;
-  min-width: 18px !important;
-  min-height: 18px !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-radius: 9999px !important;
-  background-color: #FFFFFF !important;
+  background-color: #424245 !important;
   background-image: none !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22) !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
   transform: translate(-50%, -50%) scale(1) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out !important;
+  transition: transform 0.12s ease-out, background-color 0.12s ease !important;
   pointer-events: none !important;
   z-index: 10 !important;
 }
 
-/* Inner Accent Dot: 7px solid blue center circle */
+/* Inner Accent Dot: 11px solid #4cc2ff center circle matching image.png */
 #settings-slider-thumb::after,
-.settings-slider-thumb::after {
+.settings-slider-thumb::after,
+[id^="settings-slider-thumb-"]::after {
   content: "" !important;
   display: block !important;
-  width: 7px !important;
-  height: 7px !important;
+  width: 11px !important;
+  height: 11px !important;
   border-radius: 9999px !important;
   background-color: #4cc2ff !important;
-  transition: transform 0.15s ease-out !important;
+  transition: transform 0.12s ease-out !important;
+}
+
+/* Light Mode Slider Thumb */
+html.light-mode #settings-slider-thumb,
+html.light-mode .settings-slider-thumb,
+html.light-mode [id^="settings-slider-thumb-"] {
+  background-color: #D1D5DB !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
 }
 
 html.light-mode #settings-slider-thumb::after,
-html.light-mode .settings-slider-thumb::after {
+html.light-mode .settings-slider-thumb::after,
+html.light-mode [id^="settings-slider-thumb-"]::after {
   background-color: #005fb8 !important;
 }
 
-/* Slider Thumb Hover & Active: Clean smooth feedback, never transparent */
+/* Slider Thumb Hover & Active: Clean smooth feedback */
 .settings-slider-capsule:hover #settings-slider-thumb,
 .settings-slider-capsule:hover .settings-slider-thumb,
+.settings-slider-capsule:hover [id^="settings-slider-thumb-"],
 .group:hover #settings-slider-thumb,
 .group:hover .settings-slider-thumb,
+.group:hover [id^="settings-slider-thumb-"],
 #slider-font-scale:hover ~ * #settings-slider-thumb,
 #slider-font-scale:hover ~ * .settings-slider-thumb,
-#slider-spatial-glass-opacity:hover ~ * .settings-slider-thumb,
-#slider-spatial-glass-blur:hover ~ * .settings-slider-thumb,
+#slider-spatial-glass-opacity:hover ~ * [id^="settings-slider-thumb-"],
+#slider-spatial-glass-blur:hover ~ * [id^="settings-slider-thumb-"],
 #settings-slider-thumb:hover,
-.settings-slider-thumb:hover {
+.settings-slider-thumb:hover,
+[id^="settings-slider-thumb-"]:hover {
   transform: translate(-50%, -50%) scale(1.08) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28) !important;
+  background-color: #4c4c50 !important;
 }
 
 .settings-slider-capsule:active #settings-slider-thumb,
 .settings-slider-capsule:active .settings-slider-thumb,
+.settings-slider-capsule:active [id^="settings-slider-thumb-"],
 #slider-font-scale:active ~ * #settings-slider-thumb,
 #slider-font-scale:active ~ * .settings-slider-thumb,
-#slider-spatial-glass-opacity:active ~ * .settings-slider-thumb,
-#slider-spatial-glass-blur:active ~ * .settings-slider-thumb {
+#slider-spatial-glass-opacity:active ~ * [id^="settings-slider-thumb-"],
+#slider-spatial-glass-blur:active ~ * [id^="settings-slider-thumb-"] {
   transform: translate(-50%, -50%) scale(1.04) !important;
+  background-color: #38383a !important;
+}
+
+html.light-mode .settings-slider-capsule:hover #settings-slider-thumb,
+html.light-mode .settings-slider-capsule:hover .settings-slider-thumb,
+html.light-mode .settings-slider-capsule:hover [id^="settings-slider-thumb-"] {
+  background-color: #C5CAD3 !important;
 }
 
 /* Settings Switches in Light Mode (WinUI 3) */
@@ -4728,19 +4775,21 @@ html.light-mode .toggle-switch-btn:active {
   box-shadow: none !important;
 }
 
-/* Light Mode OFF State */
+/* Light Mode OFF State - No outline, no border stroke */
 html.light-mode button[role="switch"][aria-checked="false"],
 html.light-mode .toggle-switch-btn[aria-checked="false"] {
-  background-color: #FFFFFF !important;
-  border: 1px solid #757575 !important;
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
 html.light-mode button[role="switch"][aria-checked="false"]:hover,
 html.light-mode .toggle-switch-btn[aria-checked="false"]:hover {
-  background-color: #F5F5F5 !important;
-  border-color: #1F1F1F !important;
+  background-color: rgba(0, 0, 0, 0.18) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Light Mode ON State: Accent blue filled pill with NO outer border/outline */
