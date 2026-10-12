@@ -14,8 +14,8 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({ className = 
       className={`tab-loading-slide-up w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh] py-12 select-none my-auto ${className}`}
     >
       <div className="flex items-center justify-center">
-        {/* Shrunk elegant spinning ring in #4cc2ff */}
-        <SpinningRing size={32} strokeWidth={3.5} color="#4cc2ff" />
+        {/* Enlarged elegant spinning ring in #4cc2ff */}
+        <SpinningRing size={48} strokeWidth={4} color="#4cc2ff" />
       </div>
     </div>
   );

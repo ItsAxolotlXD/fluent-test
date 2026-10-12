@@ -12,6 +12,7 @@ import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
 import { SpinningRing } from '../components/SpinningRing';
+import { EpgScheduleWidget } from '../components/EpgScheduleWidget';
 
 interface LiveTVProps {
   currentChannel: Channel;
@@ -87,14 +88,38 @@ export const LiveTV: React.FC<LiveTVProps> = ({
         </p>
       </div>
 
-      {/* Video Player Section */}
+      {/* Video Player & TV Schedule (Lịch phát sóng) Section */}
       <div className="w-full">
-        <VideoPlayer
-          channel={currentChannel}
-          onOpenCustomStreamModal={onOpenCustomStreamModal}
-          isTheaterMode={isTheaterMode}
-          onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
-        />
+        {isTheaterMode ? (
+          <div className="space-y-4">
+            <VideoPlayer
+              channel={currentChannel}
+              onOpenCustomStreamModal={onOpenCustomStreamModal}
+              isTheaterMode={isTheaterMode}
+              onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
+            />
+            <div className="w-full">
+              <EpgScheduleWidget currentChannel={currentChannel} />
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+            {/* Stream Player Area */}
+            <div className="lg:col-span-8 w-full">
+              <VideoPlayer
+                channel={currentChannel}
+                onOpenCustomStreamModal={onOpenCustomStreamModal}
+                isTheaterMode={isTheaterMode}
+                onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
+              />
+            </div>
+
+            {/* EPG Broadcast Schedule (Lịch phát sóng) placed beside stream player */}
+            <div className="lg:col-span-4 w-full">
+              <EpgScheduleWidget currentChannel={currentChannel} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Channel List Section */}

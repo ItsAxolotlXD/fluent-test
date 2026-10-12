@@ -979,15 +979,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             id={isMobile ? 'mobile-nav-settings' : 'sidebar-nav-settings'}
-            data-nav-active={currentRoute === '/settings' ? 'true' : undefined}
+            data-nav-active={isCurrentActive('/settings') ? 'true' : undefined}
             onClick={() => handleNavClick('/settings')}
             title="Settings"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-              currentRoute === '/settings'
+              isCurrentActive('/settings')
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                 : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
             }`}
           >
+            {isCurrentActive('/settings') && (
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+              />
+            )}
             <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-black dark:text-white" />
             <span className="truncate text-[13.5px]">Settings</span>
           </button>
@@ -1198,15 +1204,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   type="button"
                   id="sidebar-collapsed-settings"
-                  data-nav-active={currentRoute === '/settings' ? 'true' : undefined}
+                  data-nav-active={isCurrentActive('/settings') ? 'true' : undefined}
                   onClick={() => handleNavClick('/settings')}
                   title="Settings"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                    currentRoute === '/settings'
+                    isCurrentActive('/settings')
                       ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
                       : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                   }`}
                 >
+                  {isCurrentActive('/settings') && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+                    />
+                  )}
                   <FluentSettingsIcon className="w-5 h-5 settings-spin-icon text-[#111827] dark:text-white" />
                 </button>
               </div>

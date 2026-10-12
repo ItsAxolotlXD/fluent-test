@@ -187,6 +187,24 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
+/* Main tab page: bo cong 20px ở góc trên trái trang, các góc còn lại ko bo */
+main,
+.main-tab-page,
+.tab-element-slide-up-container {
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+/* Nút Save ở settings ko có glow */
+#btn-settings-save,
+#btn-settings-subpage-save {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
 /* Dark Mode: các ô kênh, các khung, các ô nội dung là màu #38383d */
 html.dark .channel-card,
 html.dark [class*="channel-card"],

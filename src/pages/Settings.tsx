@@ -29,6 +29,7 @@ import { WelcomeModal } from '../components/WelcomeModal';
 import { SfCheckmark } from '../components/SfCheckmark';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { TriangleLoader } from '../components/TriangleLoader';
+import { SpinningRing } from '../components/SpinningRing';
 import { KEYBIND_DEFINITIONS, DEFAULT_KEYBINDS, eventToKeyString, validateKeybind } from '../utils/keybinds';
 import { KeybindAction } from '../types';
 
@@ -121,6 +122,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const [activeCategory, setActiveCategory] = useState<SettingsCategoryId | null>(null);
   const activeCatObj = ALL_CATEGORIES.find((c) => c.id === activeCategory);
   const [showApplyToast, setShowApplyToast] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [internalSearchQuery, setInternalSearchQuery] = useState('');
 
@@ -172,6 +174,7 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   const handleApplySettings = () => {
+    if (isSaving) return;
     if (!hasChanges) {
       setToastMessage('All settings are already up to date');
       setShowApplyToast(true);
@@ -179,10 +182,14 @@ export const Settings: React.FC<SettingsProps> = ({
       return;
     }
 
-    applyDraftSettings();
-    setToastMessage(`Applied ${changedKeys.length} settings changes!`);
-    setShowApplyToast(true);
-    setTimeout(() => setShowApplyToast(false), 2600);
+    setIsSaving(true);
+    setTimeout(() => {
+      applyDraftSettings();
+      setIsSaving(false);
+      setToastMessage(`Applied ${changedKeys.length} settings changes!`);
+      setShowApplyToast(true);
+      setTimeout(() => setShowApplyToast(false), 2600);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -218,14 +225,23 @@ export const Settings: React.FC<SettingsProps> = ({
             <h1 className="text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
               Settings
             </h1>
-            {hasChanges && (
+            {(hasChanges || isSaving) && (
               <button
                 type="button"
                 id="btn-settings-save"
+                disabled={isSaving}
                 onClick={handleApplySettings}
-                className="px-5 py-2 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs sm:text-sm cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
+                  isSaving
+                    ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
+                    : 'bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-medium border border-transparent cursor-pointer'
+                }`}
               >
-                <span>Save</span>
+                {isSaving ? (
+                  <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
+                ) : (
+                  <span>Save</span>
+                )}
               </button>
             )}
           </div>
@@ -303,15 +319,36 @@ export const Settings: React.FC<SettingsProps> = ({
       ) : (
         /* Subpage Header: Fluent Back button & Category Title/Subtitle */
         <div className="space-y-2 pb-3 border-b border-black/10 dark:border-white/10 select-none">
-          <button
-            type="button"
-            id="btn-settings-back"
-            onClick={() => setActiveCategory(null)}
-            className="inline-flex items-center gap-1.5 text-[#0078d4] dark:text-[#4cc2ff] hover:opacity-80 active:opacity-70 transition-all font-semibold text-sm py-1 px-2.5 -ml-2.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-default select-none"
-          >
-            <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
-            <span>Settings</span>
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              id="btn-settings-back"
+              onClick={() => setActiveCategory(null)}
+              className="inline-flex items-center gap-1.5 text-[#0078d4] dark:text-[#4cc2ff] hover:opacity-80 active:opacity-70 transition-all font-semibold text-sm py-1 px-2.5 -ml-2.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-default select-none"
+            >
+              <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
+              <span>Settings</span>
+            </button>
+            {(hasChanges || isSaving) && (
+              <button
+                type="button"
+                id="btn-settings-subpage-save"
+                disabled={isSaving}
+                onClick={handleApplySettings}
+                className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
+                  isSaving
+                    ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
+                    : 'bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-medium border border-transparent cursor-pointer'
+                }`}
+              >
+                {isSaving ? (
+                  <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
+                ) : (
+                  <span>Save</span>
+                )}
+              </button>
+            )}
+          </div>
           {activeCatObj && (
             <div className="flex items-center gap-3 pt-1">
               <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
