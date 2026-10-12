@@ -76,12 +76,12 @@ export const DiscordWelcomeModal: React.FC<DiscordWelcomeModalProps> = ({
             <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
 
             {/* Bottom Actions Footer */}
-            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-4 flex items-center justify-end gap-3">
+            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 id="btn-discord-close"
                 onClick={onClose}
-                className="fluent-btn-secondary px-6 h-9 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[13.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
+                className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
               >
                 Not Now
               </button>
@@ -89,7 +89,7 @@ export const DiscordWelcomeModal: React.FC<DiscordWelcomeModalProps> = ({
                 type="button"
                 id="btn-discord-join"
                 onClick={handleJoin}
-                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#5865F2] hover:bg-[#4752C4] active:bg-[#3C45A5] text-white text-[13.5px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-[#4752C4] flex items-center justify-center cursor-pointer"
+                className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#5865F2] hover:bg-[#4752C4] active:bg-[#3C45A5] text-white text-[12.5px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-[#4752C4] flex items-center justify-center cursor-pointer"
               >
                 Join Discord
               </button>

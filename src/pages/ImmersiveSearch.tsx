@@ -334,7 +334,13 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                 </p>
               </div>
             ) : (
-              <div className="space-y-7">
+              <motion.div
+                key="immersive-search-results"
+                initial={{ opacity: 0, y: 26 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
+                className="immersive-search-results-container space-y-7"
+              >
                 {/* 1. Matched Channels */}
                 {(activeTab === 'all' || activeTab === 'channels') && matchedChannels.length > 0 && (
                   <div className="space-y-3">
@@ -428,7 +434,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
         ) : (

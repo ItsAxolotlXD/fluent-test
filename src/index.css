@@ -137,13 +137,17 @@ input[type="reset"],
   cursor: pointer !important;
 }
 
-/* Light Mode Global Overrides */
+/* Light Mode Global Overrides: Main tab page is #f9f9f9, Sidebar & TopBar are #f3f3f3 */
 html.light-mode,
 html.light-mode body,
-html.light-mode #root,
+html.light-mode #root {
+  background-color: #f9f9f9 !important;
+  color: #000000 !important;
+}
+
 html.light-mode main,
 html.light-mode .tab-element-slide-up-container {
-  background-color: #f3f3f3 !important;
+  background-color: #f9f9f9 !important;
   color: #000000 !important;
 }
 
@@ -443,6 +447,155 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
     transform: none !important;
     opacity: 1 !important;
   }
+}
+
+/* Splash Screen background matches Sidebar (#1b1f24 in Dark, #f3f3f3 in Light) */
+#vplay-splash-screen,
+html.dark #vplay-splash-screen,
+html:not(.light-mode) #vplay-splash-screen {
+  background-color: #1b1f24 !important;
+  background: #1b1f24 !important;
+  color: #FFFFFF !important;
+}
+
+html.light-mode #vplay-splash-screen {
+  background-color: #f3f3f3 !important;
+  background: #f3f3f3 !important;
+  color: #111827 !important;
+}
+
+/* Flyout Sign In & Search Result UI: Slide Up Animation giống animation slide up của các trang tab */
+.signin-flyout-container,
+.topbar-search-results-dropdown,
+.spotlight-search-results-container,
+.immersive-search-results-container {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.signin-flyout-container > *:not(style):not(script),
+.topbar-search-results-dropdown > *:not(style):not(script),
+.spotlight-search-results-container > *:not(style):not(script),
+.immersive-search-results-container > *:not(style):not(script) {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.signin-flyout-container > *:nth-child(1),
+.topbar-search-results-dropdown > *:nth-child(1),
+.spotlight-search-results-container > *:nth-child(1),
+.immersive-search-results-container > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.signin-flyout-container > *:nth-child(2),
+.topbar-search-results-dropdown > *:nth-child(2),
+.spotlight-search-results-container > *:nth-child(2),
+.immersive-search-results-container > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.signin-flyout-container > *:nth-child(3),
+.topbar-search-results-dropdown > *:nth-child(3),
+.spotlight-search-results-container > *:nth-child(3),
+.immersive-search-results-container > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.signin-flyout-container > *:nth-child(4),
+.topbar-search-results-dropdown > *:nth-child(4),
+.spotlight-search-results-container > *:nth-child(4),
+.immersive-search-results-container > *:nth-child(4) {
+  animation-delay: 0.16s;
+}
+
+.signin-flyout-container > *:nth-child(5),
+.topbar-search-results-dropdown > *:nth-child(5),
+.spotlight-search-results-container > *:nth-child(5),
+.immersive-search-results-container > *:nth-child(5) {
+  animation-delay: 0.20s;
+}
+
+.signin-flyout-container > *:nth-child(n+6),
+.topbar-search-results-dropdown > *:nth-child(n+6),
+.spotlight-search-results-container > *:nth-child(n+6),
+.immersive-search-results-container > *:nth-child(n+6) {
+  animation-delay: 0.24s;
+}
+
+/* Sidebar entrance slide-up after splash screen */
+.sidebar-slide-up-entrance {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+.sidebar-slide-up-entrance .sidebar-nav-item,
+.sidebar-slide-up-entrance nav > div,
+.sidebar-slide-up-entrance nav > button {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(1),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(2),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(3),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(4),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(4) {
+  animation-delay: 0.16s;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(5),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(5) {
+  animation-delay: 0.20s;
+}
+
+.sidebar-slide-up-entrance nav > *:nth-child(n+6),
+.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(n+6) {
+  animation-delay: 0.24s;
+}
+
+/* Search Box: text & icon white in dark mode */
+html.dark #topbar-search-box input {
+  color: #FFFFFF !important;
+}
+html.dark #topbar-search-box input::placeholder {
+  color: #FFFFFF !important;
+  opacity: 0.85 !important;
+}
+html.dark #topbar-search-box button,
+html.dark #topbar-search-box svg {
+  color: #FFFFFF !important;
+  fill: currentColor !important;
+}
+
+/* Thu nhỏ các nút ở toàn bộ modal dialog 1 tí */
+.fluent-modal-footer button,
+.fluent-modal-dialog .fluent-btn-primary,
+.fluent-modal-dialog .fluent-btn-secondary,
+.fluent-modal-dialog button[class*="fluent-btn"],
+[role="dialog"] .fluent-btn-primary,
+[role="dialog"] .fluent-btn-secondary,
+[role="dialog"] .fluent-modal-footer button,
+[role="dialog"] button.fluent-btn-primary,
+[role="dialog"] button.fluent-btn-secondary {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  font-size: 12.5px !important;
+}
+
+.fluent-modal-footer {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
 }
 
 /* Line dưới chân các nút (giống search bar) có màu nền của các nút nhưng tối hơn */

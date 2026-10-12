@@ -93,12 +93,12 @@ export const UnderConstructionModal: React.FC<UnderConstructionModalProps> = ({
             <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
 
             {/* Bottom Actions Footer */}
-            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-4 flex items-center justify-end">
+            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end">
               <button
                 type="button"
                 id="btn-under-construction-close"
                 onClick={onClose}
-                className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer"
+                className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
               >
                 <span className="font-semibold">{buttonText}</span>
               </button>

@@ -135,8 +135,9 @@ export default function App() {
     }
   }, [currentChannel]);
 
-  // Modals state (Changelogs popup shows on web launch)
-  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
+  // Modals state
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const [isSplashFinished, setIsSplashFinished] = useState(false);
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isCustomStreamModalOpen, setIsCustomStreamModalOpen] = useState(false);
@@ -603,7 +604,7 @@ export default function App() {
         <div
         data-immersive-sidebar={settings.immersiveSidebar}
       data-sidebar-position={settings.sidebarPosition}
-      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f3f3f3] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
+      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
     >
       {/* Fixed atmospheric cosmic background matching custom nebula gradient */}
       <div 
@@ -643,11 +644,12 @@ export default function App() {
           onChangeFontSize={handleFontSizeChange}
           onOpenUpdate={() => setIsUpdating(true)}
           onOpenOfficeTool={handleOpenOfficeTool}
+          isSplashFinished={isSplashFinished}
         />
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f3f3f3] dark:bg-[#282c31] ${
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f9f9f9] dark:bg-[#282c31] ${
         settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
           : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'
@@ -826,7 +828,7 @@ export default function App() {
       <NativeKeyboard />
 
       {/* Startup Splash Screen (3 seconds) */}
-      <SplashScreen duration={3000} />
+      <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
 
       {/* Update V-One Splash Screen (1 minute: 60s) */}
       {isUpdating && (

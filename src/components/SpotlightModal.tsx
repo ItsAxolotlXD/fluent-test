@@ -541,7 +541,13 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     </p>
                   </div>
                 ) : (
-                  <div className="mt-3 max-h-[320px] overflow-y-auto space-y-2.5 pr-1 sidebar-scroller">
+                  <motion.div
+                    key="spotlight-results-container"
+                    initial={{ opacity: 0, y: 26 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
+                    className="spotlight-search-results-container mt-3 max-h-[320px] overflow-y-auto space-y-2.5 pr-1 sidebar-scroller"
+                  >
                     {/* 1. Channels */}
                     {matchedChannels.length > 0 && (
                       <div className="space-y-1">
@@ -670,7 +676,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                         No results found for "<span className="text-[#111827] dark:text-white font-medium">{query}</span>"
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 )}
               </>
             )}

@@ -361,8 +361,8 @@ export const NativeKeyboard: React.FC = () => {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
       }}
-      className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-xl bg-white/70 backdrop-blur-[20px] border-t border-black/10 shadow-[0_-8px_30px_rgba(0,0,0,0.25)] transition-transform duration-[300ms] ease-out will-change-transform select-none flex flex-col justify-between ${
-        isOpen ? 'translate-y-0 pointer-events-auto' : 'translate-y-full pointer-events-none'
+      className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-xl bg-white/70 backdrop-blur-[20px] border-t border-black/10 shadow-[0_-8px_30px_rgba(0,0,0,0.25)] transition-all duration-[440ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] will-change-transform select-none flex flex-col justify-between ${
+        isOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-full opacity-0 pointer-events-none'
       }`}
     >
       <div className="w-full max-w-full md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col justify-between h-full px-2 sm:px-3 md:px-5 pt-1.5 pb-2">

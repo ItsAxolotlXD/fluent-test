@@ -5,6 +5,7 @@ import {
   FlaskConical,
   Menu,
   X,
+  ArrowLeft,
   ChevronDown,
   ChevronRight,
   Wrench,
@@ -170,6 +171,7 @@ interface SidebarProps {
   onChangeFontSize?: (size: number) => void;
   onOpenUpdate?: () => void;
   onOpenOfficeTool?: (tool: string) => void;
+  isSplashFinished?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -194,10 +196,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   fontSize = 16,
   onChangeFontSize = (_size: number) => {},
   onOpenUpdate = () => {},
-  onOpenOfficeTool = (_tool: string) => {}
+  onOpenOfficeTool = (_tool: string) => {},
+  isSplashFinished = false
 }) => {
   const { settings } = useSettings();
   const { favoriteChannelIds } = useFavorites();
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate('/');
+    }
+  };
 
   const desktopNavRef = useRef<HTMLDivElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
@@ -545,10 +556,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return (
       <motion.div
         key="signin-flyout-panel"
-        initial={{ opacity: 0, y: 32, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 22, scale: 0.98 }}
-        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 18 }}
+        transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
         className={`signin-flyout-panel signin-flyout-container absolute z-50 w-[264px] bg-white/70 dark:bg-[#1c1c1c]/70 backdrop-blur-3xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-[10px] shadow-[0_16px_48px_rgba(0,0,0,0.22),0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.7),0_2px_8px_rgba(255,255,255,0.04)] p-1.5 space-y-0.5 text-[#111827] dark:text-white select-none ${
           isCollapsedMode
             ? settings.sidebarPosition === 'right'
@@ -679,17 +690,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           aria-hidden="true"
         />
 
-        {/* Top Header: Hamburger Toggle + Vplay Logo placed right beside it, Clock removed */}
-        <div className="px-3.5 pt-3 pb-2 flex items-center justify-start gap-2.5 shrink-0">
+        {/* Top Header: Left Arrow (Back) + Hamburger Toggle + Vplay Logo placed right beside it */}
+        <div className="px-3.5 pt-3 pb-2 flex items-center justify-start gap-1 shrink-0">
+          {/* Back button with left arrow */}
+          <button
+            type="button"
+            id={isMobile ? 'btn-mobile-sidebar-back' : 'btn-desktop-sidebar-back'}
+            onClick={handleGoBack}
+            title="Quay lại (Back)"
+            aria-label="Quay lại"
+            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
+          >
+            <ArrowLeft className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" />
+          </button>
+
           {/* Hamburger Menu Icon */}
           <button
             type="button"
             id={isMobile ? 'btn-mobile-sidebar-toggle' : 'btn-desktop-sidebar-toggle'}
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
             title={isMobile ? 'Close menu' : 'Collapse menu'}
-            className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors"
+            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
-            {isMobile ? <X className="w-5 h-5 stroke-[1.75] text-black dark:text-white" /> : <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />}
+            {isMobile ? <X className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" /> : <Menu className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" />}
           </button>
 
           {/* Logo placed right next to hamburger menu icon */}
@@ -978,9 +1001,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {settings.dockToSidebar && (
         <aside 
           id="waves-desktop-sidebar"
+          key={isSplashFinished ? 'desktop-sidebar-post-splash' : 'desktop-sidebar-init'}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
+            isSplashFinished ? 'sidebar-slide-up-entrance' : ''
+          } ${
             settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
             shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
@@ -1007,6 +1033,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 currentRoute={currentRoute}
                 dependencyKey={`${navItems.length}-${currentRoute}`}
               />
+
+              {/* Back Button with Left Arrow */}
+              <button 
+                id="btn-sidebar-collapsed-back"
+                type="button"
+                onClick={handleGoBack} 
+                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
+                title="Quay lại (Back)"
+                aria-label="Quay lại"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
+              </button>
 
               {/* Hamburger Button to Expand */}
               <button 

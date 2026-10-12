@@ -379,35 +379,43 @@ export const TopBar: React.FC<TopBarProps> = ({
                 }}
                 onFocus={() => setIsSearchFlyoutOpen(true)}
                 placeholder="Search in V-One"
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-6 no-fluent-line"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
               />
               <button
                 type="submit"
                 title="Search"
-                className="absolute right-2.5 text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
               >
-                <FluentSearchIcon className="w-3.5 h-3.5" />
+                <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
               </button>
             </div>
           </form>
 
-          {/* Flyout Result Dropdown: Displays ~5 items at a time, scrollable to see all results */}
+          {/* Flyout Result Dropdown: Displays ~5 items at a time, scrollable to see all results with tab-like slide-up */}
           <AnimatePresence>
             {isSearchFlyoutOpen && searchResults.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: -4 }}
+                key="topbar-search-flyout"
+                initial={{ opacity: 0, y: 26 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
+                exit={{ opacity: 0, y: 18 }}
+                transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
                 className="topbar-search-results-dropdown absolute top-full left-0 right-0 z-50 bg-white/70 dark:bg-[#1b1f24]/90 backdrop-blur-2xl rounded-b-[8px] border border-black/10 dark:border-white/10 border-t-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 max-h-[240px] overflow-y-auto sidebar-scroller"
                 style={{
                   backdropFilter: 'blur(28px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
-                {searchResults.map((item) => (
-                  <div
+                {searchResults.map((item, index) => (
+                  <motion.div
                     key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.44,
+                      delay: Math.min(index * 0.04, 0.24),
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
                     onClick={() => handleSelectSearchResult(item)}
                     className="w-full h-11 px-2.5 rounded-[6px] flex items-center gap-3.5 text-left text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
                   >
@@ -425,7 +433,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         {item.title}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </motion.div>
             )}

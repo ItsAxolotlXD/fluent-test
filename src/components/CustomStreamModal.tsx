@@ -272,30 +272,30 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
             <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
 
             {/* Bottom Actions Footer */}
-            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-4 flex items-center justify-start gap-3">
+            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-start gap-2.5">
               {activeTab === 'single' ? (
                 <button
                   type="submit"
                   form="form-single-stream"
-                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
+                  className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5 text-[12.5px]"
                 >
-                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <Play className="w-3 h-3 fill-current" />
                   <span className="font-semibold">Play Stream</span>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleImportM3U}
-                  className="fluent-btn-primary px-6 h-9 rounded-[6px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5"
+                  className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default gap-1.5 text-[12.5px]"
                 >
-                  <Upload className="w-3.5 h-3.5" />
+                  <Upload className="w-3 h-3" />
                   <span className="font-semibold">Import Playlist</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={onClose}
-                className="fluent-btn-secondary px-6 h-9 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[13.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-default"
+                className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-default"
               >
                 Close
               </button>
