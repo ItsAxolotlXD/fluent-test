@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Heart } from 'lucide-react';
 import { Channel } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
 import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
+import { SpinningRing } from './SpinningRing';
 
 interface ChannelCardProps {
   channel: Channel;
@@ -18,6 +19,16 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({
   const { isChannelFavorite, toggleFavoriteChannel } = useFavorites();
   const isFav = isChannelFavorite(channel.id);
 
+  // 3-second loading state on tab load before displaying channel images
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div
       id={`channel-card-${channel.id}`}
@@ -30,37 +41,45 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({
     >
       {/* Top Banner / Logo Area */}
       <div className="relative h-32 bg-neutral-100 dark:bg-[#38383d] flex items-center justify-center p-4 overflow-hidden">
-        <img
-          src={channel.bannerImage || DEFAULT_BANNER_PLACEHOLDER}
-          alt={channel.name}
-          referrerPolicy="no-referrer"
-          className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
-          onError={(e) => {
-            const target = e.currentTarget;
-            if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
-              target.src = DEFAULT_BANNER_PLACEHOLDER;
-            }
-          }}
-        />
+        {isLoading ? (
+          <div key="channel-loading" className="flex items-center justify-center w-full h-full">
+            <SpinningRing size={36} strokeWidth={4} color="#4cc2ff" />
+          </div>
+        ) : (
+          <div key="channel-loaded" className="slide-up-refresh w-full h-full relative flex items-center justify-center">
+            <img
+              src={channel.bannerImage || DEFAULT_BANNER_PLACEHOLDER}
+              alt={channel.name}
+              referrerPolicy="no-referrer"
+              className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
+                  target.src = DEFAULT_BANNER_PLACEHOLDER;
+                }
+              }}
+            />
 
-        {/* Center Channel Logo */}
-        <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-[6px] bg-white dark:bg-[#1a1a1a] border border-black/10 dark:border-white/10 flex items-center justify-center p-2 overflow-hidden shadow-xs">
-          <img
-            src={channel.logo}
-            alt={channel.name}
-            referrerPolicy="no-referrer"
-            className={`w-full h-full object-contain filter drop-shadow-xs transition-transform ${
-              channel.category === 'Kênh địa phương' || channel.category === 'Kênh phát thanh' || channel.category === 'Kênh HTV'
-                ? 'scale-110'
-                : channel.category === 'Kênh VTV'
-                  ? 'scale-[0.96] p-0.5'
-                  : ''
-            }`}
-            onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
-            }}
-          />
-        </div>
+            {/* Center Channel Logo */}
+            <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-[6px] bg-white dark:bg-[#1a1a1a] border border-black/10 dark:border-white/10 flex items-center justify-center p-2 overflow-hidden shadow-xs">
+              <img
+                src={channel.logo}
+                alt={channel.name}
+                referrerPolicy="no-referrer"
+                className={`w-full h-full object-contain filter drop-shadow-xs transition-transform ${
+                  channel.category === 'Kênh địa phương' || channel.category === 'Kênh phát thanh' || channel.category === 'Kênh HTV'
+                    ? 'scale-110'
+                    : channel.category === 'Kênh VTV'
+                      ? 'scale-[0.96] p-0.5'
+                      : ''
+                }`}
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Live Status Badge */}
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-[3px] bg-[#d83b01] text-white text-[10px] font-semibold">

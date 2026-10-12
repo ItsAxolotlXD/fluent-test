@@ -521,59 +521,128 @@ html.light-mode #vplay-splash-screen {
   animation-delay: 0.24s;
 }
 
-/* Sidebar entrance slide-up after splash screen */
-.sidebar-slide-up-entrance {
+/* Fluent Progress Ring Continuous Spin */
+@keyframes fluent-progress-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.fluent-spinning-ring {
+  animation: fluent-progress-spin 1s linear infinite !important;
+  transform-origin: center center;
+  display: block;
+}
+
+/* Sidebar container stays pinned without slide-up */
+#waves-desktop-sidebar {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Sidebar item slide up when toggling collapse/expand */
+@keyframes sidebarItemSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sidebar-items-slide-up > * {
+  animation: sidebarItemSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sidebar-items-slide-up > *:nth-child(1) { animation-delay: 0.02s; }
+.sidebar-items-slide-up > *:nth-child(2) { animation-delay: 0.04s; }
+.sidebar-items-slide-up > *:nth-child(3) { animation-delay: 0.06s; }
+.sidebar-items-slide-up > *:nth-child(4) { animation-delay: 0.08s; }
+.sidebar-items-slide-up > *:nth-child(5) { animation-delay: 0.10s; }
+.sidebar-items-slide-up > *:nth-child(6) { animation-delay: 0.12s; }
+.sidebar-items-slide-up > *:nth-child(7) { animation-delay: 0.14s; }
+.sidebar-items-slide-up > *:nth-child(8) { animation-delay: 0.16s; }
+.sidebar-items-slide-up > *:nth-child(n+9) { animation-delay: 0.18s; }
+
+/* Slide up animations for tab loading and refreshed elements */
+.tab-loading-slide-up {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-.sidebar-slide-up-entrance .sidebar-nav-item,
-.sidebar-slide-up-entrance nav > div,
-.sidebar-slide-up-entrance nav > button {
-  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+.slide-up-refresh {
+  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-.sidebar-slide-up-entrance nav > *:nth-child(1),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(1) {
-  animation-delay: 0.04s;
-}
-
-.sidebar-slide-up-entrance nav > *:nth-child(2),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(2) {
-  animation-delay: 0.08s;
-}
-
-.sidebar-slide-up-entrance nav > *:nth-child(3),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(3) {
-  animation-delay: 0.12s;
-}
-
-.sidebar-slide-up-entrance nav > *:nth-child(4),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(4) {
-  animation-delay: 0.16s;
-}
-
-.sidebar-slide-up-entrance nav > *:nth-child(5),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(5) {
-  animation-delay: 0.20s;
-}
-
-.sidebar-slide-up-entrance nav > *:nth-child(n+6),
-.sidebar-slide-up-entrance .sidebar-nav-item:nth-child(n+6) {
-  animation-delay: 0.24s;
-}
-
-/* Search Box: text & icon white in dark mode */
-html.dark #topbar-search-box input {
+/* All Search Boxes: text & icon white in dark mode, matching Search in V-One */
+html.dark #topbar-search-box input,
+html.dark #channels-search-box input,
+html.dark #settings-search-box input,
+html.dark #immersive-search-capsule input,
+html.dark #spotlight-search-container input,
+html.dark #find-words-bar input {
   color: #FFFFFF !important;
 }
-html.dark #topbar-search-box input::placeholder {
+html.dark #topbar-search-box input::placeholder,
+html.dark #channels-search-box input::placeholder,
+html.dark #settings-search-box input::placeholder,
+html.dark #immersive-search-capsule input::placeholder,
+html.dark #spotlight-search-container input::placeholder,
+html.dark #find-words-bar input::placeholder {
   color: #FFFFFF !important;
   opacity: 0.85 !important;
 }
 html.dark #topbar-search-box button,
-html.dark #topbar-search-box svg {
+html.dark #topbar-search-box svg,
+html.dark #channels-search-box button,
+html.dark #channels-search-box svg,
+html.dark #settings-search-box button,
+html.dark #settings-search-box svg,
+html.dark #immersive-search-capsule button,
+html.dark #immersive-search-capsule svg,
+html.dark #spotlight-search-container button,
+html.dark #spotlight-search-container svg,
+html.dark #find-words-bar button,
+html.dark #find-words-bar svg {
   color: #FFFFFF !important;
   fill: currentColor !important;
+}
+
+/* All Search Boxes: text & icon in light mode, matching Search in V-One */
+html.light-mode #topbar-search-box input,
+html.light-mode #channels-search-box input,
+html.light-mode #settings-search-box input,
+html.light-mode #immersive-search-capsule input,
+html.light-mode #spotlight-search-container input,
+html.light-mode #find-words-bar input {
+  color: #111827 !important;
+}
+html.light-mode #topbar-search-box input::placeholder,
+html.light-mode #channels-search-box input::placeholder,
+html.light-mode #settings-search-box input::placeholder,
+html.light-mode #immersive-search-capsule input::placeholder,
+html.light-mode #spotlight-search-container input::placeholder,
+html.light-mode #find-words-bar input::placeholder {
+  color: #71717a !important;
+  opacity: 1 !important;
+}
+html.light-mode #topbar-search-box button,
+html.light-mode #topbar-search-box svg,
+html.light-mode #channels-search-box button,
+html.light-mode #channels-search-box svg,
+html.light-mode #settings-search-box button,
+html.light-mode #settings-search-box svg,
+html.light-mode #immersive-search-capsule button,
+html.light-mode #immersive-search-capsule svg,
+html.light-mode #spotlight-search-container button,
+html.light-mode #spotlight-search-container svg,
+html.light-mode #find-words-bar button,
+html.light-mode #find-words-bar svg {
+  color: #71717a !important;
 }
 
 /* Thu nhỏ các nút ở toàn bộ modal dialog 1 tí */
@@ -598,27 +667,27 @@ html.dark #topbar-search-box svg {
   padding-bottom: 10px !important;
 }
 
-/* Line dưới chân các nút (giống search bar) có màu nền của các nút nhưng tối hơn */
+/* Button styles - No bottom border lines */
 .fluent-btn-primary,
 button.fluent-btn-primary {
-  border-bottom: 2px solid #005a9e !important;
+  border-bottom: none !important;
 }
 
 html:not(.light-mode) button[class*="bg-[#4cc2ff]"],
 html:not(.light-mode) .fluent-btn-primary.bg-\[\#4cc2ff\] {
-  border-bottom: 2px solid #0078d4 !important;
+  border-bottom: none !important;
 }
 
 .fluent-btn-secondary,
 button.fluent-btn-secondary,
 .fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-discord-join) {
-  border-bottom: 2px solid #141414 !important;
+  border-bottom: none !important;
 }
 
 html.light-mode .fluent-btn-secondary,
 html.light-mode button.fluent-btn-secondary,
 html.light-mode .fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-discord-join) {
-  border-bottom: 2px solid #c4c4c4 !important;
+  border-bottom: none !important;
 }
 
 /* Tab Switching Loading Spinner - Clean with no glow */
@@ -2238,7 +2307,7 @@ button[class*="bg-[#4cc2ff]"],
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
-  border-bottom: 2px solid #0078d4 !important;
+  border-bottom: none !important;
   background-image: none !important;
   transform: scale(1);
   transition: transform 0.38s cubic-bezier(0.34, 1.65, 0.64, 1), box-shadow 0.24s ease-out, background-color 0.18s ease-in-out !important;
@@ -2247,7 +2316,7 @@ button[class*="bg-[#4cc2ff]"],
 #btn-discord-join,
 #btn-home-join-discord {
   background-color: #5865F2 !important;
-  border-bottom: 2px solid #3c45a5 !important;
+  border-bottom: none !important;
   box-shadow: 0 4px 14px rgba(88, 101, 242, 0.42) !important;
   color: #FFFFFF !important;
 }
@@ -2255,7 +2324,7 @@ button[class*="bg-[#4cc2ff]"],
 #btn-discord-join:hover,
 #btn-home-join-discord:hover {
   background-color: #4752C4 !important;
-  border-bottom: 2px solid #353ca0 !important;
+  border-bottom: none !important;
   box-shadow: 0 6px 20px rgba(88, 101, 242, 0.55) !important;
   transform: scale(1.05) !important;
 }
@@ -2275,20 +2344,20 @@ button.bg-\[\#4cc2ff\],
 button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
   background-color: #4cc2ff !important;
-  border-bottom: 2px solid #0078d4 !important;
+  border-bottom: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
   color: #FFFFFF !important;
 }
 
 #btn-discord-close {
   background-color: #2c2c2c !important;
-  border-bottom: 2px solid #141414 !important;
+  border-bottom: none !important;
   color: #FFFFFF !important;
 }
 
 html.light-mode #btn-discord-close {
   background-color: #ffffff !important;
-  border-bottom: 2px solid #c4c4c4 !important;
+  border-bottom: none !important;
   color: #111827 !important;
 }
 
@@ -2341,103 +2410,131 @@ button[class*="bg-[#4cc2ff]"]:active,
   color: #FFFFFF !important;
 }
 
-/* Spatial Glass Toggle Switch Styling */
+/* WinUI 3 / Windows 11 Standard Toggle Switch Styling */
 button[role="switch"],
 .toggle-switch-btn {
-  width: 66px !important;
-  height: 28px !important;
+  width: 40px !important;
+  height: 20px !important;
+  min-width: 40px !important;
+  min-height: 20px !important;
   box-sizing: border-box !important;
   border-radius: 9999px !important;
-  padding: 3px !important;
+  padding: 0 !important;
   position: relative !important;
   overflow: hidden !important;
-  border: none !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
   background-image: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  transform: scale(1);
-  transition: transform 0.35s cubic-bezier(0.34, 1.65, 0.64, 1), background-color 0.25s ease, box-shadow 0.25s ease !important;
+  transition: background-color 0.16s ease, border-color 0.16s ease !important;
   cursor: default !important;
   flex-shrink: 0 !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
+button[role="switch"]:focus,
+button[role="switch"]:focus-visible,
+button[role="switch"]:active,
 button[role="switch"]:hover,
+.toggle-switch-btn:focus,
+.toggle-switch-btn:focus-visible,
+.toggle-switch-btn:active,
 .toggle-switch-btn:hover {
-  transform: scale(1) !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* OFF state (Dark Mode) */
+button[role="switch"][aria-checked="false"],
+.toggle-switch-btn[aria-checked="false"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button[role="switch"][aria-checked="false"]:hover,
+.toggle-switch-btn[aria-checked="false"]:hover {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* ON state (Dark Mode): Accent cyan-blue filled pill with NO outer border/outline */
+button[role="switch"][aria-checked="true"],
+.toggle-switch-btn[aria-checked="true"] {
+  background-color: #4cc2ff !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button[role="switch"][aria-checked="true"]:hover,
+.toggle-switch-btn[aria-checked="true"]:hover {
+  background-color: #60cdff !important;
+  border: none !important;
 }
 
 button[role="switch"]:active,
 .toggle-switch-btn:active {
-  transform: scale(0.98) !important;
-  transition: transform 0.1s ease-out !important;
+  transform: none !important;
 }
 
-button[role="switch"][aria-checked="true"],
-.toggle-switch-btn[aria-checked="true"] {
-  background-color: #4cc2ff !important;
-  background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25), 0 2px 10px rgba(76, 194, 255, 0.35) !important;
-}
-
-button[role="switch"][aria-checked="false"],
-.toggle-switch-btn[aria-checked="false"] {
-  background-color: #3F3F46 !important;
-  background-image: none !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 -1px 2px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Switch Pill Thumb (Núm toggle dạng pill) */
+/* Circular Thumb (Con trượt tròn WinUI 3) */
 button[role="switch"] span,
 .toggle-switch-thumb {
   display: block !important;
-  position: relative !important;
-  z-index: 30 !important;
-  width: 32px !important;
-  height: 22px !important;
+  position: absolute !important;
+  top: 4px !important;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
   border-radius: 9999px !important;
-  background-color: #FFFFFF !important;
-  background-image: none !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.15) !important;
-  transform: translateX(0px) scale(1);
-  transition: transform 0.35s cubic-bezier(0.34, 1.65, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
-  will-change: transform;
+  margin: 0 !important;
+  padding: 0 !important;
+  translate: none !important;
+  transform: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: left 0.16s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.15s ease !important;
+  pointer-events: none !important;
+  will-change: left;
 }
 
-button[role="switch"][aria-checked="true"] span,
-.toggle-switch-btn[aria-checked="true"] .toggle-switch-thumb {
-  transform: translateX(28px) scale(1) !important;
-}
-
+/* OFF state Thumb (Dark Mode): White circle at left 4px */
 button[role="switch"][aria-checked="false"] span,
 .toggle-switch-btn[aria-checked="false"] .toggle-switch-thumb {
-  transform: translateX(0px) scale(1) !important;
+  left: 4px !important;
+  right: auto !important;
+  background-color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* Khi hover qua núm toggle switch: phóng to như nút, nền trong suốt và có viền thường */
+/* ON state Thumb (Dark Mode): Black circle at left 24px (4px margin from right) */
+button[role="switch"][aria-checked="true"] span,
+.toggle-switch-btn[aria-checked="true"] .toggle-switch-thumb {
+  left: 24px !important;
+  right: auto !important;
+  background-color: #000000 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Hover Thumb effect */
 button[role="switch"]:hover span,
 button[role="switch"] span:hover,
 .toggle-switch-btn:hover .toggle-switch-thumb,
 .toggle-switch-thumb:hover {
-  background-color: transparent !important;
   background-image: none !important;
-  border: 1.5px solid #FFFFFF !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-}
-
-button[role="switch"][aria-checked="true"]:hover span,
-button[role="switch"][aria-checked="true"] span:hover,
-.toggle-switch-btn[aria-checked="true"]:hover .toggle-switch-thumb,
-.toggle-switch-btn[aria-checked="true"] .toggle-switch-thumb:hover {
-  transform: translateX(28px) scale(1.15) !important;
-}
-
-button[role="switch"][aria-checked="false"]:hover span,
-button[role="switch"][aria-checked="false"] span:hover,
-.toggle-switch-btn[aria-checked="false"]:hover .toggle-switch-thumb,
-.toggle-switch-btn[aria-checked="false"] .toggle-switch-thumb:hover {
-  transform: translateX(0px) scale(1.15) !important;
 }
 
 /* Interactive cursor: Hand select (pointer) on buttons and sidebar items when hovering */
@@ -3730,7 +3827,7 @@ html.light-mode .fluent-modal-footer {
   background-color: #4cc2ff !important;
   color: #000000 !important;
   border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.28) !important;
+  border-bottom: none !important;
   border-radius: 4px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
   transition: all 0.1s ease-in-out !important;
@@ -3745,7 +3842,7 @@ html.light-mode .fluent-modal-footer {
 .fluent-btn-primary:active {
   background-color: #3bb2ef !important;
   color: #000000 !important;
-  border-bottom-width: 1px !important;
+  border-bottom: none !important;
 }
 
 .fluent-btn-primary svg,
@@ -3760,7 +3857,7 @@ html.light-mode button.fluent-btn-primary:not(.bg-\[\#5865F2\]) {
   background-color: #005fb8 !important;
   color: #FFFFFF !important;
   border: 1px solid rgba(0, 0, 0, 0.14) !important;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.35) !important;
+  border-bottom: none !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
 }
 
@@ -3774,7 +3871,7 @@ html.light-mode .fluent-btn-primary:not(.bg-\[\#5865F2\]):active,
 html.light-mode button.fluent-btn-primary:not(.bg-\[\#5865F2\]):active {
   background-color: #0051a2 !important;
   color: #FFFFFF !important;
-  border-bottom-width: 1px !important;
+  border-bottom: none !important;
 }
 
 html.light-mode .fluent-btn-primary:not(.bg-\[\#5865F2\]) svg,
@@ -3794,7 +3891,7 @@ html.light-mode button.fluent-btn-primary:not(.bg-\[\#5865F2\]) * {
   background-color: #2D2D2D !important;
   color: #FFFFFF !important;
   border: 1px solid #3E3E3E !important;
-  border-bottom: 1px solid #4D4D4D !important;
+  border-bottom: 1px solid #3E3E3E !important;
   border-radius: 4px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
   transition: all 0.1s ease-in-out !important;
@@ -3812,7 +3909,7 @@ html.light-mode .fluent-btn-secondary {
   background-color: #FFFFFF !important;
   color: #1F1F1F !important;
   border: 1px solid #D1D1D1 !important;
-  border-bottom: 1px solid #BFBFBF !important;
+  border-bottom: 1px solid #D1D1D1 !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
@@ -3833,7 +3930,7 @@ html.light-mode .fluent-btn-secondary:active {
 #channels-search-box,
 #settings-search-box,
 #topbar-search-box,
-input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#topbar-search-box input),
+input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input),
 input[type="url"]:not(.no-fluent-line),
 input[type="password"]:not(.no-fluent-line) {
   border-bottom: 2px solid #777777 !important;
@@ -3849,7 +3946,7 @@ input[type="password"]:not(.no-fluent-line) {
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
 #topbar-search-box:focus-within,
-input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#topbar-search-box input):focus,
+input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):focus,
 input[type="url"]:not(.no-fluent-line):focus,
 input[type="password"]:not(.no-fluent-line):focus {
   border-bottom: 2px solid #4cc2ff !important;
@@ -3864,7 +3961,7 @@ html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
 html.light-mode #topbar-search-box,
-html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#topbar-search-box input),
+html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input),
 html.light-mode input[type="url"]:not(.no-fluent-line),
 html.light-mode input[type="password"]:not(.no-fluent-line) {
   border-bottom: 2px solid #8e8e93 !important;
@@ -3879,7 +3976,7 @@ html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
 html.light-mode #topbar-search-box:focus-within,
-html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#topbar-search-box input):focus,
+html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):focus,
 html.light-mode input[type="url"]:not(.no-fluent-line):focus,
 html.light-mode input[type="password"]:not(.no-fluent-line):focus {
   border-bottom: 2px solid #005fb8 !important;
@@ -3887,8 +3984,12 @@ html.light-mode input[type="password"]:not(.no-fluent-line):focus {
 
 #spotlight-search-container,
 #spotlight-search-container:focus-within,
+#immersive-search-capsule,
+#immersive-search-capsule:focus-within,
 #settings-search-box,
 #settings-search-box:focus-within,
+#channels-search-box,
+#channels-search-box:focus-within,
 #topbar-search-box,
 #topbar-search-box:focus-within {
   outline: none !important;
@@ -3899,6 +4000,7 @@ html.light-mode input[type="password"]:not(.no-fluent-line):focus {
 #immersive-search-capsule input,
 #sidebar-search-box input,
 #settings-search-box input,
+#channels-search-box input,
 #topbar-search-box input {
   border: none !important;
   border-bottom: none !important;
@@ -4528,109 +4630,157 @@ html.light-mode .settings-slider-capsule {
   transition: transform 0.35s cubic-bezier(0.34, 1.65, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-/* Khi hover qua thanh slider hoặc núm slider: phóng to như nút, nền trong suốt và có viền thường */
+/* WinUI 3 Slider Styling (Windows 11) - Matching reference design */
+.settings-slider-track {
+  height: 4px !important;
+  min-height: 4px !important;
+  background-color: #505058 !important;
+  border-radius: 9999px !important;
+}
+
+html.light-mode .settings-slider-track {
+  background-color: #8a8a8a !important;
+}
+
+/* Outer Thumb: 18px White Circular Puck with subtle shadow */
+#settings-slider-thumb,
+.settings-slider-thumb {
+  position: absolute !important;
+  top: 50% !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22) !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+/* Inner Accent Dot: 7px solid blue center circle */
+#settings-slider-thumb::after,
+.settings-slider-thumb::after {
+  content: "" !important;
+  display: block !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 9999px !important;
+  background-color: #4cc2ff !important;
+  transition: transform 0.15s ease-out !important;
+}
+
+html.light-mode #settings-slider-thumb::after,
+html.light-mode .settings-slider-thumb::after {
+  background-color: #005fb8 !important;
+}
+
+/* Slider Thumb Hover & Active: Clean smooth feedback, never transparent */
 .settings-slider-capsule:hover #settings-slider-thumb,
 .settings-slider-capsule:hover .settings-slider-thumb,
 .group:hover #settings-slider-thumb,
 .group:hover .settings-slider-thumb,
 #slider-font-scale:hover ~ * #settings-slider-thumb,
 #slider-font-scale:hover ~ * .settings-slider-thumb,
-#slider-font-scale:active ~ * #settings-slider-thumb,
-#slider-font-scale:active ~ * .settings-slider-thumb,
+#slider-spatial-glass-opacity:hover ~ * .settings-slider-thumb,
+#slider-spatial-glass-blur:hover ~ * .settings-slider-thumb,
 #settings-slider-thumb:hover,
 .settings-slider-thumb:hover {
-  position: absolute !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) scale(1.18) !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 1.5px solid #FFFFFF !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+  transform: translate(-50%, -50%) scale(1.08) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28) !important;
 }
 
-/* Settings Switches in Light Mode */
+.settings-slider-capsule:active #settings-slider-thumb,
+.settings-slider-capsule:active .settings-slider-thumb,
+#slider-font-scale:active ~ * #settings-slider-thumb,
+#slider-font-scale:active ~ * .settings-slider-thumb,
+#slider-spatial-glass-opacity:active ~ * .settings-slider-thumb,
+#slider-spatial-glass-blur:active ~ * .settings-slider-thumb {
+  transform: translate(-50%, -50%) scale(1.04) !important;
+}
+
+/* Settings Switches in Light Mode (WinUI 3) */
 html.light-mode button[role="switch"],
 html.light-mode .toggle-switch-btn {
-  border: none !important;
   background-image: none !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
 }
 
+html.light-mode button[role="switch"]:focus,
+html.light-mode button[role="switch"]:focus-visible,
+html.light-mode button[role="switch"]:active,
+html.light-mode .toggle-switch-btn:focus,
+html.light-mode .toggle-switch-btn:focus-visible,
+html.light-mode .toggle-switch-btn:active {
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Light Mode OFF State */
+html.light-mode button[role="switch"][aria-checked="false"],
+html.light-mode .toggle-switch-btn[aria-checked="false"] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #757575 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+html.light-mode button[role="switch"][aria-checked="false"]:hover,
+html.light-mode .toggle-switch-btn[aria-checked="false"]:hover {
+  background-color: #F5F5F5 !important;
+  border-color: #1F1F1F !important;
+}
+
+/* Light Mode ON State: Accent blue filled pill with NO outer border/outline */
 html.light-mode button[role="switch"][aria-checked="true"],
 html.light-mode .toggle-switch-btn[aria-checked="true"] {
   background-color: #005fb8 !important;
-  background-image: none !important;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.35), 0 2px 10px rgba(0, 95, 184, 0.35) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-html.light-mode button[role="switch"][aria-checked="false"],
-html.light-mode .toggle-switch-btn[aria-checked="false"] {
-  background-color: #E4E4E7 !important;
-  background-image: none !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 -1px 2px rgba(0, 0, 0, 0.08) !important;
+html.light-mode button[role="switch"][aria-checked="true"]:hover,
+html.light-mode .toggle-switch-btn[aria-checked="true"]:hover {
+  background-color: #0067c0 !important;
+  border: none !important;
 }
 
-html.light-mode button[role="switch"] span,
-html.light-mode .toggle-switch-thumb {
-  position: relative !important;
-  z-index: 30 !important;
+/* Light Mode Thumb: Left 4px (Off), Left 24px (On) */
+html.light-mode button[role="switch"][aria-checked="false"] span,
+html.light-mode .toggle-switch-btn[aria-checked="false"] .toggle-switch-thumb {
+  left: 4px !important;
+  right: auto !important;
+  background-color: #5C5C5C !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  translate: none !important;
+  transform: none !important;
+}
+
+html.light-mode button[role="switch"][aria-checked="true"] span,
+html.light-mode .toggle-switch-btn[aria-checked="true"] .toggle-switch-thumb {
+  left: 24px !important;
+  right: auto !important;
   background-color: #FFFFFF !important;
-  background-image: none !important;
-  border: 1px solid rgba(0, 0, 0, 0.10) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-html.light-mode #settings-slider-thumb,
-html.light-mode .settings-slider-thumb {
-  position: absolute !important;
-  top: 50% !important;
-  margin: 0 !important;
-  background-color: #FFFFFF !important;
-  background-image: none !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Light Mode - Khi hover qua thanh slider hoặc núm slider: phóng to như nút, nền trong suốt và có viền */
-html.light-mode .settings-slider-capsule:hover #settings-slider-thumb,
-html.light-mode .settings-slider-capsule:hover .settings-slider-thumb,
-html.light-mode .group:hover #settings-slider-thumb,
-html.light-mode .group:hover .settings-slider-thumb,
-html.light-mode #slider-font-scale:hover ~ * #settings-slider-thumb,
-html.light-mode #slider-font-scale:hover ~ * .settings-slider-thumb,
-html.light-mode #slider-font-scale:active ~ * #settings-slider-thumb,
-html.light-mode #slider-font-scale:active ~ * .settings-slider-thumb,
-html.light-mode #settings-slider-thumb:hover,
-html.light-mode .settings-slider-thumb:hover {
-  position: absolute !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) scale(1.18) !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 1.5px solid #27272A !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Light Mode - Khi hover qua núm toggle switch: phóng to như nút, nền trong suốt và có viền */
-html.light-mode button[role="switch"][aria-checked="true"]:hover span,
-html.light-mode button[role="switch"][aria-checked="true"] span:hover,
-html.light-mode .toggle-switch-btn[aria-checked="true"]:hover .toggle-switch-thumb,
-html.light-mode .toggle-switch-btn[aria-checked="true"] .toggle-switch-thumb:hover {
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 1.5px solid #FFFFFF !important;
-  transform: translateX(28px) scale(1.15) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-}
-
-html.light-mode button[role="switch"][aria-checked="false"]:hover span,
-html.light-mode button[role="switch"][aria-checked="false"] span:hover,
-html.light-mode .toggle-switch-btn[aria-checked="false"]:hover .toggle-switch-thumb,
-html.light-mode .toggle-switch-btn[aria-checked="false"] .toggle-switch-thumb:hover {
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 1.5px solid #27272A !important;
-  transform: translateX(0px) scale(1.15) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  translate: none !important;
+  transform: none !important;
 }
 
 html.light-mode #settings-section-search .bg-\[\#24242A\] {

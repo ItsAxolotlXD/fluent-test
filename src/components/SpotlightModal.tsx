@@ -277,11 +277,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                         e.stopPropagation();
                         updateSetting('searchCategories', !settings.searchCategories);
                       }}
-                      className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        settings.searchCategories ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
+                      className="toggle-switch-btn"
                     >
-                      <span className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-md pointer-events-none transition-transform ${settings.searchCategories ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`} />
+                      <span className="toggle-switch-thumb" />
                     </button>
                   </div>
 
@@ -309,11 +307,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                         e.stopPropagation();
                         updateSetting('searchNews', !settings.searchNews);
                       }}
-                      className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        settings.searchNews ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
+                      className="toggle-switch-btn"
                     >
-                      <span className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-md pointer-events-none transition-transform ${settings.searchNews ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`} />
+                      <span className="toggle-switch-thumb" />
                     </button>
                   </div>
 
@@ -343,11 +339,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                           e.stopPropagation();
                           updateSetting('searchTv', !settings.searchTv);
                         }}
-                        className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          settings.searchTv ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn"
                       >
-                        <span className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-md pointer-events-none transition-transform ${settings.searchTv ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`} />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
 
@@ -383,11 +377,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                           e.stopPropagation();
                           updateSetting('searchChannelNumber', !settings.searchChannelNumber);
                         }}
-                        className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          settings.searchChannelNumber ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn"
                       >
-                        <span className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-md pointer-events-none transition-transform ${settings.searchChannelNumber ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`} />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
                   </div>
@@ -416,11 +408,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                         e.stopPropagation();
                         updateSetting('searchSettings', !settings.searchSettings);
                       }}
-                      className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        settings.searchSettings ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
+                      className="toggle-switch-btn"
                     >
-                      <span className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-md pointer-events-none transition-transform ${settings.searchSettings ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`} />
+                      <span className="toggle-switch-thumb" />
                     </button>
                   </div>
                 </div>
@@ -435,7 +425,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     setIsFocused(true);
                     inputRef.current?.focus();
                   }}
-                  className="relative w-full h-[42px] flex items-center px-3.5 rounded-[6px] bg-[#F9F9F9] dark:bg-[#2B2B2B] text-sm transition-colors border border-black/10 dark:border-white/10 border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff] overflow-hidden cursor-text select-none"
+                  className="group relative w-full h-9 sm:h-9.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 rounded-[6px] focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all cursor-text select-none"
                 >
                   <motion.div 
                     animate={{
@@ -450,7 +440,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     className={`flex items-center gap-2.5 w-full ${isFocused || isListening || query ? 'pr-24' : 'pr-14'}`}
                   >
                     <div className="w-[18px] h-[18px] min-w-[18px] min-h-[18px] max-w-[18px] max-h-[18px] flex items-center justify-center shrink-0">
-                      <FluentSearchIcon className="w-4 h-4 text-[#888888] dark:text-[#AAAAAA]" />
+                      <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
                     </div>
                     <input
                       ref={inputRef}
@@ -462,7 +452,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                       }}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={isListening ? "Listening..." : "Spotlight Search"}
-                      className="bg-transparent text-[#111827] dark:text-white placeholder-[#888888] text-sm focus:outline-none font-medium w-full text-left"
+                      className="bg-transparent text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white text-xs sm:text-[13px] focus:outline-none border-none font-medium w-full text-left no-fluent-line"
                     />
                   </motion.div>
 

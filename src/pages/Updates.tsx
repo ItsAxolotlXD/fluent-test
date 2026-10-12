@@ -46,7 +46,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
               </span>
             </div>
             <p className="text-xs text-black dark:text-[#AAAAAA] mt-0.5">
-              V-One version 26.11 (Build 261009) • Microsoft Fluent Design
+              V-One version 26.11 (Build 261013) • Microsoft Fluent Design
             </p>
           </div>
         </div>

@@ -133,10 +133,10 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="fixed top-20 right-6 sm:right-10 z-50 flex items-center gap-2 p-2 rounded-2xl bg-[#1E1D22] border border-[#3E3E48] shadow-2xl text-white"
+          className="fixed top-20 right-6 sm:right-10 z-50 flex items-center gap-2 p-2 rounded-[8px] bg-white/90 dark:bg-[#1b1f24]/90 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-2xl text-[#111827] dark:text-white"
         >
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-[#141318] border border-[#2A2A32] border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff] transition-colors">
-            <FluentSearchIcon className="w-4 h-4 text-[#8E8E93] shrink-0" />
+          <div className="group relative h-8 sm:h-8.5 flex items-center gap-2 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all">
+            <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -144,10 +144,10 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
               placeholder="Find in article..."
-              className="w-36 sm:w-52 bg-transparent text-xs text-white placeholder-[#8E8E93] focus:outline-none"
+              className="w-36 sm:w-52 bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 no-fluent-line"
             />
             {searchTerm && (
-              <span className="text-[11px] font-mono text-[#8E8E93] whitespace-nowrap">
+              <span className="text-[11px] font-mono text-[#71717a] dark:text-white/80 whitespace-nowrap">
                 {matchCount > 0 ? `${currentMatchIndex}/${matchCount}` : '0/0'}
               </span>
             )}

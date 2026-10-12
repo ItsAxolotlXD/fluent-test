@@ -35,7 +35,14 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
         viewBox="0 0 44 44"
         width={size}
         height={size}
-        className="animate-[spin_1s_linear_infinite]"
+        className={`fluent-spinning-ring ${className}`}
+        style={{
+          width: size,
+          height: size,
+          animation: 'fluent-progress-spin 1s linear infinite',
+          transformOrigin: 'center center',
+          display: 'block'
+        }}
         aria-hidden="true"
       >
         {/* Thick spinning arc without background */}
@@ -49,7 +56,7 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
           strokeLinecap="round"
           strokeDasharray={strokeDasharray}
           style={{
-            transformOrigin: 'center'
+            transformOrigin: '22px 22px'
           }}
         />
       </svg>

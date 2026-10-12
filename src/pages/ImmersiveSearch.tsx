@@ -232,40 +232,41 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
       <div className="max-w-6xl mx-auto space-y-7 sm:space-y-9">
         {/* Top Search Bar Row */}
         <div className="flex items-center justify-center gap-3 w-full">
-          {/* AutoSuggestBox Search Input Bar */}
+          {/* Search Box matching Search in V-One */}
           <div 
             id="immersive-search-capsule"
             onClick={() => {
               inputRef.current?.focus();
             }}
-            className="relative w-full max-w-md sm:max-w-lg h-[44px] md:h-[48px] flex items-center px-3.5 md:px-4 rounded-[6px] overflow-hidden cursor-text select-none bg-white dark:bg-[#2c2c2c] border border-[#e5e5e5] dark:border-[#3e3e3e] border-b-2 border-b-[#888888] dark:border-b-[#777777] focus-within:border-b-2 focus-within:border-b-[#4cc2ff] transition-colors shadow-xs"
+            className="group relative w-full max-w-md sm:max-w-lg h-9 sm:h-9.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2.5 rounded-[6px] transition-all cursor-text select-none"
           >
-            <div className="flex items-center gap-3 w-full">
-              <FluentSearchIcon className="w-5 h-5 text-[#9CA3AF] shrink-0" />
-              <input
-                ref={inputRef}
-                id="immersive-search-input"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Find and search"
-                className="w-full bg-transparent text-[#111827] dark:text-white text-base placeholder-[#9CA3AF] focus:outline-none"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setQuery('');
-                    inputRef.current?.focus();
-                  }}
-                  className="p-1 rounded-full text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer shrink-0"
-                  title="Clear search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+            <input
+              ref={inputRef}
+              id="immersive-search-input"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search in V-One"
+              className="w-full bg-transparent text-xs sm:text-[13.5px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-7 no-fluent-line"
+            />
+            {query ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuery('');
+                  inputRef.current?.focus();
+                }}
+                className="absolute right-2.5 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <div className="absolute right-2.5 text-[#71717a] dark:text-white pointer-events-none">
+                <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white" />
+              </div>
+            )}
           </div>
         </div>
 

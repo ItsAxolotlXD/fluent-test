@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { HERO_SLIDES, DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
 import { Channel } from '../types';
 import { useSettings } from '../hooks/useSettings';
+import { SpinningRing } from './SpinningRing';
 
 interface HeroCarouselProps {
   navigate?: (route: string) => void;
@@ -15,6 +16,16 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { settings, draftSettings } = useSettings();
   const isLightMode = (draftSettings?.theme ?? settings.theme) === 'light';
+
+  // 3-second loading state on tab load before displaying banner images
+  const [isLoadingBanner, setIsLoadingBanner] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoadingBanner(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Danh sách slide gồm các banner chất lượng cao
   const allSlides = HERO_SLIDES;
@@ -260,19 +271,27 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
                   : 'shadow-lg pointer-events-none'
               }`}
             >
-              {/* Ảnh nền banner - 16:9 với object-cover */}
-              <img
-                src={slide.backgroundImage || DEFAULT_BANNER_PLACEHOLDER}
-                alt={slide.title}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover object-center pointer-events-none select-none"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
-                    target.src = DEFAULT_BANNER_PLACEHOLDER;
-                  }
-                }}
-              />
+              {/* Ảnh nền banner - hiển thị loading ring trong 3 giây khi vừa load tab, sau đó refresh và slide up */}
+              {isLoadingBanner ? (
+                <div key="banner-loading" className="w-full h-full flex items-center justify-center bg-[#202020] dark:bg-[#18181b]">
+                  <SpinningRing size={42} strokeWidth={4.5} color="#4cc2ff" />
+                </div>
+              ) : (
+                <div key="banner-loaded" className="slide-up-refresh w-full h-full relative">
+                  <img
+                    src={slide.backgroundImage || DEFAULT_BANNER_PLACEHOLDER}
+                    alt={slide.title}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center pointer-events-none select-none"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
+                        target.src = DEFAULT_BANNER_PLACEHOLDER;
+                      }
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Lớp phủ tinh tế khi slide ở 2 bên */}
               {!isCenter && (
@@ -282,27 +301,27 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
           );
         })}
 
-        {/* Nút mũi tên Chevron trái (<) - Fluent Button Style */}
+        {/* Nút mũi tên Chevron trái (<) - Bỏ nền nút, căn vị trí chuẩn 2 bên banner */}
         {totalSlides > 1 && (
           <button
             id="btn-coverflow-prev"
             onClick={() => prevSlide(true)}
             aria-label="Slide trước"
-            className="fluent-reveal-item absolute left-[3%] sm:left-[6%] md:left-[9%] lg:left-[11%] top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-[#202020]/90 hover:bg-[#2b2b2b] border border-white/15 flex items-center justify-center text-white transition-colors shadow-lg cursor-default select-none outline-none"
+            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-white/75 hover:text-white transition-all transform hover:scale-120 active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
           >
-            <ChevronLeft className="w-5 h-5 stroke-[2]" />
+            <ChevronLeft className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.25]" />
           </button>
         )}
 
-        {/* Nút mũi tên Chevron phải (>) - Fluent Button Style */}
+        {/* Nút mũi tên Chevron phải (>) - Bỏ nền nút, căn vị trí chuẩn 2 bên banner */}
         {totalSlides > 1 && (
           <button
             id="btn-coverflow-next"
             onClick={() => nextSlide(true)}
             aria-label="Slide tiếp theo"
-            className="fluent-reveal-item absolute right-[3%] sm:right-[6%] md:right-[9%] lg:right-[11%] top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-[#202020]/90 hover:bg-[#2b2b2b] border border-white/15 flex items-center justify-center text-white transition-colors shadow-lg cursor-default select-none outline-none"
+            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-white/75 hover:text-white transition-all transform hover:scale-120 active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
           >
-            <ChevronRight className="w-5 h-5 stroke-[2]" />
+            <ChevronRight className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.25]" />
           </button>
         )}
       </div>

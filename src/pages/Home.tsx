@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeroCarousel } from '../components/HeroCarousel';
 import { OnAirSlider } from '../components/OnAirSlider';
 import { FarewellAnnouncement } from '../components/FarewellAnnouncement';
@@ -17,6 +17,7 @@ import {
 import { FluentHomeIcon, FluentLiveTvIcon, FluentNewsIcon } from '../components/FluentIcons';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
+import { SpinningRing } from '../components/SpinningRing';
 
 interface HomeProps {
   navigate: (route: string, state?: any) => void;
@@ -54,6 +55,16 @@ export const Home: React.FC<HomeProps> = ({
 }) => {
   const { settings } = useSettings();
   const query = (searchQuery || '').trim().toLowerCase();
+
+  // 3-second loading state on tab load before displaying channel cards
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 1. Matching App Pages
   const matchingPages = query
@@ -215,27 +226,33 @@ export const Home: React.FC<HomeProps> = ({
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
               {matchingChannels.map((ch) => (
                 <div
-                  key={ch.id}
+                  key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
                   id={`home-channel-card-${ch.id}`}
                   onClick={() => onSelectChannel(ch)}
-                  className="group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d]"
+                  className={`group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d] ${
+                    !isLoading ? 'slide-up-refresh' : ''
+                  }`}
                   title={ch.name}
                 >
-                  <img
-                    src={ch.logo}
-                    alt={ch.name}
-                    referrerPolicy="no-referrer"
-                    className={`${
-                      ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                        ? 'max-h-[78%] max-w-[92%] scale-110'
-                        : ch.category === 'Kênh VTV'
-                          ? 'max-h-[56%] max-w-[80%]'
-                          : 'max-h-[58%] max-w-[82%]'
-                    } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
+                  {isLoading ? (
+                    <SpinningRing size={24} strokeWidth={3.5} color="#4cc2ff" />
+                  ) : (
+                    <img
+                      src={ch.logo}
+                      alt={ch.name}
+                      referrerPolicy="no-referrer"
+                      className={`${
+                        ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                          ? 'max-h-[78%] max-w-[92%] scale-110'
+                          : ch.category === 'Kênh VTV'
+                            ? 'max-h-[56%] max-w-[80%]'
+                            : 'max-h-[58%] max-w-[82%]'
+                      } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
               ))}
             </div>

@@ -12,13 +12,15 @@ interface SequentialSectionProps {
 export const SequentialSection: React.FC<SequentialSectionProps> = ({
   children,
   order,
-  enabled = true,
+  enabled = false,
   className = '',
-  minHeight = '120px',
+  minHeight = '140px',
 }) => {
-  // If order === 0 or sequential loading is disabled, render immediately
+  // If order === 0 or sequential loading is disabled, render immediately (initial 1 portion of page)
   const [isLoaded, setIsLoaded] = useState(() => !enabled || order === 0);
+  const [isTriggered, setIsTriggered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!enabled || order === 0 || isLoaded) {
@@ -28,38 +30,62 @@ export const SequentialSection: React.FC<SequentialSectionProps> = ({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsLoaded(true);
-            observer.disconnect();
-          }
-        });
+        const entry = entries[0];
+        if (entry && entry.isIntersecting) {
+          setIsTriggered(true);
+          observer.disconnect();
+        }
       },
       {
-        rootMargin: '220px 0px', // Preload smoothly 220px before entering viewport
-        threshold: 0.01,
+        rootMargin: '20px 0px',
+        threshold: 0.05,
       }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    const el = containerRef.current;
+    if (el) {
+      observer.observe(el);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [enabled, order, isLoaded]);
 
+  // When placeholder enters viewport upon scrolling down, run loading ring for 3 seconds before loading more
+  useEffect(() => {
+    if (isTriggered && !isLoaded) {
+      timerRef.current = setTimeout(() => {
+        setIsLoaded(true);
+      }, 3000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [isTriggered, isLoaded]);
+
   if (!enabled || isLoaded) {
-    return <div className={`sequential-section-loaded ${className}`}>{children}</div>;
+    return (
+      <div className={`sequential-section-loaded ${order > 0 ? 'slide-up-refresh' : ''} ${className}`}>
+        {children}
+      </div>
+    );
   }
 
   return (
     <div
       ref={containerRef}
       style={{ minHeight }}
-      className={`sequential-section-placeholder w-full flex flex-col items-center justify-center py-8 select-none transition-opacity duration-200 ${className}`}
+      className={`sequential-section-placeholder w-full flex flex-col items-center justify-center py-10 select-none ${className}`}
     >
-      <div className="flex flex-col items-center justify-center gap-2">
-        <SpinningRing size={36} strokeWidth={4} color="#4cc2ff" />
+      <div className="flex flex-col items-center justify-center gap-3">
+        <SpinningRing size={34} strokeWidth={3.8} color="#4cc2ff" />
+        <span className="text-xs text-[#888888] dark:text-[#AAAAAA] font-normal tracking-wide">
+          Đang tải thêm nội dung...
+        </span>
       </div>
     </div>
   );

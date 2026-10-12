@@ -649,7 +649,7 @@ export default function App() {
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 bg-[#f9f9f9] dark:bg-[#282c31] ${
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-300 ease-in-out bg-[#f9f9f9] dark:bg-[#282c31] ${
         settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
           : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'
@@ -707,7 +707,7 @@ export default function App() {
         }`}>
           {/* Dynamic Page Content: Slide up individual elements of the loaded tab, not the entire page as a block */}
           {isTabLoading ? (
-            <div key={`tab-loading-${currentRoute}`} className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
+            <div key={`tab-loading-${currentRoute}`} className="tab-loading-slide-up w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
               <TabLoadingScreen />
             </div>
           ) : (

@@ -119,6 +119,7 @@ export const Settings: React.FC<SettingsProps> = ({
   } = useSettings();
 
   const [activeCategory, setActiveCategory] = useState<SettingsCategoryId | null>(null);
+  const activeCatObj = ALL_CATEGORIES.find((c) => c.id === activeCategory);
   const [showApplyToast, setShowApplyToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [internalSearchQuery, setInternalSearchQuery] = useState('');
@@ -240,7 +241,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 setIsFocused(true);
                 inputRef.current?.focus();
               }}
-              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#38383d] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] overflow-hidden transition-colors cursor-text select-none"
+              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none"
             >
               <input
                 ref={inputRef}
@@ -251,7 +252,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 placeholder="Search in Settings"
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1 pr-14 no-fluent-line"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-14 no-fluent-line"
               />
 
               <div className="absolute right-2.5 flex items-center gap-1">
@@ -300,17 +301,32 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
         </div>
       ) : (
-        /* Subpage Minimal Header: Back button (no redundant title/description) */
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        /* Subpage Header: Fluent Back button & Category Title/Subtitle */
+        <div className="space-y-2 pb-3 border-b border-black/10 dark:border-white/10 select-none">
           <button
             type="button"
             id="btn-settings-back"
             onClick={() => setActiveCategory(null)}
-            className="inline-flex items-center gap-1 text-[#007AFF] hover:text-[#32ADE6] active:opacity-75 transition-all font-semibold text-sm sm:text-base py-1 px-2.5 rounded-full bg-white/5 hover:bg-white/10 cursor-default"
+            className="inline-flex items-center gap-1.5 text-[#0078d4] dark:text-[#4cc2ff] hover:opacity-80 active:opacity-70 transition-all font-semibold text-sm py-1 px-2.5 -ml-2.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-default select-none"
           >
-            <ChevronLeft className="w-5 h-5 -ml-1" />
+            <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
             <span>Settings</span>
           </button>
+          {activeCatObj && (
+            <div className="flex items-center gap-3 pt-1">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
+                <activeCatObj.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold font-square text-[#111827] dark:text-white tracking-tight leading-tight">
+                  {activeCatObj.title}
+                </h1>
+                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 truncate">
+                  {activeCatObj.subtitle}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -436,7 +452,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
-                <span className="font-semibold text-[#9CA3AF]">261009</span>
+                <span className="font-semibold text-[#9CA3AF]">261013</span>
               </div>
               {/* Compatible with Fluent Design */}
               <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">
@@ -533,155 +549,185 @@ export const Settings: React.FC<SettingsProps> = ({
             {activeCategory === 'spatial-glass' && (
               <section 
                 id="settings-section-spatial-glass"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
               >
-                <div className="space-y-4 select-none">
-                  {/* 1. Fluent Design Master Toggle */}
-                  <div 
-                    id="setting-spatial-glass"
-                    className="p-3.5 sm:p-4 rounded-[12px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5"
+                {/* 1. Fluent Design Master Toggle */}
+                <div 
+                  id="setting-spatial-glass"
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                >
+                  <div className="flex-1 min-w-0 pr-2">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                      <span className="text-[#0078d4] dark:text-[#4cc2ff] font-semibold">
+                        Fluent Design (Mica & Acrylic)
+                      </span>
+                    </div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Ngôn ngữ thiết kế giao diện người dùng Fluent Design của Microsoft, kết hợp hiệu ứng chất liệu Mica và Acrylic, phân cấp thị giác tinh tế và đường nét tối giản hiện đại.
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <button
+                    id="toggle-spatial-glass"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.spatialGlass}
+                    onClick={() => updateDraft('spatialGlass', !draftSettings.spatialGlass)}
+                    className="toggle-switch-btn focus:outline-none"
+                    title="Bật/Tắt hiệu ứng Acrylic Fluent Design"
                   >
-                    <div className="flex-1 min-w-0 pr-2">
-                      <div className="font-semibold text-white text-sm">
-                        <span className="text-[#4cc2ff] font-semibold">
-                          Fluent Design (Mica & Acrylic)
-                        </span>
+                    <span
+                      className="toggle-switch-thumb"
+                    />
+                  </button>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 2. Slider: Độ trong suốt (Opacity) */}
+                <div 
+                  id="setting-spatial-glass-opacity"
+                  className={`px-4 py-3 sm:py-3.5 space-y-2 transition-opacity duration-200 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] ${
+                    !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                        Độ trong suốt Acrylic (Opacity)
                       </div>
-                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                        Ngôn ngữ thiết kế giao diện người dùng Fluent Design của Microsoft, kết hợp hiệu ứng chất liệu Mica và Acrylic, phân cấp thị giác tinh tế và đường nét tối giản hiện đại.
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Điều chỉnh độ trong suốt của chất liệu Acrylic Fluent Design từ 0% đến 100%. Khi trên 40%, biểu tượng và văn bản sẽ tự động cân bằng tương phản tối ưu.
                       </div>
                     </div>
+                    <span className="text-xs font-mono font-semibold text-[#0078d4] dark:text-[#4cc2ff] px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 shrink-0 ml-2">
+                      {draftSettings.spatialGlassOpacity ?? 20}%
+                    </span>
+                  </div>
 
-                    {/* Toggle Switch */}
-                    <button
-                      id="toggle-spatial-glass"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.spatialGlass}
-                      onClick={() => updateDraft('spatialGlass', !draftSettings.spatialGlass)}
-                      className={`toggle-switch-btn relative w-[52px] h-6 rounded-full p-[2px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.spatialGlass ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
-                      title="Bật/Tắt hiệu ứng Acrylic Fluent Design"
-                    >
-                      <span
-                        className={`toggle-switch-thumb block w-[20px] h-[20px] rounded-full shadow-sm pointer-events-none transition-transform ${draftSettings.spatialGlass ? 'translate-x-[26px] bg-white' : 'translate-x-0 bg-white'}`}
+                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
+                  <div className="pt-7 pb-2 px-2">
+                    <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
+                      {/* Floating Value Tooltip above thumb matching image.png */}
+                      <div 
+                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[32px] text-center z-30"
+                        style={{ left: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
+                      >
+                        {draftSettings.spatialGlassOpacity ?? 20}
+                      </div>
+
+                      <input
+                        id="slider-spatial-glass-opacity"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={draftSettings.spatialGlassOpacity ?? 20}
+                        onChange={(e) => updateDraft('spatialGlassOpacity', parseInt(e.target.value, 10))}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-default z-20"
+                        aria-label="Độ trong suốt (Opacity)"
                       />
-                    </button>
-                  </div>
 
-                  {/* 2. Slider: Độ trong suốt (Opacity) */}
-                  <div 
-                    id="setting-spatial-glass-opacity"
-                    className={`p-3.5 sm:p-4 rounded-[20px] space-y-3 transition-opacity duration-200 ${
-                      !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold text-white text-sm">
-                          Độ trong suốt Acrylic (Opacity)
-                        </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                          Điều chỉnh độ trong suốt của chất liệu Acrylic Fluent Design từ 0% đến 100%. Khi trên 40%, biểu tượng và văn bản sẽ tự động cân bằng tương phản tối ưu.
-                        </div>
+                      {/* 11 Tick Marks along track matching image.png */}
+                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
+                        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((t) => (
+                          <div key={t} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
+                        ))}
                       </div>
-                      <span className="text-xs font-mono font-semibold text-[#4cc2ff] px-2.5 py-1 rounded-md bg-white/10 shrink-0 ml-2">
-                        {draftSettings.spatialGlassOpacity ?? 20}%
-                      </span>
-                    </div>
 
-                    {/* Slider Container */}
-                    <div className="pt-1">
-                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
-                        <input
-                          id="slider-spatial-glass-opacity"
-                          type="range"
-                          min="0"
-                          max="100"
-                          step="1"
-                          value={draftSettings.spatialGlassOpacity ?? 20}
-                          onChange={(e) => updateDraft('spatialGlassOpacity', parseInt(e.target.value, 10))}
-                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
-                          aria-label="Độ trong suốt (Opacity)"
+                      {/* Track */}
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                        {/* Active Filled Bar */}
+                        <div 
+                          className="absolute left-0 top-0 h-full rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] transition-all duration-75 ease-out"
+                          style={{ width: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
                         />
-                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
-                          <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-75 ease-out"
-                            style={{ width: `${draftSettings.spatialGlassOpacity ?? 20}%` }}
-                          />
-                          <div 
-                            id="settings-slider-thumb-opacity"
-                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
-                            style={{ 
-                              left: `${draftSettings.spatialGlassOpacity ?? 20}%`,
-                              top: '50%',
-                              transform: 'translate(-50%, -50%)'
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-between text-[11px] text-[#6B7280] px-1 pt-1">
-                        <span>0%</span>
-                        <span>100%</span>
+                        {/* Thumb: White Puck with Blue Dot */}
+                        <div 
+                          id="settings-slider-thumb-opacity"
+                          className="settings-slider-thumb"
+                          style={{ 
+                            left: `${draftSettings.spatialGlassOpacity ?? 20}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* 3. Slider: Độ mờ (Blur) */}
-                  <div 
-                    id="setting-spatial-glass-blur"
-                    className={`p-3.5 sm:p-4 rounded-[20px] space-y-3 transition-opacity duration-200 ${
-                      !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold text-white text-sm">
-                          Độ mờ Acrylic (Blur)
-                        </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                          Điều chỉnh độ nhòe phông nền (backdrop blur) của chất liệu Acrylic từ 0% đến 100% cho thanh điều hướng và menu hệ thống.
-                        </div>
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 3. Slider: Độ mờ (Blur) */}
+                <div 
+                  id="setting-spatial-glass-blur"
+                  className={`px-4 py-3 sm:py-3.5 space-y-2 transition-opacity duration-200 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] ${
+                    !draftSettings.spatialGlass ? 'opacity-40 pointer-events-none' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                        Độ mờ Acrylic (Blur)
                       </div>
-                      <span className="text-xs font-mono font-semibold text-[#4cc2ff] px-2.5 py-1 rounded-md bg-white/10 shrink-0 ml-2">
-                        {draftSettings.spatialGlassBlur ?? 10}%
-                      </span>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Điều chỉnh độ nhòe phông nền (backdrop blur) của chất liệu Acrylic từ 0% đến 100% cho thanh điều hướng và menu hệ thống.
+                      </div>
                     </div>
+                    <span className="text-xs font-mono font-semibold text-[#0078d4] dark:text-[#4cc2ff] px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 shrink-0 ml-2">
+                      {draftSettings.spatialGlassBlur ?? 10}%
+                    </span>
+                  </div>
 
-                    {/* Slider Container */}
-                    <div className="pt-1">
-                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
-                        <input
-                          id="slider-spatial-glass-blur"
-                          type="range"
-                          min="0"
-                          max="100"
-                          step="1"
-                          value={draftSettings.spatialGlassBlur ?? 10}
-                          onChange={(e) => updateDraft('spatialGlassBlur', parseInt(e.target.value, 10))}
-                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
-                          aria-label="Độ mờ (Blur)"
-                        />
-                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
-                          <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-75 ease-out"
-                            style={{ width: `${draftSettings.spatialGlassBlur ?? 10}%` }}
-                          />
-                          <div 
-                            id="settings-slider-thumb-blur"
-                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
-                            style={{ 
-                              left: `${draftSettings.spatialGlassBlur ?? 10}%`,
-                              top: '50%',
-                              transform: 'translate(-50%, -50%)'
-                            }}
-                          />
-                        </div>
+                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
+                  <div className="pt-7 pb-2 px-2">
+                    <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
+                      {/* Floating Value Tooltip above thumb matching image.png */}
+                      <div 
+                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[32px] text-center z-30"
+                        style={{ left: `${draftSettings.spatialGlassBlur ?? 10}%` }}
+                      >
+                        {draftSettings.spatialGlassBlur ?? 10}
                       </div>
-                      <div className="flex justify-between text-[11px] text-[#6B7280] px-1 pt-1">
-                        <span>0%</span>
-                        <span>100%</span>
+
+                      <input
+                        id="slider-spatial-glass-blur"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={draftSettings.spatialGlassBlur ?? 10}
+                        onChange={(e) => updateDraft('spatialGlassBlur', parseInt(e.target.value, 10))}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-default z-20"
+                        aria-label="Độ mờ (Blur)"
+                      />
+
+                      {/* 11 Tick Marks along track matching image.png */}
+                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
+                        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((t) => (
+                          <div key={t} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
+                        ))}
+                      </div>
+
+                      {/* Track */}
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                        {/* Active Filled Bar */}
+                        <div 
+                          className="absolute left-0 top-0 h-full rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] transition-all duration-75 ease-out"
+                          style={{ width: `${draftSettings.spatialGlassBlur ?? 10}%` }}
+                        />
+                        {/* Thumb: White Puck with Blue Dot */}
+                        <div 
+                          id="settings-slider-thumb-blur"
+                          className="settings-slider-thumb"
+                          style={{ 
+                            left: `${draftSettings.spatialGlassBlur ?? 10}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -693,178 +739,203 @@ export const Settings: React.FC<SettingsProps> = ({
             {activeCategory === 'interface' && (
               <section 
                 id="settings-section-interface"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
               >
-                <div className="space-y-4">
-                  {/* 1. Chế độ ứng dụng (Ban ngày / Ban đêm) */}
-                  <div
-                    id="setting-theme-mode"
-                    className="p-3.5 sm:p-4 rounded-[20px] space-y-3"
-                  >
-                    <div>
-                      <div className="font-bold text-white text-sm">Chế độ ứng dụng</div>
-                    </div>
-                    <div className="settings-segmented-group grid grid-cols-2 gap-2 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5  max-w-sm" role="group" aria-label="Chế độ ứng dụng">
-                      {([
-                        ['light', 'Ban ngày', Sun],
-                        ['dark', 'Ban đêm', Moon],
-                      ] as const).map(([val, label, IconComponent]) => (
-                        <button
-                          key={val}
-                          type="button"
-                          id={`theme-btn-${val}`}
-                          onClick={() => {
-                            updateDraft('theme', val);
-                            if (val === 'light') {
-                              updateDraft('spatialGlassOpacity', 43);
-                            } else if (draftSettings.spatialGlassOpacity === 43) {
-                              updateDraft('spatialGlassOpacity', 20);
-                            }
-                          }}
-                          className={`flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-default ${
-                            (draftSettings.theme || 'dark') === val
-                              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
-                              : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
-                          }`}
-                          aria-pressed={(draftSettings.theme || 'dark') === val}
-                        >
-                          <IconComponent className="w-4 h-4" />
-                          <span>{label}</span>
-                        </button>
-                      ))}
+                {/* 1. Chế độ ứng dụng (Ban ngày / Ban đêm) */}
+                <div
+                  id="setting-theme-mode"
+                  className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">Chế độ ứng dụng</div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Lựa chọn giao diện sáng hoặc tối cho toàn bộ hệ thống.
                     </div>
                   </div>
+                  <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[220px]" role="group" aria-label="Chế độ ứng dụng">
+                    {([
+                      ['light', 'Ban ngày', Sun],
+                      ['dark', 'Ban đêm', Moon],
+                    ] as const).map(([val, label, IconComponent]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        id={`theme-btn-${val}`}
+                        onClick={() => {
+                          updateDraft('theme', val);
+                          if (val === 'light') {
+                            updateDraft('spatialGlassOpacity', 43);
+                          } else if (draftSettings.spatialGlassOpacity === 43) {
+                            updateDraft('spatialGlassOpacity', 20);
+                          }
+                        }}
+                        className={`flex items-center justify-center gap-1.5 rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default ${
+                          (draftSettings.theme || 'dark') === val
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                        aria-pressed={(draftSettings.theme || 'dark') === val}
+                      >
+                        <IconComponent className="w-3.5 h-3.5" />
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                  {/* 2. Thanh điều hướng */}
-                  <div className="p-3.5 sm:p-4 rounded-[20px] space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                      <div>
-                        <div className="font-bold text-white text-sm">Thanh điều hướng</div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">Lựa chọn kiểu điều hướng của ứng dụng.</div>
-                      </div>
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 2. Thanh điều hướng */}
+                <div className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white">Thanh điều hướng</div>
                       {draftSettings.navigationMode === 'topbar' && (
-                        <span className="inline-flex items-center text-[11px] font-medium text-[#4cc2ff] bg-[#4cc2ff]/10 px-2 py-0.5 rounded-full self-start sm:self-auto">
-                          Progressive Blur Top View
+                        <span className="inline-flex items-center text-[10px] font-semibold text-[#0078d4] dark:text-[#4cc2ff] bg-[#0078d4]/10 dark:bg-[#4cc2ff]/10 px-2 py-0.5 rounded-full">
+                          Top View
                         </span>
                       )}
                     </div>
-                    <div className="settings-segmented-group grid grid-cols-3 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5 " role="group" aria-label="Thanh điều hướng">
-                      {([
-                        ['sidebar', 'Side View'],
-                        ['topbar', 'Top View'],
-                        ['floaty', 'Tab View'],
-                      ] as const).map(([value, label]) => (
-                        <button 
-                          key={value} 
-                          type="button" 
-                          onClick={() => { 
-                            updateDraft('navigationMode', value); 
-                            updateDraft('immersiveSidebar', false); 
-                          }} 
-                          className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center truncate ${
-                            draftSettings.navigationMode === value
-                              ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
-                              : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
-                          }`} 
-                          aria-pressed={draftSettings.navigationMode === value}
-                          title={label}
-                        >
-                          {label}
-                        </button>
-                      ))}
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      {draftSettings.navigationMode === 'topbar'
+                        ? 'Giao diện Top View đưa thanh điều khiển lên đầu màn hình.'
+                        : 'Lựa chọn kiểu điều hướng của ứng dụng (Side View, Top View, Tab View).'}
                     </div>
-                    {draftSettings.navigationMode === 'topbar' && (
-                      <p className="text-[12px] text-[#9CA3AF] leading-relaxed pt-1">
-                        Giao diện Top View sẽ đưa thanh điều khiển và điều hướng (Logo trang chủ, Truyền hình, News và các công cụ, icon cài đặt) lên thanh Progressive Blur trên cùng màn hình.
-                      </p>
-                    )}
                   </div>
+                  <div className="settings-segmented-group grid grid-cols-3 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[280px]" role="group" aria-label="Thanh điều hướng">
+                    {([
+                      ['sidebar', 'Side View'],
+                      ['topbar', 'Top View'],
+                      ['floaty', 'Tab View'],
+                    ] as const).map(([value, label]) => (
+                      <button 
+                        key={value} 
+                        type="button" 
+                        onClick={() => { 
+                          updateDraft('navigationMode', value); 
+                          updateDraft('immersiveSidebar', false); 
+                        }} 
+                        className={`rounded-sm sm:rounded-[6px] px-2.5 py-1.5 text-xs font-semibold transition-all cursor-default text-center truncate ${
+                          draftSettings.navigationMode === value
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                        }`} 
+                        aria-pressed={draftSettings.navigationMode === value}
+                        title={label}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                  {/* 2. Thu phóng giao diện */}
-                  <div className="p-3.5 sm:p-4 rounded-[20px] space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Type className="w-4.5 h-4.5 text-[#9CA3AF]" />
-                          <span className="font-bold text-white text-sm">
-                            Thu phóng giao diện
-                          </span>
-                        </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                          Tùy chỉnh kích cỡ giao diện ứng dụng để phù hợp với thiết bị của bạn.
-                        </div>
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 3. Thu phóng giao diện */}
+                <div className="px-4 py-3 sm:py-3.5 space-y-2 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <Type className="w-4 h-4 text-[#6B7280] dark:text-[#9CA3AF]" />
+                        <span className="font-semibold text-sm text-[#111827] dark:text-white">
+                          Thu phóng giao diện
+                        </span>
+                      </div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Tùy chỉnh kích cỡ giao diện ứng dụng để phù hợp với thiết bị của bạn.
                       </div>
                     </div>
+                  </div>
 
-                    <div className="pt-1">
-                      <div className="group relative w-full h-10 flex items-center px-1 transition-all settings-slider-capsule select-none">
-                        <input
-                          id="slider-font-scale"
-                          type="range"
-                          min="0"
-                          max={FONT_SCALE_CONFIG.length - 1}
-                          step="1"
-                          value={draftSettings.fontScale}
-                          onChange={(e) => updateDraft('fontScale', parseInt(e.target.value, 10))}
-                          className="absolute left-1 right-1 top-0 bottom-0 opacity-0 cursor-default z-20"
-                          aria-label="Thu phóng giao diện"
+                  {/* WinUI 3 Slider with Tooltip, Ticks and Center Dot */}
+                  <div className="pt-7 pb-2 px-2">
+                    <div className="group relative w-full h-5 flex items-center transition-all settings-slider-capsule select-none">
+                      {/* Floating Value Tooltip above thumb matching image.png */}
+                      <div 
+                        className="absolute -top-7 -translate-x-1/2 px-2.5 py-0.5 rounded-[5px] bg-white dark:bg-[#2c2c2c] border border-black/10 dark:border-white/15 shadow-[0_2px_8px_rgba(0,0,0,0.12)] text-[12px] font-semibold text-[#111827] dark:text-white pointer-events-none select-none transition-all duration-75 min-w-[36px] text-center z-30"
+                        style={{ left: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
+                      >
+                        {FONT_SCALE_CONFIG[draftSettings.fontScale]?.label || '100%'}
+                      </div>
+
+                      <input
+                        id="slider-font-scale"
+                        type="range"
+                        min="0"
+                        max={FONT_SCALE_CONFIG.length - 1}
+                        step="1"
+                        value={draftSettings.fontScale}
+                        onChange={(e) => updateDraft('fontScale', parseInt(e.target.value, 10))}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-default z-20"
+                        aria-label="Thu phóng giao diện"
+                      />
+
+                      {/* Tick Marks along track matching image.png */}
+                      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none px-0 z-0">
+                        {FONT_SCALE_CONFIG.map((_, idx) => (
+                          <div key={idx} className="w-[1px] h-3 bg-black/25 dark:bg-white/25 -translate-x-1/2" />
+                        ))}
+                      </div>
+
+                      {/* Track */}
+                      <div className="settings-slider-track relative w-full h-1 rounded-full bg-[#8a8a8a] dark:bg-[#505058] overflow-visible pointer-events-none z-10">
+                        {/* Active Filled Bar */}
+                        <div 
+                          className="absolute left-0 top-0 h-full rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] transition-all duration-150 ease-out"
+                          style={{ width: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
                         />
-                        <div className="settings-slider-track relative w-full h-2 rounded-full bg-[#E4E4E7] dark:bg-[#383842] overflow-visible pointer-events-none">
-                          <div 
-                            className="absolute left-0 top-0 h-full rounded-full bg-[#4cc2ff] transition-all duration-150 ease-out"
-                            style={{ width: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%` }}
-                          />
-                          <div 
-                            id="settings-slider-thumb"
-                            className="settings-slider-thumb absolute w-11 h-6 rounded-full bg-white border border-black/10 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)] pointer-events-none flex items-center justify-center"
-                            style={{ 
-                              left: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%`,
-                              top: '50%',
-                              transform: 'translate(-50%, -50%)'
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="relative flex items-center justify-between text-[11px] pt-3 px-1 sm:px-2">
-                        {FONT_SCALE_CONFIG.map((item, idx) => {
-                          const isSelected = draftSettings.fontScale === idx;
-                          let alignClass = 'text-center';
-                          if (idx === 0) alignClass = 'text-left';
-                          else if (idx === FONT_SCALE_CONFIG.length - 1) alignClass = 'text-right';
-                          return (
-                            <button
-                              key={item.label}
-                              type="button"
-                              id={`btn-font-scale-${idx}`}
-                              onClick={() => updateDraft('fontScale', idx)}
-                              className={`cursor-default transition-colors py-1 ${alignClass} ${
-                                isSelected
-                                  ? 'text-[#4cc2ff] font-bold text-xs'
-                                  : 'text-[#6B7280] hover:text-[#9CA3AF]'
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          );
-                        })}
+                        {/* Thumb: White Puck with Blue Dot */}
+                        <div 
+                          id="settings-slider-thumb"
+                          className="settings-slider-thumb"
+                          style={{ 
+                            left: `${(draftSettings.fontScale / (FONT_SCALE_CONFIG.length - 1)) * 100}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        />
                       </div>
                     </div>
-                  </div>
 
-                  {/* 3. Vị trí thanh bên (nếu dùng chế độ Side View) */}
-                  {draftSettings.navigationMode === 'sidebar' && (
+                    <div className="relative flex items-center justify-between text-[11px] pt-1 px-1">
+                      {FONT_SCALE_CONFIG.map((item, idx) => {
+                        const isSelected = draftSettings.fontScale === idx;
+                        let alignClass = 'text-center';
+                        if (idx === 0) alignClass = 'text-left';
+                        else if (idx === FONT_SCALE_CONFIG.length - 1) alignClass = 'text-right';
+                        return (
+                          <button
+                            key={item.label}
+                            type="button"
+                            id={`btn-font-scale-${idx}`}
+                            onClick={() => updateDraft('fontScale', idx)}
+                            className={`cursor-default transition-colors py-1 ${alignClass} ${
+                              isSelected
+                                ? 'text-[#0078d4] dark:text-[#4cc2ff] font-bold text-xs'
+                                : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Vị trí thanh bên (nếu dùng chế độ Side View) */}
+                {draftSettings.navigationMode === 'sidebar' && (
+                  <>
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
                     <div
                       id="setting-sidebar-position"
-                      className="p-3.5 sm:p-4 rounded-[20px] space-y-4"
+                      className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div className="flex items-center justify-between gap-4">
-                        <div>
-                          <div className="font-bold text-white text-sm">Vị trí thanh bên (Side View position)</div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">Chọn vị trí hiển thị thanh bên trái hoặc phải.</div>
-                        </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">Vị trí thanh bên (Side View position)</div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Chọn vị trí hiển thị thanh bên trái hoặc phải.</div>
                       </div>
-                      <div className="settings-segmented-group grid grid-cols-2 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5 ">
+                      <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[180px]">
                         {[
                           ['left', 'Trái'],
                           ['right', 'Phải'],
@@ -873,10 +944,10 @@ export const Settings: React.FC<SettingsProps> = ({
                             key={pos}
                             type="button"
                             onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
-                            className={`rounded-full px-3 py-2 text-xs font-semibold transition-all cursor-default text-center ${
+                            className={`rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default text-center ${
                               draftSettings.sidebarPosition === pos
-                                ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
-                                : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                                ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                                : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                             }`}
                           >
                             {label}
@@ -884,175 +955,160 @@ export const Settings: React.FC<SettingsProps> = ({
                         ))}
                       </div>
                     </div>
-                  )}
+                  </>
+                )}
 
-                  {/* 4. Siêu chế độ tối */}
-                  <div
-                    id="setting-super-dark-mode"
-                    className="p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5"
-                  >
-                    <div>
-                      <div className="font-bold text-white text-sm">
-                        Siêu chế độ tối (Super Dark Mode)
-                      </div>
-                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                        Chuyển đổi giao diện sang màu đen tuyền tuyệt đối (OLED Pure Black #000000) giúp tối ưu tiết kiệm pin trên màn hình OLED và tạo cảm giác dịu mắt ban đêm.
-                      </div>
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 5. Siêu chế độ tối */}
+                <div
+                  id="setting-super-dark-mode"
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.04]"
+                >
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                      Siêu chế độ tối (Super Dark Mode)
                     </div>
-
-                    <button
-                      id="toggle-super-dark-mode"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.superDarkMode}
-                      onClick={() => updateDraft('superDarkMode', !draftSettings.superDarkMode)}
-                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.superDarkMode ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
-                    >
-                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                    </button>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Chuyển đổi giao diện sang màu đen tuyền tuyệt đối (OLED Pure Black #000000) giúp tối ưu tiết kiệm pin trên màn hình OLED và tạo cảm giác dịu mắt ban đêm.
+                    </div>
                   </div>
+
+                  <button
+                    id="toggle-super-dark-mode"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.superDarkMode}
+                    onClick={() => updateDraft('superDarkMode', !draftSettings.superDarkMode)}
+                    className="toggle-switch-btn focus:outline-none"
+                  >
+                    <span
+                      className="toggle-switch-thumb"
+                    />
+                  </button>
                 </div>
               </section>
             )}
 
-            {/* SUBPAGE: CÔNG CỤ (TỶ LỆ KHUNG HÌNH, TỰ ĐỘNG ẨN VÀ CHUYỂN ĐỘNG) */}
+            {/* SUBPAGE 3: CÔNG CỤ */}
             {activeCategory === 'tools' && (
-              <div className="space-y-6">
-                {/* 4.1 Section Trợ năng */}
-                <section 
-                  id="settings-section-accessibility"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="space-y-3">
-                    {/* Tỉ lệ khung hình */}
-                    <div className="p-3 sm:p-4 rounded-[20px] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Tv className="w-4.5 h-4.5 text-[#9CA3AF]" />
-                          <span className="font-bold text-white text-sm">
-                            Tỉ lệ khung hình
-                          </span>
-                        </div>
-                        <span className="text-xs font-semibold text-[#4cc2ff] font-mono">
-                          {draftSettings.streamAspectRatio === '4:3' ? '4.3 (chuẩn vuông)' : '16:9 (chuẩn rộng)'}
-                        </span>
-                      </div>
-                      <div className="text-xs text-[#9CA3AF] leading-relaxed">
-                        Chuyển đổi tỉ lệ khung hình khi xem giữa 4:3 hoặc 16:9.
-                      </div>
-                      <div className="settings-segmented-group grid grid-cols-2 gap-1.5 rounded-full bg-[#18181b]/80 border border-white/10 p-1.5  pt-1">
-                        {[
-                          { value: '16:9', label: '16:9 (chuẩn rộng)' },
-                          { value: '4:3', label: '4.3 (chuẩn vuông)' },
-                        ].map(({ value, label }) => (
-                          <button
-                            key={value}
-                            type="button"
-                            id={`btn-aspect-${value.replace(':', '-')}`}
-                            onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
-                            className={`h-9 sm:h-10 rounded-full font-semibold text-xs sm:text-sm transition-all cursor-default flex items-center justify-center ${
-                              draftSettings.streamAspectRatio === value
-                                ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_2px_10px_rgba(76,194,255,0.35)]'
-                                : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
-                            }`}
-                            aria-pressed={draftSettings.streamAspectRatio === value}
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
+              <section 
+                id="settings-section-tools"
+                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
+              >
+                {/* 1. Tỉ lệ khung hình */}
+                <div className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Tv className="w-4 h-4 text-[#6B7280] dark:text-[#9CA3AF]" />
+                      <span className="font-semibold text-sm text-[#111827] dark:text-white">
+                        Tỉ lệ khung hình
+                      </span>
                     </div>
-
-                    {/* Tự động ẩn Side View */}
-                    <div className="p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 transition-colors hover:bg-white/5">
-                      <div>
-                        <div className="font-bold text-white text-sm">
-                          Tự động ẩn Side View
-                        </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                          Tự động thu gọn thanh menu khi không di chuột vào.
-                        </div>
-                      </div>
-
-                      <button
-                        id="toggle-autohide-sidebar"
-                        type="button"
-                        role="switch"
-                        aria-checked={draftSettings.autoHideSidebar}
-                        onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.autoHideSidebar ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
-                      >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                      </button>
-                    </div>
-
-                    {/* Office Tools (Write, Table, Present) */}
-                    <div className="p-3.5 sm:p-4 rounded-[20px] space-y-3 bg-black/10 dark:bg-white/[0.02] border border-white/5">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-bold text-white text-sm flex items-center gap-2">
-                            <span>V-One Notes</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
-                              Ghi chú
-                            </span>
-                          </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                            Ứng dụng ghi chú & soạn thảo văn bản, hỗ trợ hiển thị dưới dạng Sticky Note nổi di động.
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pt-1">
-                        <button
-                          type="button"
-                          onClick={() => onOpenOfficeTool?.('notes')}
-                          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/5 hover:bg-[#0078d4]/20 border border-white/10 hover:border-[#4cc2ff] transition-all flex items-center gap-3 text-left cursor-pointer group"
-                        >
-                          <div className="w-9 h-9 rounded-lg bg-[#0078d4] flex items-center justify-center shrink-0 shadow-sm">
-                            <span className="text-white text-sm font-bold">N</span>
-                          </div>
-                          <div>
-                            <div className="text-xs font-bold text-white group-hover:text-[#4cc2ff]">Mở V-One Notes</div>
-                            <div className="text-[10px] text-neutral-400">Ghi chú & Sticky Note</div>
-                          </div>
-                        </button>
-                      </div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Chuyển đổi tỉ lệ khung hình khi xem giữa 4:3 hoặc 16:9.
                     </div>
                   </div>
-                </section>
-              </div>
+                  <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[220px]">
+                    {[
+                      { value: '16:9', label: '16:9 (chuẩn rộng)' },
+                      { value: '4:3', label: '4:3 (chuẩn vuông)' },
+                    ].map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        id={`btn-aspect-${value.replace(':', '-')}`}
+                        onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
+                        className={`rounded-sm sm:rounded-[6px] px-3 py-1.5 text-xs font-semibold transition-all cursor-default text-center ${
+                          draftSettings.streamAspectRatio === value
+                            ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-bold'
+                            : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                        }`}
+                        aria-pressed={draftSettings.streamAspectRatio === value}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 2. Tự động ẩn Side View */}
+                <div className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.04]">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                      Tự động ẩn Side View
+                    </div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Tự động thu gọn thanh menu khi không di chuột vào.
+                    </div>
+                  </div>
+
+                  <button
+                    id="toggle-autohide-sidebar"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.autoHideSidebar}
+                    onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)}
+                    className="toggle-switch-btn focus:outline-none"
+                  >
+                    <span
+                      className="toggle-switch-thumb"
+                    />
+                  </button>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* 3. V-One Notes */}
+                <div className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                      <span>V-One Notes</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
+                        Ghi chú
+                      </span>
+                    </div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Ứng dụng ghi chú & soạn thảo văn bản, hỗ trợ hiển thị dưới dạng Sticky Note nổi di động.
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onOpenOfficeTool?.('notes')}
+                    className="px-4 py-1.5 rounded-md font-semibold text-xs text-white bg-[#0078d4] hover:bg-[#106ebe] dark:bg-[#4cc2ff] dark:text-black dark:hover:bg-[#6bd0ff] transition-all flex items-center gap-2 self-start sm:self-auto cursor-default shadow-xs"
+                  >
+                    <span>Mở V-One Notes</span>
+                  </button>
+                </div>
+              </section>
             )}
 
-            {/* SUBPAGE: TRỢ NĂNG (HIỆU ỨNG CHUYỂN ĐỘNG, NỘI DUNG TÌM KIẾM, BÀN PHÍM VÀ TỔ HỢP PHÍM) */}
+            {/* SUBPAGE 4: TRỢ NĂNG */}
             {activeCategory === 'accessibility' && (
-              <div className="space-y-6">
-                {/* Section 1: Tải trang & Hiệu năng (Page loading & Sequential loading) */}
-                <section 
-                  id="settings-section-page-loading"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
-                    <div className="font-bold text-[#111827] dark:text-white text-[15px] sm:text-[16px] tracking-tight">
-                      Tải trang & Hiệu năng (Page Loading & Performance)
-                    </div>
+              <div className="space-y-4 select-none">
+                {/* Section 1: Tải trang & Hiệu năng */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
+                    Tải trang & Hiệu năng (Page Loading & Performance)
                   </div>
-
-                  <div className="space-y-3">
+                  <section 
+                    id="settings-section-page-loading"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
                     {/* Option 1: Page loading */}
                     <div 
                       id="setting-page-loading"
                       onClick={() => updateDraft('pageLoading', !draftSettings.pageLoading)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-[#111827] dark:text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Page loading
                         </div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Displays a spinning ring for 1 second before the page finishes loading to improve perceived performance.
                         </div>
                       </div>
@@ -1066,28 +1122,26 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('pageLoading', !draftSettings.pageLoading);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.pageLoading ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
 
-                    <hr className="border-black/10 dark:border-white/10" />
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
                     {/* Option 2: Load pages sequentially */}
                     <div 
                       id="setting-load-pages-sequentially"
                       onClick={() => updateDraft('loadPagesSequentially', !draftSettings.loadPagesSequentially)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-[#111827] dark:text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Load pages sequentially
                         </div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1 leading-normal">
-                          Loads page content one section at a time instead of all at once to improve performance.
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                          Loads the initial portion of page content, then displays a loading ring for 3 seconds when scrolling down to reveal more.
                         </div>
                       </div>
 
@@ -1100,39 +1154,34 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('loadPagesSequentially', !draftSettings.loadPagesSequentially);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.loadPagesSequentially ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
-                  </div>
-                </section>
+                  </section>
+                </div>
 
-                {/* Section: Chuyển động (Reduce all animation & Sub-options) */}
-                <section 
-                  id="settings-section-motion"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
-                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
-                      Hiệu ứng chuyển động (Motion)
-                    </div>
+                {/* Section 2: Hiệu ứng chuyển động */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
+                    Hiệu ứng chuyển động (Motion)
                   </div>
-
-                  <div className="space-y-3">
+                  <section 
+                    id="settings-section-motion"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
                     {/* Reduce all animation */}
                     <div 
                       id="setting-motion-reduce-all"
                       onClick={() => updateDraft('reduceAllMotion', !draftSettings.reduceAllMotion)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Reduce all animation
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Giảm và tắt toàn bộ các hiệu ứng chuyển động trong ứng dụng.
                         </div>
                       </div>
@@ -1146,24 +1195,22 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('reduceAllMotion', !draftSettings.reduceAllMotion);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
 
-                    <hr className="border-white/10" />
-
                     {/* Sub-options Container */}
                     <div 
-                      className={`space-y-3 transition-opacity duration-200 ${
+                      className={`transition-opacity duration-200 ${
                         draftSettings.reduceAllMotion 
                           ? 'opacity-35 pointer-events-none select-none filter grayscale-[30%]' 
                           : ''
                       }`}
                     >
+                      <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
                       {/* Side View */}
                       <div 
                         id="setting-motion-sidebar"
@@ -1172,13 +1219,13 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animateSidebar', !draftSettings.animateSidebar);
                           }
                         }}
-                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                        className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors pl-6 sm:pl-8"
                       >
-                        <div>
-                          <div className="font-bold text-white text-sm">
+                        <div className="min-w-0 flex-1 pr-2">
+                          <div className="font-semibold text-sm text-[#111827] dark:text-white">
                             Side View
                           </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                             Hiệu ứng mở rộng/thu gọn và trượt ngăn kéo menu bên.
                           </div>
                         </div>
@@ -1192,13 +1239,13 @@ export const Settings: React.FC<SettingsProps> = ({
                             e.stopPropagation();
                             updateDraft('animateSidebar', !draftSettings.animateSidebar);
                           }}
-                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animateSidebar && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                          }`}
+                          className="toggle-switch-btn focus:outline-none"
                         >
-                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                          <span className="toggle-switch-thumb" />
                         </button>
                       </div>
+
+                      <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-6 sm:ml-8 mr-4" />
 
                       {/* Hộp thoại */}
                       <div 
@@ -1208,13 +1255,13 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animateModals', !draftSettings.animateModals);
                           }
                         }}
-                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                        className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors pl-6 sm:pl-8"
                       >
-                        <div>
-                          <div className="font-bold text-white text-sm">
+                        <div className="min-w-0 flex-1 pr-2">
+                          <div className="font-semibold text-sm text-[#111827] dark:text-white">
                             Hộp thoại (Modal dialog)
                           </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                             Hiệu ứng phóng to, thu nhỏ và làm mờ các cửa sổ bật lên.
                           </div>
                         </div>
@@ -1228,13 +1275,13 @@ export const Settings: React.FC<SettingsProps> = ({
                             e.stopPropagation();
                             updateDraft('animateModals', !draftSettings.animateModals);
                           }}
-                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animateModals && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                          }`}
+                          className="toggle-switch-btn focus:outline-none"
                         >
-                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                          <span className="toggle-switch-thumb" />
                         </button>
                       </div>
+
+                      <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-6 sm:ml-8 mr-4" />
 
                       {/* Chuyển trang */}
                       <div 
@@ -1244,13 +1291,13 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('animatePageTransitions', !draftSettings.animatePageTransitions);
                           }
                         }}
-                        className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                        className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors pl-6 sm:pl-8"
                       >
-                        <div>
-                          <div className="font-bold text-white text-sm">
+                        <div className="min-w-0 flex-1 pr-2">
+                          <div className="font-semibold text-sm text-[#111827] dark:text-white">
                             Chuyển trang trong Cài đặt
                           </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                          <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                             Hiệu ứng trượt ngang mượt mà khi vào hoặc thoát các mục cài đặt.
                           </div>
                         </div>
@@ -1264,40 +1311,35 @@ export const Settings: React.FC<SettingsProps> = ({
                             e.stopPropagation();
                             updateDraft('animatePageTransitions', !draftSettings.animatePageTransitions);
                           }}
-                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.animatePageTransitions && !draftSettings.reduceAllMotion ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                          }`}
+                          className="toggle-switch-btn focus:outline-none"
                         >
-                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                          <span className="toggle-switch-thumb" />
                         </button>
                       </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
+                </div>
 
-                {/* Section 2: Nội dung Tìm kiếm */}
-                <section 
-                  id="settings-section-search"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
-                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
-                      Nội dung Tìm kiếm
-                    </div>
+                {/* Section 3: Nội dung Tìm kiếm */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
+                    Nội dung Tìm kiếm
                   </div>
-
-                  <div className="space-y-3">
+                  <section 
+                    id="settings-section-search"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
                     {/* Danh mục */}
                     <div 
                       id="setting-search-categories"
                       onClick={() => updateDraft('searchCategories', !draftSettings.searchCategories)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Danh mục
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Hiển thị các tab và điều hướng hệ thống (Home, Live TV, News, v.v.).
                         </div>
                       </div>
@@ -1311,25 +1353,25 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('searchCategories', !draftSettings.searchCategories);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchCategories ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
+
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
                     {/* Tin tức */}
                     <div 
                       id="setting-search-news"
                       onClick={() => updateDraft('searchNews', !draftSettings.searchNews)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Tin tức
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Hiển thị các bài viết tin tức, thông báo cộng đồng và sự kiện.
                         </div>
                       </div>
@@ -1343,98 +1385,94 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('searchNews', !draftSettings.searchNews);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchNews ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
 
-                    {/* Truyền hình & Tìm kênh theo số hiệu */}
-                    <div className="p-3.5 sm:p-4 rounded-[20px] space-y-4">
-                      <div 
-                        id="setting-search-tv"
-                        onClick={() => updateDraft('searchTv', !draftSettings.searchTv)}
-                        className="group flex items-center justify-between gap-4 cursor-default"
-                      >
-                        <div>
-                          <div className="font-bold text-white text-sm">
-                            Truyền hình
-                          </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                            Hiển thị danh sách kênh truyền hình trực tiếp theo tên hoặc nhóm kênh.
-                          </div>
-                        </div>
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
-                        <button
-                          id="toggle-search-tv"
-                          type="button"
-                          role="switch"
-                          aria-checked={draftSettings.searchTv}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateDraft('searchTv', !draftSettings.searchTv);
-                          }}
-                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.searchTv ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                          }`}
-                        >
-                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                        </button>
+                    {/* Truyền hình */}
+                    <div 
+                      id="setting-search-tv"
+                      onClick={() => updateDraft('searchTv', !draftSettings.searchTv)}
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                    >
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                          Truyền hình
+                        </div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                          Hiển thị danh sách kênh truyền hình trực tiếp theo tên hoặc nhóm kênh.
+                        </div>
                       </div>
 
-                      <hr className="border-white/10" />
-
-                      {/* Tìm kênh theo số hiệu kênh */}
-                      <div 
-                        id="setting-search-channel-number"
-                        onClick={() => updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber)}
-                        className="group flex items-center justify-between gap-4 cursor-default"
+                      <button
+                        id="toggle-search-tv"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.searchTv}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('searchTv', !draftSettings.searchTv);
+                        }}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-white text-sm">
-                              Tìm kênh theo số hiệu kênh
-                            </span>
-                            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#4cc2ff]/20 text-[#4cc2ff] tracking-wider">
-                              CH #
-                            </span>
-                          </div>
-                          <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                            Cho phép gõ số kênh (ví dụ: 1, 001, #12, kênh 5) để tìm nhanh.
-                          </div>
-                        </div>
-
-                        <button
-                          id="toggle-search-channel-number"
-                          type="button"
-                          role="switch"
-                          aria-checked={draftSettings.searchChannelNumber}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber);
-                          }}
-                          className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                            draftSettings.searchChannelNumber ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                          }`}
-                        >
-                          <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                        </button>
-                      </div>
+                        <span className="toggle-switch-thumb" />
+                      </button>
                     </div>
+
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                    {/* Tìm kênh theo số hiệu kênh */}
+                    <div 
+                      id="setting-search-channel-number"
+                      onClick={() => updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber)}
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                    >
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-sm text-[#111827] dark:text-white">
+                            Tìm kênh theo số hiệu kênh
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] tracking-wider">
+                            CH #
+                          </span>
+                        </div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                          Cho phép gõ số kênh (ví dụ: 1, 001, #12, kênh 5) để tìm nhanh.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-search-channel-number"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.searchChannelNumber}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('searchChannelNumber', !draftSettings.searchChannelNumber);
+                        }}
+                        className="toggle-switch-btn focus:outline-none"
+                      >
+                        <span className="toggle-switch-thumb" />
+                      </button>
+                    </div>
+
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
                     {/* Cài đặt */}
                     <div 
                       id="setting-search-settings"
                       onClick={() => updateDraft('searchSettings', !draftSettings.searchSettings)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Cài đặt
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Quản lý và chuyển nhanh tới các mục tùy chọn hệ thống.
                         </div>
                       </div>
@@ -1448,39 +1486,34 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('searchSettings', !draftSettings.searchSettings);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.searchSettings ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
-                  </div>
-                </section>
+                  </section>
+                </div>
 
-                {/* Section 2: Bàn phím */}
-                <section 
-                  id="settings-section-keyboard"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="px-3.5 sm:px-4 pt-0.5 pb-1">
-                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
-                      Bàn phím
-                    </div>
+                {/* Section 4: Bàn phím & Âm thanh */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
+                    Bàn phím & Âm thanh
                   </div>
-
-                  <div className="space-y-3">
+                  <section 
+                    id="settings-section-keyboard"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
                     {/* Bàn phím số */}
                     <div 
                       id="setting-keyboard-number-row"
                       onClick={() => updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Bàn phím số
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Hiển thị bàn phím số từ 0 đến 9 ngay trên dải phím chữ.
                         </div>
                       </div>
@@ -1494,25 +1527,25 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardNumberRow ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
+
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
                     {/* Clipboard */}
                     <div 
                       id="setting-keyboard-clipboard"
                       onClick={() => updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Clipboard
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Danh sách lịch sử sao chép trong ứng dụng.
                         </div>
                       </div>
@@ -1526,25 +1559,25 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardClipboard ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
+
+                    <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
                     {/* Âm bàn phím */}
                     <div 
                       id="setting-keyboard-sound"
                       onClick={() => updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled)}
-                      className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
                     >
-                      <div>
-                        <div className="font-bold text-white text-sm">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
                           Âm bàn phím
                         </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Phát ra tiếng "pop" khi gõ trên bàn phím.
                         </div>
                       </div>
@@ -1558,23 +1591,18 @@ export const Settings: React.FC<SettingsProps> = ({
                           e.stopPropagation();
                           updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled);
                         }}
-                        className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                          draftSettings.keyboardSoundEnabled ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                        }`}
+                        className="toggle-switch-btn focus:outline-none"
                       >
-                        <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
+                        <span className="toggle-switch-thumb" />
                       </button>
                     </div>
-                  </div>
-                </section>
+                  </section>
+                </div>
 
-                {/* Section 3: Tổ hợp phím */}
-                <section 
-                  id="settings-section-keybinds"
-                  className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
-                >
-                  <div className="flex items-center justify-between px-3.5 sm:px-4 pt-0.5 pb-1">
-                    <div className="font-bold text-white text-[15px] sm:text-[16px] tracking-tight">
+                {/* Section 5: Tổ hợp phím */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between px-1">
+                    <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider">
                       Tổ hợp phím
                     </div>
                     <button
@@ -1586,268 +1614,270 @@ export const Settings: React.FC<SettingsProps> = ({
                         setKeybindError(null);
                       }}
                       title="Đặt lại tất cả phím tắt về mặc định"
-                      className="px-3 py-1.5 rounded-full text-xs font-semibold text-[#A1A1AA] hover:text-white bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-1.5 shrink-0 cursor-default"
+                      className="px-2.5 py-1 rounded-md text-xs font-semibold text-[#0078d4] dark:text-[#4cc2ff] hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-1.5 shrink-0 cursor-default"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>Phím tắt mặc định</span>
                     </button>
                   </div>
-
-                  {/* Keybind items list */}
-                  <div className="space-y-2.5 pt-1">
-                    {KEYBIND_DEFINITIONS.map((def) => {
+                  <section 
+                    id="settings-section-keybinds"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
+                    {/* Keybind items list */}
+                    {KEYBIND_DEFINITIONS.map((def, idx) => {
                       const currentKey = draftSettings.customKeybinds?.[def.id] || def.defaultKey;
                       const isEditing = editingKeybindId === def.id;
                       const error = keybindError?.id === def.id ? keybindError.message : null;
 
                       return (
-                        <div
-                          key={def.id}
-                          id={`keybind-row-${def.id}`}
-                          className="p-3.5 sm:p-4 rounded-[20px] flex flex-col gap-2 transition-colors hover:bg-white/5"
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0 flex-1">
-                              <div className="font-bold text-white text-sm flex items-center gap-2">
-                                <span>{def.label}</span>
-                                {currentKey !== def.defaultKey && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#4cc2ff]/20 text-[#FF4D8B] font-medium border border-[#4cc2ff]/30">
-                                    Đã đổi
-                                  </span>
-                                )}
+                        <React.Fragment key={def.id}>
+                          <div
+                            id={`keybind-row-${def.id}`}
+                            className="px-4 py-3 sm:py-3.5 flex flex-col gap-2 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                                  <span>{def.label}</span>
+                                  {currentKey !== def.defaultKey && (
+                                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium">
+                                      Đã đổi
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                                  {def.description}
+                                </div>
                               </div>
-                              <div className="text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                                {def.description}
-                              </div>
-                            </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                              {isEditing ? (
-                                <div className="flex items-center gap-1.5">
-                                  <input
-                                    type="text"
-                                    autoFocus
-                                    readOnly
-                                    data-keybind-recording="true"
-                                    value="Nhấn tổ hợp phím..."
-                                    onKeyDown={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
+                              <div className="flex items-center gap-2 shrink-0">
+                                {isEditing ? (
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="text"
+                                      autoFocus
+                                      readOnly
+                                      data-keybind-recording="true"
+                                      value="Nhấn tổ hợp phím..."
+                                      onKeyDown={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
 
-                                      if (e.key === 'Escape') {
+                                        if (e.key === 'Escape') {
+                                          setEditingKeybindId(null);
+                                          setKeybindError(null);
+                                          return;
+                                        }
+
+                                        const keyStr = eventToKeyString(e.nativeEvent);
+                                        if (!keyStr) return;
+
+                                        const validation = validateKeybind(keyStr);
+                                        if (!validation.valid) {
+                                          setKeybindError({ id: def.id, message: validation.reason || 'Phím tắt không hợp lệ.' });
+                                          return;
+                                        }
+
+                                        const existingAction = Object.entries(draftSettings.customKeybinds || {}).find(
+                                          ([act, key]) => act !== def.id && typeof key === 'string' && key.toLowerCase() === keyStr.toLowerCase()
+                                        );
+
+                                        if (existingAction) {
+                                          const targetDef = KEYBIND_DEFINITIONS.find(d => d.id === existingAction[0]);
+                                          setKeybindError({
+                                            id: def.id,
+                                            message: `Tổ hợp này đã gán cho mục "${targetDef?.label || existingAction[0]}".`
+                                          });
+                                          return;
+                                        }
+
+                                        const updated = {
+                                          ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
+                                          [def.id]: keyStr
+                                        };
+                                        updateDraft('customKeybinds', updated);
                                         setEditingKeybindId(null);
                                         setKeybindError(null);
-                                        return;
-                                      }
-
-                                      const keyStr = eventToKeyString(e.nativeEvent);
-                                      if (!keyStr) return;
-
-                                      const validation = validateKeybind(keyStr);
-                                      if (!validation.valid) {
-                                        setKeybindError({ id: def.id, message: validation.reason || 'Phím tắt không hợp lệ.' });
-                                        return;
-                                      }
-
-                                      const existingAction = Object.entries(draftSettings.customKeybinds || {}).find(
-                                        ([act, key]) => act !== def.id && typeof key === 'string' && key.toLowerCase() === keyStr.toLowerCase()
-                                      );
-
-                                      if (existingAction) {
-                                        const targetDef = KEYBIND_DEFINITIONS.find(d => d.id === existingAction[0]);
-                                        setKeybindError({
-                                          id: def.id,
-                                          message: `Tổ hợp này đã gán cho mục "${targetDef?.label || existingAction[0]}".`
-                                        });
-                                        return;
-                                      }
-
-                                      const updated = {
-                                        ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
-                                        [def.id]: keyStr
-                                      };
-                                      updateDraft('customKeybinds', updated);
-                                      setEditingKeybindId(null);
-                                      setKeybindError(null);
-                                    }}
-                                    onBlur={() => {
-                                      setEditingKeybindId(null);
-                                    }}
-                                    className="px-3 py-1.5 text-xs rounded-xl bg-[#4cc2ff]/20 border-2 border-[#4cc2ff] text-white font-mono animate-pulse text-center w-36 cursor-default outline-none select-none"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditingKeybindId(null);
-                                      setKeybindError(null);
-                                    }}
-                                    className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white bg-white/5 hover:bg-white/10 text-xs transition-colors"
-                                    title="Hủy"
-                                  >
-                                    <X className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-1.5">
-                                  <button
-                                    type="button"
-                                    id={`btn-edit-keybind-${def.id}`}
-                                    onClick={() => {
-                                      setEditingKeybindId(def.id);
-                                      setKeybindError(null);
-                                    }}
-                                    className="px-3 py-1.5 rounded-xl bg-[#1F1E24] hover:bg-[#34333C] border border-white/10 hover:border-[#4cc2ff]/60 text-white font-mono text-xs font-bold transition-all shadow-inner active:scale-95 cursor-default"
-                                    title="Nhấp để thay đổi phím tắt"
-                                  >
-                                    {currentKey}
-                                  </button>
-
-                                  {currentKey !== def.defaultKey && (
+                                      }}
+                                      onBlur={() => {
+                                        setEditingKeybindId(null);
+                                      }}
+                                      className="px-3 py-1.5 text-xs rounded-md bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 border border-[#0078d4] dark:border-[#4cc2ff] text-[#0078d4] dark:text-[#4cc2ff] font-mono animate-pulse text-center w-36 cursor-default outline-none select-none font-semibold"
+                                    />
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const updated = {
-                                          ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
-                                          [def.id]: def.defaultKey
-                                        };
-                                        updateDraft('customKeybinds', updated);
+                                        setEditingKeybindId(null);
                                         setKeybindError(null);
                                       }}
-                                      className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-white bg-white/5 hover:bg-white/10 transition-colors cursor-default"
-                                      title="Khôi phục mặc định"
+                                      className="p-1.5 rounded text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 text-xs transition-colors"
+                                      title="Hủy"
                                     >
-                                      <RotateCcw className="w-3.5 h-3.5" />
+                                      <X className="w-3.5 h-3.5" />
                                     </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      id={`btn-edit-keybind-${def.id}`}
+                                      onClick={() => {
+                                        setEditingKeybindId(def.id);
+                                        setKeybindError(null);
+                                      }}
+                                      className="px-2.5 py-1 rounded-md bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/15 text-[#111827] dark:text-white font-mono text-xs font-semibold transition-all active:scale-95 cursor-default"
+                                      title="Nhấp để thay đổi phím tắt"
+                                    >
+                                      {currentKey}
+                                    </button>
 
-                          {error && (
-                            <div className="flex items-start gap-1.5 text-xs text-[#FF4D8B] bg-[#4cc2ff]/10 border border-[#4cc2ff]/30 p-2 rounded-xl">
-                              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                              <span>{error}</span>
+                                    {currentKey !== def.defaultKey && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const updated = {
+                                            ...(draftSettings.customKeybinds || DEFAULT_KEYBINDS),
+                                            [def.id]: def.defaultKey
+                                          };
+                                          updateDraft('customKeybinds', updated);
+                                          setKeybindError(null);
+                                        }}
+                                        className="p-1 rounded text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-default"
+                                        title="Khôi phục mặc định"
+                                      >
+                                        <RotateCcw className="w-3 h-3" />
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
+
+                            {error && (
+                              <div className="flex items-start gap-1.5 text-xs text-red-500 bg-red-500/10 border border-red-500/20 p-2 rounded-md">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                <span>{error}</span>
+                              </div>
+                            )}
+                          </div>
+                          {idx < KEYBIND_DEFINITIONS.length - 1 && (
+                            <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
                           )}
-                        </div>
+                        </React.Fragment>
                       );
                     })}
-                  </div>
-                </section>
+                  </section>
+                </div>
               </div>
             )}
 
-            {/* SUBPAGE 6: INSIDER FLAGS */}
+            {/* SUBPAGE 5: INSIDER FLAGS */}
             {activeCategory === 'experimental' && (
               <section 
                 id="settings-section-experimental"
-                className="p-5 sm:p-6 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-4"
+                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
               >
-                <div className="space-y-3">
-                  {/* Native keyboard */}
-                  <div 
-                    id="setting-experimental-native-keyboard"
-                    onClick={() => updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard)}
-                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
-                  >
-                    <div>
-                      <div className="font-bold text-white text-sm">
-                        Native keyboard
-                      </div>
-                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                        Sử dụng bàn phím của ứng dụng thay vì bàn phím của thiết bị (chỉ áp dụng cho thiết bị cảm ứng).
-                      </div>
+                {/* Native keyboard */}
+                <div 
+                  id="setting-experimental-native-keyboard"
+                  onClick={() => updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard)}
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                      Native keyboard
                     </div>
-
-                    <button
-                      id="toggle-native-keyboard"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.nativeKeyboard}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard);
-                      }}
-                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.nativeKeyboard ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
-                    >
-                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                    </button>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Sử dụng bàn phím của ứng dụng thay vì bàn phím của thiết bị (chỉ áp dụng cho thiết bị cảm ứng).
+                    </div>
                   </div>
 
-                  {/* Immersive search experience */}
-                  <div 
-                    id="setting-experimental-immersive-search"
-                    onClick={() => updateDraft('immersiveSearch', !draftSettings.immersiveSearch)}
-                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                  <button
+                    id="toggle-native-keyboard"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.nativeKeyboard}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard);
+                    }}
+                    className="toggle-switch-btn focus:outline-none"
                   >
-                    <div>
-                      <div className="font-bold text-white text-sm">
-                        Immersive search experience
-                      </div>
-                      <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                        Search UI that looks immersive.
-                      </div>
-                    </div>
+                    <span className="toggle-switch-thumb" />
+                  </button>
+                </div>
 
-                    <button
-                      id="toggle-immersive-search"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.immersiveSearch}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateDraft('immersiveSearch', !draftSettings.immersiveSearch);
-                      }}
-                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.immersiveSearch ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
-                    >
-                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                    </button>
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* Immersive search experience */}
+                <div 
+                  id="setting-experimental-immersive-search"
+                  onClick={() => updateDraft('immersiveSearch', !draftSettings.immersiveSearch)}
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                      Immersive search experience
+                    </div>
+                    <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                      Search UI that looks immersive.
+                    </div>
                   </div>
 
-                  {/* Thử nghiệm "Tam giác" */}
-                  <div 
-                    id="setting-experimental-triangle"
-                    onClick={() => updateDraft('triangleExperiment', !draftSettings.triangleExperiment)}
-                    className="group p-3.5 sm:p-4 rounded-[20px] flex items-center justify-between gap-4 cursor-default hover:bg-white/5 transition-colors"
+                  <button
+                    id="toggle-immersive-search"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.immersiveSearch}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateDraft('immersiveSearch', !draftSettings.immersiveSearch);
+                    }}
+                    className="toggle-switch-btn focus:outline-none"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                        <TriangleLoader size={32} glow={false} />
+                    <span className="toggle-switch-thumb" />
+                  </button>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* Thử nghiệm "Tam giác" */}
+                <div 
+                  id="setting-experimental-triangle"
+                  onClick={() => updateDraft('triangleExperiment', !draftSettings.triangleExperiment)}
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                      <TriangleLoader size={30} glow={false} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                        <span>Tam giác</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
+                          Mới
+                        </span>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="font-bold text-white text-sm flex items-center gap-2">
-                          <span>Tam giác</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#4cc2ff]/20 text-[#4cc2ff] border border-[#4cc2ff]/30">
-                            Mới
-                          </span>
-                        </div>
-                        <div className="text-xs text-[#9CA3AF] mt-1 leading-normal">
-                          Khi bật, biểu tượng loading của app sẽ thay bằng hình tam giác lỗ màu đỏ cam gradient chạy loop liên tục.
-                        </div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Khi bật, biểu tượng loading của app sẽ thay bằng hình tam giác lỗ màu đỏ cam gradient chạy loop liên tục.
                       </div>
                     </div>
-
-                    <button
-                      id="toggle-triangle-experiment"
-                      type="button"
-                      role="switch"
-                      aria-checked={draftSettings.triangleExperiment}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateDraft('triangleExperiment', !draftSettings.triangleExperiment);
-                      }}
-                      className={`toggle-switch-btn relative w-[66px] h-7 rounded-full p-[3px] transition-colors duration-200 ease-in-out cursor-default shrink-0 flex items-center ${
-                        draftSettings.triangleExperiment ? 'bg-[#4cc2ff]' : 'bg-[#E4E4E7] dark:bg-[#3F3F46]'
-                      }`}
-                    >
-                      <span className="toggle-switch-thumb block w-[32px] h-[22px] rounded-full bg-white border border-black/10 dark:border-white/10 shadow-md pointer-events-none" />
-                    </button>
                   </div>
+
+                  <button
+                    id="toggle-triangle-experiment"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.triangleExperiment}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateDraft('triangleExperiment', !draftSettings.triangleExperiment);
+                    }}
+                    className="toggle-switch-btn focus:outline-none"
+                  >
+                    <span className="toggle-switch-thumb" />
+                  </button>
                 </div>
               </section>
             )}

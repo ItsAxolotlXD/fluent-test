@@ -91,7 +91,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperiment: true,
   triangleExperimentVersion: 1,
   pageLoading: true,
-  loadPagesSequentially: true,
+  loadPagesSequentially: false,
   customKeybinds: DEFAULT_KEYBINDS,
 };
 
@@ -179,7 +179,7 @@ export const getStoredSettings = (): SystemSettings => {
           : true,
         triangleExperimentVersion: 1,
         pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
-        loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : true,
+        loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
         fontScale,
         fontScaleVersion: 2,
       };

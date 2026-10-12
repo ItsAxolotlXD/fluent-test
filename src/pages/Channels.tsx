@@ -3,7 +3,7 @@ import { Channel } from '../types';
 import { ChannelCard } from '../components/ChannelCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
-import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite } from 'lucide-react';
+import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite, X } from 'lucide-react';
 import { FluentSearchIcon } from '../components/FluentIcons';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
@@ -74,17 +74,17 @@ export const Channels: React.FC<ChannelsProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-[28px] bg-white dark:bg-[#1E1E22] border border-[#E5E7EB] dark:border-[#2D2D35] flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+      <div className="p-3.5 sm:p-4 rounded-[8px] bg-white dark:bg-[#38383d] border border-black/10 dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 shadow-xs">
         {/* Groups */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 no-scrollbar">
           {groups.map((grp) => (
             <button
               key={grp}
               onClick={() => setSelectedGroup(grp)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedGroup === grp
                   ? 'bg-[#4cc2ff] text-black shadow-md'
-                  : 'bg-[#F3F4F6] text-[#4B5563] hover:text-[#111827] hover:bg-[#E5E7EB] dark:bg-[#141416] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-[#2D2D35]'
+                  : 'bg-black/5 dark:bg-white/5 text-[#4B5563] hover:text-[#111827] hover:bg-black/10 dark:text-[#A1A1AA] dark:hover:text-white border border-black/10 dark:border-white/10'
               }`}
             >
               {grp}
@@ -92,16 +92,32 @@ export const Channels: React.FC<ChannelsProps> = ({
           ))}
         </div>
 
-        {/* Search */}
-        <div id="channels-search-container" className="relative w-full md:w-72">
-          <FluentSearchIcon className="absolute left-3.5 top-2.5 w-4 h-4 text-[#8E8E93]" />
+        {/* Search matching Search in V-One */}
+        <div
+          id="channels-search-box"
+          className="group relative w-full md:w-80 h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all rounded-[6px]"
+        >
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search television channels..."
-            className="w-full pl-10 pr-4 py-2 rounded-[6px] bg-[#F3F4F6] dark:bg-[#141416] border border-[#E5E7EB] dark:border-[#34343C] border-b-2 border-b-[#888888] dark:border-b-[#777777] text-xs text-[#111827] dark:text-white placeholder-[#8E8E93] focus:outline-none focus:border-b-[#4cc2ff] focus:border-b-2 transition-colors"
+            placeholder="Search in Channels"
+            className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
           />
+          {searchQuery ? (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              title="Clear search"
+              className="absolute right-1.5 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <div className="absolute right-2 text-[#71717a] dark:text-white pointer-events-none">
+              <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
+            </div>
+          )}
         </div>
       </div>
 

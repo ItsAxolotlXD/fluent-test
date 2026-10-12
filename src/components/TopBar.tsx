@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Menu, History } from 'lucide-react';
+import { Menu, History, X } from 'lucide-react';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -381,13 +381,27 @@ export const TopBar: React.FC<TopBarProps> = ({
                 placeholder="Search in V-One"
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
               />
-              <button
-                type="submit"
-                title="Search"
-                className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-              >
-                <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
-              </button>
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setIsSearchFlyoutOpen(false);
+                  }}
+                  title="Clear search"
+                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  title="Search"
+                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                >
+                  <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
+                </button>
+              )}
             </div>
           </form>
 

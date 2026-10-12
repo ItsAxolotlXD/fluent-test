@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Channel } from '../types';
 import { CategoryIcon } from './CategoryIcon';
+import { SpinningRing } from './SpinningRing';
 
 interface OnAirSliderProps {
   channels: Channel[];
@@ -17,6 +18,16 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+
+  // 3-second loading state on tab load before displaying channel logos
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Hàm cuộn mượt mà có gia tốc animation (smooth kinetic easeInOutCubic scroll)
   const animatedScroll = (distance: number, duration: number = 600) => {
@@ -88,7 +99,7 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
       >
         {channels.map((ch, idx) => (
           <div
-            key={ch.id}
+            key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
             id={`recommended-channel-${ch.id}`}
             role="button"
             tabIndex={0}
@@ -102,24 +113,30 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
                 navigate(`/live-tv?channel=${ch.slug}`);
               }
             }}
-            className="fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248] transition-colors shadow-xs"
+            className={`fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248] transition-colors shadow-xs ${
+              !isLoading ? 'slide-up-refresh' : ''
+            }`}
             title={ch.name}
             aria-label={ch.name}
           >
             <div className="w-full h-full flex items-center justify-center">
-              <img
-                src={ch.logo}
-                alt={ch.name}
-                referrerPolicy="no-referrer"
-                className={`${
-                  ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                    ? 'max-h-7 sm:max-h-8 md:max-h-9 max-w-[92%] scale-110'
-                    : 'max-h-6 sm:max-h-7 md:max-h-7.5 max-w-[82%]'
-                } w-auto object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105`}
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
+              {isLoading ? (
+                <SpinningRing size={22} strokeWidth={3} color="#4cc2ff" />
+              ) : (
+                <img
+                  src={ch.logo}
+                  alt={ch.name}
+                  referrerPolicy="no-referrer"
+                  className={`${
+                    ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                      ? 'max-h-7 sm:max-h-8 md:max-h-9 max-w-[92%] scale-110'
+                      : 'max-h-6 sm:max-h-7 md:max-h-7.5 max-w-[82%]'
+                  } w-auto object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105`}
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+              )}
             </div>
           </div>
         ))}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { Channel } from '../types';
@@ -11,6 +11,7 @@ import { motion } from 'motion/react';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
+import { SpinningRing } from '../components/SpinningRing';
 
 interface LiveTVProps {
   currentChannel: Channel;
@@ -34,6 +35,16 @@ export const LiveTV: React.FC<LiveTVProps> = ({
   const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isTheaterMode, setIsTheaterMode] = useState(false);
+
+  // 3-second loading state on tab load before displaying channel logos
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Distinct category list maintaining natural broadcast order
   const distinctCategories = Array.from(new Set(channels.map((c) => c.category)));
@@ -156,31 +167,35 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
                       return (
                         <div
-                          key={ch.id}
+                          key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
                           id={`livetv-channel-card-${ch.id}`}
                           onClick={() => onSelectChannel(ch)}
                           className={`fluent-reveal-item channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d] ${
                             isSelected ? 'is-selected' : ''
-                          }`}
+                          } ${!isLoading ? 'slide-up-refresh' : ''}`}
                           title={ch.name}
                         >
                           {/* Channel Logo Box without background (strictly only logo) */}
                           <div className="w-full h-full flex items-center justify-center p-1 relative">
-                            <img
-                              src={ch.logo}
-                              alt={ch.name}
-                              referrerPolicy="no-referrer"
-                              className={`${
-                                ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                                  ? 'max-h-[78%] max-w-[92%] scale-110'
-                                  : ch.category === 'Kênh VTV'
-                                    ? 'max-h-[56%] max-w-[80%]'
-                                    : 'max-h-[58%] max-w-[82%]'
-                              } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                              }}
-                            />
+                            {isLoading ? (
+                              <SpinningRing size={24} strokeWidth={3.5} color="#4cc2ff" />
+                            ) : (
+                              <img
+                                src={ch.logo}
+                                alt={ch.name}
+                                referrerPolicy="no-referrer"
+                                className={`${
+                                  ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
+                                    ? 'max-h-[78%] max-w-[92%] scale-110'
+                                    : ch.category === 'Kênh VTV'
+                                      ? 'max-h-[56%] max-w-[80%]'
+                                      : 'max-h-[58%] max-w-[82%]'
+                                } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                }}
+                              />
+                            )}
                           </div>
                         </div>
                       );

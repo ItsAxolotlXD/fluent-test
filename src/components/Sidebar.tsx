@@ -734,7 +734,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Unified Navigation List inside common scroll container */}
         <div 
           ref={containerRef}
-          className="flex-1 overflow-y-auto pb-4 no-scrollbar space-y-1 px-2.5 font-normal relative"
+          key="sidebar-nav-expanded"
+          className="sidebar-items-slide-up flex-1 overflow-y-auto pb-4 no-scrollbar space-y-1 px-2.5 font-normal relative"
         >
           {/* Morphing Vertical Blue Accent Bar */}
           <MorphingVerticalIndicator
@@ -1001,15 +1002,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {settings.dockToSidebar && (
         <aside 
           id="waves-desktop-sidebar"
-          key={isSplashFinished ? 'desktop-sidebar-post-splash' : 'desktop-sidebar-init'}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
-            isSplashFinished ? 'sidebar-slide-up-entrance' : ''
-          } ${
             settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
           } ${
-            shouldAnimateSidebar ? 'transition-all duration-200 ease-in-out' : 'transition-none'
+            shouldAnimateSidebar ? 'transition-[width] duration-300 ease-in-out' : 'transition-none'
           } ${
             effectiveCollapsed ? 'w-[48px]' : 'w-[260px]'
           }`}
@@ -1026,7 +1024,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             /* Collapsed Windows 10 Sidebar Icon Bar */
             <div 
               ref={collapsedNavRef}
-              className="flex flex-col h-full select-none items-center py-2.5 space-y-1 relative"
+              key="sidebar-nav-collapsed"
+              className="sidebar-items-slide-up flex flex-col h-full select-none items-center py-2.5 space-y-1 relative"
             >
               <MorphingVerticalIndicator
                 containerRef={collapsedNavRef}

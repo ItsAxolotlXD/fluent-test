@@ -396,24 +396,27 @@ export const NativeKeyboard: React.FC = () => {
 
           {/* Emoji search bar placed right next to switch button when in emoji board */}
           {showEmojiPicker && (
-            <div className="relative flex items-center shrink-0 w-44 xs:w-52 sm:w-64 md:w-80 animate-in fade-in duration-150">
+            <div className="relative flex items-center shrink-0 w-44 xs:w-52 sm:w-64 md:w-80 h-7 bg-white/70 dark:bg-[#282c31] border border-black/10 dark:border-white/10 rounded-[6px] px-2 gap-1.5 focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all animate-in fade-in duration-150">
               <input
                 type="text"
                 value={emojiSearchQuery}
                 onChange={(e) => setEmojiSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm emoji..."
-                className="w-full h-7 pl-6 pr-6 rounded-full bg-white/60 hover:bg-white/70 border border-black/10 text-xs text-black placeholder:text-black/50 focus:outline-none focus:bg-white/85 transition-colors"
+                className="w-full bg-transparent text-xs text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none border-none py-0.5 pr-5 no-fluent-line"
               />
-              <Search className="w-3.5 h-3.5 text-black/50 absolute left-2 pointer-events-none" />
-              {emojiSearchQuery && (
+              {emojiSearchQuery ? (
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setEmojiSearchQuery('')}
-                  className="absolute right-1.5 p-0.5 text-black/50 hover:text-black cursor-default"
+                  className="absolute right-1.5 p-0.5 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </button>
+              ) : (
+                <div className="absolute right-1.5 pointer-events-none text-black/50 dark:text-white/50">
+                  <Search className="w-3.5 h-3.5" />
+                </div>
               )}
             </div>
           )}
