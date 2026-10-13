@@ -300,7 +300,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [favoriteChannelIds]);
 
   const shouldAnimateSidebar = !settings.reduceAllMotion && settings.animateSidebar;
-  const effectiveCollapsed = settings.autoHideSidebar ? !isHovered : isCollapsed;
+  const isHoverToExpandActive = Boolean(settings.hoverToExpand && isCollapsed);
+  const isExpandedOnHover = isHovered || isToolsFlyoutOpen || isSignInFlyoutOpen;
+  const effectiveCollapsed = isHoverToExpandActive
+    ? !isExpandedOnHover
+    : (settings.autoHideSidebar ? !isHovered : isCollapsed);
 
   const handleNavClick = (route: string, state?: any) => {
     navigate(route, state);
@@ -1171,18 +1175,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 z-40 overflow-visible shadow-none border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
-            settings.sidebarPosition === 'right' ? 'right-0' : 'left-0'
+          className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 overflow-visible border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
+            settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
           } ${
-            shouldAnimateSidebar ? 'transition-[width] duration-300 ease-in-out' : 'transition-none'
+            shouldAnimateSidebar ? 'transition-[width,box-shadow] duration-300 ease-in-out' : 'transition-none'
           } ${
             effectiveCollapsed ? 'w-[48px]' : 'w-[260px]'
+          } ${
+            isHoverToExpandActive && isExpandedOnHover
+              ? settings.sidebarPosition === 'right'
+                ? '!z-50 shadow-[-8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[-8px_0_32px_rgba(0,0,0,0.6)]'
+                : '!z-50 shadow-[8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[8px_0_32px_rgba(0,0,0,0.6)]'
+              : 'z-40 shadow-none'
           }`}
           style={{
             backgroundColor: settings.theme === 'light' ? '#f3f3f3' : '#1b1f24',
             backdropFilter: 'none',
             WebkitBackdropFilter: 'none',
-            boxShadow: 'none',
           }}
         >
           {!effectiveCollapsed ? (
@@ -1190,220 +1199,228 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             /* Collapsed Windows 10 Sidebar Icon Bar */
             <div 
-              ref={collapsedNavRef}
               key="sidebar-nav-collapsed"
-              className="sidebar-items-slide-up flex flex-col h-full select-none items-center py-2.5 space-y-1 relative"
+              className="sidebar-items-slide-up flex flex-col h-full select-none items-center py-2 relative w-full"
             >
-              <MorphingVerticalIndicator
-                containerRef={collapsedNavRef}
-                currentRoute={currentRoute}
-                dependencyKey={`${navItems.length}-${currentRoute}`}
-              />
+              {/* Top controls: Back & Hamburger toggle (shrink-0) */}
+              <div className="flex flex-col items-center gap-1 shrink-0 pb-1.5 w-full">
+                {/* Back Button with Left Arrow */}
+                <button 
+                  id="btn-sidebar-collapsed-back"
+                  type="button"
+                  onClick={handleGoBack} 
+                  className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
+                  title="Quay lại (Back)"
+                  aria-label="Quay lại"
+                >
+                  <ArrowLeft className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
+                </button>
 
-              {/* Back Button with Left Arrow */}
-              <button 
-                id="btn-sidebar-collapsed-back"
-                type="button"
-                onClick={handleGoBack} 
-                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                title="Quay lại (Back)"
-                aria-label="Quay lại"
+                {/* Hamburger Button to Expand */}
+                <button 
+                  id="btn-sidebar-expand-toggle"
+                  type="button"
+                  onClick={onToggleCollapse} 
+                  className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
+                  title="Expand menu"
+                >
+                  <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
+                </button>
+              </div>
+
+              {/* Scrollable Navigation List (spaced out like expanded, never squeezed, can scroll down) */}
+              <div 
+                ref={collapsedNavRef}
+                className="flex-1 w-full overflow-y-auto no-scrollbar py-1 space-y-1 flex flex-col items-center relative"
               >
-                <ArrowLeft className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
-              </button>
+                <MorphingVerticalIndicator
+                  containerRef={collapsedNavRef}
+                  currentRoute={currentRoute}
+                  dependencyKey={`${navItems.length}-${currentRoute}`}
+                />
 
-              {/* Hamburger Button to Expand */}
-              <button 
-                id="btn-sidebar-expand-toggle"
-                type="button"
-                onClick={onToggleCollapse} 
-                className="w-9 h-9 rounded-[6px] flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white mb-1.5 cursor-pointer transition-colors"
-                title="Expand menu"
-              >
-                <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
-              </button>
+                {/* 1. Home Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-home"
+                  data-nav-active={currentRoute === '/' ? 'true' : undefined}
+                  onClick={() => handleNavClick('/')}
+                  title="Home"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    currentRoute === '/'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* Home Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-home"
-                data-nav-active={currentRoute === '/' ? 'true' : undefined}
-                onClick={() => handleNavClick('/')}
-                title="Home"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  currentRoute === '/'
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 2. Articles Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-articles"
+                  data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/news')}
+                  title="Articles"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 2. Articles Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-articles"
-                data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/news')}
-                title="Articles"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 3. Updates Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-updates"
+                  data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/updates')}
+                  title="Updates"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 3. Updates Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-updates"
-                data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/updates')}
-                title="Updates"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* Divider: Apps */}
+                <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-              {/* Divider: Apps */}
-              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
+                {/* 4. Watch Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-watch"
+                  data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/live-tv')}
+                  title="Watch"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 4. Watch Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-watch"
-                data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/live-tv')}
-                title="Watch"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 5. Gallery Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-gallery"
+                  data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/gallery')}
+                  title="Gallery"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 5. Gallery Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-gallery"
-                data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/gallery')}
-                title="Gallery"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 6. Draws Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-draws"
+                  data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/draws')}
+                  title="Draws"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 6. Draws Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-draws"
-                data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/draws')}
-                title="Draws"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 7. Notes Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-notes"
+                  data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
+                  onClick={() => handleNavClick('/notes')}
+                  title="Notes"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 7. Notes Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-notes"
-                data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
-                onClick={() => handleNavClick('/notes')}
-                title="Notes"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 8. VLC Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-vlc"
+                  data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/vlc')}
+                  title="VLC Media Player"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentVlcIcon white className="w-5 h-5 text-white" />
+                </button>
 
-              {/* 8. VLC Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-vlc"
-                data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
-                onClick={() => handleNavClick('/vlc')}
-                title="VLC Media Player"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentVlcIcon white className="w-5 h-5 text-white" />
-              </button>
+                {/* Divider: LAC's project */}
+                <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-              {/* Divider: LAC's project */}
-              <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-1" />
+                {/* 9. Craftmine Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-craftmine"
+                  data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
+                  onClick={() => handleNavClick('/craftmine')}
+                  title="Craftmine"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    currentRoute === '/craftmine'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* 6. Craftmine Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-craftmine"
-                data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
-                onClick={() => handleNavClick('/craftmine')}
-                title="Craftmine"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  currentRoute === '/craftmine'
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
+                {/* 10. Photopea Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-photopea"
+                  data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
+                  onClick={() => handleNavClick('/photopea')}
+                  title="Photopea"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    currentRoute === '/photopea'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
+                </button>
 
-              {/* Photopea Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-photopea"
-                data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
-                onClick={() => handleNavClick('/photopea')}
-                title="Photopea"
-                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
-                  currentRoute === '/photopea'
-                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                }`}
-              >
-                <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
-              </button>
-
-              {/* 7. Discord Icon */}
-              <button
-                type="button"
-                id="sidebar-collapsed-discord"
-                onClick={() => window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer')}
-                title="Discord"
-                className="sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
-              >
-                <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
-                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                </svg>
-              </button>
+                {/* 11. Discord Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-discord"
+                  onClick={() => window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer')}
+                  title="Discord"
+                  className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
+                >
+                  <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                  </svg>
+                </button>
+              </div>
 
               {/* Bottom Sign In & Settings Icons */}
-              <div className="mt-auto pt-2 space-y-1 relative signin-flyout-container">
+              <div className="shrink-0 w-full mt-auto pt-2 pb-1 space-y-1 flex flex-col items-center relative signin-flyout-container border-t border-black/5 dark:border-white/5">
                 {/* Sign In Collapsed Button placed directly above Settings */}
                 <div className="relative">
                   <button
@@ -1411,7 +1428,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     id="sidebar-collapsed-signin"
                     onClick={toggleSignInFlyout}
                     title="Sign in"
-                    className={`sidebar-nav-item signin-toggle-btn w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                    className={`sidebar-nav-item signin-toggle-btn w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                       isSignInFlyoutOpen
                         ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
                         : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
@@ -1432,7 +1449,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   data-nav-active={isCurrentActive('/settings') ? 'true' : undefined}
                   onClick={() => handleNavClick('/settings')}
                   title="Settings"
-                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     isCurrentActive('/settings')
                       ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
                       : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'

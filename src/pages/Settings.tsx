@@ -72,7 +72,7 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Page loading, motion animations, search scope, and virtual keyboard',
     icon: Key,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
-    keywords: ['accessibility', 'page loading', 'load pages sequentially', 'sequential', 'performance', 'spinning ring', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts'],
+    keywords: ['accessibility', 'page loading', 'load pages sequentially', 'sequential', 'performance', 'spinning ring', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts', 'hover to expand', 'hover', 'expand', 'sidebar'],
   },
 ];
 
@@ -1085,6 +1085,47 @@ export const Settings: React.FC<SettingsProps> = ({
             {/* SUBPAGE 4: TRỢ NĂNG */}
             {activeCategory === 'accessibility' && (
               <div className="space-y-4 select-none">
+                {/* Section: Điều hướng & Thanh bên (Sidebar & Navigation) */}
+                <div className="space-y-1.5">
+                  <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
+                    Điều hướng & Thanh bên (Sidebar & Navigation)
+                  </div>
+                  <section 
+                    id="settings-section-sidebar-accessibility"
+                    className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden"
+                  >
+                    {/* Hover to expand */}
+                    <div 
+                      id="setting-hover-to-expand"
+                      onClick={() => updateDraft('hoverToExpand', !draftSettings.hoverToExpand)}
+                      className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                    >
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="font-semibold text-sm text-[#111827] dark:text-white">
+                          Hover to expand
+                        </div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                          When the mouse is hovered over the collapsed sidebar, it automatically expands it without changing the tab pages width.
+                        </div>
+                      </div>
+
+                      <button
+                        id="toggle-hover-to-expand"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.hoverToExpand}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('hoverToExpand', !draftSettings.hoverToExpand);
+                        }}
+                        className="toggle-switch-btn focus:outline-none"
+                      >
+                        <span className="toggle-switch-thumb" />
+                      </button>
+                    </div>
+                  </section>
+                </div>
+
                 {/* Section 1: Tải trang & Hiệu năng */}
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">

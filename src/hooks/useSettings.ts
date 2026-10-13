@@ -17,6 +17,7 @@ export interface SystemSettings {
   fontScaleVersion?: number;
   autoScrollBanner: boolean;
   autoHideSidebar: boolean;
+  hoverToExpand: boolean;
   searchCategories: boolean;
   searchNews: boolean;
   searchTv: boolean;
@@ -65,6 +66,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   fontScaleVersion: 2,
   autoScrollBanner: true,
   autoHideSidebar: false,
+  hoverToExpand: false,
   searchCategories: true,
   searchNews: true,
   searchTv: true,
@@ -180,6 +182,7 @@ export const getStoredSettings = (): SystemSettings => {
         triangleExperimentVersion: 1,
         pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
+        hoverToExpand: typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : DEFAULT_SETTINGS.hoverToExpand,
         fontScale,
         fontScaleVersion: 2,
       };
