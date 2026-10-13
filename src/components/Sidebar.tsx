@@ -35,6 +35,21 @@ import {
   FluentVlcIcon,
   FluentPhotopeaIcon
 } from './FluentIcons';
+import {
+  Fluent3DHomeIcon,
+  Fluent3DArticlesIcon,
+  Fluent3DUpdatesIcon,
+  Fluent3DWatchIcon,
+  Fluent3DGalleryIcon,
+  Fluent3DDrawsIcon,
+  Fluent3DNotesIcon,
+  Fluent3DVlcIcon,
+  Fluent3DCraftmineIcon,
+  Fluent3DPhotopeaIcon,
+  Fluent3DDiscordIcon,
+  Fluent3DUserIcon,
+  Fluent3DSettingsIcon,
+} from './Fluent3DIcons';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
 import { CHANNELS_DATA } from '../data/channels';
@@ -299,6 +314,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return CHANNELS_DATA.filter((ch) => favoriteChannelIds.includes(ch.id));
   }, [favoriteChannelIds]);
 
+  const isFluentIcons = Boolean(settings.fluentIcons);
   const shouldAnimateSidebar = !settings.reduceAllMotion && settings.animateSidebar;
   const isHoverToExpandActive = Boolean(settings.hoverToExpand && isCollapsed);
   const isExpandedOnHover = isHovered || isToolsFlyoutOpen || isSignInFlyoutOpen;
@@ -838,7 +854,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              {isFluentIcons ? (
+                <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
               <span className="truncate text-[13.5px]">Home</span>
             </button>
           </div>
@@ -857,7 +877,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <FluentArticlesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              {isFluentIcons ? (
+                <Fluent3DArticlesIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentArticlesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
               <span className="truncate text-[13.5px]">Articles</span>
             </button>
           </div>
@@ -876,7 +900,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <FluentUpdatesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              {isFluentIcons ? (
+                <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentUpdatesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
               <span className="truncate text-[13.5px]">Updates</span>
             </button>
           </div>
@@ -904,7 +932,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Watch</span>
               </div>
 
@@ -969,7 +1001,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Gallery</span>
               </div>
             </button>
@@ -990,7 +1026,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentDrawsIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentDrawsIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Draws</span>
               </div>
             </button>
@@ -1011,7 +1051,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentNotesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DNotesIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentNotesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Notes</span>
               </div>
             </button>
@@ -1032,7 +1076,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
+                )}
                 <span className="truncate text-[13.5px]">VLC</span>
               </div>
             </button>
@@ -1061,7 +1109,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Craftmine</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Web</span>
@@ -1083,7 +1135,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">Photopea</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-600 dark:text-blue-400 font-semibold uppercase">Web</span>
@@ -1102,9 +1158,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Discord"
               className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
             >
-              <svg className="w-5 h-5 fill-current shrink-0 text-black dark:text-white" viewBox="0 0 24 24">
-                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-              </svg>
+              {isFluentIcons ? (
+                <Fluent3DDiscordIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <svg className="w-5 h-5 fill-current shrink-0 text-black dark:text-white" viewBox="0 0 24 24">
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+              )}
               <span className="truncate text-[13.5px]">Discord</span>
             </button>
           </div>
@@ -1126,7 +1186,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                <FluentUserIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                {isFluentIcons ? (
+                  <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentUserIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
                 <span className="truncate text-[13.5px]">
                   {signedInAccount ? signedInAccount : 'Sign in'}
                 </span>
@@ -1159,7 +1223,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
               />
             )}
-            <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-black dark:text-white" />
+            {isFluentIcons ? (
+              <Fluent3DSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon" />
+            ) : (
+              <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-black dark:text-white" />
+            )}
             <span className="truncate text-[13.5px]">Settings</span>
           </button>
         </div>
@@ -1252,7 +1320,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 2. Articles Icon */}
@@ -1268,7 +1340,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DArticlesIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 3. Updates Icon */}
@@ -1284,7 +1360,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* Divider: Apps */}
@@ -1303,7 +1383,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 5. Gallery Icon */}
@@ -1319,7 +1403,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 6. Draws Icon */}
@@ -1335,7 +1423,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 7. Notes Icon */}
@@ -1351,7 +1443,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DNotesIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 8. VLC Icon */}
@@ -1367,7 +1463,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentVlcIcon white className="w-5 h-5 text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentVlcIcon white className="w-5 h-5 text-white" />
+                  )}
                 </button>
 
                 {/* Divider: LAC's project */}
@@ -1386,7 +1486,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 10. Photopea Icon */}
@@ -1402,7 +1506,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
                 </button>
 
                 {/* 11. Discord Icon */}
@@ -1413,9 +1521,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Discord"
                   className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
                 >
-                  <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
-                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-                  </svg>
+                  {isFluentIcons ? (
+                    <Fluent3DDiscordIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                  )}
                 </button>
               </div>
 
@@ -1434,7 +1546,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                     }`}
                   >
-                    <FluentUserIcon className="w-5 h-5 text-[#111827] dark:text-white" />
+                    {isFluentIcons ? (
+                      <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
+                    ) : (
+                      <FluentUserIcon className="w-5 h-5 text-[#111827] dark:text-white" />
+                    )}
                   </button>
 
                   <AnimatePresence>
@@ -1461,7 +1577,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
                     />
                   )}
-                  <FluentSettingsIcon className="w-5 h-5 settings-spin-icon text-[#111827] dark:text-white" />
+                  {isFluentIcons ? (
+                    <Fluent3DSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon" />
+                  ) : (
+                    <FluentSettingsIcon className="w-5 h-5 settings-spin-icon text-[#111827] dark:text-white" />
+                  )}
                 </button>
               </div>
             </div>

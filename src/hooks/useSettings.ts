@@ -43,6 +43,7 @@ export interface SystemSettings {
   developerMode: boolean;
   triangleExperiment: boolean;
   triangleExperimentVersion?: number;
+  fluentIcons: boolean;
   pageLoading: boolean;
   loadPagesSequentially: boolean;
   customKeybinds: CustomKeybinds;
@@ -92,6 +93,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   developerMode: false,
   triangleExperiment: true,
   triangleExperimentVersion: 1,
+  fluentIcons: false,
   pageLoading: true,
   loadPagesSequentially: false,
   customKeybinds: DEFAULT_KEYBINDS,
@@ -180,6 +182,7 @@ export const getStoredSettings = (): SystemSettings => {
           ? (typeof parsed.triangleExperiment === 'boolean' ? parsed.triangleExperiment : true)
           : true,
         triangleExperimentVersion: 1,
+        fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
         pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
         hoverToExpand: typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : DEFAULT_SETTINGS.hoverToExpand,

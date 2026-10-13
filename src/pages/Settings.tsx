@@ -30,6 +30,7 @@ import { SfCheckmark } from '../components/SfCheckmark';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { TriangleLoader } from '../components/TriangleLoader';
 import { SpinningRing } from '../components/SpinningRing';
+import { Fluent3DHomeIcon } from '../components/Fluent3DIcons';
 import { KEYBIND_DEFINITIONS, DEFAULT_KEYBINDS, eventToKeyString, validateKeybind } from '../utils/keybinds';
 import { KeybindAction } from '../types';
 
@@ -91,7 +92,7 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     subtitle: 'Preview features and diagnostic flags',
     icon: FlaskConical,
     badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
-    keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader'],
+    keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader', 'fluent icons', 'fluent icon', '3d icons', 'microsoft fluent design'],
   },
 ];
 
@@ -1910,6 +1911,46 @@ export const Settings: React.FC<SettingsProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       updateDraft('triangleExperiment', !draftSettings.triangleExperiment);
+                    }}
+                    className="toggle-switch-btn focus:outline-none"
+                  >
+                    <span className="toggle-switch-thumb" />
+                  </button>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* Fluent icons */}
+                <div 
+                  id="setting-experimental-fluent-icons"
+                  onClick={() => updateDraft('fluentIcons', !draftSettings.fluentIcons)}
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                      <Fluent3DHomeIcon className="w-7 h-7" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                        <span>Fluent icons</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
+                          Mới
+                        </span>
+                      </div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Beautifully crafted 3D icons in vibrant colors, insprired by Microsoft Fluent Design
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    id="toggle-fluent-icons"
+                    type="button"
+                    role="switch"
+                    aria-checked={draftSettings.fluentIcons}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateDraft('fluentIcons', !draftSettings.fluentIcons);
                     }}
                     className="toggle-switch-btn focus:outline-none"
                   >
