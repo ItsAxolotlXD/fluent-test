@@ -187,14 +187,27 @@ html:not(.light-mode) .tab-element-slide-up-container {
   background-color: #282c31 !important;
 }
 
-/* Main tab page: bo cong 10px ở góc trên trái trang, các góc còn lại ko bo */
-main,
-.main-tab-page,
-.tab-element-slide-up-container {
-  border-top-left-radius: 10px !important;
-  border-top-right-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
+/* Main tab page: bo cong 10px ở góc trên trái trang khi ở desktop, khi ở mobile ko bo */
+@media (min-width: 768px) {
+  main,
+  .main-tab-page,
+  .tab-element-slide-up-container {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  main,
+  .main-tab-page,
+  .tab-element-slide-up-container {
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+  }
 }
 
 

@@ -327,6 +327,26 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
+      {/* Sticky top-left tab corner rounded mask: keeps top-left of tab page rounded (bo cong 10px) when scrolling, hidden on mobile UI */}
+      <div
+        aria-hidden="true"
+        className="hidden md:block pointer-events-none absolute top-full left-0 z-30 w-[10px] h-[10px] overflow-hidden"
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-[10px] h-[10px] block"
+        >
+          <path
+            d="M 0,0 L 10,0 A 10 10 0 0 0 0,10 Z"
+            className={settings.superDarkMode ? 'fill-black' : 'fill-[#f3f3f3] dark:fill-[#1b1f24]'}
+          />
+        </svg>
+      </div>
+
       {/* 1. Left Section */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0 z-10">
         {settings.navigationMode !== 'floaty' && (

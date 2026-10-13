@@ -15,11 +15,27 @@ export const FLUENT_ICON_URLS = {
   draws: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Draw%20Shape/SVG/ic_fluent_draw_shape_24_regular.svg'
 };
 
-export const FluentHomeIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-    <path d="M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H31.825C29.7125 43 28 41.2599 28 39.1134V29.8866C28 29.1711 27.4292 28.5911 26.725 28.5911H21.275C20.5708 28.5911 20 29.1711 20 29.8866V39.1134C20 41.2599 18.2875 43 16.175 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H16.175C16.8792 40.4089 17.45 39.8289 17.45 39.1134V29.8866C17.45 27.7401 19.1625 26 21.275 26H26.725C28.8375 26 30.55 27.7401 30.55 29.8866V39.1134C30.55 39.8289 31.1208 40.4089 31.825 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z" fill="currentColor"/>
-  </svg>
-);
+export const FluentHomeIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (hasError) {
+    return (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+        <path d="M21.6062 5.85517C23.0048 4.71494 24.9952 4.71494 26.3938 5.85517L39.5688 16.5966C40.4736 17.3342 41 18.4492 41 19.628V39.1134C41 41.2599 39.2875 43 37.175 43H31.825C29.7125 43 28 41.2599 28 39.1134V29.8866C28 29.1711 27.4292 28.5911 26.725 28.5911H21.275C20.5708 28.5911 20 29.1711 20 29.8866V39.1134C20 41.2599 18.2875 43 16.175 43H10.825C8.71251 43 7 41.2599 7 39.1134V19.628C7 18.4493 7.52645 17.3342 8.43124 16.5966L21.6062 5.85517ZM24.7979 7.87612C24.3317 7.49604 23.6683 7.49604 23.2021 7.87612L10.0271 18.6175C9.72548 18.8634 9.55 19.2351 9.55 19.628V39.1134C9.55 39.8289 10.1208 40.4089 10.825 40.4089H16.175C16.8792 40.4089 17.45 39.8289 17.45 39.1134V29.8866C17.45 27.7401 19.1625 26 21.275 26H26.725C28.8375 26 30.55 27.7401 30.55 29.8866V39.1134C30.55 39.8289 31.1208 40.4089 31.825 40.4089H37.175C37.8792 40.4089 38.45 39.8289 38.45 39.1134V19.628C38.45 19.2351 38.2745 18.8634 37.9729 18.6175L24.7979 7.87612Z" fill="currentColor"/>
+      </svg>
+    );
+  }
+
+  return (
+    <img
+      src="https://static.wikia.nocookie.net/ep-deo/images/c/c7/Home-icns.png/revision/latest?cb=20261013101015"
+      alt="Home"
+      className={`${className} shrink-0 object-contain dark:brightness-0 dark:invert`}
+      style={style}
+      onError={() => setHasError(true)}
+    />
+  );
+};
 
 export const FluentWatchIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
@@ -98,12 +114,16 @@ export const FluentGalleryIcon: React.FC<{ className?: string; style?: React.CSS
 
 export const FluentDrawsIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-    {/* Artist Palette & Brush Icon */}
-    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 14.5 3 17 5 18.5C6.5 19.5 7.5 20.5 7.5 21.5C7.5 21.8 7.7 22 8 22H9C9.55228 22 10 21.5523 10 21C10 19.8954 10.8954 19 12 19C16.4183 19 22 16.5 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="7.5" cy="8.5" r="1.5" fill="currentColor"/>
-    <circle cx="12" cy="6.5" r="1.5" fill="currentColor"/>
-    <circle cx="16.5" cy="8.5" r="1.5" fill="currentColor"/>
-    <circle cx="17.5" cy="13.5" r="1.5" fill="currentColor"/>
+    {/* Artist Palette */}
+    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 14.5 3 17 5 18.5C6.5 19.5 7.5 20.5 7.5 21.5C7.5 21.8 7.7 22 8 22H9C9.55228 22 10 21.5523 10 21C10 19.8954 10.8954 19 12 19C16.4183 19 22 16.5 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="7.5" cy="8.5" r="1.3" fill="currentColor"/>
+    <circle cx="12" cy="6.2" r="1.3" fill="currentColor"/>
+    <circle cx="16.5" cy="8.5" r="1.3" fill="currentColor"/>
+    <circle cx="17.5" cy="13" r="1.3" fill="currentColor"/>
+    {/* Paint Brush across palette */}
+    <path d="M15 19.5L21.5 13C22 12.5 22 11.7 21.5 11.2C21 10.7 20.2 10.7 19.7 11.2L13.2 17.7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+    <path d="M13.2 17.7L11.5 21.5C11.3 22 11.8 22.4 12.2 22.1L15 19.5Z" fill="currentColor"/>
+    <line x1="18.5" y1="12.4" x2="20.3" y2="14.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
