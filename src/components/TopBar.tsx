@@ -577,48 +577,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           </button>
         )}
 
-        {/* In Settings tab: Fluent Save Button */}
-        {currentRoute === '/settings' ? (
-          <div className="relative flex items-center justify-center ml-1">
-            <button
-              id="btn-top-settings-apply-checkbox"
-              type="button"
-              onClick={handleApplySettings}
-              className={`px-4 py-1.5 rounded-[4px] font-semibold text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] transition-colors text-xs sm:text-[13px] cursor-default flex items-center justify-center shrink-0 border-b-2 border-black/25 shadow-xs select-none ${
-                hasChanges 
-                  ? 'ring-2 ring-[#4cc2ff]/50' 
-                  : ''
-              } ${showUnsavedTooltip ? 'animate-shake' : ''}`}
-              title={
-                hasChanges
-                  ? "Unsaved changes. Click to save!"
-                  : "All settings saved"
-              }
-              aria-label={hasChanges ? "Save settings" : "Settings saved"}
-            >
-              <span className="font-semibold">Save</span>
-            </button>
-
-            {/* Unsaved Settings Warning Tooltip */}
-            <AnimatePresence>
-              {showUnsavedTooltip && (
-                <motion.div
-                  id="settings-unsaved-tooltip"
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -2 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full mt-2 right-0 z-50 flex flex-col items-end pointer-events-auto"
-                >
-                  <div className="px-3 py-1.5 rounded-[4px] bg-[#2c2c2c] border border-[#3e3e3e] text-white shadow-xl flex items-center gap-2 whitespace-nowrap text-xs">
-                    <span className="w-2 h-2 rounded-full bg-[#4cc2ff] shrink-0" />
-                    <span>Please save changes before leaving</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ) : null}
       </div>
     </header>
   );

@@ -29,7 +29,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
           <stop offset="100%" stopColor="#93c5fd" />
         </linearGradient>
 
-        {/* Light mode: Gradient xanh dương đậm */}
+        {/* Light mode: Gradient màu giống spinning ring (#005fb8) nhưng có gradient */}
         <linearGradient
           id="vplay-cat-inverted-triangle-grad-light"
           x1="0%"
@@ -37,16 +37,15 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
           x2="100%"
           y2="100%"
         >
-          <stop offset="0%" stopColor="#005a9e" />
-          <stop offset="50%" stopColor="#0284c7" />
-          <stop offset="100%" stopColor="#0369a1" />
+          <stop offset="0%" stopColor="#0078d4" />
+          <stop offset="50%" stopColor="#005fb8" />
+          <stop offset="100%" stopColor="#00458b" />
         </linearGradient>
       </defs>
-      {/* Tam giác ngược: ở Light mode là gradient xanh dương đậm, ở Dark mode là gradient xanh dương nhạt */}
+      {/* Tam giác ngược: ở Light mode là gradient xanh dương đậm giống spinning ring #005fb8, ở Dark mode là gradient xanh dương nhạt */}
       <path
         d="M 2.2 3.6 H 21.8 L 12 21.6 Z"
         className="category-icon-path stroke-[url(#vplay-cat-inverted-triangle-grad-light)] dark:stroke-[url(#vplay-cat-inverted-triangle-grad)]"
-        stroke="currentColor"
         strokeWidth="3.6"
         strokeLinejoin="round"
         strokeLinecap="round"

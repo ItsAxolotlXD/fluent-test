@@ -10,11 +10,12 @@ export const Fluent3DHomeIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5
   const [loadError, setLoadError] = React.useState(false);
 
   return (
-    <div className={`${className} shrink-0 flex items-center justify-center`} style={style}>
+    <div className={`fluent-3d-icon ${className} shrink-0 flex items-center justify-center`} style={style}>
       {!loadError ? (
         <img
           src="https://www.elevenforum.com/data/attachments/30/30188-c9f25938bd40f9c2e3af267cc96b3e28.jpg?hash=yfJZOL1A-c"
           alt="Home"
+          referrerPolicy="no-referrer"
           className="w-[17px] h-[17px] shrink-0 object-contain rounded-[2px]"
           onError={() => setLoadError(true)}
         />
@@ -46,7 +47,7 @@ export const Fluent3DHomeIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5
 
 // 2. Articles - 3D Red Megaphone
 export const Fluent3DArticlesIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_mega_cone" x1="6" y1="18" x2="22" y2="10" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#EF4444" />
@@ -92,7 +93,7 @@ export const Fluent3DArticlesIcon: React.FC<Fluent3DIconProps> = ({ className = 
 
 // 3. Updates - 3D Yellow-Orange (Vàng cam) Sync Arrows
 export const Fluent3DUpdatesIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_up_orange_top" x1="4" y1="4" x2="28" y2="16" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#FDE047" />
@@ -125,7 +126,7 @@ export const Fluent3DUpdatesIcon: React.FC<Fluent3DIconProps> = ({ className = '
 
 // 4. Watch / Movies & TV - Official 2020 Microsoft Movies & TV Films Icon (scaled down slightly)
 export const Fluent3DWatchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <div className={`${className} shrink-0 flex items-center justify-center`} style={style}>
+  <div className={`fluent-3d-icon ${className} shrink-0 flex items-center justify-center`} style={style}>
     <svg
       viewBox="0 0 559 508"
       fill="none"
@@ -138,22 +139,22 @@ export const Fluent3DWatchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-
           <path d="M696 119 1255 119 1255 627 696 627Z" fillRule="evenodd" clipRule="evenodd" />
         </clipPath>
         <linearGradient id="fl3d_mtv_bg" x1="723.1" y1="96.2" x2="1227.9" y2="650.8" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FE924A" />
+          <stop offset="0%" stopColor="#FE924A" />
           <stop offset="0.51" stopColor="#BF6F91" />
           <stop offset="1" stopColor="#8962C2" />
         </linearGradient>
         <linearGradient id="fl3d_mtv_screen" x1="792.6" y1="167.7" x2="1158.4" y2="625.3" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#4B4C4C" />
+          <stop offset="0%" stopColor="#4B4C4C" />
           <stop offset="0.5" stopColor="#3E3E3E" />
           <stop offset="1" stopColor="#252525" />
         </linearGradient>
         <linearGradient id="fl3d_mtv_play" x1="922.3" y1="260" x2="1081.7" y2="536" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#FFFFFF" />
+          <stop offset="0%" stopColor="#FFFFFF" />
           <stop offset="0.6" stopColor="#E2E8EE" />
           <stop offset="1" stopColor="#AABDCD" />
         </linearGradient>
         <linearGradient id="fl3d_mtv_chev" x1="781.4" y1="278.9" x2="1177.6" y2="50.1" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#B3596E" />
+          <stop offset="0%" stopColor="#B3596E" />
           <stop offset="1" stopColor="#AF4E63" />
         </linearGradient>
       </defs>
@@ -182,42 +183,58 @@ export const Fluent3DWatchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-
   </div>
 );
 
-// 5. Gallery - 3D Microsoft Photos
-export const Fluent3DGalleryIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
-    <defs>
-      <linearGradient id="fl3d_gal_back" x1="4" y1="4" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#A855F7" />
-        <stop offset="100%" stopColor="#6366F1" />
-      </linearGradient>
-      <linearGradient id="fl3d_gal_sky" x1="8" y1="8" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#38BDF8" />
-        <stop offset="60%" stopColor="#0284C7" />
-        <stop offset="100%" stopColor="#1E3A8A" />
-      </linearGradient>
-      <linearGradient id="fl3d_gal_mount" x1="12" y1="18" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#34D399" />
-        <stop offset="100%" stopColor="#059669" />
-      </linearGradient>
-      <filter id="fl3d_gal_shadow" x="-10%" y="-10%" width="125%" height="125%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodColor="#000" floodOpacity="0.22" />
-      </filter>
-    </defs>
-    {/* Back Card */}
-    <rect x="4" y="4" width="19" height="19" rx="3.5" fill="url(#fl3d_gal_back)" opacity="0.65" />
-    {/* Front Picture Card */}
-    <rect x="9" y="8" width="19" height="19" rx="3.5" fill="url(#fl3d_gal_sky)" filter="url(#fl3d_gal_shadow)" />
-    {/* Sun */}
-    <circle cx="14.5" cy="13.5" r="2.4" fill="#FBBF24" />
-    {/* Mountains */}
-    <path d="M9 24L14 18L18 22L22 17L28 24V24.5C28 25.8807 26.8807 27 25.5 27H11.5C10.1193 27 9 25.8807 9 24.5V24Z" fill="url(#fl3d_gal_mount)" />
-    <path d="M17 23L22 17L28 24V25C28 26.1046 27.1046 27 26 27H21L17 23Z" fill="#10B981" opacity="0.5" />
-  </svg>
-);
+// 5. Gallery - 3D Microsoft Photos / Gallery (scaled down like home, settings, watch)
+export const Fluent3DGalleryIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => {
+  const [loadError, setLoadError] = React.useState(false);
+
+  return (
+    <div className={`fluent-3d-icon ${className} shrink-0 flex items-center justify-center`} style={style}>
+      {!loadError ? (
+        <img
+          src="https://www.elevenforum.com/data/attachments/73/73114-b7601bc81d404bb12cc522e1acb2fea8.jpg?hash=t2AbyB1AS7"
+          alt="Gallery"
+          referrerPolicy="no-referrer"
+          className="w-[17px] h-[17px] shrink-0 object-contain rounded-[2px]"
+          onError={() => setLoadError(true)}
+        />
+      ) : (
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[17px] h-[17px] shrink-0">
+          <defs>
+            <linearGradient id="fl3d_gal_back" x1="4" y1="4" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#A855F7" />
+              <stop offset="100%" stopColor="#6366F1" />
+            </linearGradient>
+            <linearGradient id="fl3d_gal_sky" x1="8" y1="8" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#38BDF8" />
+              <stop offset="60%" stopColor="#0284C7" />
+              <stop offset="100%" stopColor="#1E3A8A" />
+            </linearGradient>
+            <linearGradient id="fl3d_gal_mount" x1="12" y1="18" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#34D399" />
+              <stop offset="100%" stopColor="#059669" />
+            </linearGradient>
+            <filter id="fl3d_gal_shadow" x="-10%" y="-10%" width="125%" height="125%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodColor="#000" floodOpacity="0.22" />
+            </filter>
+          </defs>
+          {/* Back Card */}
+          <rect x="4" y="4" width="19" height="19" rx="3.5" fill="url(#fl3d_gal_back)" opacity="0.65" />
+          {/* Front Picture Card */}
+          <rect x="9" y="8" width="19" height="19" rx="3.5" fill="url(#fl3d_gal_sky)" filter="url(#fl3d_gal_shadow)" />
+          {/* Sun */}
+          <circle cx="14.5" cy="13.5" r="2.4" fill="#FBBF24" />
+          {/* Mountains */}
+          <path d="M9 24L14 18L18 22L22 17L28 24V24.5C28 25.8807 26.8807 27 25.5 27H11.5C10.1193 27 9 25.8807 9 24.5V24Z" fill="url(#fl3d_gal_mount)" />
+          <path d="M17 23L22 17L28 24V25C28 26.1046 27.1046 27 26 27H21L17 23Z" fill="#10B981" opacity="0.5" />
+        </svg>
+      )}
+    </div>
+  );
+};
 
 // 6. Draws - 3D Artist Palette WITH PAINT BRUSH (Cọ vẽ)
 export const Fluent3DDrawsIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_draw_palette" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#FDE68A" />
@@ -268,7 +285,7 @@ export const Fluent3DDrawsIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-
 
 // 7. Notes - 4 Stacked Sticky Notes (Vàng, Xanh lá, Xanh dương, Đỏ)
 export const Fluent3DNotesIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_note_red" x1="4" y1="4" x2="22" y2="22" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#F87171" />
@@ -323,7 +340,7 @@ export const Fluent3DNotesIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-
 
 // 8. VLC - 3D Traffic Cone WITH 2 CLEAR WHITE HORIZONTAL STRIPES (2 thanh ngang trắng)
 export const Fluent3DVlcIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_vlc_orange_base" x1="16" y1="4" x2="16" y2="26" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#FB923C" />
@@ -359,7 +376,7 @@ export const Fluent3DVlcIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 
 
 // 9. Craftmine - 3D Isometric Minecraft Grass Block
 export const Fluent3DCraftmineIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_craft_top" x1="16" y1="4" x2="16" y2="15" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#4ADE80" />
@@ -389,7 +406,7 @@ export const Fluent3DCraftmineIcon: React.FC<Fluent3DIconProps> = ({ className =
 
 // 10. Photopea - 3D Vibrant Photopea Tile
 export const Fluent3DPhotopeaIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_pea_bg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#0E7490" />
@@ -414,7 +431,7 @@ export const Fluent3DPhotopeaIcon: React.FC<Fluent3DIconProps> = ({ className = 
 
 // 11. Discord - 3D Microsoft Fluent Discord Clyde
 export const Fluent3DDiscordIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_dc_bg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#6366F1" />
@@ -435,7 +452,7 @@ export const Fluent3DDiscordIcon: React.FC<Fluent3DIconProps> = ({ className = '
 
 // 12. Sign In / User - 3D Microsoft Fluent Profile Avatar WITH GRAY BACKGROUND (Background is gray)
 export const Fluent3DUserIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0`} style={style}>
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
     <defs>
       <linearGradient id="fl3d_user_gray_bg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#9CA3AF" />
@@ -463,7 +480,7 @@ export const Fluent3DUserIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5
 
 // 13. Settings - Official Windows 2020 Settings Gear (Settings_Windows_2020.svg, scaled down slightly)
 export const Fluent3DSettingsIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <div className={`${className} shrink-0 flex items-center justify-center`} style={style}>
+  <div className={`fluent-3d-icon ${className} shrink-0 flex items-center justify-center`} style={style}>
     <svg
       viewBox="0 0 651 612.4"
       fill="none"

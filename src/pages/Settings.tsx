@@ -235,13 +235,13 @@ export const Settings: React.FC<SettingsProps> = ({
                 className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
                   isSaving
                     ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
-                    : 'bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-medium border border-transparent cursor-pointer'
+                    : 'bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:bg-[#00458b] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold border border-transparent cursor-pointer'
                 }`}
               >
                 {isSaving ? (
                   <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
                 ) : (
-                  <span>Save</span>
+                  <span className="text-white dark:text-black font-semibold">Save</span>
                 )}
               </button>
             )}
@@ -343,13 +343,13 @@ export const Settings: React.FC<SettingsProps> = ({
                 className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
                   isSaving
                     ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
-                    : 'bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-black font-medium border border-transparent cursor-pointer'
+                    : 'bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:bg-[#00458b] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold border border-transparent cursor-pointer'
                 }`}
               >
                 {isSaving ? (
                   <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
                 ) : (
-                  <span>Save</span>
+                  <span className="text-white dark:text-black font-semibold">Save</span>
                 )}
               </button>
             )}
@@ -357,7 +357,7 @@ export const Settings: React.FC<SettingsProps> = ({
           {activeCatObj && (
             <div className="flex items-center gap-3 pt-1">
               <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
-                <activeCatObj.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
+                <activeCatObj.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl font-bold font-square text-[#111827] dark:text-white tracking-tight leading-tight">
@@ -406,7 +406,7 @@ export const Settings: React.FC<SettingsProps> = ({
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 flex items-center justify-center shrink-0">
-                        <cat.icon className="w-5 h-5 text-[#111827] dark:text-white stroke-[1.75]" />
+                        <cat.icon className="w-5 h-5 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-[#111827] dark:text-white">{cat.title}</div>
@@ -431,7 +431,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
@@ -462,7 +462,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#111827] dark:text-white stroke-[1.75]" />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
@@ -508,14 +508,14 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
 
             <div className="space-y-2 pt-0.5">
-              {/* Test VNRT Online Option Card */}
+              {/* Test V-One Option Card */}
               <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
                   <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Test VNRT Online
+                    Test V-One
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Try our test builds of VNRT Online with new, early unreleased features.
+                    Try our test builds of V-One with new, early unreleased features.
                   </div>
                 </div>
 
@@ -524,9 +524,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   href="https://test-vplay.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
                 >
-                  <span className="font-normal">Switch</span>
+                  <span className="font-normal text-white dark:text-black">Switch</span>
                 </a>
               </div>
 
@@ -537,7 +537,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     Changelogs
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của VNRT Online.
+                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của V-One.
                   </div>
                 </div>
 
@@ -545,9 +545,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-changelogs-read"
                   type="button"
                   onClick={() => setIsWelcomeModalOpen(true)}
-                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="font-normal">Read</span>
+                  <span className="font-normal text-white dark:text-black">Read</span>
                 </button>
               </div>
 
@@ -566,9 +566,9 @@ export const Settings: React.FC<SettingsProps> = ({
                   id="btn-update-vplay"
                   type="button"
                   onClick={onOpenUpdate}
-                  className="px-4 py-1.5 rounded-full font-normal text-white dark:text-black bg-[#4cc2ff] hover:bg-[#6bd0ff] active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
                 >
-                  <span className="font-normal">Update</span>
+                  <span className="font-normal text-white dark:text-black">Update</span>
                 </button>
               </div>
             </div>
@@ -1963,7 +1963,7 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Welcome to VNRT Online / Changelogs Modal Dialog */}
+      {/* Welcome to V-One / Changelogs Modal Dialog */}
       <WelcomeModal
         isOpen={isWelcomeModalOpen}
         onClose={() => setIsWelcomeModalOpen(false)}

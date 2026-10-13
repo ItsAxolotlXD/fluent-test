@@ -55,12 +55,12 @@ export const HERO_SLIDES: HeroSlide[] = [
     id: 'waves-nhip-song-thoi-dai',
     title: 'Waves of Our Time',
     subtitle: 'Media & Broadcasting Community',
-    description: 'VNRT Online - Where every wave leaves a mark. A community space connecting television and broadcasting enthusiasts.',
-    category: 'VNRT ONLINE COMMUNITY',
-    quality: 'VNRT ONLINE',
-    badge: 'VNRT ONLINE',
+    description: 'V-One - Where every wave leaves a mark. A community space connecting television and broadcasting enthusiasts.',
+    category: 'V-ONE COMMUNITY',
+    quality: 'V-ONE',
+    badge: 'V-ONE',
     channelId: 'vtv1',
-    channelName: 'VNRT ONLINE • MEDIA SPACE',
+    channelName: 'V-ONE • MEDIA SPACE',
     backgroundImage: '/banners/vplay_background.webp'
   }
 ];

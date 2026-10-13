@@ -742,11 +742,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
-              <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
-              <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
-              <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
-              <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
+            <svg className="w-4 h-4 microsoft-logo" viewBox="0 0 24 24" stroke="none" fill="none">
+              <rect x="1" y="1" width="10" height="10" fill="#F25022" stroke="none" />
+              <rect x="13" y="1" width="10" height="10" fill="#7FBA00" stroke="none" />
+              <rect x="1" y="13" width="10" height="10" fill="#00A4EF" stroke="none" />
+              <rect x="13" y="13" width="10" height="10" fill="#FFB900" stroke="none" />
             </svg>
           </div>
           <span className="font-medium truncate">Sign in with Microsoft</span>
@@ -797,7 +797,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aria-label="Quay lại"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
-            <ArrowLeft className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" />
+            <ArrowLeft className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white stroke-black dark:stroke-white" />
           </button>
 
           {/* Hamburger Menu Icon */}
