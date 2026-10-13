@@ -18,6 +18,7 @@ import {
 import { Channel } from '../types';
 import { fetchChannelEpgGuide, EpgProgram, EpgGuideResponse } from '../services/epgService';
 import { SpinningRing } from './SpinningRing';
+import { FluentSearchIcon } from './FluentIcons';
 
 interface EpgScheduleWidgetProps {
   currentChannel: Channel;
@@ -158,24 +159,31 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
       {/* Sidebar Mode Header: Clean header with "Search for programs" input on the left and Close button X on the right */}
       {isSidebarMode ? (
         <div className="h-14 px-3 sm:px-4 flex items-center justify-between gap-3 border-b border-black/10 dark:border-white/10 bg-[#16181d] shrink-0">
-          {/* Search bar inside header */}
-          <div className="relative flex-1 min-w-0">
+          {/* Synchronized Search Bar matching "Find and search" layout & design */}
+          <div className="group relative flex-1 min-w-0 h-8 sm:h-8.5 bg-black/20 border border-white/10 flex items-center px-3 gap-2 rounded-[6px] transition-all focus-within:border-b-2 focus-within:border-b-[#4cc2ff]">
             <input
               type="text"
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               placeholder="Search for programs"
-              className="w-full h-9 pl-9 pr-8 rounded-full text-xs sm:text-[13px] bg-white/10 dark:bg-white/10 border-0 outline-none text-white placeholder-[#9CA3AF] focus:ring-1 focus:ring-[#4cc2ff] transition-all"
+              className="w-full bg-transparent text-xs sm:text-[13px] text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
             />
-            <Search className="w-4 h-4 text-[#9CA3AF] absolute left-3 top-2.5 pointer-events-none" />
-            {filterQuery && (
+            {filterQuery ? (
               <button
                 type="button"
                 onClick={() => setFilterQuery('')}
-                className="absolute right-2.5 top-2.5 text-[#9CA3AF] hover:text-white transition-colors cursor-pointer"
-                title="Xóa tìm kiếm"
+                className="absolute right-1 text-[#71717a] dark:text-white hover:text-white p-0.5 transition-colors cursor-pointer"
+                title="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                title="Search"
+                className="absolute right-1 text-[#71717a] dark:text-white p-0.5 transition-colors cursor-pointer"
+              >
+                <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
               </button>
             )}
           </div>

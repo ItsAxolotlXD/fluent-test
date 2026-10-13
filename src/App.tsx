@@ -30,7 +30,11 @@ import { Settings } from './pages/Settings';
 import { ImmersiveSearch } from './pages/ImmersiveSearch';
 import { NotesApp } from './pages/NotesApp';
 import { Craftmine } from './pages/Craftmine';
+import { Photopea } from './pages/Photopea';
 import { Updates } from './pages/Updates';
+import { Gallery } from './pages/Gallery';
+import { Draws } from './pages/Draws';
+import { VLC } from './pages/VLC';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -579,8 +583,20 @@ export default function App() {
       case '/table':
         return <NotesApp navigate={navigate} />;
 
+      case '/gallery':
+        return <Gallery navigate={navigate} searchQuery={currentTabSearchQuery} />;
+
+      case '/draws':
+        return <Draws navigate={navigate} />;
+
+      case '/vlc':
+        return <VLC navigate={navigate} />;
+
       case '/craftmine':
         return <Craftmine />;
+
+      case '/photopea':
+        return <Photopea />;
 
       case '/updates':
         return <Updates navigate={navigate} onOpenUpdate={() => setIsUpdating(true)} />;
@@ -662,42 +678,42 @@ export default function App() {
                 ? 'md:pl-[48px]'
                 : 'md:pl-[260px]'
       }`}>
-        {/* TopBar Header */}
-        {!isOfficeRoute && (
-          <TopBar
-            currentRoute={currentRoute}
-            navigate={navigate}
-            onOpenSearch={handleOpenSearch}
-            onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
-            currentChannel={currentChannel}
-            channels={channels}
-            onSelectChannel={setCurrentChannel}
-            onOpenHelp={() => setIsHelpModalOpen(true)}
-            onOpenDiscord={() => setIsWelcomeModalOpen(true)}
-            onOpenSummarize={(art) => {
-              setSummarizeArticle(art);
-              setIsNewsSummaryOpen(true);
-            }}
-            onOpenTextToSpeech={(art) => {
-              setTtsArticle(art);
-              setIsTtsOpen(true);
-            }}
-            onOpenFindWords={() => {
-              setIsFindWordsOpen(true);
-            }}
-            onOpenAddStream={() => setIsAddStreamOpen(true)}
-            onImportChannels={handleImportPlaylist}
-            onOpenNotifications={() => setIsUnderConstructionOpen(true)}
-            fontSize={articleFontSize}
-            onChangeFontSize={handleFontSizeChange}
-            showUnsavedTooltip={showUnsavedTooltip}
-            onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
-          />
-        )}
+        {/* TopBar Header - Always displayed including on Notes tab */}
+        <TopBar
+          currentRoute={currentRoute}
+          navigate={navigate}
+          tabSearchQuery={currentTabSearchQuery}
+          onTabSearchChange={handleTabSearchChange}
+          onOpenSearch={handleOpenSearch}
+          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+          currentChannel={currentChannel}
+          channels={channels}
+          onSelectChannel={setCurrentChannel}
+          onOpenHelp={() => setIsHelpModalOpen(true)}
+          onOpenDiscord={() => setIsWelcomeModalOpen(true)}
+          onOpenSummarize={(art) => {
+            setSummarizeArticle(art);
+            setIsNewsSummaryOpen(true);
+          }}
+          onOpenTextToSpeech={(art) => {
+            setTtsArticle(art);
+            setIsTtsOpen(true);
+          }}
+          onOpenFindWords={() => {
+            setIsFindWordsOpen(true);
+          }}
+          onOpenAddStream={() => setIsAddStreamOpen(true)}
+          onImportChannels={handleImportPlaylist}
+          onOpenNotifications={() => setIsUnderConstructionOpen(true)}
+          fontSize={articleFontSize}
+          onChangeFontSize={handleFontSizeChange}
+          showUnsavedTooltip={showUnsavedTooltip}
+          onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
+        />
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái */}
         <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
-          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine'
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${

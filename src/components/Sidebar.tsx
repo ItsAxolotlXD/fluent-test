@@ -29,7 +29,11 @@ import {
   FluentSearchIcon,
   FluentSettingsIcon,
   FluentCraftmineIcon,
-  FluentUpdatesIcon
+  FluentUpdatesIcon,
+  FluentGalleryIcon,
+  FluentDrawsIcon,
+  FluentVlcIcon,
+  FluentPhotopeaIcon
 } from './FluentIcons';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -391,7 +395,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (route === '/updates' && (currentRoute === '/updates' || currentRoute.startsWith('/updates'))) return true;
     if (route === '/live-tv' && (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))) return true;
     if (route === '/notes' && (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')) return true;
+    if (route === '/gallery' && (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))) return true;
+    if (route === '/draws' && (currentRoute === '/draws' || currentRoute.startsWith('/draws'))) return true;
+    if (route === '/vlc' && (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))) return true;
     if (route === '/craftmine' && currentRoute === '/craftmine') return true;
+    if (route === '/photopea' && currentRoute === '/photopea') return true;
     if (route === '/settings' && (currentRoute === '/settings' || currentRoute.startsWith('/settings'))) return true;
     if (route === '/about' && (currentRoute === '/about' || currentRoute.startsWith('/about'))) return true;
     if (route !== '/' && currentRoute.startsWith(route)) return true;
@@ -513,6 +521,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Ứng dụng
         </div>
 
+        {/* Gallery */}
+        <button
+          type="button"
+          id="tool-gallery"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            handleNavClick('/gallery');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FluentGalleryIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
+            <span>Gallery</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Bộ sưu tập</span>
+        </button>
+
+        {/* Draws */}
+        <button
+          type="button"
+          id="tool-draws"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            handleNavClick('/draws');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FluentDrawsIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
+            <span>Draws</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Vẽ Paint</span>
+        </button>
+
         {/* Notes */}
         <button
           type="button"
@@ -528,6 +570,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span>Notes</span>
           </div>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
+        </button>
+
+        {/* VLC */}
+        <button
+          type="button"
+          id="tool-vlc"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            handleNavClick('/vlc');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FluentVlcIcon white className="w-4 h-4 shrink-0 text-white" />
+            <span>VLC</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Media player</span>
+        </button>
+
+        {/* Photopea Tool */}
+        <button
+          type="button"
+          id="tool-photopea"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            handleNavClick('/photopea');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FluentPhotopeaIcon className="w-4 h-4 shrink-0 text-black dark:text-white" />
+            <span>Photopea</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Photo editor</span>
         </button>
 
         {/* Article contextual tools */}
@@ -874,7 +950,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* 5. Notes */}
+          {/* 5. Gallery */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-gallery' : 'sidebar-nav-gallery'}
+              data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/gallery')}
+              title="Gallery"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <span className="truncate text-[13.5px]">Gallery</span>
+              </div>
+            </button>
+          </div>
+
+          {/* 6. Draws */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-draws' : 'sidebar-nav-draws'}
+              data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/draws')}
+              title="Draws"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <FluentDrawsIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <span className="truncate text-[13.5px]">Draws</span>
+              </div>
+            </button>
+          </div>
+
+          {/* 7. Notes */}
           <div className="w-full">
             <button
               type="button"
@@ -891,6 +1009,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="flex items-center gap-3.5 truncate">
                 <FluentNotesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 <span className="truncate text-[13.5px]">Notes</span>
+              </div>
+            </button>
+          </div>
+
+          {/* 8. VLC */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-vlc' : 'sidebar-nav-vlc'}
+              data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/vlc')}
+              title="VLC Media Player"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
+                <span className="truncate text-[13.5px]">VLC</span>
               </div>
             </button>
           </div>
@@ -922,6 +1061,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="truncate text-[13.5px]">Craftmine</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Web</span>
+            </button>
+          </div>
+
+          {/* Photopea */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-photopea' : 'sidebar-nav-photopea'}
+              data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
+              onClick={() => handleNavClick('/photopea')}
+              title="Photopea"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                currentRoute === '/photopea'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <span className="truncate text-[13.5px]">Photopea</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-600 dark:text-blue-400 font-semibold uppercase">Web</span>
             </button>
           </div>
 
@@ -1129,7 +1290,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
               </button>
 
-              {/* 5. Notes Icon */}
+              {/* 5. Gallery Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-gallery"
+                data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/gallery')}
+                title="Gallery"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* 6. Draws Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-draws"
+                data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/draws')}
+                title="Draws"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* 7. Notes Icon */}
               <button
                 type="button"
                 id="sidebar-collapsed-notes"
@@ -1143,6 +1336,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }`}
               >
                 <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* 8. VLC Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-vlc"
+                data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
+                onClick={() => handleNavClick('/vlc')}
+                title="VLC Media Player"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentVlcIcon white className="w-5 h-5 text-white" />
               </button>
 
               {/* Divider: LAC's project */}
@@ -1162,6 +1371,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }`}
               >
                 <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
+              </button>
+
+              {/* Photopea Icon */}
+              <button
+                type="button"
+                id="sidebar-collapsed-photopea"
+                data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
+                onClick={() => handleNavClick('/photopea')}
+                title="Photopea"
+                className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] flex items-center justify-center relative transition-colors cursor-pointer ${
+                  currentRoute === '/photopea'
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
               </button>
 
               {/* 7. Discord Icon */}

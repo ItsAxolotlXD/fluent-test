@@ -299,7 +299,11 @@ export const Settings: React.FC<SettingsProps> = ({
                   }`}
                   title={isListening ? 'Stop listening' : 'Voice search'}
                 >
-                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  {isListening ? (
+                    <MicOff className="w-3.5 h-3.5" fill="none" />
+                  ) : (
+                    <Mic className="w-3.5 h-3.5" fill="none" />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -310,7 +314,7 @@ export const Settings: React.FC<SettingsProps> = ({
                   className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
                   title="Search"
                 >
-                  <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+                  <Search className="w-3.5 h-3.5 stroke-[1.75]" fill="none" />
                 </button>
               </div>
             </div>
@@ -489,7 +493,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
-                <span className="font-semibold text-[#9CA3AF]">261013</span>
+                <span className="font-semibold text-[#9CA3AF]">261014</span>
               </div>
               {/* Compatible with Fluent Design */}
               <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">

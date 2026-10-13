@@ -18,7 +18,7 @@ import {
   Wrench,
   FileText
 } from 'lucide-react';
-import { FluentNotesIcon, FluentSearchIcon } from './FluentIcons';
+import { FluentNotesIcon, FluentSearchIcon, FluentGalleryIcon, FluentDrawsIcon, FluentVlcIcon, FluentPhotopeaIcon } from './FluentIcons';
 import { Channel, NewsArticle } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -666,6 +666,42 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
             </div>
 
             <div className="space-y-0.5">
+              {/* Gallery */}
+              <button
+                id="tool-gallery"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onNavigate('/gallery');
+                }}
+                className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
+                {...revealProps}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <FluentGalleryIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
+                  <span className="truncate">Gallery</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Bộ sưu tập</span>
+              </button>
+
+              {/* Draws */}
+              <button
+                id="tool-draws"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onNavigate('/draws');
+                }}
+                className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
+                {...revealProps}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <FluentDrawsIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
+                  <span className="truncate">Draws</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Vẽ Paint</span>
+              </button>
+
               {/* Notes */}
               <button
                 id="tool-notes"
@@ -682,6 +718,42 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                   <span className="truncate">Notes</span>
                 </div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
+              </button>
+
+              {/* VLC */}
+              <button
+                id="tool-vlc"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onNavigate('/vlc');
+                }}
+                className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
+                {...revealProps}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <FluentVlcIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">VLC</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Media player</span>
+              </button>
+
+              {/* Photopea Web Tool */}
+              <button
+                id="tool-photopea"
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onNavigate('/photopea');
+                }}
+                className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
+                {...revealProps}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <FluentPhotopeaIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Photopea</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Photo editor</span>
               </button>
             </div>
 

@@ -620,7 +620,6 @@ html.dark #topbar-search-box svg,
 html.dark #channels-search-box button,
 html.dark #channels-search-box svg,
 html.dark #settings-search-box button,
-html.dark #settings-search-box svg,
 html.dark #immersive-search-capsule button,
 html.dark #immersive-search-capsule svg,
 html.dark #spotlight-search-container button,
@@ -629,6 +628,13 @@ html.dark #find-words-bar button,
 html.dark #find-words-bar svg {
   color: #FFFFFF !important;
   fill: currentColor !important;
+}
+
+/* Settings search box icons (Micro & Search) MUST NOT be filled (outline only) */
+#settings-search-box svg,
+html.dark #settings-search-box svg,
+html.light-mode #settings-search-box svg {
+  fill: none !important;
 }
 
 /* All Search Boxes: text & icon in light mode, matching Find and search V-One */

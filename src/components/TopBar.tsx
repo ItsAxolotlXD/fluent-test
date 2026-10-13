@@ -12,6 +12,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
+import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 
 const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 const HOME_ICON_SRC = FLUENT_ICON_URLS.home;
@@ -58,6 +59,8 @@ interface TopBarProps {
   onChangeFontSize?: (size: number) => void;
   showUnsavedTooltip?: boolean;
   onDismissUnsavedTooltip?: () => void;
+  tabSearchQuery?: string;
+  onTabSearchChange?: (query: string) => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -78,14 +81,31 @@ export const TopBar: React.FC<TopBarProps> = ({
   fontSize = 16,
   onChangeFontSize = () => {},
   showUnsavedTooltip = false,
-  onDismissUnsavedTooltip = () => {}
+  onDismissUnsavedTooltip = () => {},
+  tabSearchQuery = '',
+  onTabSearchChange
 }) => {
   const { settings, hasChanges, applyDraftSettings } = useSettings();
   const isMobile = useIsMobile();
   const [logoError, setLogoError] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(tabSearchQuery);
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
+  const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize searchQuery with current tab's search query
+  useEffect(() => {
+    setSearchQuery(tabSearchQuery || '');
+  }, [tabSearchQuery, currentRoute]);
+
+  // Load gallery items so TopBar search can find gallery media/documents
+  useEffect(() => {
+    galleryDB.getAll().then(setGalleryItems).catch(() => {});
+    const unsubscribe = galleryDB.subscribe(() => {
+      galleryDB.getAll().then(setGalleryItems).catch(() => {});
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Search History from localStorage
   const [searchHistory, setSearchHistory] = useState<string[]>(() => {
@@ -153,7 +173,11 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-favs', title: 'Favorites', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
       { id: 'page-updates', title: 'Updates', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
       { id: 'page-craftmine', title: 'Craftmine', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
+      { id: 'page-photopea', title: 'Photopea', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
+      { id: 'page-gallery', title: 'Gallery', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
+      { id: 'page-draws', title: 'Draws', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
+      { id: 'page-vlc', title: 'VLC Media Player', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
       { id: 'page-settings', title: 'Settings', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
       { id: 'page-about', title: 'About', keywords: 'giới thiệu about v-one', type: 'page', onSelect: () => navigate('/about') },
 
@@ -253,9 +277,31 @@ export const TopBar: React.FC<TopBarProps> = ({
       }
     });
 
+    // Gallery media and document matches
+    galleryItems.forEach((gItem) => {
+      const matchTitle = gItem.title.toLowerCase().includes(q);
+      const matchTag = gItem.tags?.some((t) => t.toLowerCase().includes(q));
+      const matchDesc = gItem.description?.toLowerCase().includes(q);
+      if (matchTitle || matchTag || matchDesc) {
+        matches.push({
+          id: `gallery-item-${gItem.id}`,
+          title: gItem.title,
+          keywords: `gallery ${gItem.type} ${gItem.tags?.join(' ') || ''}`,
+          type: 'tool',
+          logo: gItem.type === 'image' ? (gItem.thumbnailUrl || gItem.url) : undefined,
+          onSelect: () => {
+            navigate('/gallery');
+            if (onTabSearchChange) {
+              onTabSearchChange(gItem.title);
+            }
+          }
+        });
+      }
+    });
+
     // Return ALL matches
     return matches;
-  }, [searchQuery, searchHistory, appAspects, navigate]);
+  }, [searchQuery, searchHistory, appAspects, galleryItems, navigate, onTabSearchChange]);
 
   const handleSelectSearchResult = (item: SearchAspectItem) => {
     saveToHistory(item.title);
@@ -265,6 +311,10 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (currentRoute === '/gallery') {
+      setIsSearchFlyoutOpen(false);
+      return;
+    }
     if (searchQuery.trim()) {
       saveToHistory(searchQuery.trim());
       setIsSearchFlyoutOpen(false);
@@ -376,11 +426,33 @@ export const TopBar: React.FC<TopBarProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => {
-                  setSearchQuery(e.target.value);
+                  const val = e.target.value;
+                  setSearchQuery(val);
                   setIsSearchFlyoutOpen(true);
+                  if (onTabSearchChange) {
+                    onTabSearchChange(val);
+                  }
                 }}
                 onFocus={() => setIsSearchFlyoutOpen(true)}
-                placeholder={isMobile ? "Search" : "Find and search"}
+                placeholder={(() => {
+                  if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
+                  if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
+                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article')) return 'Search Articles';
+                  if (currentRoute.startsWith('/updates')) return 'Search Updates';
+                  if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
+                  if (currentRoute.startsWith('/draws')) return 'Search Draws';
+                  if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
+                  if (currentRoute.startsWith('/vlc')) return 'Search VLC';
+                  if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';
+                  if (currentRoute.startsWith('/photopea')) return 'Search Photopea';
+                  if (currentRoute.startsWith('/settings')) return 'Search Settings';
+                  if (currentRoute.startsWith('/channels')) return 'Search Channels';
+                  if (currentRoute.startsWith('/favorites')) return 'Search Favorites';
+                  if (currentRoute.startsWith('/about')) return 'Search About';
+                  if (currentRoute.startsWith('/test')) return 'Search Insider Flags';
+                  const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
+                  return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
+                })()}
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
               />
               {searchQuery ? (
@@ -389,6 +461,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                   onClick={() => {
                     setSearchQuery('');
                     setIsSearchFlyoutOpen(false);
+                    if (onTabSearchChange) {
+                      onTabSearchChange('');
+                    }
                   }}
                   title="Clear search"
                   className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"

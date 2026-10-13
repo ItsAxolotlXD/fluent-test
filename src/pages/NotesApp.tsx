@@ -25,10 +25,12 @@ import {
   Highlighter,
   RemoveFormatting,
   FileText,
-  Type
+  Type,
+  FolderPlus
 } from 'lucide-react';
-import { FluentNotesIcon } from '../components/FluentIcons';
-import { exportDocx, exportWritePdf } from '../utils/officeExport';
+import { FluentNotesIcon, FluentGalleryIcon } from '../components/FluentIcons';
+import { exportDocx, exportWritePdf, createDocxBlob } from '../utils/officeExport';
+import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { useNotes, STICKY_COLORS } from '../context/NotesContext';
 
 interface NotesAppProps {
@@ -243,6 +245,28 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
       handleEditorInput();
     }
   };
+
+  // Keyboard Shortcuts: Ctrl+Z for Undo, Ctrl+D for Redo (disabling browser bookmarks)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        const key = e.key.toLowerCase();
+        if (key === 'z') {
+          e.preventDefault();
+          e.stopPropagation();
+          execCmd('undo');
+        } else if (key === 'd' || key === 'y') {
+          e.preventDefault();
+          e.stopPropagation();
+          execCmd('redo');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+    };
+  }, []);
 
   const handleToggleBold = () => {
     execCmd('bold');
@@ -509,6 +533,105 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     triggerToast('Đã xuất file văn bản (.txt) thành công!');
   };
 
+  const createStickySvgDataUrl = (title: string, content: string, bgColor: string, textColor: string) => {
+    const safeTitle = (title || 'Sticky Note').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeContent = (content || '').slice(0, 350).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+      <rect width="600" height="600" rx="20" fill="${bgColor}"/>
+      <rect width="600" height="56" rx="20" fill="rgba(0,0,0,0.07)"/>
+      <circle cx="36" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
+      <circle cx="60" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
+      <text x="85" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="${textColor}" opacity="0.85">${safeTitle}</text>
+      <foreignObject x="36" y="76" width="528" height="490">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 22px; line-height: 1.45; color: ${textColor}; word-break: break-word; white-space: pre-wrap;">
+          ${safeContent}
+        </div>
+      </foreignObject>
+    </svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  };
+
+  const handleSaveToGalleryAsDocument = async () => {
+    setShowExportMenu(false);
+    const rawText = editorRef.current?.innerText || '';
+    const title = (noteTitle || 'Document').trim();
+    try {
+      const docxBlob = await createDocxBlob(title, rawText);
+      const url = URL.createObjectURL(docxBlob);
+      const now = new Date();
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+      const newItem: GalleryMediaItem = {
+        id: `doc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        title: `${title}.docx`,
+        type: 'document',
+        url,
+        blobData: docxBlob,
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        size: docxBlob.size,
+        dateAdded: now.toISOString(),
+        dateLabel,
+        year: now.getFullYear(),
+        dimensions: { width: 800, height: 1100 },
+        aspectRatio: 8.5 / 11,
+        tags: ['Notes', 'Word', 'DOCX', 'Document'],
+        description: rawText.slice(0, 160) || 'Word document saved from V-One Notes',
+        source: 'upload',
+      };
+
+      await galleryDB.add(newItem);
+      triggerToast('Đã lưu vào Gallery dưới dạng Document (.docx)!');
+    } catch (e) {
+      console.error(e);
+      triggerToast('Lưu vào Gallery thất bại');
+    }
+  };
+
+  const handleSaveToGalleryAsStickies = async () => {
+    setShowExportMenu(false);
+    const rawText = editorRef.current?.innerText || '';
+    const title = (noteTitle || 'Sticky Note').trim();
+    try {
+      const now = new Date();
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+      const svgUrl = createStickySvgDataUrl(title, rawText, currentStickyColor.bg, currentStickyColor.text);
+      const stickyBlob = new Blob([rawText], { type: 'text/plain;charset=utf-8' });
+
+      const newItem: GalleryMediaItem = {
+        id: `sticky-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        title,
+        type: 'document',
+        url: svgUrl,
+        thumbnailUrl: svgUrl,
+        blobData: stickyBlob,
+        mimeType: 'application/x-sticky-note',
+        size: stickyBlob.size,
+        dateAdded: now.toISOString(),
+        dateLabel,
+        year: now.getFullYear(),
+        dimensions: { width: 600, height: 600 },
+        aspectRatio: 1,
+        tags: ['Stickies', 'Sticky Note', currentStickyColor.name, 'Notes'],
+        description: rawText.slice(0, 160) || 'Sticky note saved from V-One Notes',
+        source: 'upload',
+      };
+
+      await galleryDB.add(newItem);
+      triggerToast('Đã lưu vào Gallery dưới dạng Stickies!');
+    } catch (e) {
+      console.error(e);
+      triggerToast('Lưu Stickies vào Gallery thất bại');
+    }
+  };
+
   const handleClear = () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ nội dung ghi chú này không?')) {
       if (editorRef.current) {
@@ -636,7 +759,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
 
             {showExportMenu && (
               <div 
-                className="absolute right-0 mt-1.5 w-48 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl p-1 z-50 text-xs"
+                className="absolute right-0 mt-1.5 w-60 bg-[#282832] border border-[#3e3e48] rounded-md shadow-2xl p-1 z-50 text-xs"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -644,7 +767,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                   onClick={handleExportDocx}
                   className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                 >
-                  <FileDown className="w-4 h-4 text-[#4cc2ff]" />
+                  <FileDown className="w-4 h-4 text-[#4cc2ff] shrink-0" />
                   <div>
                     <div className="font-semibold">Word Document</div>
                     <div className="text-[10px] text-neutral-400">Xuất định dạng .docx</div>
@@ -656,7 +779,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                   onClick={handleExportPdf}
                   className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                 >
-                  <Printer className="w-4 h-4 text-[#e81123]" />
+                  <Printer className="w-4 h-4 text-[#e81123] shrink-0" />
                   <div>
                     <div className="font-semibold">PDF Document</div>
                     <div className="text-[10px] text-neutral-400">Xuất định dạng .pdf</div>
@@ -668,10 +791,36 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                   onClick={handleExportTxt}
                   className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
                 >
-                  <FileText className="w-4 h-4 text-[#107c41]" />
+                  <FileText className="w-4 h-4 text-[#107c41] shrink-0" />
                   <div>
                     <div className="font-semibold">Plain Text</div>
                     <div className="text-[10px] text-neutral-400">Xuất định dạng .txt</div>
+                  </div>
+                </button>
+
+                <div className="my-1 border-t border-white/10" />
+
+                <button
+                  type="button"
+                  onClick={handleSaveToGalleryAsDocument}
+                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                >
+                  <FluentGalleryIcon className="w-4 h-4 text-[#4cc2ff] shrink-0" />
+                  <div>
+                    <div className="font-semibold text-[#4cc2ff] group-hover:text-white transition-colors">Save to Gallery as Document</div>
+                    <div className="text-[10px] text-neutral-400">Lưu file Word (.docx) vào Gallery</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveToGalleryAsStickies}
+                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer group"
+                >
+                  <FluentNotesIcon className="w-4 h-4 shrink-0" style={{ color: currentStickyColor.accent }} />
+                  <div>
+                    <div className="font-semibold text-amber-300 group-hover:text-white transition-colors">Save to Gallery as Stickies</div>
+                    <div className="text-[10px] text-neutral-400">Lưu dạng Sticky Note vào Gallery</div>
                   </div>
                 </button>
               </div>
@@ -706,7 +855,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => execCmd('redo')}
           className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Làm lại (Ctrl+Y)"
+          title="Làm lại (Ctrl+D)"
         >
           <Redo2 className="w-3.5 h-3.5" />
         </button>

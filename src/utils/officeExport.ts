@@ -37,7 +37,7 @@ export interface CellInfo {
 
 // ==================== 1. WRITE EXPORTS (.docx, .pdf) ====================
 
-export async function exportDocx(title: string, rawText: string, htmlText?: string) {
+export async function createDocxBlob(title: string, rawText: string): Promise<Blob> {
   const safeTitle = (title || 'Document').trim();
   const paragraphs: Paragraph[] = [];
 
@@ -102,7 +102,12 @@ export async function exportDocx(title: string, rawText: string, htmlText?: stri
     ],
   });
 
-  const blob = await Packer.toBlob(doc);
+  return await Packer.toBlob(doc);
+}
+
+export async function exportDocx(title: string, rawText: string, _htmlText?: string) {
+  const safeTitle = (title || 'Document').trim();
+  const blob = await createDocxBlob(title, rawText);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

@@ -10,7 +10,9 @@ export const FLUENT_ICON_URLS = {
   settings: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Settings/SVG/ic_fluent_settings_48_regular.svg',
   user: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person/SVG/ic_fluent_person_48_regular.svg',
   personDelete: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person%20Delete/SVG/ic_fluent_person_delete_24_regular.svg',
-  search: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Search/SVG/ic_fluent_search_48_regular.svg'
+  search: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Search/SVG/ic_fluent_search_48_regular.svg',
+  gallery: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Image%20Multiple/SVG/ic_fluent_image_multiple_24_regular.svg',
+  draws: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Draw%20Shape/SVG/ic_fluent_draw_shape_24_regular.svg'
 };
 
 export const FluentHomeIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
@@ -83,5 +85,76 @@ export const FluentUpdatesIcon: React.FC<{ className?: string; style?: React.CSS
     <path d="M6.5 16H2V20.5" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+export const FluentGalleryIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    {/* Multi-layered Photos Icon */}
+    <rect x="2.5" y="4.5" width="15" height="15" rx="3" stroke="currentColor" strokeWidth="1.75"/>
+    <circle cx="7" cy="9" r="1.5" fill="currentColor"/>
+    <path d="M3.5 16.5L8 12L12 16L14.5 13.5L17 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6.5 2.5H18.5C20.1569 2.5 21.5 3.84315 21.5 5.5V17.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+  </svg>
+);
+
+export const FluentDrawsIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    {/* Artist Palette & Brush Icon */}
+    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 14.5 3 17 5 18.5C6.5 19.5 7.5 20.5 7.5 21.5C7.5 21.8 7.7 22 8 22H9C9.55228 22 10 21.5523 10 21C10 19.8954 10.8954 19 12 19C16.4183 19 22 16.5 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="7.5" cy="8.5" r="1.5" fill="currentColor"/>
+    <circle cx="12" cy="6.5" r="1.5" fill="currentColor"/>
+    <circle cx="16.5" cy="8.5" r="1.5" fill="currentColor"/>
+    <circle cx="17.5" cy="13.5" r="1.5" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentVlcIcon: React.FC<{ className?: string; style?: React.CSSProperties; white?: boolean }> = ({ className = 'w-5 h-5', style, white = false }) => {
+  if (white) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+        {/* Base plate */}
+        <path d="M2.5 20.5C2.5 19.9477 2.94772 19.5 3.5 19.5H20.5C21.0523 19.5 21.5 19.9477 21.5 20.5C21.5 21.0523 21.0523 21.5 20.5 21.5H3.5C2.94772 21.5 2.5 21.0523 2.5 20.5Z" fill="white" fillOpacity="0.85" />
+        {/* Bottom cone segment */}
+        <path d="M5.5 19.5L7 15H17L18.5 19.5H5.5Z" fill="white" fillOpacity="0.7" />
+        {/* Lower reflective white stripe */}
+        <path d="M7.6 13H16.4L17 15H7L7.6 13Z" fill="white" fillOpacity="1" />
+        {/* Middle cone segment */}
+        <path d="M8.6 9.8H15.4L16.4 13H7.6L8.6 9.8Z" fill="white" fillOpacity="0.7" />
+        {/* Upper reflective white stripe */}
+        <path d="M9.6 6.8H14.4L15.4 9.8H8.6L9.6 6.8Z" fill="white" fillOpacity="1" />
+        {/* Top tip */}
+        <path d="M10.8 3.2C11.3 2.3 12.7 2.3 13.2 3.2L14.4 6.8H9.6L10.8 3.2Z" fill="white" fillOpacity="0.85" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+      {/* Authentic VLC Traffic Cone with 3D gradient look */}
+      <path d="M2.5 20.5C2.5 19.9477 2.94772 19.5 3.5 19.5H20.5C21.0523 19.5 21.5 19.9477 21.5 20.5C21.5 21.0523 21.0523 21.5 20.5 21.5H3.5C2.94772 21.5 2.5 21.0523 2.5 20.5Z" fill="#E65100"/>
+      <path d="M5.5 19.5L7 15H17L18.5 19.5H5.5Z" fill="#F57C00"/>
+      {/* Lower reflective white stripe */}
+      <path d="M7.6 13H16.4L17 15H7L7.6 13Z" fill="#FFFFFF"/>
+      {/* Middle orange body */}
+      <path d="M8.6 9.8H15.4L16.4 13H7.6L8.6 9.8Z" fill="#FF9800"/>
+      {/* Upper reflective white stripe */}
+      <path d="M9.6 6.8H14.4L15.4 9.8H8.6L9.6 6.8Z" fill="#FFFFFF"/>
+      {/* Top orange tip with rounded peak */}
+      <path d="M10.8 3.2C11.3 2.3 12.7 2.3 13.2 3.2L14.4 6.8H9.6L10.8 3.2Z" fill="#FFA726"/>
+    </svg>
+  );
+};
+
+export const FluentPhotopeaIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    {/* Photopea rounded frame */}
+    <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.75" />
+    {/* Stylized P character with photo pen curve */}
+    <path d="M8.5 7H13.25C14.7688 7 16 8.23122 16 9.75C16 11.2688 14.7688 12.5 13.25 12.5H8.5V17" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Inner dot or graphic spark accent */}
+    <circle cx="12" cy="9.75" r="1" fill="currentColor" />
+  </svg>
+);
+
+
 
 
