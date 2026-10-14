@@ -20,13 +20,24 @@ import {
   Check,
   FileSpreadsheet,
   Presentation,
-  FileCode
+  FileCode,
+  Folder,
+  FolderPlus,
+  FolderInput,
+  ChevronRight,
+  ArrowLeft,
+  PenLine
 } from 'lucide-react';
 import { 
   galleryDB, 
   GalleryMediaItem, 
+  GalleryFolder,
   getMediaDimensions 
 } from '../services/galleryStorage';
+import { GalleryContextMenu, type GalleryContextAction } from '../components/gallery/GalleryContextMenu';
+import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryDialogs';
+
+const LONG_PRESS_MS = 500;
 import { useSettings } from '../hooks/useSettings';
 import { FluentNotesIcon } from '../components/FluentIcons';
 
@@ -51,15 +62,35 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Folders & context menu
+  const [folders, setFolders] = useState<GalleryFolder[]>([]);
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ item: GalleryMediaItem; x: number; y: number } | null>(null);
+  const [renameTarget, setRenameTarget] = useState<{ kind: 'item' | 'folder'; id: string; name: string } | null>(null);
+  const [moveTargetIds, setMoveTargetIds] = useState<string[] | null>(null);
+  const [isNewFolderOpen, setIsNewFolderOpen] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const galleryContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Load items from database
   const loadGallery = async () => {
-    const list = await galleryDB.getAll();
+    const [list, folderList] = await Promise.all([galleryDB.getAll(), galleryDB.getFolders()]);
     setItems(list);
+    setFolders(folderList);
   };
+
+  const currentFolder = folders.find((f) => f.id === currentFolderId) ?? null;
+  const isSearching = searchQuery.trim().length > 0;
+
+  useEffect(() => {
+    if (currentFolderId && folders.length > 0 && !folders.some((f) => f.id === currentFolderId)) {
+      setCurrentFolderId(null);
+    }
+  }, [folders, currentFolderId]);
 
   useEffect(() => {
     loadGallery();
@@ -72,6 +103,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   // Filter items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      // Folder scope (search looks across every folder)
+      if (!searchQuery.trim() && (item.folderId ?? null) !== currentFolderId) return false;
+
       // Type filter
       if (activeFilter === 'image' && item.type !== 'image') return false;
       if (activeFilter === 'video' && item.type !== 'video') return false;
@@ -92,7 +126,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
       return true;
     });
-  }, [items, activeFilter, searchQuery]);
+  }, [items, activeFilter, searchQuery, currentFolderId]);
+
+  const folderItemCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const it of items) {
+      if (it.folderId) counts.set(it.folderId, (counts.get(it.folderId) ?? 0) + 1);
+    }
+    return counts;
+  }, [items]);
 
   // Timeline years list from available items
   const timelineYears = useMemo(() => {
@@ -243,6 +285,166 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     showToast(`Deleted ${ids.length} ${ids.length === 1 ? 'item' : 'items'}`);
   };
 
+  const closeContextMenu = React.useCallback(() => setContextMenu(null), []);
+
+  const openContextMenu = (item: GalleryMediaItem, x: number, y: number) => {
+    if (isSelectMode) return;
+    setContextMenu({ item, x, y });
+  };
+
+  const clearLongPress = () => {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchStart = (item: GalleryMediaItem, e: React.TouchEvent) => {
+    longPressTriggered.current = false;
+    const touch = e.touches[0];
+    const { clientX, clientY } = touch;
+    clearLongPress();
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      if (navigator.vibrate) navigator.vibrate(10);
+      openContextMenu(item, clientX, clientY);
+    }, LONG_PRESS_MS);
+  };
+
+  const getFileName = (item: GalleryMediaItem) => {
+    if (/\.[a-z0-9]{2,5}$/i.test(item.title)) return item.title;
+    const ext = item.mimeType?.split('/')[1]?.split(/[+;]/)[0];
+    return ext && ext.length <= 5 ? `${item.title}.${ext}` : item.title;
+  };
+
+  const getItemBlob = async (item: GalleryMediaItem): Promise<Blob | null> => {
+    if (item.blobData) return item.blobData;
+    try {
+      const res = await fetch(item.url);
+      return await res.blob();
+    } catch {
+      return null;
+    }
+  };
+
+  const handleSaveToDevice = async (item: GalleryMediaItem) => {
+    const blob = await getItemBlob(item);
+    const href = blob ? URL.createObjectURL(blob) : item.url;
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = getFileName(item);
+    a.rel = 'noopener';
+    if (!blob) a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    if (blob) setTimeout(() => URL.revokeObjectURL(href), 1000);
+    showToast(`Saving "${item.title}"`);
+  };
+
+  const handleShare = async (item: GalleryMediaItem) => {
+    try {
+      const blob = await getItemBlob(item);
+      if (blob && navigator.share) {
+        const file = new File([blob], getFileName(item), { type: blob.type || item.mimeType });
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: item.title });
+          return;
+        }
+      }
+      if (navigator.share && /^https?:/.test(item.url)) {
+        await navigator.share({ title: item.title, url: item.url });
+        return;
+      }
+      if (/^https?:/.test(item.url) && navigator.clipboard) {
+        await navigator.clipboard.writeText(item.url);
+        showToast('Link copied to clipboard');
+        return;
+      }
+      showToast('Sharing is not supported on this device');
+    } catch (err) {
+      if ((err as DOMException)?.name !== 'AbortError') showToast('Unable to share this file');
+    }
+  };
+
+  const handleContextAction = async (action: GalleryContextAction) => {
+    if (!contextMenu) return;
+    const { item } = contextMenu;
+    setContextMenu(null);
+    switch (action) {
+      case 'open':
+        setSelectedItem(item);
+        break;
+      case 'favorite': {
+        const isFav = await galleryDB.toggleFavorite(item.id);
+        showToast(isFav ? 'Added to favorites' : 'Removed from favorites');
+        break;
+      }
+      case 'rename':
+        setRenameTarget({ kind: 'item', id: item.id, name: item.title });
+        break;
+      case 'share':
+        await handleShare(item);
+        break;
+      case 'duplicate':
+        await galleryDB.duplicate(item.id);
+        showToast(`Duplicated "${item.title}"`);
+        break;
+      case 'move':
+        setMoveTargetIds([item.id]);
+        break;
+      case 'save':
+        await handleSaveToDevice(item);
+        break;
+      case 'delete':
+        await handleDeleteItem(item);
+        break;
+    }
+  };
+
+  const handleRenameConfirm = async (name: string) => {
+    if (!renameTarget) return;
+    if (renameTarget.kind === 'item') {
+      await galleryDB.rename(renameTarget.id, name);
+      if (selectedItem?.id === renameTarget.id) setSelectedItem({ ...selectedItem, title: name });
+    } else {
+      await galleryDB.renameFolder(renameTarget.id, name);
+    }
+    setRenameTarget(null);
+    showToast(`Renamed to "${name}"`);
+  };
+
+  const handleCreateFolder = async (name: string) => {
+    const folder = await galleryDB.createFolder(name);
+    setIsNewFolderOpen(false);
+    if (moveTargetIds) {
+      await galleryDB.moveToFolder(moveTargetIds, folder.id);
+      showToast(`Moved ${moveTargetIds.length === 1 ? 'item' : `${moveTargetIds.length} items`} to "${name}"`);
+      setMoveTargetIds(null);
+      setSelectedIds(new Set());
+      setIsSelectMode(false);
+    } else {
+      showToast(`Created folder "${name}"`);
+    }
+  };
+
+  const handleMove = async (folderId: string | null) => {
+    if (!moveTargetIds) return;
+    const ids = moveTargetIds;
+    setMoveTargetIds(null);
+    await galleryDB.moveToFolder(ids, folderId);
+    const dest = folderId ? folders.find((f) => f.id === folderId)?.name ?? 'folder' : 'Gallery';
+    showToast(`Moved ${ids.length === 1 ? 'item' : `${ids.length} items`} to "${dest}"`);
+    setSelectedIds(new Set());
+    setIsSelectMode(false);
+  };
+
+  const handleDeleteFolder = async (folder: GalleryFolder) => {
+    await galleryDB.deleteFolder(folder.id);
+    if (currentFolderId === folder.id) setCurrentFolderId(null);
+    showToast(`Deleted folder "${folder.name}"`);
+  };
+
   // Helper to determine Office Document type info
   const getDocumentDetails = (item: GalleryMediaItem) => {
     const title = item.title.toLowerCase();
@@ -375,6 +577,18 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 <span>Duplicate</span>
               </button>
 
+              {/* Move Selected */}
+              <button
+                type="button"
+                onClick={() => setMoveTargetIds(Array.from(selectedIds))}
+                disabled={selectedIds.size === 0}
+                className="px-2.5 py-1 rounded-[4px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-xs font-semibold text-[#111827] dark:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Move selected items into a folder"
+              >
+                <FolderInput className="w-3.5 h-3.5" />
+                <span>Move</span>
+              </button>
+
               {/* Delete Selected */}
               <button
                 type="button"
@@ -415,6 +629,17 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 </button>
               )}
 
+              {/* New Folder */}
+              <button
+                type="button"
+                onClick={() => setIsNewFolderOpen(true)}
+                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                title="Create a new folder"
+              >
+                <FolderPlus className="w-3.5 h-3.5" />
+                <span>New folder</span>
+              </button>
+
               {/* Upload Button (.docx, .doc, .pptx, .ppt, .xlsx, .xls, images, videos, audio) */}
               <button
                 type="button"
@@ -454,8 +679,80 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       <div className="flex-1 flex overflow-hidden relative" ref={galleryContainerRef}>
         {/* Gallery Content View */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar">
+          {/* Folder breadcrumb */}
+          {currentFolder && !isSearching && (
+            <nav aria-label="Folder" className="flex items-center gap-1.5 mb-4 max-w-[1800px] mx-auto text-sm">
+              <button
+                type="button"
+                onClick={() => setCurrentFolderId(null)}
+                className="w-8 h-8 rounded-[6px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                aria-label="Back to Gallery"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentFolderId(null)}
+                className="px-1.5 py-1 rounded-[4px] text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer"
+              >
+                Gallery
+              </button>
+              <ChevronRight className="w-3.5 h-3.5 text-[#9ca3af]" />
+              <span className="font-semibold truncate" aria-current="page">{currentFolder.name}</span>
+              <div className="ml-auto flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setRenameTarget({ kind: 'folder', id: currentFolder.id, name: currentFolder.name })}
+                  className="h-8 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                >
+                  <PenLine className="w-3.5 h-3.5" />
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFolder(currentFolder)}
+                  className="h-8 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 text-[#c42b1c] dark:text-[#ff99a4] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete folder
+                </button>
+              </div>
+            </nav>
+          )}
+
+          {/* Folder tiles at Gallery root */}
+          {!currentFolderId && !isSearching && folders.length > 0 && (
+            <section aria-label="Folders" className="max-w-[1800px] mx-auto mb-6">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-medium text-[#4b5563] dark:text-[#d1d5db] px-1 mb-2.5">
+                <span>Folders</span>
+                <span className="text-[11px] text-[#6b7280] dark:text-[#9ca3af]">{folders.length}</span>
+              </div>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2 sm:gap-2.5">
+                {folders.map((folder) => {
+                  const count = folderItemCounts.get(folder.id) ?? 0;
+                  return (
+                    <button
+                      key={folder.id}
+                      type="button"
+                      onClick={() => setCurrentFolderId(folder.id)}
+                      className="group flex items-center gap-3 p-3 rounded-[8px] bg-black/[0.03] dark:bg-white/[0.05] hover:bg-black/[0.06] dark:hover:bg-white/[0.09] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-colors"
+                    >
+                      <Folder className="w-8 h-8 shrink-0 text-[#e8a33d] fill-[#f4c15d]/70" strokeWidth={1.5} />
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white">{folder.name}</p>
+                        <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af]">
+                          {count} {count === 1 ? 'item' : 'items'}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           {/* Empty State */}
-          {items.length === 0 ? (
+          {items.length === 0 && folders.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 max-w-md mx-auto">
               <div className="w-20 h-20 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#005fb8] dark:text-[#4cc2ff] mb-5 shadow-lg">
                 <FolderOpen className="w-10 h-10 stroke-[1.5]" />
@@ -489,6 +786,16 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 </button>
               </div>
             </div>
+          ) : filteredItems.length === 0 && activeFilter === 'all' && !isSearching ? (
+            currentFolderId ? (
+              <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-4 max-w-md mx-auto">
+                <Folder className="w-12 h-12 mb-3 text-[#e8a33d]" strokeWidth={1.5} />
+                <h3 className="text-base font-semibold text-[#111827] dark:text-white mb-1">This folder is empty</h3>
+                <p className="text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                  Right-click or long-press a file in Gallery and choose Move into a folder.
+                </p>
+              </div>
+            ) : null
           ) : filteredItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 max-w-md mx-auto">
               <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#6b7280] dark:text-[#9ca3af] mb-4">
@@ -532,16 +839,30 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.2 }}
                       onClick={(e) => {
+                        if (longPressTriggered.current) {
+                          longPressTriggered.current = false;
+                          return;
+                        }
                         if (isSelectMode) {
                           toggleSelect(item.id, e);
                         } else {
                           setSelectedItem(item);
                         }
                       }}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        clearLongPress();
+                        openContextMenu(item, e.clientX, e.clientY);
+                      }}
+                      onTouchStart={(e) => handleTouchStart(item, e)}
+                      onTouchMove={clearLongPress}
+                      onTouchEnd={clearLongPress}
+                      onTouchCancel={clearLongPress}
                       style={{
                         flexGrow: Math.round(ar * 100),
                         flexBasis: `calc(${ar} * 160px)`,
                         height: '200px',
+                        WebkitTouchCallout: 'none',
                       }}
                       className={`group relative rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#2a2a2a] cursor-pointer shadow-sm hover:shadow-xl transition-all select-none border ${
                         isSelected
@@ -737,6 +1058,51 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           </div>
         </div>
       </div>
+
+      {/* File context menu */}
+      <AnimatePresence>
+        {contextMenu && (
+          <GalleryContextMenu
+            key={contextMenu.item.id + contextMenu.x + contextMenu.y}
+            x={contextMenu.x}
+            y={contextMenu.y}
+            isFavorite={!!contextMenu.item.isFavorite}
+            onAction={handleContextAction}
+            onClose={closeContextMenu}
+          />
+        )}
+      </AnimatePresence>
+
+      <PromptDialog
+        isOpen={!!renameTarget}
+        title={renameTarget?.kind === 'folder' ? 'Rename folder' : 'Rename'}
+        label="Name"
+        initialValue={renameTarget?.name}
+        confirmLabel="Rename"
+        onConfirm={handleRenameConfirm}
+        onClose={() => setRenameTarget(null)}
+      />
+
+      <PromptDialog
+        isOpen={isNewFolderOpen}
+        title="New folder"
+        label="Folder name"
+        initialValue="New folder"
+        confirmLabel="Create"
+        onConfirm={handleCreateFolder}
+        onClose={() => setIsNewFolderOpen(false)}
+      />
+
+      <MoveToFolderDialog
+        isOpen={!!moveTargetIds && !isNewFolderOpen}
+        folders={folders}
+        currentFolderId={
+          moveTargetIds?.length === 1 ? items.find((it) => it.id === moveTargetIds[0])?.folderId ?? null : undefined
+        }
+        onMove={handleMove}
+        onCreateFolder={() => setIsNewFolderOpen(true)}
+        onClose={() => setMoveTargetIds(null)}
+      />
 
       {/* Lightbox / Media Preview Modal */}
       <AnimatePresence>
