@@ -569,6 +569,108 @@ html.light-mode #vplay-splash-screen {
   display: block;
 }
 
+/* Light mode visual corrections */
+html.light-mode .sidebar-nav-item,
+html.light-mode .sidebar-nav-item svg,
+html.light-mode .sidebar-nav-item svg *,
+html.light-mode #waves-desktop-sidebar button,
+html.light-mode #waves-mobile-sidebar button,
+html.light-mode #waves-desktop-sidebar button svg,
+html.light-mode #waves-mobile-sidebar button svg,
+html.light-mode #waves-desktop-sidebar button svg * ,
+html.light-mode #waves-mobile-sidebar button svg * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Fluent 3D icons remain colorful in light mode; do not apply monochrome filters. */
+html.light-mode .fluent-3d-icon,
+html.light-mode .fluent-3d-icon svg,
+html.light-mode .fluent-3d-icon svg * {
+  filter: none !important;
+}
+
+html.light-mode #settings-search-box,
+html.light-mode #topbar-search-box,
+html.light-mode #channels-search-box,
+html.light-mode #immersive-search-capsule,
+html.light-mode #spotlight-search-container,
+html.light-mode #find-words-bar {
+  background-color: #fbfbfb !important;
+}
+
+html.light-mode [data-nav-active="true"] {
+  background-color: #eaeaea !important;
+}
+
+html.light-mode #settings-search-box input,
+html.light-mode #topbar-search-box input,
+html.light-mode #channels-search-box input,
+html.light-mode #immersive-search-capsule input,
+html.light-mode #spotlight-search-container input,
+html.light-mode #find-words-bar input {
+  background-color: #fbfbfb !important;
+}
+
+html.light-mode .banner-card button,
+html.light-mode .banner-card svg,
+html.light-mode [aria-label*="Previous"],
+html.light-mode [aria-label*="Next"] {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+html.light-mode .setting-card svg,
+html.light-mode .settings-fluent-group svg,
+html.light-mode .setting-card svg * ,
+html.light-mode .settings-fluent-group svg * ,
+html.light-mode [id^="settings-category-"] svg,
+html.light-mode [id^="settings-category-"] svg * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* The Microsoft mark is a four-colour logo, never a monochrome or outlined glyph. */
+html.light-mode .microsoft-logo,
+html.light-mode .microsoft-logo * {
+  color: inherit !important;
+  filter: none !important;
+  stroke: none !important;
+}
+
+html.light-mode .microsoft-logo rect {
+  stroke: none !important;
+}
+
+html.light-mode .fluent-vlc-icon,
+html.light-mode .notes-app-icon,
+html.light-mode .draws-icon,
+html.light-mode .gallery-icon {
+  color: #000000 !important;
+  filter: none !important;
+}
+
+html.light-mode #btn-settings-save,
+html.light-mode #btn-settings-subpage-save,
+html.light-mode button[aria-label*="Read"],
+html.light-mode button[aria-label*="Update"],
+html.light-mode .day-night-toggle,
+html.light-mode [role="switch"] {
+  color: #ffffff !important;
+}
+
+html.light-mode #btn-desktop-sidebar-toggle,
+html.light-mode #btn-mobile-sidebar-toggle,
+html.light-mode #btn-sidebar-expand-toggle,
+html.light-mode #btn-mobile-menu-toggle,
+html.light-mode #btn-desktop-sidebar-toggle svg,
+html.light-mode #btn-mobile-sidebar-toggle svg,
+html.light-mode #btn-sidebar-expand-toggle svg,
+html.light-mode #btn-mobile-menu-toggle svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
 /* Sidebar container stays pinned without slide-up */
 #waves-desktop-sidebar {
   animation: none !important;
@@ -2096,7 +2198,7 @@ html.light-mode #floating-search-build-info .build-info-line-2 {
    Áp dụng đồng nhất cho các nút, ô kênh, banner trong toàn bộ ứng dụng
    ========================================================================== */
 
-/* 1. Base container styling: Đảm bảo relative, overflow hidden và border-box */
+/* 1. Base container styling: Đảm bảo relative, overflow hidden v�� border-box */
 [id^="recommended-channel-"],
 [id^="livetv-channel-card-"],
 [id^="home-channel-card-"],
