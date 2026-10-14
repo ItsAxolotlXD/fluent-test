@@ -49,7 +49,6 @@ interface SettingsCategoryItem {
   subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
   badgeColor: string;
-  iconColor: string;
   keywords: string[];
 }
 
@@ -60,7 +59,6 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Acrylic, Mica material effects and modern visual styling',
     icon: Box,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
-    iconColor: 'text-[#0078d4] dark:text-[#4cc2ff]',
     keywords: ['fluent', 'design', 'acrylic', 'mica', 'opacity', 'blur', 'windows 11', 'transparency'],
   },
   {
@@ -69,7 +67,6 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Navigation bar, app theme, text scaling, and display mode',
     icon: Palette,
     badgeColor: 'bg-gradient-to-b from-[#34C759] to-[#248A3D]',
-    iconColor: 'text-[#248A3D] dark:text-[#34C759]',
     keywords: ['interface', 'navigation', 'sidebar', 'topbar', 'side view', 'top view', 'floaty', 'tab view', 'theme', 'light mode', 'dark mode', 'font', 'scale', 'super dark'],
   },
   {
@@ -78,7 +75,6 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Page loading, motion animations, search scope, and virtual keyboard',
     icon: Key,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
-    iconColor: 'text-[#0078d4] dark:text-[#4cc2ff]',
     keywords: ['accessibility', 'page loading', 'load pages sequentially', 'sequential', 'performance', 'spinning ring', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts', 'hover to expand', 'hover', 'expand', 'sidebar'],
   },
 ];
@@ -89,8 +85,7 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     title: 'Tools',
     subtitle: 'Aspect ratio and sidebar auto-hide preferences',
     icon: Wrench,
-    badgeColor: 'bg-gradient-to-b from-[#636366] dark:from-[#8E8E93] to-[#636366]',
-    iconColor: 'text-[#636366] dark:text-[#B8B8BD]',
+    badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
     keywords: ['tools', 'aspect ratio', '16:9', '4:3', 'auto hide', 'sidebar'],
   },
   {
@@ -98,8 +93,7 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     title: 'Insider Flags',
     subtitle: 'Preview features and diagnostic flags',
     icon: FlaskConical,
-    badgeColor: 'bg-gradient-to-b from-[#636366] dark:from-[#8E8E93] to-[#636366]',
-    iconColor: 'text-[#636366] dark:text-[#B8B8BD]',
+    badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
     keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader', 'fluent icons', 'fluent icon', '3d icons', 'microsoft fluent design', 'page animation', 'slide up', 'zoom in', 'transition'],
   },
 ];
@@ -365,7 +359,7 @@ export const Settings: React.FC<SettingsProps> = ({
           {activeCatObj && (
             <div className="flex items-center gap-3 pt-1">
               <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
-                <activeCatObj.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${activeCatObj.iconColor} stroke-current stroke-[1.75]`} />
+                <activeCatObj.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl font-bold font-square text-[#111827] dark:text-white tracking-tight leading-tight">
@@ -414,7 +408,7 @@ export const Settings: React.FC<SettingsProps> = ({
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 flex items-center justify-center shrink-0">
-                        <cat.icon className={`w-5 h-5 ${cat.iconColor} stroke-current stroke-[1.75]`} />
+                        <cat.icon className="w-5 h-5 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-[#111827] dark:text-white">{cat.title}</div>
@@ -439,7 +433,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${item.iconColor} stroke-current stroke-[1.75]`} />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
@@ -470,7 +464,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${item.iconColor} stroke-current stroke-[1.75]`} />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
