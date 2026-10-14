@@ -18,7 +18,7 @@ import {
   FluentSearchIcon, 
   FLUENT_ICON_URLS 
 } from './FluentIcons';
-import { Fluent3DFolderSearchIcon } from './Fluent3DIcons';
+import { Fluent3DSearchIcon } from './Fluent3DIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -99,11 +99,12 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   const { settings, hasChanges, applyDraftSettings } = useSettings();
   const isLightMode = settings.theme === 'light';
-  const searchFlyoutBg = isLightMode ? 'rgba(243, 243, 243, 0.80)' : 'rgba(27, 31, 36, 0.80)';
+  const searchFlyoutBg = isLightMode ? 'rgba(243, 243, 243, 0.90)' : 'rgba(27, 31, 36, 0.90)';
   const isMobile = useIsMobile();
   const [logoError, setLogoError] = useState(false);
   const [searchQuery, setSearchQuery] = useState(tabSearchQuery);
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAllResults, setShowAllResults] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -135,15 +136,32 @@ export const TopBar: React.FC<TopBarProps> = ({
   });
 
   const saveToHistory = (query: string) => {
-    const trimmed = query.trim().toLowerCase();
+    const trimmed = query.trim();
     if (!trimmed) return;
     setSearchHistory((prev) => {
-      const next = [trimmed, ...prev.filter((item) => item.toLowerCase() !== trimmed)].slice(0, 15);
+      const next = [trimmed, ...prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase())].slice(0, 20);
       try {
         localStorage.setItem('vone_search_history', JSON.stringify(next));
       } catch {}
       return next;
     });
+  };
+
+  const removeFromHistory = (queryToRemove: string) => {
+    setSearchHistory((prev) => {
+      const next = prev.filter((item) => item.toLowerCase() !== queryToRemove.toLowerCase());
+      try {
+        localStorage.setItem('vone_search_history', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const clearAllHistory = () => {
+    setSearchHistory([]);
+    try {
+      localStorage.setItem('vone_search_history', JSON.stringify([]));
+    } catch {}
   };
 
   // Close flyout on click outside or Escape
@@ -378,10 +396,10 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // Default / History: Microsoft Fluent Design Search Icon with NO background box
+    // Default / History / Search: Microsoft Fluent Design Colored 3D Magnifying Glass Icon (no background box)
     return (
-      <div className="w-7 h-7 flex items-center justify-center shrink-0 text-[#64748b] dark:text-[#94a3b8]">
-        <FluentSearchIcon className="w-5 h-5" />
+      <div className="w-7 h-7 flex items-center justify-center shrink-0">
+        <Fluent3DSearchIcon className="w-5.5 h-5.5 drop-shadow-xs" />
       </div>
     );
   };
@@ -517,7 +535,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               } focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff]`}
               style={isSearchFlyoutOpen ? { backgroundColor: searchFlyoutBg } : undefined}
             >
-              <Fluent3DFolderSearchIcon className="w-5 h-5 shrink-0 pointer-events-none select-none drop-shadow-xs" />
+              <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -531,7 +549,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                   }
                 }}
                 onFocus={() => {
+                  setIsSearchFocused(true);
                   setIsSearchFlyoutOpen(true);
+                }}
+                onBlur={() => {
+                  setIsSearchFocused(false);
                 }}
                 placeholder={(() => {
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
@@ -572,6 +594,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+
+              {/* Windows 11 Fluent Active Indicator Line when focused/selected */}
+              {(isSearchFocused || isSearchFlyoutOpen) && (
+                <span className="fluent-search-active-line absolute bottom-0 left-2 right-2 h-[2px] bg-[#005fb8] dark:bg-[#4cc2ff] rounded-full pointer-events-none z-10" />
+              )}
             </div>
           </form>
 
@@ -593,6 +620,23 @@ export const TopBar: React.FC<TopBarProps> = ({
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
+                {/* Search History Section Header when input is empty */}
+                {!searchQuery.trim() && (
+                  <div className="flex items-center justify-between px-2.5 pt-1 pb-1.5 text-[11px] font-semibold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider select-none border-b border-black/5 dark:border-white/5 mb-1">
+                    <span>Recent searches</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearAllHistory();
+                      }}
+                      className="normal-case font-normal text-[11.5px] text-[#005fb8] dark:text-[#4cc2ff] hover:underline cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
+
                 {(showAllResults ? searchResults : searchResults.slice(0, 4)).map((item, index) => (
                   <motion.div
                     key={`${item.id}-${searchQuery}-${index}`}
@@ -618,10 +662,24 @@ export const TopBar: React.FC<TopBarProps> = ({
                         </div>
                       )}
                     </div>
+
+                    {item.type === 'history' && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFromHistory(item.title);
+                        }}
+                        title="Remove from history"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-opacity text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white shrink-0 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </motion.div>
                 ))}
 
-                {/* See more search results button: shown when results > 4 and not yet expanded */}
+                {/* See more search results button: lower background opacity, with clock rewind icon */}
                 {searchResults.length > 4 && !showAllResults && (
                   <motion.button
                     key={`see-more-search-results-${searchQuery}`}
@@ -637,9 +695,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                       e.stopPropagation();
                       setShowAllResults(true);
                     }}
-                    className="w-full mt-1 h-10 px-3.5 rounded-[8px] bg-black/[0.04] dark:bg-white/[0.05] hover:bg-black/[0.08] dark:hover:bg-white/[0.09] active:bg-black/[0.1] dark:active:bg-white/[0.12] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
+                    className="w-full mt-1 h-9.5 px-3 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
                   >
-                    <span className="font-medium text-[13px]">See more search results</span>
+                    <div className="flex items-center gap-2.5">
+                      <History className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0 group-hover:rotate-[-25deg] transition-transform" />
+                      <span className="font-medium text-[13px]">See more search results</span>
+                    </div>
                     <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
                   </motion.button>
                 )}

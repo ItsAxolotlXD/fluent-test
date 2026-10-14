@@ -644,3 +644,85 @@ export const Fluent3DFolderSearchIcon: React.FC<Fluent3DIconProps> = ({ classNam
   </svg>
 );
 
+// 15. Search / Magnifying Glass - Microsoft Fluent Design Colored 3D Magnifying Glass
+export const Fluent3DSearchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <svg
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`fluent-3d-icon ${className} shrink-0`}
+    style={style}
+  >
+    <defs>
+      {/* 3D Cylindrical Handle Gradient */}
+      <linearGradient id="fl3d_mag_handle" x1="18.5" y1="18.5" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#94A3B8" />
+        <stop offset="25%" stopColor="#475569" />
+        <stop offset="65%" stopColor="#1E293B" />
+        <stop offset="100%" stopColor="#0F172A" />
+      </linearGradient>
+      {/* Metallic Ferrule Collar */}
+      <linearGradient id="fl3d_mag_collar" x1="17.5" y1="17.5" x2="21.5" y2="21.5" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFFFFF" />
+        <stop offset="40%" stopColor="#E2E8F0" />
+        <stop offset="100%" stopColor="#64748B" />
+      </linearGradient>
+      {/* 3D Rim Gradient (Fluent Azure / Windows Blue) */}
+      <linearGradient id="fl3d_mag_rim" x1="5" y1="4" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#60A5FA" />
+        <stop offset="35%" stopColor="#38BDF8" />
+        <stop offset="70%" stopColor="#0284C7" />
+        <stop offset="100%" stopColor="#0369A1" />
+      </linearGradient>
+      {/* Inner Rim Bevel */}
+      <linearGradient id="fl3d_mag_inner_rim" x1="6" y1="5" x2="20" y2="19" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#BAE6FD" />
+        <stop offset="100%" stopColor="#0284C7" />
+      </linearGradient>
+      {/* Translucent Glass Lens Gradient */}
+      <linearGradient id="fl3d_mag_glass" x1="6.5" y1="5.5" x2="19.5" y2="18.5" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#F0F9FF" stopOpacity="0.9" />
+        <stop offset="40%" stopColor="#7DD3FC" stopOpacity="0.55" />
+        <stop offset="85%" stopColor="#0284C7" stopOpacity="0.75" />
+        <stop offset="100%" stopColor="#0369A1" stopOpacity="0.85" />
+      </linearGradient>
+      {/* Drop Shadow */}
+      <filter id="fl3d_mag_shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.5" dy="2" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.32" />
+      </filter>
+    </defs>
+    <g filter="url(#fl3d_mag_shadow)">
+      {/* 3D Cylindrical Handle */}
+      <path
+        d="M19.2 19.2L26.8 26.8C27.4 27.4 28.4 27.4 29 26.8C29.6 26.2 29.6 25.2 29 24.6L21.4 17L19.2 19.2Z"
+        fill="url(#fl3d_mag_handle)"
+      />
+      {/* Metallic Ferrule Ring between Handle and Lens Rim */}
+      <rect
+        x="18.5"
+        y="18.5"
+        width="3.5"
+        height="1.8"
+        rx="0.6"
+        transform="rotate(45 18.5 18.5)"
+        fill="url(#fl3d_mag_collar)"
+      />
+      {/* Outer 3D Bevel Lens Rim */}
+      <circle cx="13" cy="13" r="8.5" fill="url(#fl3d_mag_rim)" />
+      {/* Inner Lens Rim Highlight */}
+      <circle cx="13" cy="13" r="6.5" fill="url(#fl3d_mag_inner_rim)" />
+      {/* Translucent Glass Lens */}
+      <circle cx="13" cy="13" r="5.8" fill="url(#fl3d_mag_glass)" />
+      {/* Specular Curved Reflection Gleam on Top-Left of Glass */}
+      <path
+        d="M9.5 9.5C10.5 8.5 11.8 8 13.2 8C13.8 8 14.1 8.3 14 8.7C13.9 9.1 13.5 9.3 13 9.3C11.9 9.3 11 9.7 10.3 10.4C9.9 10.8 9.5 10.7 9.3 10.3C9.1 9.9 9.2 9.7 9.5 9.5Z"
+        fill="#FFFFFF"
+        opacity="0.95"
+      />
+      {/* Secondary subtle glint */}
+      <circle cx="16" cy="16" r="0.9" fill="#FFFFFF" opacity="0.75" />
+    </g>
+  </svg>
+);
+
+

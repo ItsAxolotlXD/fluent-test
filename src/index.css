@@ -3700,14 +3700,14 @@ html.light-mode [class*="CategoryIcon"] path {
 }
 
 
-/* TopBar Search Results Flyout & UI with 80% Opacity matching Sidebar and TopBar colors (#f3f3f3 in light, #1b1f24 in dark) */
+/* TopBar Search Results Flyout & UI with 90% Opacity matching Sidebar and TopBar colors (#f3f3f3 in light, #1b1f24 in dark) */
 .topbar-search-results-dropdown {
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
 }
 html.light-mode .topbar-search-results-dropdown,
 html.light-mode #topbar-search-box.search-flyout-open {
-  background-color: rgba(243, 243, 243, 0.80) !important;
+  background-color: rgba(243, 243, 243, 0.90) !important;
   border-color: rgba(0, 0, 0, 0.10) !important;
   color: #000000 !important;
 }
@@ -3715,10 +3715,32 @@ html:not(.light-mode) .topbar-search-results-dropdown,
 html:not(.light-mode) #topbar-search-box.search-flyout-open,
 html.dark .topbar-search-results-dropdown,
 html.dark #topbar-search-box.search-flyout-open {
-  background-color: rgba(27, 31, 36, 0.80) !important;
+  background-color: rgba(27, 31, 36, 0.90) !important;
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
 }
+
+/* Ensure Windows 11 Fluent Active Bottom Line Indicator is visible when search box is selected/focused */
+#topbar-search-box:focus-within,
+#topbar-search-box.search-flyout-open {
+  border-bottom-color: #005fb8 !important;
+  border-bottom-width: 2px !important;
+}
+html:not(.light-mode) #topbar-search-box:focus-within,
+html:not(.light-mode) #topbar-search-box.search-flyout-open,
+html.dark #topbar-search-box:focus-within,
+html.dark #topbar-search-box.search-flyout-open {
+  border-bottom-color: #4cc2ff !important;
+  border-bottom-width: 2px !important;
+}
+.fluent-search-active-line {
+  background-color: #005fb8 !important;
+}
+html:not(.light-mode) .fluent-search-active-line,
+html.dark .fluent-search-active-line {
+  background-color: #4cc2ff !important;
+}
+
 
 /* Floating Search Bar input text box must NEVER have a background in any mode (light or dark) */
 #floating-search-input,
