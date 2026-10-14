@@ -20,6 +20,19 @@ export const supabase = isSupabaseConfigured
     })
   : null;
 
-export const authRedirectUrl =
-  viteEnv.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
-  window.location.origin;
+const configuredRedirectUrl = viteEnv.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL;
+
+// OAuth providers must return to the origin currently hosting the Vite app.
+// A stale localhost redirect variable breaks sign-in from previews and production.
+export const authRedirectUrl = (() => {
+  if (!configuredRedirectUrl) return window.location.origin;
+
+  try {
+    const configuredUrl = new URL(configuredRedirectUrl);
+    return configuredUrl.origin === window.location.origin
+      ? configuredUrl.toString()
+      : window.location.origin;
+  } catch {
+    return window.location.origin;
+  }
+})();

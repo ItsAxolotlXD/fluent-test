@@ -15,6 +15,18 @@ export const Auth: React.FC<AuthProps> = ({ navigate }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const callbackError =
+      params.get('error_description') ||
+      hashParams.get('error_description') ||
+      params.get('error');
+
+    if (callbackError) {
+      setError(decodeURIComponent(callbackError.replace(/\\+/g, ' ')));
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     if (!supabase) return;
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) navigate('/');
