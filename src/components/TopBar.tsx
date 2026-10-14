@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Menu, History, X } from 'lucide-react';
+import { Menu, History, X, UserRound as UserRoundIcon } from 'lucide-react';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -552,8 +552,20 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* 3. Right Action Icons: Settings Gear */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
+      {/* 3. Right Action Icons: Account and Settings */}
+  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
+  <button
+    type="button"
+    onClick={() => navigate('/auth')}
+    className={`flex h-9 items-center gap-2 rounded-md px-2.5 text-xs font-semibold transition-colors cursor-pointer ${currentRoute === '/auth' ? 'bg-[#4cc2ff] text-black' : 'text-black/70 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
+    title="Đăng nhập hoặc đăng ký"
+    aria-label="Đăng nhập hoặc đăng ký"
+  >
+    <UserRoundIcon />
+    <span className="hidden sm:inline">Tài khoản</span>
+  </button>
+
+
         {/* TopBar Mode: Settings Gear Icon */}
         {isTopBarMode && (
           <button

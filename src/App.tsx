@@ -35,6 +35,7 @@ import { Updates } from './pages/Updates';
 import { Gallery } from './pages/Gallery';
 import { Draws } from './pages/Draws';
 import { VLC } from './pages/VLC';
+import { Auth } from './pages/Auth';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -554,6 +555,9 @@ export default function App() {
             onSearchChange={handleTabSearchChange}
           />
         );
+
+      case '/auth':
+        return <Auth navigate={navigate} />;
 
       case '/settings':
         return (
