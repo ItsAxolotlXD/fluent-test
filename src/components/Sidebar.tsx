@@ -15,7 +15,8 @@ import {
   PlusCircle,
   UploadCloud,
   DownloadCloud,
-  RefreshCw
+  RefreshCw,
+  PanelsTopLeft
 } from 'lucide-react';
 import { 
   FluentHomeIcon, 
@@ -1173,8 +1174,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Bottom Section: Sign In (placed directly above Settings) & Settings */}
+        {/* Bottom Section: WinUI 3, Sign In (placed directly above Settings) & Settings */}
         <div className="px-2.5 py-2 shrink-0 mt-auto space-y-1 relative signin-flyout-container">
+          {/* WinUI 3 component library */}
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-winui-3' : 'sidebar-nav-winui-3'}
+            data-nav-active={currentRoute === '/winui-3' ? 'true' : undefined}
+            onClick={() => handleNavClick('/winui-3')}
+            title="WinUI 3"
+            className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              currentRoute === '/winui-3'
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-3.5 truncate">
+              <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
+              <span className="truncate text-[13.5px]">WinUI 3</span>
+            </div>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold uppercase">UI</span>
+          </button>
+
           {/* Sign In item placed directly ABOVE Settings tab */}
           <div className="relative">
             <button
