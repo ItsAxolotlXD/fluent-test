@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  PanelsTopLeft,
-  Accessibility,
+  Palette,
+  Key,
   Search, 
   Type, 
   X,
@@ -55,7 +55,7 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     id: 'spatial-glass',
     title: 'Fluent Design',
     subtitle: 'Acrylic, Mica material effects and modern visual styling',
-    icon: Sparkles,
+    icon: Box,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
     keywords: ['fluent', 'design', 'acrylic', 'mica', 'opacity', 'blur', 'windows 11', 'transparency'],
   },
@@ -63,7 +63,7 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     id: 'interface',
     title: 'Interface',
     subtitle: 'Navigation bar, app theme, text scaling, and display mode',
-    icon: PanelsTopLeft,
+    icon: Palette,
     badgeColor: 'bg-gradient-to-b from-[#34C759] to-[#248A3D]',
     keywords: ['interface', 'navigation', 'sidebar', 'topbar', 'side view', 'top view', 'floaty', 'tab view', 'theme', 'light mode', 'dark mode', 'font', 'scale', 'super dark'],
   },
@@ -71,7 +71,7 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     id: 'accessibility',
     title: 'Accessibility',
     subtitle: 'Page loading, motion animations, search scope, and virtual keyboard',
-    icon: Accessibility,
+    icon: Key,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
     keywords: ['accessibility', 'page loading', 'load pages sequentially', 'sequential', 'performance', 'spinning ring', 'motion', 'animation', 'reduce all animation', 'search', 'spotlight', 'keyboard', 'clipboard', 'sound', 'keybinds', 'shortcuts', 'hover to expand', 'hover', 'expand', 'sidebar'],
   },
@@ -930,7 +930,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     >
                       <div className="min-w-0 flex-1">
                         <div className="font-semibold text-sm text-[#111827] dark:text-white">Vị trí thanh bên (Side View position)</div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Chọn vị trí hiển thị thanh bên trái hoặc phải.</div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Chọn vị trí hiển thị thanh bên trái ho��c phải.</div>
                       </div>
                       <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[180px]">
                         {[
@@ -1089,7 +1089,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section: Điều hướng & Thanh bên (Sidebar & Navigation) */}
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
-                    Điều hướng & Thanh bên (Sidebar & Navigation)
+                    ��iều hướng & Thanh bên (Sidebar & Navigation)
                   </div>
                   <section 
                     id="settings-section-sidebar-accessibility"
