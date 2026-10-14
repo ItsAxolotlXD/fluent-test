@@ -551,56 +551,48 @@ html.light-mode #vplay-splash-screen {
 
 /* Flyout Sign In & Search Result UI: Slide Up Animation giống animation slide up của các trang tab */
 .signin-flyout-container,
-.topbar-search-results-dropdown,
 .spotlight-search-results-container,
 .immersive-search-results-container {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .signin-flyout-container > *:not(style):not(script),
-.topbar-search-results-dropdown > *:not(style):not(script),
 .spotlight-search-results-container > *:not(style):not(script),
 .immersive-search-results-container > *:not(style):not(script) {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .signin-flyout-container > *:nth-child(1),
-.topbar-search-results-dropdown > *:nth-child(1),
 .spotlight-search-results-container > *:nth-child(1),
 .immersive-search-results-container > *:nth-child(1) {
   animation-delay: 0.04s;
 }
 
 .signin-flyout-container > *:nth-child(2),
-.topbar-search-results-dropdown > *:nth-child(2),
 .spotlight-search-results-container > *:nth-child(2),
 .immersive-search-results-container > *:nth-child(2) {
   animation-delay: 0.08s;
 }
 
 .signin-flyout-container > *:nth-child(3),
-.topbar-search-results-dropdown > *:nth-child(3),
 .spotlight-search-results-container > *:nth-child(3),
 .immersive-search-results-container > *:nth-child(3) {
   animation-delay: 0.12s;
 }
 
 .signin-flyout-container > *:nth-child(4),
-.topbar-search-results-dropdown > *:nth-child(4),
 .spotlight-search-results-container > *:nth-child(4),
 .immersive-search-results-container > *:nth-child(4) {
   animation-delay: 0.16s;
 }
 
 .signin-flyout-container > *:nth-child(5),
-.topbar-search-results-dropdown > *:nth-child(5),
 .spotlight-search-results-container > *:nth-child(5),
 .immersive-search-results-container > *:nth-child(5) {
   animation-delay: 0.20s;
 }
 
 .signin-flyout-container > *:nth-child(n+6),
-.topbar-search-results-dropdown > *:nth-child(n+6),
 .spotlight-search-results-container > *:nth-child(n+6),
 .immersive-search-results-container > *:nth-child(n+6) {
   animation-delay: 0.24s;
@@ -3708,18 +3700,22 @@ html.light-mode [class*="CategoryIcon"] path {
 }
 
 
-/* TopBar Search Results Flyout with 50% Opacity and Light Mode */
+/* TopBar Search Results Flyout & UI with 80% Opacity matching Sidebar and TopBar colors (#f3f3f3 in light, #1b1f24 in dark) */
 .topbar-search-results-dropdown {
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
 }
-html.light-mode .topbar-search-results-dropdown {
-  background-color: rgba(255, 255, 255, 0.50) !important;
+html.light-mode .topbar-search-results-dropdown,
+html.light-mode #topbar-search-box.search-flyout-open {
+  background-color: rgba(243, 243, 243, 0.80) !important;
   border-color: rgba(0, 0, 0, 0.10) !important;
   color: #000000 !important;
 }
-html:not(.light-mode) .topbar-search-results-dropdown {
-  background-color: rgba(28, 28, 28, 0.50) !important;
+html:not(.light-mode) .topbar-search-results-dropdown,
+html:not(.light-mode) #topbar-search-box.search-flyout-open,
+html.dark .topbar-search-results-dropdown,
+html.dark #topbar-search-box.search-flyout-open {
+  background-color: rgba(27, 31, 36, 0.80) !important;
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
 }

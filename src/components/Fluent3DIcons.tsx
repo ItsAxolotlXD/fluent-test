@@ -511,3 +511,136 @@ export const Fluent3DSettingsIcon: React.FC<Fluent3DIconProps> = ({ className = 
     </svg>
   </div>
 );
+
+// 14. Folder Search / Search in Folder - Microsoft Fluent Design Colored 3D Folder with 3D Magnifying Glass
+export const Fluent3DFolderSearchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <svg
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`fluent-3d-icon ${className} shrink-0`}
+    style={style}
+  >
+    <defs>
+      {/* Folder Back Tab & Base Gradients */}
+      <linearGradient id="fl3d_fsearch_back" x1="4" y1="6" x2="28" y2="24" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="50%" stopColor="#D97706" />
+        <stop offset="100%" stopColor="#B45309" />
+      </linearGradient>
+      {/* Folder Front Flap Gradient */}
+      <linearGradient id="fl3d_fsearch_front" x1="4" y1="11" x2="28" y2="26" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FDE047" />
+        <stop offset="35%" stopColor="#FBBF24" />
+        <stop offset="75%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#D97706" />
+      </linearGradient>
+      {/* Magnifier Rim Gradient (Vibrant Azure 3D) */}
+      <linearGradient id="fl3d_fsearch_rim" x1="10" y1="9" x2="23" y2="22" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#60A5FA" />
+        <stop offset="30%" stopColor="#38BDF8" />
+        <stop offset="70%" stopColor="#0284C7" />
+        <stop offset="100%" stopColor="#0369A1" />
+      </linearGradient>
+      {/* Magnifier Handle Gradient */}
+      <linearGradient id="fl3d_fsearch_handle" x1="19" y1="20" x2="28" y2="29" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#94A3B8" />
+        <stop offset="30%" stopColor="#475569" />
+        <stop offset="70%" stopColor="#1E293B" />
+        <stop offset="100%" stopColor="#0F172A" />
+      </linearGradient>
+      {/* Magnifier Glass Lens Gradient */}
+      <linearGradient id="fl3d_fsearch_glass" x1="11" y1="10" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#E0F2FE" stopOpacity="0.88" />
+        <stop offset="45%" stopColor="#7DD3FC" stopOpacity="0.65" />
+        <stop offset="100%" stopColor="#0284C7" stopOpacity="0.82" />
+      </linearGradient>
+      {/* Drop Shadows */}
+      <filter id="fl3d_fsearch_shadow" x="-15%" y="-15%" width="130%" height="130%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodColor="#000000" floodOpacity="0.25" />
+      </filter>
+      <filter id="fl3d_fsearch_mag_shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.5" dy="2" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.32" />
+      </filter>
+    </defs>
+
+    {/* Folder Back with Tab */}
+    <g filter="url(#fl3d_fsearch_shadow)">
+      <path
+        d="M3.5 8.5C3.5 7.4 4.4 6.5 5.5 6.5H11.2C12 6.5 12.7 6.9 13.2 7.5L14.7 9.5C15 9.9 15.5 10.2 16.1 10.2H26.5C27.6 10.2 28.5 11.1 28.5 12.2V23C28.5 24.1 27.6 25 26.5 25H5.5C4.4 25 3.5 24.1 3.5 23V8.5Z"
+        fill="url(#fl3d_fsearch_back)"
+      />
+      {/* Folder Inside Shadow / Depth */}
+      <path
+        d="M4.5 11.5H27.5V13H4.5V11.5Z"
+        fill="#78350F"
+        opacity="0.35"
+      />
+      {/* Peeking White Paper Sheet inside folder */}
+      <path
+        d="M6 8.5C6 7.9 6.4 7.5 7 7.5H20.5C21.1 7.5 21.5 7.9 21.5 8.5V13H6V8.5Z"
+        fill="#FFFFFF"
+        opacity="0.9"
+      />
+      <line x1="8.5" y1="9.8" x2="15.5" y2="9.8" stroke="#93C5FD" strokeWidth="1" strokeLinecap="round" />
+    </g>
+
+    {/* Folder Front Pocket Flap */}
+    <g filter="url(#fl3d_fsearch_shadow)">
+      <path
+        d="M2.5 12.5C2.5 11.4 3.4 10.5 4.5 10.5H27.5C28.6 10.5 29.5 11.4 29.5 12.5V23.5C29.5 24.6 28.6 25.5 27.5 25.5H4.5C3.4 25.5 2.5 24.6 2.5 23.5V12.5Z"
+        fill="url(#fl3d_fsearch_front)"
+      />
+      {/* Top 3D Gloss Highlight Edge on Front Flap */}
+      <path
+        d="M4.5 11H27.5"
+        stroke="#FEF9C3"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
+      {/* Bottom subtle shadow on front flap */}
+      <path
+        d="M4.5 25H27.5"
+        stroke="#B45309"
+        strokeWidth="0.8"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+    </g>
+
+    {/* 3D Magnifying Glass superimposed in 3D */}
+    <g filter="url(#fl3d_fsearch_mag_shadow)">
+      {/* 3D Cylindrical Handle */}
+      <path
+        d="M19.8 21.2L25.6 27C26.2 27.6 27.2 27.6 27.8 27C28.4 26.4 28.4 25.4 27.8 24.8L22 19L19.8 21.2Z"
+        fill="url(#fl3d_fsearch_handle)"
+      />
+      {/* Metallic Ferrule Ring between Handle and Lens Rim */}
+      <rect
+        x="19"
+        y="19"
+        width="3"
+        height="1.5"
+        rx="0.5"
+        transform="rotate(45 19 19)"
+        fill="#E2E8F0"
+      />
+      {/* Outer 3D Bevel Lens Rim */}
+      <circle cx="15" cy="15.5" r="5.6" fill="url(#fl3d_fsearch_rim)" />
+      {/* Inner Lens Rim Highlight */}
+      <circle cx="15" cy="15.5" r="4.3" stroke="#BAE6FD" strokeWidth="0.5" opacity="0.6" />
+      {/* Glass Lens (Translucent 3D Glass) */}
+      <circle cx="15" cy="15.5" r="4.1" fill="url(#fl3d_fsearch_glass)" />
+      {/* Specular Curved Reflection Gleam on Top-Left of Glass */}
+      <path
+        d="M12.5 13C13.2 12.3 14.1 11.9 15.1 11.9C15.5 11.9 15.8 12.1 15.7 12.4C15.6 12.7 15.3 12.9 14.9 12.9C14.1 12.9 13.5 13.2 13 13.7C12.7 14 12.4 13.9 12.3 13.6C12.1 13.3 12.2 13.1 12.5 13Z"
+        fill="#FFFFFF"
+        opacity="0.95"
+      />
+      {/* Secondary subtle glint */}
+      <circle cx="17.2" cy="17.5" r="0.65" fill="#FFFFFF" opacity="0.75" />
+    </g>
+  </svg>
+);
+

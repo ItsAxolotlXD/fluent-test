@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Menu, History, X } from 'lucide-react';
+import { 
+  Menu, 
+  History, 
+  X, 
+  ChevronRight, 
+  Folder, 
+  FileText, 
+  Image as ImageIcon, 
+  Search, 
+  Tv, 
+  Settings as SettingsIcon 
+} from 'lucide-react';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -7,6 +18,7 @@ import {
   FluentSearchIcon, 
   FLUENT_ICON_URLS 
 } from './FluentIcons';
+import { Fluent3DFolderSearchIcon } from './Fluent3DIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -32,6 +44,7 @@ const DEFAULT_HISTORY_ITEMS = [
 interface SearchAspectItem {
   id: string;
   title: string;
+  subtitle?: string;
   type: 'history' | 'page' | 'channel' | 'news' | 'setting' | 'tool';
   logo?: string;
   keywords?: string;
@@ -85,10 +98,13 @@ export const TopBar: React.FC<TopBarProps> = ({
   onTabSearchChange
 }) => {
   const { settings, hasChanges, applyDraftSettings } = useSettings();
+  const isLightMode = settings.theme === 'light';
+  const searchFlyoutBg = isLightMode ? 'rgba(243, 243, 243, 0.80)' : 'rgba(27, 31, 36, 0.80)';
   const isMobile = useIsMobile();
   const [logoError, setLogoError] = useState(false);
   const [searchQuery, setSearchQuery] = useState(tabSearchQuery);
   const [isSearchFlyoutOpen, setIsSearchFlyoutOpen] = useState(false);
+  const [showAllResults, setShowAllResults] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -135,11 +151,13 @@ export const TopBar: React.FC<TopBarProps> = ({
     const handleClickOutside = (e: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
         setIsSearchFlyoutOpen(false);
+        setShowAllResults(false);
       }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsSearchFlyoutOpen(false);
+        setShowAllResults(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -161,39 +179,39 @@ export const TopBar: React.FC<TopBarProps> = ({
     onDismissUnsavedTooltip();
   };
 
-  // Pre-configured App Aspects (Pages, Settings, Tools) with exact original naming
+  // Pre-configured App Aspects (Pages, Settings, Tools) with exact original naming and subtitles matching Fluent Search UI
   const appAspects = useMemo(() => {
     const aspects: SearchAspectItem[] = [
       // Pages
-      { id: 'page-home', title: 'Home', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
-      { id: 'page-watch', title: 'Watch', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
-      { id: 'page-news', title: 'Articles', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
-      { id: 'page-channels', title: 'Channels', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
-      { id: 'page-favs', title: 'Favorites', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
-      { id: 'page-updates', title: 'Updates', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
-      { id: 'page-craftmine', title: 'Craftmine', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
-      { id: 'page-photopea', title: 'Photopea', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
-      { id: 'page-gallery', title: 'Gallery', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
-      { id: 'page-draws', title: 'Draws', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
-      { id: 'page-notes', title: 'Notes', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
-      { id: 'page-vlc', title: 'VLC Media Player', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
-      { id: 'page-settings', title: 'Settings', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
-      { id: 'page-about', title: 'About', keywords: 'giới thiệu about sparkle', type: 'page', onSelect: () => navigate('/about') },
+      { id: 'page-home', title: 'Home', subtitle: 'Do action', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
+      { id: 'page-watch', title: 'Watch', subtitle: 'Do action', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-news', title: 'Articles', subtitle: 'Do action', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-channels', title: 'Channels', subtitle: 'Do action', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
+      { id: 'page-favs', title: 'Favorites', subtitle: 'Do action', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
+      { id: 'page-updates', title: 'Updates', subtitle: 'Do action', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
+      { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Do action', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
+      { id: 'page-photopea', title: 'Photopea', subtitle: 'Do action', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
+      { id: 'page-gallery', title: 'Gallery', subtitle: 'Do action', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
+      { id: 'page-draws', title: 'Draws', subtitle: 'Do action', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
+      { id: 'page-notes', title: 'Notes', subtitle: 'Do action', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
+      { id: 'page-vlc', title: 'VLC Media Player', subtitle: 'Do action', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
+      { id: 'page-settings', title: 'Settings', subtitle: 'System Setting', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
+      { id: 'page-about', title: 'About', subtitle: 'Do action', keywords: 'giới thiệu about sparkle', type: 'page', onSelect: () => navigate('/about') },
 
       // Settings Shortcuts
-      { id: 'set-sideview', title: 'Side View', keywords: 'settings side view thanh bên', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-darkmode', title: 'Dark / Light Mode', keywords: 'settings dark light mode giao diện tối sáng', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-spatialglass', title: 'Spatial Glass & Blur', keywords: 'settings spatial glass acrylic blur kính mờ', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-fontscale', title: 'Text Scaling & Typography', keywords: 'settings text scaling font size zoom cỡ chữ', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-keyboard', title: 'Native Virtual Keyboard', keywords: 'settings native virtual keyboard bàn phím ảo', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-aspect', title: 'Stream Aspect Ratio', keywords: 'settings stream aspect ratio tỉ lệ khung hình 16:9 4:3', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-sideview', title: 'Side View', subtitle: 'System Setting', keywords: 'settings side view thanh bên', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-darkmode', title: 'Dark / Light Mode', subtitle: 'System Setting', keywords: 'settings dark light mode giao diện tối sáng', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-spatialglass', title: 'Spatial Glass & Blur', subtitle: 'System Setting', keywords: 'settings spatial glass acrylic blur kính mờ', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-fontscale', title: 'Text Scaling & Typography', subtitle: 'System Setting', keywords: 'settings text scaling font size zoom cỡ chữ', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-keyboard', title: 'Native Virtual Keyboard', subtitle: 'System Setting', keywords: 'settings native virtual keyboard bàn phím ảo', type: 'setting', onSelect: () => navigate('/settings') },
+      { id: 'set-aspect', title: 'Stream Aspect Ratio', subtitle: 'System Setting', keywords: 'settings stream aspect ratio tỉ lệ khung hình 16:9 4:3', type: 'setting', onSelect: () => navigate('/settings') },
 
       // Tools
-      { id: 'tool-sticky', title: 'Sticky Note', keywords: 'tools sticky note ghi chú dán', type: 'tool', onSelect: () => navigate('/notes') },
-      { id: 'tool-tts', title: 'Text-to-Speech Player', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
-      { id: 'tool-findwords', title: 'Find Words', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
-      { id: 'tool-addstream', title: 'Add Custom Stream', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
-      { id: 'tool-discord', title: 'Discord Community', keywords: 'community discord sparkle', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
+      { id: 'tool-sticky', title: 'Sticky Note', subtitle: 'Do action', keywords: 'tools sticky note ghi chú dán', type: 'tool', onSelect: () => navigate('/notes') },
+      { id: 'tool-tts', title: 'Text-to-Speech Player', subtitle: 'Do action', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
+      { id: 'tool-findwords', title: 'Find Words', subtitle: 'Do action', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
+      { id: 'tool-addstream', title: 'Add Custom Stream', subtitle: 'Do action', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
+      { id: 'tool-discord', title: 'Discord Community', subtitle: 'Do action', keywords: 'community discord sparkle', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
     ];
 
     // Channels
@@ -201,6 +219,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       aspects.push({
         id: `channel-${ch.id}`,
         title: ch.name,
+        subtitle: ch.category || 'Live Channel',
         keywords: `${ch.category} ${ch.shortName || ''} ${ch.slug}`,
         type: 'channel',
         logo: ch.logo,
@@ -216,6 +235,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       aspects.push({
         id: `article-${art.id}`,
         title: art.title,
+        subtitle: 'Sparkle News',
         keywords: `${art.category} ${art.excerpt || ''}`,
         type: 'news',
         onSelect: () => navigate(`/article/${art.id}`)
@@ -233,18 +253,16 @@ export const TopBar: React.FC<TopBarProps> = ({
       return searchHistory.map((hist, idx) => ({
         id: `history-${idx}`,
         title: hist,
+        subtitle: 'Search history',
         type: 'history' as const,
         onSelect: () => {
           setSearchQuery(hist);
           saveToHistory(hist);
-          // If query matches a known page/aspect
-          const match = appAspects.find((a) => a.title.toLowerCase().includes(hist.toLowerCase()));
-          if (match) {
-            match.onSelect();
-          } else {
-            navigate(`/channels?search=${encodeURIComponent(hist)}`);
+          if (onTabSearchChange) {
+            onTabSearchChange(hist);
           }
           setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
         }
       }));
     }
@@ -258,12 +276,16 @@ export const TopBar: React.FC<TopBarProps> = ({
         matches.push({
           id: `hist-match-${idx}`,
           title: hist,
+          subtitle: 'Search history',
           type: 'history',
           onSelect: () => {
             setSearchQuery(hist);
             saveToHistory(hist);
-            navigate(`/channels?search=${encodeURIComponent(hist)}`);
+            if (onTabSearchChange) {
+              onTabSearchChange(hist);
+            }
             setIsSearchFlyoutOpen(false);
+            setShowAllResults(false);
           }
         });
       }
@@ -282,9 +304,14 @@ export const TopBar: React.FC<TopBarProps> = ({
       const matchTag = gItem.tags?.some((t) => t.toLowerCase().includes(q));
       const matchDesc = gItem.description?.toLowerCase().includes(q);
       if (matchTitle || matchTag || matchDesc) {
+        const rawExt = gItem.title?.split('.').pop()?.toUpperCase() || gItem.url?.split('.').pop()?.toUpperCase();
+        const validExt = rawExt && rawExt.length <= 4 ? rawExt : (gItem.type === 'image' ? 'JPG' : gItem.type.toUpperCase());
+        const fileSubtitle = `${validExt} File`;
+
         matches.push({
           id: `gallery-item-${gItem.id}`,
           title: gItem.title,
+          subtitle: fileSubtitle,
           keywords: `gallery ${gItem.type} ${gItem.tags?.join(' ') || ''}`,
           type: 'tool',
           logo: gItem.type === 'image' ? (gItem.thumbnailUrl || gItem.url) : undefined,
@@ -306,22 +333,70 @@ export const TopBar: React.FC<TopBarProps> = ({
     saveToHistory(item.title);
     item.onSelect();
     setIsSearchFlyoutOpen(false);
+    setShowAllResults(false);
+  };
+
+  // Render icon based on item type - no background box on icons per user request, using Fluent Design search icon
+  const renderItemIcon = (item: SearchAspectItem) => {
+    if (item.logo) {
+      return (
+        <div className="w-7 h-7 flex items-center justify-center shrink-0">
+          <img src={item.logo} alt="" className="w-5 h-5 object-contain rounded-[4px]" />
+        </div>
+      );
+    }
+
+    if (item.type === 'page' || item.type === 'tool') {
+      return (
+        <div className="w-7 h-7 flex items-center justify-center shrink-0">
+          <Folder className="w-5 h-5 text-[#d97706] dark:text-[#fbbf24] fill-[#f59e0b]/40" />
+        </div>
+      );
+    }
+
+    if (item.type === 'setting') {
+      return (
+        <div className="w-7 h-7 flex items-center justify-center shrink-0">
+          <SettingsIcon className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+        </div>
+      );
+    }
+
+    if (item.type === 'news') {
+      return (
+        <div className="w-7 h-7 flex items-center justify-center shrink-0">
+          <FileText className="w-5 h-5 text-[#dc2626] dark:text-[#f87171]" />
+        </div>
+      );
+    }
+
+    if (item.type === 'channel') {
+      return (
+        <div className="w-7 h-7 flex items-center justify-center shrink-0">
+          <Tv className="w-5 h-5 text-[#0284c7] dark:text-[#38bdf8]" />
+        </div>
+      );
+    }
+
+    // Default / History: Microsoft Fluent Design Search Icon with NO background box
+    return (
+      <div className="w-7 h-7 flex items-center justify-center shrink-0 text-[#64748b] dark:text-[#94a3b8]">
+        <FluentSearchIcon className="w-5 h-5" />
+      </div>
+    );
   };
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (currentRoute === '/gallery') {
-      setIsSearchFlyoutOpen(false);
-      return;
-    }
     if (searchQuery.trim()) {
       saveToHistory(searchQuery.trim());
-      setIsSearchFlyoutOpen(false);
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      setIsSearchFlyoutOpen(false);
-      onOpenSearch();
+      if (onTabSearchChange) {
+        onTabSearchChange(searchQuery.trim());
+      }
     }
+    // Stay on current tab page - do not jump to /search or open spotlight modal
+    setIsSearchFlyoutOpen(false);
+    setShowAllResults(false);
   };
 
   return (
@@ -435,25 +510,29 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
+              className={`group relative w-full h-8 sm:h-8.5 rounded-[8px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen
-                  ? 'rounded-t-[6px] rounded-b-none border-b-2 border-b-[#005fb8] dark:border-b-[#4cc2ff]'
-                  : 'rounded-[6px]'
-              }`}
+                  ? 'search-flyout-open shadow-xs'
+                  : 'bg-black/5 dark:bg-[#282c31]'
+              } focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff]`}
+              style={isSearchFlyoutOpen ? { backgroundColor: searchFlyoutBg } : undefined}
             >
-              <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
+              <Fluent3DFolderSearchIcon className="w-5 h-5 shrink-0 pointer-events-none select-none drop-shadow-xs" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => {
                   const val = e.target.value;
                   setSearchQuery(val);
+                  setShowAllResults(false);
                   setIsSearchFlyoutOpen(true);
                   if (onTabSearchChange) {
                     onTabSearchChange(val);
                   }
                 }}
-                onFocus={() => setIsSearchFlyoutOpen(true)}
+                onFocus={() => {
+                  setIsSearchFlyoutOpen(true);
+                }}
                 placeholder={(() => {
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                   if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
@@ -482,6 +561,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   onClick={() => {
                     setSearchQuery('');
                     setIsSearchFlyoutOpen(false);
+                    setShowAllResults(false);
                     if (onTabSearchChange) {
                       onTabSearchChange('');
                     }
@@ -495,50 +575,91 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           </form>
 
-          {/* Flyout Result Dropdown: Displays ~5 items at a time, scrollable to see all results with tab-like slide-up */}
+          {/* Flyout Result Dropdown: Displays up to 4 items initially with staggered slide-up animation */}
           <AnimatePresence>
             {isSearchFlyoutOpen && searchResults.length > 0 && (
               <motion.div
                 key="topbar-search-flyout"
-                initial={{ opacity: 0, y: 26 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 18 }}
-                transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
-                className="topbar-search-results-dropdown absolute top-full left-0 right-0 z-50 bg-white/70 dark:bg-[#1b1f24]/90 backdrop-blur-2xl rounded-b-[8px] border border-black/10 dark:border-white/10 border-t-0 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_48px_rgba(0,0,0,0.6)] p-1.5 space-y-0.5 max-h-[240px] overflow-y-auto sidebar-scroller"
+                initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className={`topbar-search-results-dropdown absolute top-[calc(100%+8px)] left-0 right-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
+                  showAllResults ? 'max-h-[380px] overflow-y-auto sidebar-scroller' : 'overflow-hidden'
+                }`}
                 style={{
+                  backgroundColor: searchFlyoutBg,
                   backdropFilter: 'blur(28px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
-                {searchResults.map((item, index) => (
+                {(showAllResults ? searchResults : searchResults.slice(0, 4)).map((item, index) => (
                   <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    key={`${item.id}-${searchQuery}-${index}`}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.44,
-                      delay: Math.min(index * 0.04, 0.24),
+                      duration: 0.28,
+                      delay: Math.min(index * 0.05, 0.25),
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     onClick={() => handleSelectSearchResult(item)}
-                    className="w-full h-11 px-2.5 rounded-[6px] flex items-center gap-3.5 text-left text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
+                    className="w-full min-h-[50px] px-2.5 py-1.5 rounded-[8px] flex items-center gap-3 text-left text-[#111827] dark:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.1] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
                   >
-                    {/* Rounded square box containing the icon with Light & Dark mode support */}
-                    <div className="w-8 h-8 rounded-[6px] bg-black/[0.06] dark:bg-[#000000] flex items-center justify-center shrink-0 border border-black/[0.08] dark:border-white/5 shadow-xs">
-                      {item.logo ? (
-                        <img src={item.logo} alt="" className="max-h-5 max-w-5 object-contain" />
-                      ) : (
-                        <History className="w-4 h-4 text-black/70 dark:text-white/85 group-hover:text-black dark:group-hover:text-white transition-colors" />
-                      )}
-                    </div>
+                    {renderItemIcon(item)}
 
-                    <div className="min-w-0 flex-1 truncate">
-                      <div className="text-[13px] font-normal text-[#111827] dark:text-white/95 truncate">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13.5px] font-medium text-[#111827] dark:text-white/95 truncate leading-snug">
                         {item.title}
                       </div>
+                      {item.subtitle && (
+                        <div className="text-[11.5px] font-normal text-[#6b7280] dark:text-[#9ca3af] truncate leading-tight mt-0.5">
+                          {item.subtitle}
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))}
+
+                {/* See more search results button: shown when results > 4 and not yet expanded */}
+                {searchResults.length > 4 && !showAllResults && (
+                  <motion.button
+                    key={`see-more-search-results-${searchQuery}`}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.28,
+                      delay: Math.min(4 * 0.05, 0.25),
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAllResults(true);
+                    }}
+                    className="w-full mt-1 h-10 px-3.5 rounded-[8px] bg-black/[0.04] dark:bg-white/[0.05] hover:bg-black/[0.08] dark:hover:bg-white/[0.09] active:bg-black/[0.1] dark:active:bg-white/[0.12] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
+                  >
+                    <span className="font-medium text-[13px]">See more search results</span>
+                    <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
+                  </motion.button>
+                )}
+
+                {/* When expanded, show total results and collapse button at the end */}
+                {showAllResults && (
+                  <div className="pt-2 pb-1 px-3 flex items-center justify-between text-[11.5px] text-[#6b7280] dark:text-[#9ca3af] border-t border-black/5 dark:border-white/5 mt-1">
+                    <span>{searchResults.length} results</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAllResults(false);
+                      }}
+                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                    >
+                      Show less
+                    </button>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
