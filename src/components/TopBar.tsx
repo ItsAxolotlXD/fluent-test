@@ -18,7 +18,26 @@ import {
   FluentSearchIcon, 
   FLUENT_ICON_URLS 
 } from './FluentIcons';
-import { Fluent3DSearchIcon } from './Fluent3DIcons';
+import { 
+  Fluent3DSearchIcon,
+  Fluent3DFolderSearchIcon,
+  Fluent3DCraftmineIcon,
+  Fluent3DWatchIcon,
+  Fluent3DArticlesIcon,
+  Fluent3DGalleryIcon,
+  Fluent3DDrawsIcon,
+  Fluent3DPhotopeaIcon,
+  Fluent3DNotesIcon,
+  Fluent3DVlcIcon,
+  Fluent3DUpdatesIcon,
+  Fluent3DSettingsIcon,
+  Fluent3DDiscordIcon,
+  Fluent3DUserIcon,
+  Fluent3DHomeIcon,
+  Fluent3DCalculatorIcon,
+  Fluent3DMapsIcon,
+  Fluent3DMailIcon
+} from './Fluent3DIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -157,11 +176,26 @@ export const TopBar: React.FC<TopBarProps> = ({
     });
   };
 
+  const [isClearingHistory, setIsClearingHistory] = useState(false);
+
   const clearAllHistory = () => {
     setSearchHistory([]);
     try {
       localStorage.setItem('vone_search_history', JSON.stringify([]));
     } catch {}
+  };
+
+  const handleClearAllWithAnimation = () => {
+    if (isClearingHistory || searchHistory.length === 0) return;
+    setIsClearingHistory(true);
+    const count = showAllResults ? searchResults.length : Math.min(searchResults.length, 4);
+    const totalDuration = Math.max(count * 45 + 260, 320);
+
+    setTimeout(() => {
+      clearAllHistory();
+      setIsClearingHistory(false);
+      setShowAllResults(false);
+    }, totalDuration);
   };
 
   // Close flyout on click outside or Escape
@@ -354,52 +388,267 @@ export const TopBar: React.FC<TopBarProps> = ({
     setShowAllResults(false);
   };
 
-  // Render icon based on item type - no background box on icons per user request, using Fluent Design search icon
+  // Get 3D Fluent icon based on the recent search query
+  const getRecentSearchIcon = (query: string) => {
+    const q = query.trim().toLowerCase();
+
+    // 1. Channel check
+    const matchedChannel = channels.find(
+      (c) =>
+        c.name.toLowerCase() === q ||
+        (c.shortName && c.shortName.toLowerCase() === q) ||
+        c.slug.toLowerCase() === q
+    );
+    if (matchedChannel?.logo) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <img src={matchedChannel.logo} alt="" className="w-6.5 h-6.5 object-contain rounded-[4px]" />
+        </div>
+      );
+    }
+
+    // 2. Minecraft / Craftmine / Game
+    if (q.includes('minecraft') || q.includes('craftmine') || q.includes('game') || q.includes('play')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DCraftmineIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 3. Calculator
+    if (q.includes('calculator') || q.includes('calc') || q.includes('máy tính') || q.includes('math')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DCalculatorIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 4. Mail & Calendar
+    if (
+      q.includes('mail') ||
+      q.includes('calendar') ||
+      q.includes('email') ||
+      q.includes('outlook') ||
+      q.includes('lịch') ||
+      q.includes('thư')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DMailIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 5. Maps
+    if (
+      q.includes('maps') ||
+      q.includes('map') ||
+      q.includes('bản đồ') ||
+      q.includes('navigation') ||
+      q.includes('earth')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DMapsIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 6. Notepad / Notes / Documents
+    if (
+      q.includes('notepad') ||
+      q.includes('notes') ||
+      q.includes('note') ||
+      q.includes('ghi chú') ||
+      q.includes('memo') ||
+      q.includes('word') ||
+      q.includes('doc')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DNotesIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 7. Live TV / Watch / Channels / VTV / HTV / Stream / Movies
+    if (
+      q.includes('tv') ||
+      q.includes('watch') ||
+      q.includes('live') ||
+      q.includes('vtv') ||
+      q.includes('htv') ||
+      q.includes('truyền hình') ||
+      q.includes('stream') ||
+      q.includes('movie') ||
+      q.includes('phim')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DWatchIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 8. News / Articles / Thời sự / Báo
+    if (
+      q.includes('news') ||
+      q.includes('article') ||
+      q.includes('thời sự') ||
+      q.includes('thoi su') ||
+      q.includes('báo') ||
+      q.includes('tin tức')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DArticlesIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 9. Gallery / Photos / Images
+    if (
+      q.includes('photo') ||
+      q.includes('gallery') ||
+      q.includes('image') ||
+      q.includes('ảnh') ||
+      q.includes('hình') ||
+      q.includes('picture')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DGalleryIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 10. Draws / Paint / Photopea
+    if (q.includes('draw') || q.includes('paint') || q.includes('vẽ') || q.includes('sketch') || q.includes('brush')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DDrawsIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+    if (q.includes('photopea') || q.includes('photoshop') || q.includes('psd')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DPhotopeaIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 11. VLC
+    if (q.includes('vlc') || q.includes('media player') || q.includes('video player')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DVlcIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 12. Settings
+    if (
+      q.includes('setting') ||
+      q.includes('cài đặt') ||
+      q.includes('tùy chọn') ||
+      q.includes('config') ||
+      q.includes('preferences')
+    ) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 13. Updates
+    if (q.includes('update') || q.includes('cập nhật') || q.includes('version') || q.includes('changelog')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DUpdatesIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 14. Discord
+    if (q.includes('discord') || q.includes('community')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DDiscordIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // 15. Home
+    if (q.includes('home') || q.includes('trang chủ')) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DHomeIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    // Default for all other recent searches: Microsoft Fluent Design 3D Folder with Magnifying Glass, bigger size
+    return (
+      <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+        <Fluent3DFolderSearchIcon className="w-7 h-7 drop-shadow-sm" />
+      </div>
+    );
+  };
+
+  // Render icon based on item type - using Microsoft Fluent Design 3D Icons
   const renderItemIcon = (item: SearchAspectItem) => {
+    if (item.type === 'history') {
+      return getRecentSearchIcon(item.title);
+    }
+
     if (item.logo) {
       return (
-        <div className="w-7 h-7 flex items-center justify-center shrink-0">
-          <img src={item.logo} alt="" className="w-5 h-5 object-contain rounded-[4px]" />
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <img src={item.logo} alt="" className="w-6.5 h-6.5 object-contain rounded-[4px]" />
         </div>
       );
     }
 
     if (item.type === 'page' || item.type === 'tool') {
       return (
-        <div className="w-7 h-7 flex items-center justify-center shrink-0">
-          <Folder className="w-5 h-5 text-[#d97706] dark:text-[#fbbf24] fill-[#f59e0b]/40" />
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DFolderSearchIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }
 
     if (item.type === 'setting') {
       return (
-        <div className="w-7 h-7 flex items-center justify-center shrink-0">
-          <SettingsIcon className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }
 
     if (item.type === 'news') {
       return (
-        <div className="w-7 h-7 flex items-center justify-center shrink-0">
-          <FileText className="w-5 h-5 text-[#dc2626] dark:text-[#f87171]" />
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DArticlesIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }
 
     if (item.type === 'channel') {
       return (
-        <div className="w-7 h-7 flex items-center justify-center shrink-0">
-          <Tv className="w-5 h-5 text-[#0284c7] dark:text-[#38bdf8]" />
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DWatchIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }
 
-    // Default / History / Search: Microsoft Fluent Design Colored 3D Magnifying Glass Icon (no background box)
+    // Default / Search fallback: Microsoft Fluent Design 3D Folder with Magnifying Glass, bigger size
     return (
-      <div className="w-7 h-7 flex items-center justify-center shrink-0">
-        <Fluent3DSearchIcon className="w-5.5 h-5.5 drop-shadow-xs" />
+      <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+        <Fluent3DFolderSearchIcon className="w-7 h-7 drop-shadow-sm" />
       </div>
     );
   };
@@ -532,7 +781,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 isSearchFlyoutOpen
                   ? 'search-flyout-open shadow-xs'
                   : 'bg-black/5 dark:bg-[#282c31]'
-              } focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff]`}
+              }`}
               style={isSearchFlyoutOpen ? { backgroundColor: searchFlyoutBg } : undefined}
             >
               <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
@@ -602,15 +851,20 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           </form>
 
-          {/* Flyout Result Dropdown: Displays up to 4 items initially with staggered slide-up animation */}
+          {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
           <AnimatePresence>
-            {isSearchFlyoutOpen && searchResults.length > 0 && (
+            {isSearchFlyoutOpen && (searchResults.length > 0 || (!searchQuery.trim() && searchHistory.length === 0)) && (
               <motion.div
                 key="topbar-search-flyout"
-                initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                layout
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{
+                  duration: 0.26,
+                  ease: [0.16, 1, 0.3, 1],
+                  layout: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
+                }}
                 className={`topbar-search-results-dropdown absolute top-[calc(100%+8px)] left-0 right-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
                   showAllResults ? 'max-h-[380px] overflow-y-auto sidebar-scroller' : 'overflow-hidden'
                 }`}
@@ -620,34 +874,41 @@ export const TopBar: React.FC<TopBarProps> = ({
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
-                {/* Search History Section Header when input is empty */}
-                {!searchQuery.trim() && (
-                  <div className="flex items-center justify-between px-2.5 pt-1 pb-1.5 text-[11px] font-semibold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider select-none border-b border-black/5 dark:border-white/5 mb-1">
+                {/* Search History Section Header when input is empty (not capitalized) */}
+                {!searchQuery.trim() && searchHistory.length > 0 && (
+                  <div className="px-2.5 pt-1 pb-1.5 text-[12px] font-semibold text-[#6b7280] dark:text-[#9ca3af] select-none border-b border-black/5 dark:border-white/5 mb-1">
                     <span>Recent searches</span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        clearAllHistory();
-                      }}
-                      className="normal-case font-normal text-[11.5px] text-[#005fb8] dark:text-[#4cc2ff] hover:underline cursor-pointer"
-                    >
-                      Clear all
-                    </button>
                   </div>
                 )}
 
                 {(showAllResults ? searchResults : searchResults.slice(0, 4)).map((item, index) => (
                   <motion.div
                     key={`${item.id}-${searchQuery}-${index}`}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.28,
-                      delay: Math.min(index * 0.05, 0.25),
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    onClick={() => handleSelectSearchResult(item)}
+                    layout
+                    initial={{ opacity: 0, y: 16, x: 0 }}
+                    animate={
+                      isClearingHistory && item.type === 'history'
+                        ? {
+                            opacity: 0,
+                            x: -140,
+                            transition: {
+                              duration: 0.24,
+                              delay: index * 0.045,
+                              ease: [0.4, 0, 0.2, 1],
+                            },
+                          }
+                        : {
+                            opacity: 1,
+                            y: 0,
+                            x: 0,
+                            transition: {
+                              duration: 0.28,
+                              delay: Math.min(index * 0.05, 0.25),
+                              ease: [0.16, 1, 0.3, 1],
+                            },
+                          }
+                    }
+                    onClick={() => !isClearingHistory && handleSelectSearchResult(item)}
                     className="w-full min-h-[50px] px-2.5 py-1.5 rounded-[8px] flex items-center gap-3 text-left text-[#111827] dark:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.1] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
                   >
                     {renderItemIcon(item)}
@@ -679,10 +940,121 @@ export const TopBar: React.FC<TopBarProps> = ({
                   </motion.div>
                 ))}
 
-                {/* See more search results button: lower background opacity, with clock rewind icon */}
-                {searchResults.length > 4 && !showAllResults && (
+                {/* Empty State when no recent searches exist */}
+                {!searchQuery.trim() && searchHistory.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.24 }}
+                    className="py-5 px-4 text-center flex flex-col items-center justify-center gap-2 select-none"
+                  >
+                    <Fluent3DFolderSearchIcon className="w-10 h-10 drop-shadow-sm opacity-90" />
+                    <span className="text-[13px] font-medium text-[#111827] dark:text-white">No recent searches</span>
+                    <span className="text-[11.5px] text-[#6b7280] dark:text-[#9ca3af]">Searches you perform will appear here</span>
+                  </motion.div>
+                )}
+
+                {/* Recent Searches Footer: Show more results button and Clear all button aligned */}
+                {!searchQuery.trim() && searchResults.length > 4 && !showAllResults && (
+                  <motion.div
+                    key="recent-search-footer-actions"
+                    layout
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.28,
+                      delay: Math.min(4 * 0.05, 0.25),
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="w-full mt-1 flex items-center gap-1.5 pt-0.5"
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAllResults(true);
+                      }}
+                      className="flex-1 h-9.5 px-3 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <History className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0 group-hover:rotate-[-25deg] transition-transform" />
+                        <span className="font-medium text-[13px]">Show more results</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearAllWithAnimation();
+                      }}
+                      disabled={isClearingHistory}
+                      className="h-9.5 px-3.5 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-all cursor-pointer select-none shrink-0"
+                    >
+                      Clear all
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* When 4 or fewer recent searches, Clear all is placed at the bottom where Show more results is */}
+                {!searchQuery.trim() && searchResults.length <= 4 && searchResults.length > 0 && (
+                  <motion.div
+                    key="recent-search-footer-clear"
+                    layout
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.28,
+                      delay: Math.min(searchResults.length * 0.05, 0.25),
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="w-full mt-1 pt-0.5"
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearAllWithAnimation();
+                      }}
+                      disabled={isClearingHistory}
+                      className="w-full h-9.5 px-3.5 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-all cursor-pointer select-none"
+                    >
+                      Clear all
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* When expanded with recent searches, show Show less and Clear all in footer */}
+                {!searchQuery.trim() && showAllResults && (
+                  <div className="pt-2 pb-1 px-3 flex items-center justify-between text-[11.5px] text-[#6b7280] dark:text-[#9ca3af] border-t border-black/5 dark:border-white/5 mt-1">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAllResults(false);
+                      }}
+                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                    >
+                      Show less
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClearAllWithAnimation();
+                      }}
+                      disabled={isClearingHistory}
+                      className="text-[#6b7280] dark:text-[#9ca3af] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
+
+                {/* Non-empty search results: Show more results button */}
+                {searchQuery.trim() && searchResults.length > 4 && !showAllResults && (
                   <motion.button
-                    key={`see-more-search-results-${searchQuery}`}
+                    key={`show-more-search-results-${searchQuery}`}
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
@@ -699,14 +1071,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   >
                     <div className="flex items-center gap-2.5">
                       <History className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0 group-hover:rotate-[-25deg] transition-transform" />
-                      <span className="font-medium text-[13px]">See more search results</span>
+                      <span className="font-medium text-[13px]">Show more results</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
                   </motion.button>
                 )}
 
-                {/* When expanded, show total results and collapse button at the end */}
-                {showAllResults && (
+                {/* When expanded with query */}
+                {searchQuery.trim() && showAllResults && (
                   <div className="pt-2 pb-1 px-3 flex items-center justify-between text-[11.5px] text-[#6b7280] dark:text-[#9ca3af] border-t border-black/5 dark:border-white/5 mt-1">
                     <span>{searchResults.length} results</span>
                     <button

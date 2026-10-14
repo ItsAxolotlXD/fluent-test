@@ -725,4 +725,176 @@ export const Fluent3DSearchIcon: React.FC<Fluent3DIconProps> = ({ className = 'w
   </svg>
 );
 
+// 16. Calculator - Microsoft Fluent Design Colored 3D Calculator
+export const Fluent3DCalculatorIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <svg
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`fluent-3d-icon ${className} shrink-0`}
+    style={style}
+  >
+    <defs>
+      <linearGradient id="fl3d_calc_body" x1="6" y1="3" x2="26" y2="29" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#475569" />
+        <stop offset="50%" stopColor="#334155" />
+        <stop offset="100%" stopColor="#1E293B" />
+      </linearGradient>
+      <linearGradient id="fl3d_calc_screen" x1="8" y1="6" x2="24" y2="12" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#0F172A" />
+        <stop offset="100%" stopColor="#1E293B" />
+      </linearGradient>
+      <linearGradient id="fl3d_calc_orange_btn" x1="18" y1="21" x2="24" y2="26" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FB923C" />
+        <stop offset="100%" stopColor="#EA580C" />
+      </linearGradient>
+      <linearGradient id="fl3d_calc_blue_btn" x1="18" y1="14" x2="24" y2="19" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="100%" stopColor="#0284C7" />
+      </linearGradient>
+      <filter id="fl3d_calc_shadow" x="-15%" y="-15%" width="130%" height="130%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000" floodOpacity="0.28" />
+      </filter>
+    </defs>
+    <g filter="url(#fl3d_calc_shadow)">
+      {/* Calculator Body */}
+      <rect x="5.5" y="3.5" width="21" height="25" rx="4.5" fill="url(#fl3d_calc_body)" />
+      {/* Top 3D Rim Highlight */}
+      <rect x="6" y="4" width="20" height="2" rx="1" fill="#94A3B8" opacity="0.35" />
+      {/* Screen Display */}
+      <rect x="8" y="6.5" width="16" height="5.5" rx="1.8" fill="url(#fl3d_calc_screen)" />
+      <rect x="8" y="6.5" width="16" height="5.5" rx="1.8" stroke="#334155" strokeWidth="0.6" />
+      {/* Subtle Digital Digits glow */}
+      <rect x="18" y="8.2" width="4" height="2" rx="0.5" fill="#38BDF8" opacity="0.9" />
+      <rect x="14" y="8.2" width="3" height="2" rx="0.5" fill="#38BDF8" opacity="0.6" />
+
+      {/* Row 1 Keys */}
+      <rect x="8" y="14" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="12.5" y="14" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="17" y="14" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="21.5" y="14" width="2.5" height="3" rx="1" fill="url(#fl3d_calc_blue_btn)" />
+
+      {/* Row 2 Keys */}
+      <rect x="8" y="18" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="12.5" y="18" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="17" y="18" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="21.5" y="18" width="2.5" height="3" rx="1" fill="url(#fl3d_calc_blue_btn)" />
+
+      {/* Row 3 Keys */}
+      <rect x="8" y="22" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="12.5" y="22" width="3.5" height="3" rx="1" fill="#64748B" />
+      <rect x="17" y="22" width="7" height="3" rx="1" fill="url(#fl3d_calc_orange_btn)" />
+    </g>
+  </svg>
+);
+
+// 17. Maps - Microsoft Fluent Design Colored 3D Folded Map with Pin
+export const Fluent3DMapsIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <svg
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`fluent-3d-icon ${className} shrink-0`}
+    style={style}
+  >
+    <defs>
+      <linearGradient id="fl3d_map_left" x1="4" y1="7" x2="11" y2="27" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="60%" stopColor="#0284C7" />
+        <stop offset="100%" stopColor="#0369A1" />
+      </linearGradient>
+      <linearGradient id="fl3d_map_mid" x1="11" y1="4" x2="19" y2="24" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#86EFAC" />
+        <stop offset="60%" stopColor="#22C55E" />
+        <stop offset="100%" stopColor="#15803D" />
+      </linearGradient>
+      <linearGradient id="fl3d_map_right" x1="19" y1="7" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FDE047" />
+        <stop offset="60%" stopColor="#EAB308" />
+        <stop offset="100%" stopColor="#CA8A04" />
+      </linearGradient>
+      <linearGradient id="fl3d_map_pin" x1="17" y1="5" x2="25" y2="17" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#EF4444" />
+        <stop offset="70%" stopColor="#DC2626" />
+        <stop offset="100%" stopColor="#991B1B" />
+      </linearGradient>
+      <filter id="fl3d_map_shadow" x="-15%" y="-15%" width="130%" height="130%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000" floodOpacity="0.25" />
+      </filter>
+      <filter id="fl3d_pin_shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.5" dy="2" stdDeviation="1" floodColor="#000" floodOpacity="0.35" />
+      </filter>
+    </defs>
+    <g filter="url(#fl3d_map_shadow)">
+      {/* Left Fold */}
+      <path d="M5 8.5L12 5.5V23.5L5 26.5V8.5Z" fill="url(#fl3d_map_left)" />
+      {/* Middle Fold */}
+      <path d="M12 5.5L19 8.5V26.5L12 23.5V5.5Z" fill="url(#fl3d_map_mid)" />
+      {/* Right Fold */}
+      <path d="M19 8.5L26 5.5V23.5L19 26.5V8.5Z" fill="url(#fl3d_map_right)" />
+      {/* Road / Path across folds */}
+      <path d="M5 16L12 14L19 18L26 15" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+    </g>
+    {/* 3D Location Pin */}
+    <g filter="url(#fl3d_pin_shadow)">
+      <path
+        d="M21 5.5C18.5 5.5 16.5 7.5 16.5 10C16.5 13.5 21 19 21 19C21 19 25.5 13.5 25.5 10C25.5 7.5 23.5 5.5 21 5.5Z"
+        fill="url(#fl3d_map_pin)"
+      />
+      <circle cx="21" cy="9.8" r="1.8" fill="#FFFFFF" />
+    </g>
+  </svg>
+);
+
+// 18. Mail & Calendar - Microsoft Fluent Design Colored 3D Mail & Calendar
+export const Fluent3DMailIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <svg
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`fluent-3d-icon ${className} shrink-0`}
+    style={style}
+  >
+    <defs>
+      <linearGradient id="fl3d_mail_body" x1="4" y1="8" x2="28" y2="26" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="50%" stopColor="#0284C7" />
+        <stop offset="100%" stopColor="#0369A1" />
+      </linearGradient>
+      <linearGradient id="fl3d_mail_flap" x1="4" y1="8" x2="28" y2="20" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#60A5FA" />
+        <stop offset="100%" stopColor="#2563EB" />
+      </linearGradient>
+      <linearGradient id="fl3d_mail_cal_top" x1="16" y1="14" x2="28" y2="18" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#EF4444" />
+        <stop offset="100%" stopColor="#DC2626" />
+      </linearGradient>
+      <filter id="fl3d_mail_shadow" x="-15%" y="-15%" width="130%" height="130%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000" floodOpacity="0.25" />
+      </filter>
+      <filter id="fl3d_cal_badge_shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.5" dy="1.5" stdDeviation="1" floodColor="#000" floodOpacity="0.3" />
+      </filter>
+    </defs>
+    <g filter="url(#fl3d_mail_shadow)">
+      {/* Envelope Back & Body */}
+      <rect x="4" y="8" width="24" height="17" rx="3" fill="url(#fl3d_mail_body)" />
+      {/* Envelope Flap Fold Lines */}
+      <path d="M4 8.5L16 17.5L28 8.5" fill="none" stroke="#BAE6FD" strokeWidth="1.2" opacity="0.6" />
+      <path d="M4 24.5L12 17.5" stroke="#075985" strokeWidth="1" opacity="0.4" />
+      <path d="M28 24.5L20 17.5" stroke="#075985" strokeWidth="1" opacity="0.4" />
+      <path d="M4 9C4 7.9 4.9 7 6 7H26C27.1 7 28 7.9 28 9L16 18L4 9Z" fill="url(#fl3d_mail_flap)" opacity="0.9" />
+    </g>
+    {/* Mini Calendar Badge overlay bottom right */}
+    <g filter="url(#fl3d_cal_badge_shadow)">
+      <rect x="17" y="15" width="12" height="12" rx="2.5" fill="#FFFFFF" />
+      <path d="M17 17.5C17 16.1 18.1 15 19.5 15H26.5C27.9 15 29 16.1 29 17.5V18.5H17V17.5Z" fill="url(#fl3d_mail_cal_top)" />
+      <rect x="19.5" y="21" width="2" height="2" rx="0.5" fill="#3B82F6" />
+      <rect x="23.5" y="21" width="2" height="2" rx="0.5" fill="#94A3B8" />
+      <rect x="19.5" y="24" width="2" height="2" rx="0.5" fill="#94A3B8" />
+      <rect x="23.5" y="24" width="2" height="2" rx="0.5" fill="#94A3B8" />
+    </g>
+  </svg>
+);
+
 
