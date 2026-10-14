@@ -691,15 +691,8 @@ html.light-mode .microsoft-logo * {
   stroke: none !important;
 }
 
-html.light-mode .microsoft-logo,
 html.light-mode .microsoft-logo rect {
-  color: transparent !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
   stroke: none !important;
-  stroke-width: 0 !important;
-  vector-effect: non-scaling-stroke;
 }
 
 html.light-mode .fluent-vlc-icon,

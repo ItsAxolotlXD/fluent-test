@@ -49,7 +49,6 @@ interface SettingsCategoryItem {
   subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
   badgeColor: string;
-  iconColor: string;
   keywords: string[];
 }
 
@@ -60,7 +59,6 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Acrylic, Mica material effects and modern visual styling',
     icon: Box,
     badgeColor: 'bg-gradient-to-b from-[#4cc2ff] to-[#3bb2ef]',
-    iconColor: '#0078d4',
     keywords: ['fluent', 'design', 'acrylic', 'mica', 'opacity', 'blur', 'windows 11', 'transparency'],
   },
   {
@@ -69,7 +67,6 @@ const SETTINGS_GROUP_1: SettingsCategoryItem[] = [
     subtitle: 'Navigation bar, app theme, text scaling, and display mode',
     icon: Palette,
     badgeColor: 'bg-gradient-to-b from-[#34C759] to-[#248A3D]',
-    iconColor: '#248A3D',
     keywords: ['interface', 'navigation', 'sidebar', 'topbar', 'side view', 'top view', 'floaty', 'tab view', 'theme', 'light mode', 'dark mode', 'font', 'scale', 'super dark'],
   },
   {
@@ -89,7 +86,6 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     subtitle: 'Aspect ratio and sidebar auto-hide preferences',
     icon: Wrench,
     badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
-    iconColor: '#636366',
     keywords: ['tools', 'aspect ratio', '16:9', '4:3', 'auto hide', 'sidebar'],
   },
   {
@@ -98,7 +94,6 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     subtitle: 'Preview features and diagnostic flags',
     icon: FlaskConical,
     badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
-    iconColor: '#636366',
     keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader', 'fluent icons', 'fluent icon', '3d icons', 'microsoft fluent design', 'page animation', 'slide up', 'zoom in', 'transition'],
   },
 ];
@@ -438,7 +433,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.75]" style={{ color: item.iconColor, stroke: item.iconColor }} />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
@@ -469,7 +464,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   {/* Clean Icon without background */}
                   <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.75]" style={{ color: item.iconColor, stroke: item.iconColor }} />
+                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
                   </div>
 
                   {/* Label */}
