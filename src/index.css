@@ -623,9 +623,23 @@ html.light-mode [aria-label*="Next"] {
 html.light-mode .setting-card svg,
 html.light-mode .settings-fluent-group svg,
 html.light-mode .setting-card svg * ,
-html.light-mode .settings-fluent-group svg * {
+html.light-mode .settings-fluent-group svg * ,
+html.light-mode [id^="settings-category-"] svg,
+html.light-mode [id^="settings-category-"] svg * {
   color: #000000 !important;
   stroke: #000000 !important;
+}
+
+/* The Microsoft mark is a four-colour logo, never a monochrome or outlined glyph. */
+html.light-mode .microsoft-logo,
+html.light-mode .microsoft-logo * {
+  color: inherit !important;
+  filter: none !important;
+  stroke: none !important;
+}
+
+html.light-mode .microsoft-logo rect {
+  stroke: none !important;
 }
 
 html.light-mode .fluent-vlc-icon,
