@@ -16,7 +16,10 @@ import {
   UploadCloud,
   DownloadCloud,
   RefreshCw,
-  PanelsTopLeft
+  PanelsTopLeft,
+  PanelLeft,
+  Palette,
+  Settings2
 } from 'lucide-react';
 import { 
   FluentHomeIcon, 
@@ -244,6 +247,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isSignInUnderConstructionOpen, setIsSignInUnderConstructionOpen] = useState(false);
   const [signedInAccount, setSignedInAccount] = useState<string | null>(null);
   const [signInToast, setSignInToast] = useState<string | null>(null);
+  const [sidebarContextMenu, setSidebarContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const sidebarHoldTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openSidebarContextMenu = (x: number, y: number) => {
+    setIsToolsFlyoutOpen(false);
+    setIsSignInFlyoutOpen(false);
+    setSidebarContextMenu({ x, y });
+  };
+
+  const handleSidebarContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    openSidebarContextMenu(e.clientX, e.clientY);
+  };
+
+  const handleSidebarTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    sidebarHoldTimer.current = setTimeout(() => openSidebarContextMenu(touch.clientX, touch.clientY), 550);
+  };
+
+  const clearSidebarHold = () => {
+    if (sidebarHoldTimer.current) clearTimeout(sidebarHoldTimer.current);
+    sidebarHoldTimer.current = null;
+  };
+
+  useEffect(() => clearSidebarHold, []);
 
   const toggleSignInFlyout = () => {
     setIsSignInFlyoutOpen((prev) => !prev);
@@ -775,11 +804,68 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   // Render Full Windows 10 Settings Style Sidebar Content
-  const renderSidebarBody = (isMobile: boolean = false) => {
-    const containerRef = isMobile ? mobileNavRef : desktopNavRef;
+  const renderSidebarContextMenu = () => {
+    if (!sidebarContextMenu) return null;
+
+    const menuItems = [
+      { label: 'Refresh', icon: RefreshCw, onClick: () => window.location.reload() },
+      { label: 'Go back', icon: ArrowLeft, onClick: handleGoBack },
+      {
+        label: isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
+        icon: PanelLeft,
+        onClick: () => onToggleCollapse?.(),
+      },
+    ];
 
     return (
-      <div className="flex flex-col h-full select-none text-[13.5px] font-sans">
+      <AnimatePresence>
+        <motion.div
+          role="menu"
+          aria-label="Sidebar actions"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 14 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          onContextMenu={(e) => e.preventDefault()}
+          className="fixed z-[60] w-[232px] rounded-[10px] border border-black/10 bg-white/70 p-1.5 text-[#111827] shadow-[0_16px_40px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-150 dark:border-white/10 dark:bg-[#1c1c1c]/70 dark:text-white"
+          style={{ left: Math.min(sidebarContextMenu.x, window.innerWidth - 240), top: Math.min(sidebarContextMenu.y, window.innerHeight - 190) }}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          {menuItems.map(({ label, icon: Icon, onClick }) => (
+            <button
+              key={label}
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setSidebarContextMenu(null);
+                onClick();
+              }}
+              className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]"
+            >
+              <Icon className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+              <span className="truncate">{label}</span>
+            </button>
+          ))}
+          <div role="separator" className="my-1 h-px bg-black/10 dark:bg-white/10" />
+          <button type="button" role="menuitem" onClick={() => { setSidebarContextMenu(null); navigate('/winui-3'); }} className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]">
+            <Palette className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+            <span>Fluent design icons</span>
+          </button>
+          <button type="button" role="menuitem" onClick={() => { setSidebarContextMenu(null); navigate('/settings'); }} className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]">
+            <Settings2 className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+            <span>Interface settings</span>
+          </button>
+        </motion.div>
+      </AnimatePresence>
+    );
+  };
+
+  const renderSidebarBody = (isMobile: boolean = false) => {
+  const containerRef = isMobile ? mobileNavRef : desktopNavRef;
+  
+  return (
+  <div className="relative flex flex-col h-full select-none text-[13.5px] font-sans" onContextMenu={handleSidebarContextMenu} onTouchStart={handleSidebarTouchStart} onTouchEnd={clearSidebarHold} onTouchMove={clearSidebarHold} onTouchCancel={clearSidebarHold}>
+  {renderSidebarContextMenu()}
         {/* Hidden M3U file input */}
         <input
           ref={fileInputRef}
