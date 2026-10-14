@@ -14,7 +14,6 @@ import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 
-const LOGO_SRC = 'https://static.wikia.nocookie.net/ep-deo/images/8/8a/V-green.png/revision/latest/scale-to-width-down/1000?cb=20261011062111';
 const HOME_ICON_SRC = FLUENT_ICON_URLS.home;
 const TV_ICON_SRC = FLUENT_ICON_URLS.liveTv;
 const NEWS_ICON_SRC = FLUENT_ICON_URLS.news;
