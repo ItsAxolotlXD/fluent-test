@@ -261,8 +261,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setSignInToast('Signed out of account');
       return;
     }
-    // Any sign in attempt opens the under construction dialog
-    setIsSignInUnderConstructionOpen(true);
+    if (provider === 'Guest') {
+      setSignInToast('Continuing without an account');
+      return;
+    }
+    navigate('/auth');
   };
 
   useEffect(() => {

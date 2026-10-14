@@ -22,6 +22,24 @@ export const Auth: React.FC<AuthProps> = ({ navigate }) => {
     return () => data.subscription.unsubscribe();
   }, [navigate]);
 
+  const signInWithProvider = async (provider: 'google' | 'apple' | 'azure') => {
+    setError('');
+    setLoading(true);
+    if (!supabase) {
+      setError('Supabase chưa được cấu hình cho ứng dụng.');
+      setLoading(false);
+      return;
+    }
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: authRedirectUrl },
+    });
+    if (oauthError) {
+      setError(oauthError.message);
+      setLoading(false);
+    }
+  };
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(''); setMessage(''); setLoading(true);
@@ -52,6 +70,21 @@ export const Auth: React.FC<AuthProps> = ({ navigate }) => {
         <button type="button" role="tab" aria-selected={mode === 'signin'} onClick={() => { setMode('signin'); setError(''); setMessage(''); }} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === 'signin' ? 'bg-[#4cc2ff] text-black' : 'text-white/60 hover:text-white'}`}>Đăng nhập</button>
         <button type="button" role="tab" aria-selected={mode === 'signup'} onClick={() => { setMode('signup'); setError(''); setMessage(''); }} className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === 'signup' ? 'bg-[#4cc2ff] text-black' : 'text-white/60 hover:text-white'}`}>Đăng ký</button>
       </div>
+      <div className="flex flex-col gap-2">
+        <button type="button" disabled={loading} onClick={() => signInWithProvider('google')} className="flex h-11 items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
+          <span className="flex size-5 items-center justify-center rounded-full bg-white text-sm font-bold text-[#4285f4]">G</span>
+          Tiếp tục với Google
+        </button>
+        <button type="button" disabled={loading} onClick={() => signInWithProvider('apple')} className="flex h-11 items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
+          <span className="text-lg leading-none">●</span>
+          Tiếp tục với Apple
+        </button>
+        <button type="button" disabled={loading} onClick={() => signInWithProvider('azure')} className="flex h-11 items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
+          <span className="grid size-5 grid-cols-2 gap-0.5"><span className="bg-[#f25022]" /><span className="bg-[#7fba00]" /><span className="bg-[#00a4ef]" /><span className="bg-[#ffb900]" /></span>
+          Tiếp tục với Microsoft
+        </button>
+      </div>
+      <div className="my-5 flex items-center gap-3 text-xs text-white/35"><span className="h-px flex-1 bg-white/10" />hoặc email<span className="h-px flex-1 bg-white/10" /></div>
       <form onSubmit={submit} className="flex flex-col gap-4">
         {mode === 'signup' && <label className="flex flex-col gap-2 text-sm font-medium text-white/80">Tên hiển thị<div className="relative"><UserRound className="absolute left-3 top-3 text-white/35" size={18} /><input required value={name} onChange={e => setName(e.target.value)} className="h-11 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-white outline-none transition focus:border-[#4cc2ff]" placeholder="Tên của bạn" /></div></label>}
         <label className="flex flex-col gap-2 text-sm font-medium text-white/80">Email<div className="relative"><Mail className="absolute left-3 top-3 text-white/35" size={18} /><input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-white outline-none transition focus:border-[#4cc2ff]" placeholder="you@example.com" /></div></label>
