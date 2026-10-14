@@ -113,10 +113,13 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 14 }}
-      transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], opacity: { duration: 0.3, ease: 'easeOut' } }}
+      transition={{
+        y: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+        opacity: { duration: 0.32, ease: [0.4, 0, 1, 1] },
+      }}
       onContextMenu={(e) => e.preventDefault()}
       className={`gallery-context-menu fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
-      style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
+      style={{ ...flyoutPanelStyle, left: position.left, top: position.top, willChange: 'transform, opacity' }}
     >
       {primary.map(renderEntry)}
       <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
