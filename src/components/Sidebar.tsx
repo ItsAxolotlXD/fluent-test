@@ -19,7 +19,8 @@ import {
   PanelsTopLeft,
   PanelLeft,
   Palette,
-  Settings2
+  Settings2,
+  Check
 } from 'lucide-react';
 import { 
   FluentHomeIcon, 
@@ -222,7 +223,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenOfficeTool = (_tool: string) => {},
   isSplashFinished = false
 }) => {
-  const { settings } = useSettings();
+  const { settings, updateSetting } = useSettings();
   const { favoriteChannelIds } = useFavorites();
 
   const handleGoBack = () => {
@@ -350,7 +351,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isFluentIcons = Boolean(settings.fluentIcons);
   const shouldAnimateSidebar = !settings.reduceAllMotion && settings.animateSidebar;
   const isHoverToExpandActive = Boolean(settings.hoverToExpand && isCollapsed);
-  const isExpandedOnHover = isHovered || isToolsFlyoutOpen || isSignInFlyoutOpen;
+  const isExpandedOnHover = isHovered || isToolsFlyoutOpen || isSignInFlyoutOpen || Boolean(sidebarContextMenu);
   const effectiveCollapsed = isHoverToExpandActive
     ? !isExpandedOnHover
     : (settings.autoHideSidebar ? !isHovered : isCollapsed);
@@ -819,43 +820,100 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     return (
       <AnimatePresence>
-        <motion.div
-          role="menu"
-          aria-label="Sidebar actions"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 14 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          onContextMenu={(e) => e.preventDefault()}
-          className="fixed z-[60] w-[232px] rounded-[10px] border border-black/10 bg-white/70 p-1.5 text-[#111827] shadow-[0_16px_40px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-150 dark:border-white/10 dark:bg-[#1c1c1c]/70 dark:text-white"
-          style={{ left: Math.min(sidebarContextMenu.x, window.innerWidth - 240), top: Math.min(sidebarContextMenu.y, window.innerHeight - 190) }}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          {menuItems.map(({ label, icon: Icon, onClick }) => (
-            <button
-              key={label}
-              type="button"
-              role="menuitem"
-              onClick={() => {
+        {sidebarContextMenu && (
+          <>
+            {/* Invisible backdrop to dismiss context menu on click outside */}
+            <div
+              className="fixed inset-0 z-[59]"
+              onClick={() => setSidebarContextMenu(null)}
+              onContextMenu={(e) => {
+                e.preventDefault();
                 setSidebarContextMenu(null);
-                onClick();
               }}
-              className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]"
+            />
+            <motion.div
+              role="menu"
+              aria-label="Sidebar actions"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              onContextMenu={(e) => e.preventDefault()}
+              className="fixed z-[60] w-[240px] rounded-[10px] border border-black/10 bg-white/85 p-1.5 text-[#111827] shadow-[0_16px_40px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-150 dark:border-white/10 dark:bg-[#1c1c1c]/85 dark:text-white"
+              style={{
+                left: Math.min(Math.max(8, sidebarContextMenu.x), window.innerWidth - 248),
+                top: Math.min(Math.max(8, sidebarContextMenu.y), window.innerHeight - 280),
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
             >
-              <Icon className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-              <span className="truncate">{label}</span>
-            </button>
-          ))}
-          <div role="separator" className="my-1 h-px bg-black/10 dark:bg-white/10" />
-          <button type="button" role="menuitem" onClick={() => { setSidebarContextMenu(null); navigate('/winui-3'); }} className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]">
-            <Palette className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-            <span>Fluent design icons</span>
-          </button>
-          <button type="button" role="menuitem" onClick={() => { setSidebarContextMenu(null); navigate('/settings'); }} className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12]">
-            <Settings2 className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-            <span>Interface settings</span>
-          </button>
-        </motion.div>
+              {menuItems.map(({ label, icon: Icon, onClick }) => (
+                <button
+                  key={label}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setSidebarContextMenu(null);
+                    onClick();
+                  }}
+                  className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+                  <span className="truncate">{label}</span>
+                </button>
+              ))}
+
+              {/* Hover to expand toggle option */}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  updateSetting('hoverToExpand', !settings.hoverToExpand);
+                  setSidebarContextMenu(null);
+                }}
+                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
+              >
+                <PanelsTopLeft className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+                <span className="truncate flex-1">Hover to expand</span>
+                {settings.hoverToExpand && (
+                  <Check className="h-4 w-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+                )}
+              </button>
+
+              <div role="separator" className="my-1 h-px bg-black/10 dark:bg-white/10" />
+
+              {/* Fluent design icons shortcut toggle */}
+              <button
+                type="button"
+                role="menuitem"
+                title="Bật/tắt nhanh Fluent icons (Insider flag)"
+                onClick={() => {
+                  updateSetting('fluentIcons', !settings.fluentIcons);
+                  setSidebarContextMenu(null);
+                }}
+                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
+              >
+                <Palette className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+                <span className="truncate flex-1">Fluent design icons</span>
+                {settings.fluentIcons && (
+                  <Check className="h-4 w-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setSidebarContextMenu(null);
+                  navigate('/settings');
+                }}
+                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
+              >
+                <Settings2 className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+                <span>Interface settings</span>
+              </button>
+            </motion.div>
+          </>
+        )}
       </AnimatePresence>
     );
   };
@@ -865,7 +923,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   
   return (
   <div className="relative flex flex-col h-full select-none text-[13.5px] font-sans" onContextMenu={handleSidebarContextMenu} onTouchStart={handleSidebarTouchStart} onTouchEnd={clearSidebarHold} onTouchMove={clearSidebarHold} onTouchCancel={clearSidebarHold}>
-  {renderSidebarContextMenu()}
         {/* Hidden M3U file input */}
         <input
           ref={fileInputRef}
@@ -1347,12 +1404,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
+      {renderSidebarContextMenu()}
       {/* 1. Desktop Persistent Sidebar */}
       {settings.dockToSidebar && (
         <aside 
           id="waves-desktop-sidebar"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onContextMenu={handleSidebarContextMenu}
+          onTouchStart={handleSidebarTouchStart}
+          onTouchEnd={clearSidebarHold}
+          onTouchMove={clearSidebarHold}
+          onTouchCancel={clearSidebarHold}
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 overflow-visible border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
             settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
           } ${
@@ -1378,6 +1441,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             /* Collapsed Windows 10 Sidebar Icon Bar */
             <div 
               key="sidebar-nav-collapsed"
+              onContextMenu={handleSidebarContextMenu}
+              onTouchStart={handleSidebarTouchStart}
+              onTouchEnd={clearSidebarHold}
+              onTouchMove={clearSidebarHold}
+              onTouchCancel={clearSidebarHold}
               className="sidebar-items-slide-up flex flex-col h-full select-none items-center py-2 relative w-full"
             >
               {/* Top controls: Back & Hamburger toggle (shrink-0) */}
