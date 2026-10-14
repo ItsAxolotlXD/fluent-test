@@ -334,13 +334,13 @@ export const Home: React.FC<HomeProps> = ({
           <FarewellAnnouncement />
         </SequentialSection>
 
-        {/* 3. About V-One (Section 3) */}
+        {/* 3. About Sparkle (Section 3) */}
         <SequentialSection order={3} enabled={settings.loadPagesSequentially}>
           <section id="home-about-section" className="space-y-8 pt-4 border-t border-[#26262E]">
             {/* Hero Intro */}
             <div className="text-center space-y-4 pt-2">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight">
-                V-One -{' '}
+                Sparkle -{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2020] via-[#FF3366] to-[#E6005A]">
                   Bringing Vietnam to Your Screen
                 </span>
@@ -350,13 +350,13 @@ export const Home: React.FC<HomeProps> = ({
                 <p className="flex items-start gap-2">
                   <span className="text-[#E6005A] font-bold select-none">•</span>
                   <span>
-                    V-One is a non-profit online television platform providing users with high-quality streaming experiences across diverse broadcast channels, completely free of charge.
+                    Sparkle is a non-profit online television platform providing users with high-quality streaming experiences across diverse broadcast channels, completely free of charge.
                   </span>
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="text-[#E6005A] font-bold select-none">•</span>
                   <span>
-                    In addition, V-One provides comprehensive updates on broadcasting technology, television branding & motion graphics, and media culture in Vietnam.
+                    In addition, Sparkle provides comprehensive updates on broadcasting technology, television branding & motion graphics, and media culture in Vietnam.
                   </span>
                 </p>
               </div>
@@ -374,7 +374,7 @@ export const Home: React.FC<HomeProps> = ({
                 </h3>
               </div>
               <p id="about-disclaimer-text" className="text-xs sm:text-sm text-black dark:text-[#a1a1aa] leading-relaxed">
-                All television logos, trademarks, studio images, and broadcast feeds are the intellectual property of their respective broadcasters (Vietnam Television VTV, Ho Chi Minh City Television HTV, VTC Digital Television, and local radio-television stations). V-One serves non-commercial, academic research, and technical archive purposes only.
+                All television logos, trademarks, studio images, and broadcast feeds are the intellectual property of their respective broadcasters (Vietnam Television VTV, Ho Chi Minh City Television HTV, VTC Digital Television, and local radio-television stations). Sparkle serves non-commercial, academic research, and technical archive purposes only.
               </p>
             </div>
 

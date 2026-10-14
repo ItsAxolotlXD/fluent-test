@@ -332,7 +332,7 @@ export const StickyNoteWidget: React.FC<StickyNoteWidgetProps> = ({ onNavigateNo
         style={{ backgroundColor: currentStickyColor.headerBg }}
         className="h-6 px-3 text-[10px] opacity-75 border-t border-black/5 flex items-center justify-between shrink-0 select-none relative"
       >
-        <span>V-One Sticky Note</span>
+        <span>Sparkle Sticky Note</span>
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline">Kéo góc để chỉnh kích cỡ</span>
           {/* Resize Corner Handle */}

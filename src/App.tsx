@@ -35,6 +35,7 @@ import { Updates } from './pages/Updates';
 import { Gallery } from './pages/Gallery';
 import { Draws } from './pages/Draws';
 import { VLC } from './pages/VLC';
+import { Auth } from './pages/Auth';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
 import { Channel, NewsArticle } from './types';
@@ -555,6 +556,9 @@ export default function App() {
           />
         );
 
+      case '/auth':
+        return <Auth navigate={navigate} />;
+
       case '/settings':
         return (
           <Settings
@@ -847,11 +851,11 @@ export default function App() {
       {/* Startup Splash Screen (3 seconds) */}
       <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
 
-      {/* Update V-One Splash Screen (1 minute: 60s) */}
+      {/* Update Sparkle Splash Screen (1 minute: 60s) */}
       {isUpdating && (
         <SplashScreen
           duration={60000}
-          subtitle="V-One needs an update - Working on it"
+          subtitle="Sparkle needs an update - Working on it"
           onFinish={() => setIsUpdating(false)}
         />
       )}

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Palette, 
-  Key, 
+  Palette,
+  Key,
   Search, 
   Type, 
   X,
@@ -247,7 +247,7 @@ export const Settings: React.FC<SettingsProps> = ({
             )}
           </div>
           <p className="text-xs sm:text-sm text-[#9CA3AF]">
-            Customize your V-One streaming and display experience.
+            Customize your Sparkle streaming and display experience.
           </p>
 
           {/* Search Header - Styled and laid out exactly like TopBar search bar */}
@@ -508,14 +508,14 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
 
             <div className="space-y-2 pt-0.5">
-              {/* Test V-One Option Card */}
+              {/* Test Sparkle Option Card */}
               <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
                   <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Test V-One
+                    Test Sparkle
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Try our test builds of V-One with new, early unreleased features.
+                    Try our test builds of Sparkle with new, early unreleased features.
                   </div>
                 </div>
 
@@ -537,7 +537,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     Changelogs
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của V-One.
+                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của Sparkle.
                   </div>
                 </div>
 
@@ -551,14 +551,14 @@ export const Settings: React.FC<SettingsProps> = ({
                 </button>
               </div>
 
-              {/* Update V-One Option Card */}
+              {/* Update Sparkle Option Card */}
               <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                 <div>
                   <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Update V-One
+                    Update Sparkle
                   </div>
                   <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng V-One.
+                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Sparkle.
                   </div>
                 </div>
 
@@ -930,7 +930,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     >
                       <div className="min-w-0 flex-1">
                         <div className="font-semibold text-sm text-[#111827] dark:text-white">Vị trí thanh bên (Side View position)</div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Chọn vị trí hiển thị thanh bên trái hoặc phải.</div>
+                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Chọn vị trí hiển thị thanh bên trái ho��c phải.</div>
                       </div>
                       <div className="settings-segmented-group grid grid-cols-2 gap-1 rounded-md sm:rounded-lg bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/10 p-1 w-full sm:w-auto sm:min-w-[180px]">
                         {[
@@ -1058,11 +1058,11 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
 
-                {/* 3. V-One Notes */}
+                {/* 3. Sparkle Notes */}
                 <div className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
-                      <span>V-One Notes</span>
+                      <span>Sparkle Notes</span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
                         Ghi chú
                       </span>
@@ -1077,7 +1077,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     onClick={() => onOpenOfficeTool?.('notes')}
                     className="px-4 py-1.5 rounded-md font-semibold text-xs text-white bg-[#0078d4] hover:bg-[#106ebe] dark:bg-[#4cc2ff] dark:text-black dark:hover:bg-[#6bd0ff] transition-all flex items-center gap-2 self-start sm:self-auto cursor-default shadow-xs"
                   >
-                    <span>Mở V-One Notes</span>
+                    <span>Mở Sparkle Notes</span>
                   </button>
                 </div>
               </section>
@@ -1089,7 +1089,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 {/* Section: Điều hướng & Thanh bên (Sidebar & Navigation) */}
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider px-1">
-                    Điều hướng & Thanh bên (Sidebar & Navigation)
+                    ��iều hướng & Thanh bên (Sidebar & Navigation)
                   </div>
                   <section 
                     id="settings-section-sidebar-accessibility"
@@ -1511,7 +1511,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           Cài đặt
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                          Quản lý và chuyển nhanh tới các mục tùy chọn hệ thống.
+                          Quản lý và chuy��n nhanh tới các mục tùy chọn hệ thống.
                         </div>
                       </div>
 
@@ -1552,7 +1552,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           Bàn phím số
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                          Hiển thị bàn phím số từ 0 đến 9 ngay trên dải phím chữ.
+                          Hiển thị bàn phím số từ 0 đến 9 ngay trên d���i phím chữ.
                         </div>
                       </div>
 
@@ -1963,7 +1963,7 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Welcome to V-One / Changelogs Modal Dialog */}
+      {/* Welcome to Sparkle / Changelogs Modal Dialog */}
       <WelcomeModal
         isOpen={isWelcomeModalOpen}
         onClose={() => setIsWelcomeModalOpen(false)}

@@ -527,7 +527,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                 {!query ? (
                   <div className="py-7 sm:py-9 px-3 text-center">
                     <p className="text-[13px] sm:text-sm text-[#666666] dark:text-[#AAAAAA] leading-relaxed font-normal select-none max-w-[290px] mx-auto">
-                      Type keywords or channel numbers to search V-One
+                      Type keywords or channel numbers to search Sparkle
                     </p>
                   </div>
                 ) : (

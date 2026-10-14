@@ -579,7 +579,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         dimensions: { width: 800, height: 1100 },
         aspectRatio: 8.5 / 11,
         tags: ['Notes', 'Word', 'DOCX', 'Document'],
-        description: rawText.slice(0, 160) || 'Word document saved from V-One Notes',
+        description: rawText.slice(0, 160) || 'Word document saved from Sparkle Notes',
         source: 'upload',
       };
 
@@ -620,7 +620,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         dimensions: { width: 600, height: 600 },
         aspectRatio: 1,
         tags: ['Stickies', 'Sticky Note', currentStickyColor.name, 'Notes'],
-        description: rawText.slice(0, 160) || 'Sticky note saved from V-One Notes',
+        description: rawText.slice(0, 160) || 'Sticky note saved from Sparkle Notes',
         source: 'upload',
       };
 
@@ -667,7 +667,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
           {/* App Branding Badge */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0078d4]/15 border border-[#4cc2ff]/30 text-white">
             <FluentNotesIcon className="w-4 h-4 text-[#4cc2ff]" />
-            <span className="font-semibold text-sm">V-One Notes</span>
+            <span className="font-semibold text-sm">Sparkle Notes</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/20 text-[#4cc2ff] font-medium hidden sm:inline">
               Ghi chú
             </span>
@@ -1322,7 +1322,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               Sticky Note Đang Mở
             </span>
           )}
-          <span>Tự động lưu vào V-One</span>
+          <span>Tự động lưu vào Sparkle</span>
         </div>
       </div>
     </div>

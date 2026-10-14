@@ -92,7 +92,7 @@ export const Channels: React.FC<ChannelsProps> = ({
           ))}
         </div>
 
-        {/* Search matching Find and search V-One */}
+        {/* Search matching Find and search Sparkle */}
         <div
           id="channels-search-box"
           className="group relative w-full md:w-80 h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all rounded-[6px]"

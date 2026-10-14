@@ -610,7 +610,7 @@ html.light-mode #vplay-splash-screen {
   animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-/* All Search Boxes: text & icon white in dark mode, matching Find and search V-One */
+/* All Search Boxes: text & icon white in dark mode, matching Find and search Sparkle */
 html.dark #topbar-search-box input,
 html.dark #channels-search-box input,
 html.dark #settings-search-box input,
@@ -650,7 +650,7 @@ html.light-mode #settings-search-box svg {
   fill: none !important;
 }
 
-/* All Search Boxes: text & icon in light mode, matching Find and search V-One */
+/* All Search Boxes: text & icon in light mode, matching Find and search Sparkle */
 html.light-mode #topbar-search-box input,
 html.light-mode #channels-search-box input,
 html.light-mode #settings-search-box input,
@@ -3401,7 +3401,7 @@ html.light-mode select {
   color: #111827 !important;
 }
 
-/* TopBar search in V-One must NEVER have a white background */
+/* TopBar search in Sparkle must NEVER have a white background */
 #topbar-search-box input,
 html.light-mode #topbar-search-box input,
 html:not(.light-mode) #topbar-search-box input {

@@ -288,7 +288,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
       <div className="max-w-6xl mx-auto space-y-7 sm:space-y-9">
         {/* Top Search Bar Row */}
         <div className="flex items-center justify-center gap-3 w-full">
-          {/* Search Box matching Find and search V-One */}
+          {/* Search Box matching Find and search Sparkle */}
           <div 
             id="immersive-search-capsule"
             onClick={() => {

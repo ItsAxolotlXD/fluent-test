@@ -55,12 +55,12 @@ export const HERO_SLIDES: HeroSlide[] = [
     id: 'waves-nhip-song-thoi-dai',
     title: 'Waves of Our Time',
     subtitle: 'Media & Broadcasting Community',
-    description: 'V-One - Where every wave leaves a mark. A community space connecting television and broadcasting enthusiasts.',
-    category: 'V-ONE COMMUNITY',
-    quality: 'V-ONE',
-    badge: 'V-ONE',
+    description: 'Sparkle - Where every wave leaves a mark. A community space connecting television and broadcasting enthusiasts.',
+    category: 'SPARKLE COMMUNITY',
+    quality: 'SPARKLE',
+    badge: 'SPARKLE',
     channelId: 'vtv1',
-    channelName: 'V-ONE • MEDIA SPACE',
+    channelName: 'SPARKLE • MEDIA SPACE',
     backgroundImage: '/banners/vplay_background.webp'
   }
 ];

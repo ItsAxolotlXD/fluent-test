@@ -66,7 +66,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 Help & Keyboard Shortcuts
               </h2>
               <p className="text-[13.5px] sm:text-[14px] text-[#4b5563] dark:text-[#a1a1aa] leading-normal mt-1.5 font-normal">
-                Quick navigation shortcuts and tips for using V-One
+                Quick navigation shortcuts and tips for using Sparkle
               </p>
 
               <div className="mt-4 space-y-3">
