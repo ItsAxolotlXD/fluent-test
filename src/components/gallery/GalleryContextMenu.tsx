@@ -97,7 +97,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       >
         <Icon
           className={`w-4 h-4 shrink-0 ${
-            entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-neutral-600 dark:text-neutral-300'
+            entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-black dark:text-neutral-300'
           }`}
         />
         <span className="truncate">{entry.label}</span>
@@ -113,7 +113,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 14 }}
-      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], opacity: { duration: 0.3, ease: 'easeOut' } }}
       onContextMenu={(e) => e.preventDefault()}
       className={`gallery-context-menu fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
       style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
