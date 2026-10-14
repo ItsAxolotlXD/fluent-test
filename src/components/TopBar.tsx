@@ -179,7 +179,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-notes', title: 'Notes', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
       { id: 'page-vlc', title: 'VLC Media Player', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
       { id: 'page-settings', title: 'Settings', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
-      { id: 'page-about', title: 'About', keywords: 'giới thiệu about v-one', type: 'page', onSelect: () => navigate('/about') },
+      { id: 'page-about', title: 'About', keywords: 'giới thiệu about sparkle', type: 'page', onSelect: () => navigate('/about') },
 
       // Settings Shortcuts
       { id: 'set-sideview', title: 'Side View', keywords: 'settings side view thanh bên', type: 'setting', onSelect: () => navigate('/settings') },
@@ -194,7 +194,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'tool-tts', title: 'Text-to-Speech Player', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
       { id: 'tool-findwords', title: 'Find Words', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
       { id: 'tool-addstream', title: 'Add Custom Stream', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
-      { id: 'tool-discord', title: 'Discord Community', keywords: 'community discord v-one', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
+      { id: 'tool-discord', title: 'Discord Community', keywords: 'community discord sparkle', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
     ];
 
     // Channels

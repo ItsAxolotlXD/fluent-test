@@ -72,7 +72,7 @@ export async function exportArticleToDocx(article: NewsArticle) {
   });
 
   const blob = await Packer.toBlob(doc);
-  const filename = `${article.slug || 'bai-viet-v-one'}.docx`;
+  const filename = `${article.slug || 'bai-viet-sparkle'}.docx`;
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;

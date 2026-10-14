@@ -851,11 +851,11 @@ export default function App() {
       {/* Startup Splash Screen (3 seconds) */}
       <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
 
-      {/* Update V-One Splash Screen (1 minute: 60s) */}
+      {/* Update Sparkle Splash Screen (1 minute: 60s) */}
       {isUpdating && (
         <SplashScreen
           duration={60000}
-          subtitle="V-One needs an update - Working on it"
+          subtitle="Sparkle needs an update - Working on it"
           onFinish={() => setIsUpdating(false)}
         />
       )}

@@ -853,7 +853,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
         )}
       </AnimatePresence>
 
-      {/* 1. VLC Fluent Menu Bar - V-one Design */}
+      {/* 1. VLC Fluent Menu Bar - Sparkle Design */}
       <div 
         ref={menuContainerRef}
         className="vlc-menu-bar h-9 bg-white/90 dark:bg-[#202024]/90 backdrop-blur-md border-b border-black/10 dark:border-white/10 flex items-center justify-between px-2 text-xs font-normal relative z-40 shrink-0 text-neutral-800 dark:text-neutral-200"
@@ -1595,7 +1595,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
         </AnimatePresence>
       </div>
 
-      {/* 3. VLC Playback Controls Bar - V-one Fluent Design */}
+      {/* 3. VLC Playback Controls Bar - Sparkle Fluent Design */}
       <div className="vlc-controls-panel bg-white/95 dark:bg-[#202024]/95 backdrop-blur-xl border-t border-black/10 dark:border-white/10 px-3 py-2.5 flex flex-col gap-2 shrink-0 z-30 text-neutral-800 dark:text-neutral-200">
         {/* Scrubber Seek Track */}
         <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
@@ -2498,12 +2498,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   <FluentVlcIcon className="w-14 h-14" />
                 </div>
                 <h3 className="text-base font-bold text-neutral-900 dark:text-white">VLC media player</h3>
-                <p className="text-xs text-orange-600 dark:text-orange-400 font-mono font-semibold">V-One Edition 3.0.21 Vetinari</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400 font-mono font-semibold">Sparkle Edition 3.0.21 Vetinari</p>
                 <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm mx-auto">
                   VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
                 </p>
                 <div className="p-2.5 rounded-[6px] bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 text-[11px] text-neutral-500 dark:text-neutral-400">
-                  Copyright © 1996-2026 VideoLAN and V-One Project
+                  Copyright © 1996-2026 VideoLAN and Sparkle Project
                 </div>
               </div>
 

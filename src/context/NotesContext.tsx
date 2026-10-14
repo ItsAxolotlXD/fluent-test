@@ -77,7 +77,7 @@ export const STICKY_COLORS: StickyColorOption[] = [
 ];
 
 const DEFAULT_CONTENT = `
-  <h2 style="color: #4cc2ff; font-size: 22px; font-weight: bold; margin-bottom: 8px;">Ghi chú mới trong V-One Notes</h2>
+  <h2 style="color: #4cc2ff; font-size: 22px; font-weight: bold; margin-bottom: 8px;">Ghi chú mới trong Sparkle Notes</h2>
   <p style="font-size: 15px; line-height: 1.6; margin-bottom: 12px;">Soạn thảo nhanh ý tưởng, kế hoạch hoặc việc cần làm ngay tại đây.</p>
   <ul style="margin-left: 20px; margin-bottom: 12px;">
     <li>Định dạng văn bản: <strong>In đậm</strong>, <em>In nghiêng</em>, <u>Gạch chân</u>, màu sắc và cỡ chữ linh hoạt từ 1 đến 200px.</li>
@@ -119,7 +119,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (parsed.noteTitle) return parsed.noteTitle;
       }
     } catch {}
-    return 'Ghi chú V-One';
+    return 'Ghi chú Sparkle';
   });
 
   const [noteContent, setNoteContentState] = useState<string>(() => {

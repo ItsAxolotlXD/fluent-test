@@ -24,7 +24,7 @@ export const Photopea: React.FC = () => {
           : 'h-[calc(100vh-64px)] min-h-[580px] rounded-[10px] overflow-hidden border border-black/10 dark:border-white/10 shadow-sm'
       }`}
     >
-      {/* Mini top toolbar for Photopea tab - V-one Fluent style */}
+      {/* Mini top toolbar for Photopea tab - Sparkle Fluent style */}
       <div className="h-10 px-3 sm:px-4 bg-white dark:bg-[#272727] border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2 text-xs font-semibold text-black dark:text-white">
           <div className="w-2 h-2 rounded-full bg-[#18a0fb] animate-pulse" />

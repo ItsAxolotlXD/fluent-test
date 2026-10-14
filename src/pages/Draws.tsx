@@ -583,7 +583,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
     const dataUrl = canvas.toDataURL(format === 'jpeg' ? 'image/jpeg' : 'image/png', 0.95);
     const link = document.createElement('a');
     const timestamp = new Date().toISOString().slice(0, 10);
-    link.download = `VOne_Drawing_${timestamp}.${format}`;
+    link.download = `Sparkle_Drawing_${timestamp}.${format}`;
     link.href = dataUrl;
     link.click();
     showToast(`Saved drawing as .${format} to device`);
@@ -619,7 +619,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       aspectRatio: CANVAS_WIDTH / CANVAS_HEIGHT,
       isFavorite: false,
       tags: ['Draws', 'Artwork', 'Paint'],
-      description: 'Created with V-One Draws',
+      description: 'Created with Sparkle Draws',
       source: 'draws',
     };
 

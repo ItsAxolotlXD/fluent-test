@@ -1,4 +1,4 @@
-// IndexedDB storage service for V-One Gallery and Draws integration
+// IndexedDB storage service for Sparkle Gallery and Draws integration
 
 export interface GalleryMediaItem {
   id: string;
@@ -402,7 +402,7 @@ export const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
   // Sample Document Items
   {
     id: 'seed-vone-welcome-guide',
-    title: 'V-One User Handbook & Shortcuts.pdf',
+    title: 'Sparkle User Handbook & Shortcuts.pdf',
     type: 'document',
     url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     thumbnailUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&auto=format&fit=crop&q=80',
@@ -415,12 +415,12 @@ export const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
     aspectRatio: 3 / 4,
     isFavorite: false,
     tags: ['Document', 'PDF', 'Guide'],
-    description: 'Documentation guide and keybind reference for V-One.',
+    description: 'Documentation guide and keybind reference for Sparkle.',
     source: 'default',
   },
   {
     id: 'seed-vone-project-brief-docx',
-    title: 'V-One Project Roadmap & Requirements.docx',
+    title: 'Sparkle Project Roadmap & Requirements.docx',
     type: 'document',
     url: 'https://calibre-ebook.com/downloads/demos/demo.docx',
     mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -437,7 +437,7 @@ export const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
   },
   {
     id: 'seed-vone-keynote-presentation-pptx',
-    title: 'V-One Community Pitch Deck.pptx',
+    title: 'Sparkle Community Pitch Deck.pptx',
     type: 'document',
     url: 'https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx',
     mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
@@ -449,7 +449,7 @@ export const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
     aspectRatio: 16 / 9,
     isFavorite: false,
     tags: ['PowerPoint', 'PPTX', 'Presentation', 'Slides'],
-    description: 'Slide presentation deck showcasing V-One features and UI.',
+    description: 'Slide presentation deck showcasing Sparkle features and UI.',
     source: 'default',
   },
   {

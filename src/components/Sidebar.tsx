@@ -692,16 +692,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* 1. Sign in with V-One */}
+        {/* 1. Sign in with Sparkle */}
         <button
           type="button"
-          onClick={() => handleSignInAction('V-One')}
+          onClick={() => handleSignInAction('Sparkle')}
           className="w-full h-[40px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] text-[#111827] dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] transition-colors cursor-pointer text-left"
         >
           <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[#0078d4] to-[#4cc2ff] flex items-center justify-center shrink-0 border border-[#4cc2ff]/40 shadow-xs">
             <span className="text-white font-black text-xs leading-none">V</span>
           </div>
-          <span className="font-medium truncate">Sign in with V-One</span>
+          <span className="font-medium truncate">Sign in with Sparkle</span>
         </button>
 
         {/* 2. Sign in with Apple */}
@@ -820,7 +820,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <img 
               src={LOGO_SRC}
-              alt="V-One" 
+              alt="Sparkle" 
               referrerPolicy="no-referrer"
               className="h-6 w-auto object-contain drop-shadow-sm"
             />
