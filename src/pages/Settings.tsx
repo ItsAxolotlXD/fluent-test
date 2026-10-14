@@ -20,8 +20,10 @@ import {
   ChevronRight,
   ChevronLeft,
   Sun,
-  Moon
+  Moon,
+  Layers
 } from 'lucide-react';
+import { FlyoutDropdown } from '../components/FlyoutDropdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSettings';
 import { useVoiceSearch } from '../hooks/useVoiceSearch';
@@ -92,7 +94,7 @@ const SETTINGS_GROUP_2: SettingsCategoryItem[] = [
     subtitle: 'Preview features and diagnostic flags',
     icon: FlaskConical,
     badgeColor: 'bg-gradient-to-b from-[#8E8E93] to-[#636366]',
-    keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader', 'fluent icons', 'fluent icon', '3d icons', 'microsoft fluent design'],
+    keywords: ['insider flags', 'insider', 'flags', 'experimental', 'lab', 'native keyboard', 'immersive search', 'triangle', 'loader', 'fluent icons', 'fluent icon', '3d icons', 'microsoft fluent design', 'page animation', 'slide up', 'zoom in', 'transition'],
   },
 ];
 
@@ -268,7 +270,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Search in Settings"
+                placeholder="Search in settings"
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-14 no-fluent-line"
               />
 
@@ -1928,7 +1930,13 @@ export const Settings: React.FC<SettingsProps> = ({
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
                     <div className="w-9 h-9 flex items-center justify-center shrink-0">
-                      <Fluent3DHomeIcon className="w-7 h-7" />
+                      <img
+                        src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Leaf%20fluttering%20in%20wind/3D/leaf_fluttering_in_wind_3d.png"
+                        alt=""
+                        aria-hidden="true"
+                        referrerPolicy="no-referrer"
+                        className="w-7 h-7 object-contain"
+                      />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold text-sm text-[#111827] dark:text-white flex items-center gap-2">
@@ -1956,6 +1964,37 @@ export const Settings: React.FC<SettingsProps> = ({
                   >
                     <span className="toggle-switch-thumb" />
                   </button>
+                </div>
+
+                <div className="divider-line h-[1px] bg-black/5 dark:bg-white/10 ml-4 mr-4" />
+
+                {/* Page animation */}
+                <div
+                  id="setting-experimental-page-animation"
+                  className="px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0 text-[#0078d4] dark:text-[#4cc2ff]">
+                      <Layers className="w-6 h-6" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm text-[#111827] dark:text-white">Page animation</div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
+                        Choose how pages transition when you switch between tabs
+                      </div>
+                    </div>
+                  </div>
+
+                  <FlyoutDropdown
+                    id="dropdown-page-animation"
+                    ariaLabel="Page animation"
+                    value={draftSettings.pageAnimation}
+                    onChange={(v) => updateDraft('pageAnimation', v)}
+                    options={[
+                      { value: 'slideUp', label: 'Slide up', hint: 'Default' },
+                      { value: 'zoomIn', label: 'Zoom in' },
+                    ]}
+                  />
                 </div>
               </section>
             )}

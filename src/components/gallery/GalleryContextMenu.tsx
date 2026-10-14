@@ -1,0 +1,126 @@
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import { MousePointer2, Star, PenLine, Share2, Copy, FolderInput, Save, Trash2, type LucideIcon } from 'lucide-react';
+import { flyoutPanelClassName, flyoutPanelStyle } from '../FlyoutDropdown';
+
+export type GalleryContextAction = 'open' | 'favorite' | 'rename' | 'share' | 'duplicate' | 'move' | 'save' | 'delete';
+
+interface GalleryContextMenuProps {
+  x: number;
+  y: number;
+  isFavorite: boolean;
+  onAction: (action: GalleryContextAction) => void;
+  onClose: () => void;
+}
+
+interface MenuEntry {
+  action: GalleryContextAction;
+  label: string;
+  icon: LucideIcon;
+  danger?: boolean;
+}
+
+const VIEWPORT_MARGIN = 8;
+
+export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, isFavorite, onAction, onClose }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ left: x, top: y });
+
+  const primary: MenuEntry[] = [
+    { action: 'open', label: 'Open', icon: MousePointer2 },
+    { action: 'favorite', label: isFavorite ? 'Remove from favorites' : 'Add to favorites', icon: Star },
+    { action: 'rename', label: 'Rename', icon: PenLine },
+    { action: 'share', label: 'Share', icon: Share2 },
+    { action: 'duplicate', label: 'Duplicate', icon: Copy },
+    { action: 'move', label: 'Move into a folder', icon: FolderInput },
+  ];
+  const secondary: MenuEntry[] = [
+    { action: 'save', label: 'Save to device', icon: Save },
+    { action: 'delete', label: 'Delete', icon: Trash2, danger: true },
+  ];
+
+  useLayoutEffect(() => {
+    const el = menuRef.current;
+    if (!el) return;
+    const { width, height } = el.getBoundingClientRect();
+    const maxLeft = window.innerWidth - width - VIEWPORT_MARGIN;
+    const maxTop = window.innerHeight - height - VIEWPORT_MARGIN;
+    setPosition({
+      left: Math.max(VIEWPORT_MARGIN, Math.min(x, maxLeft)),
+      top: Math.max(VIEWPORT_MARGIN, y > maxTop ? y - height : y),
+    });
+    el.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus({ preventScroll: true });
+  }, [x, y]);
+
+  useEffect(() => {
+    const handlePointer = (e: PointerEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) onClose();
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const buttons: HTMLButtonElement[] = Array.from(
+          menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []
+        );
+        const idx = buttons.indexOf(document.activeElement as HTMLButtonElement);
+        const next = e.key === 'ArrowDown' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
+        buttons[next]?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', handlePointer, true);
+    document.addEventListener('keydown', handleKey);
+    window.addEventListener('resize', onClose);
+    window.addEventListener('blur', onClose);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointer, true);
+      document.removeEventListener('keydown', handleKey);
+      window.removeEventListener('resize', onClose);
+      window.removeEventListener('blur', onClose);
+    };
+  }, [onClose]);
+
+  const renderEntry = (entry: MenuEntry) => {
+    const Icon = entry.icon;
+    return (
+      <button
+        key={entry.action}
+        type="button"
+        role="menuitem"
+        onClick={() => onAction(entry.action)}
+        className={`w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] ${
+          entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : ''
+        }`}
+      >
+        <Icon
+          className={`w-4 h-4 shrink-0 ${
+            entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-neutral-600 dark:text-neutral-300'
+          }`}
+        />
+        <span className="truncate">{entry.label}</span>
+      </button>
+    );
+  };
+
+  return (
+    <motion.div
+      ref={menuRef}
+      role="menu"
+      aria-label="File actions"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      onContextMenu={(e) => e.preventDefault()}
+      className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
+      style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
+    >
+      {primary.map(renderEntry)}
+      <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+      {secondary.map(renderEntry)}
+    </motion.div>
+  );
+};

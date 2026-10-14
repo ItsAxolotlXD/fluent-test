@@ -58,7 +58,7 @@ import { DiscordWelcomeModal } from './DiscordWelcomeModal';
 import { UnderConstructionModal } from './UnderConstructionModal';
 import { parseM3UPlaylist, downloadPlaylistFile } from '../utils/m3uParser';
 
-const LOGO_SRC = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/spark%20full-7SHBWp8VSWky1L86figr0Evl3wbEcT.png';
+const LOGO_SRC = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/spark-Kj8YQWc8TjouwICxNDbMK3n2GRfvAy.png';
 
 interface MorphingIndicatorProps {
   containerRef: React.RefObject<HTMLDivElement | null>;

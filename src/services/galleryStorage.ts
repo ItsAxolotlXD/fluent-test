@@ -19,11 +19,19 @@ export interface GalleryMediaItem {
   tags?: string[];
   description?: string;
   source?: 'upload' | 'draws' | 'default';
+  folderId?: string | null;
+}
+
+export interface GalleryFolder {
+  id: string;
+  name: string;
+  dateCreated: string;
 }
 
 const DB_NAME = 'VOne_Gallery_DB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'media_items';
+const FOLDER_STORE_NAME = 'folders';
 
 // High-fidelity initial seed media matching the reference image layout
 export const DEFAULT_GALLERY_ITEMS: GalleryMediaItem[] = [
@@ -489,6 +497,9 @@ class GalleryDatabase {
           store.createIndex('type', 'type', { unique: false });
           store.createIndex('isFavorite', 'isFavorite', { unique: false });
         }
+        if (!db.objectStoreNames.contains(FOLDER_STORE_NAME)) {
+          db.createObjectStore(FOLDER_STORE_NAME, { keyPath: 'id' });
+        }
       };
 
       request.onsuccess = () => {
@@ -709,6 +720,102 @@ class GalleryDatabase {
     } catch (e) {
       console.error('Failed to clear gallery', e);
     }
+  }
+
+  private async patchItems(ids: string[], patch: (item: GalleryMediaItem) => void): Promise<void> {
+    const db = await this.openDB();
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    for (const id of ids) {
+      const req = store.get(id);
+      req.onsuccess = () => {
+        const item = req.result as GalleryMediaItem | undefined;
+        if (item) {
+          patch(item);
+          store.put(item);
+        }
+      };
+    }
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    this.notify();
+  }
+
+  public async rename(id: string, title: string): Promise<void> {
+    await this.patchItems([id], (item) => {
+      item.title = title;
+    });
+  }
+
+  public async moveToFolder(ids: string[], folderId: string | null): Promise<void> {
+    await this.patchItems(ids, (item) => {
+      item.folderId = folderId;
+    });
+  }
+
+  public async getFolders(): Promise<GalleryFolder[]> {
+    try {
+      const db = await this.openDB();
+      const tx = db.transaction(FOLDER_STORE_NAME, 'readonly');
+      const req = tx.objectStore(FOLDER_STORE_NAME).getAll();
+      const folders: GalleryFolder[] = await new Promise((resolve, reject) => {
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+      return folders.sort((a, b) => a.name.localeCompare(b.name));
+    } catch (e) {
+      console.warn('Failed to read folders', e);
+      return [];
+    }
+  }
+
+  public async createFolder(name: string): Promise<GalleryFolder> {
+    const folder: GalleryFolder = {
+      id: `folder-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      dateCreated: new Date().toISOString(),
+    };
+    const db = await this.openDB();
+    const tx = db.transaction(FOLDER_STORE_NAME, 'readwrite');
+    tx.objectStore(FOLDER_STORE_NAME).put(folder);
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    this.notify();
+    return folder;
+  }
+
+  public async renameFolder(id: string, name: string): Promise<void> {
+    const db = await this.openDB();
+    const tx = db.transaction(FOLDER_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(FOLDER_STORE_NAME);
+    const req = store.get(id);
+    req.onsuccess = () => {
+      if (req.result) store.put({ ...req.result, name });
+    };
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    this.notify();
+  }
+
+  // Deleting a folder moves its contents back to the Gallery root
+  public async deleteFolder(id: string): Promise<void> {
+    const items = await this.getAll();
+    const childIds = items.filter((it) => it.folderId === id).map((it) => it.id);
+    if (childIds.length) await this.moveToFolder(childIds, null);
+    const db = await this.openDB();
+    const tx = db.transaction(FOLDER_STORE_NAME, 'readwrite');
+    tx.objectStore(FOLDER_STORE_NAME).delete(id);
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    this.notify();
   }
 
   // Restore sample items

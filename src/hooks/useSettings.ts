@@ -44,6 +44,7 @@ export interface SystemSettings {
   triangleExperiment: boolean;
   triangleExperimentVersion?: number;
   fluentIcons: boolean;
+  pageAnimation: 'slideUp' | 'zoomIn';
   pageLoading: boolean;
   loadPagesSequentially: boolean;
   customKeybinds: CustomKeybinds;
@@ -94,6 +95,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperiment: true,
   triangleExperimentVersion: 1,
   fluentIcons: false,
+  pageAnimation: 'slideUp',
   pageLoading: true,
   loadPagesSequentially: false,
   customKeybinds: DEFAULT_KEYBINDS,
@@ -183,6 +185,7 @@ export const getStoredSettings = (): SystemSettings => {
           : true,
         triangleExperimentVersion: 1,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
+        pageAnimation: parsed.pageAnimation === 'zoomIn' ? 'zoomIn' : 'slideUp',
         pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
         hoverToExpand: typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : DEFAULT_SETTINGS.hoverToExpand,
