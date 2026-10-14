@@ -903,7 +903,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {isFluentIcons ? (
                 <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
               ) : (
-                <FluentUpdatesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                <RefreshCw className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
               )}
               <span className="truncate text-[13.5px]">Updates</span>
             </button>
@@ -1363,7 +1363,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {isFluentIcons ? (
                     <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
                   ) : (
-                    <FluentUpdatesIcon className="w-5 h-5 text-black dark:text-white" />
+                    <RefreshCw className="w-5 h-5 text-black dark:text-white" aria-hidden="true" />
                   )}
                 </button>
 
