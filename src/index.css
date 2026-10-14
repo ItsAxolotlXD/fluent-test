@@ -120,6 +120,59 @@
   }
 }
 
+/* WinUI 3 page theme tokens */
+.winui3 {
+  --winui-surface: #30353b;
+  --winui-surface-strong: #282c31;
+  --winui-border: rgba(255, 255, 255, 0.1);
+  --winui-text: #ffffff;
+  --winui-muted: rgba(255, 255, 255, 0.55);
+  --winui-control: rgba(0, 0, 0, 0.1);
+}
+
+html.light-mode .winui3 {
+  --winui-surface: #ffffff;
+  --winui-surface-strong: #f9f9f9;
+  --winui-border: rgba(0, 0, 0, 0.12);
+  --winui-text: #1f1f1f;
+  --winui-muted: #5f6368;
+  --winui-control: rgba(0, 0, 0, 0.04);
+  background-color: var(--winui-surface-strong) !important;
+  color: var(--winui-text) !important;
+}
+
+html.light-mode .winui3 header,
+html.light-mode .winui3 section {
+  border-color: var(--winui-border) !important;
+  background-color: var(--winui-surface) !important;
+  color: var(--winui-text) !important;
+}
+
+html.light-mode .winui3 input:not([type="checkbox"]):not([type="radio"]),
+html.light-mode .winui3 textarea {
+  border-color: var(--winui-border) !important;
+  background-color: var(--winui-control) !important;
+  color: var(--winui-text) !important;
+}
+
+html.light-mode .winui3 .text-white,
+html.light-mode .winui3 .text-white\/70,
+html.light-mode .winui3 .text-white\/55,
+html.light-mode .winui3 .text-white\/50,
+html.light-mode .winui3 .text-white\/45,
+html.light-mode .winui3 .text-white\/35,
+html.light-mode .winui3 .text-white\/30 {
+  color: var(--winui-text) !important;
+}
+
+html.light-mode .winui3 .text-white\/55,
+html.light-mode .winui3 .text-white\/50,
+html.light-mode .winui3 .text-white\/45,
+html.light-mode .winui3 .text-white\/35,
+html.light-mode .winui3 .text-white\/30 {
+  color: var(--winui-muted) !important;
+}
+
 /* Global Interactive Cursor Hand (pointer) */
 button,
 a,
