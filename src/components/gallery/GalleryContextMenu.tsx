@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { MousePointer2, Star, PenLine, Share2, Copy, FolderInput, Save, Trash2, type LucideIcon } from 'lucide-react';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../FlyoutDropdown';
 
@@ -105,9 +106,13 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
   };
 
   return (
-    <div
+    <motion.div
       ref={menuRef}
       role="menu"
+      initial={{ y: 10 }}
+      animate={{ y: 0 }}
+      exit={{ y: 10 }}
+      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
       aria-label="File actions"
       onContextMenu={(e) => e.preventDefault()}
       className={`gallery-context-menu fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
@@ -116,6 +121,6 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       {primary.map(renderEntry)}
       <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
       {secondary.map(renderEntry)}
-      </div>
+    </motion.div>
   );
 };
