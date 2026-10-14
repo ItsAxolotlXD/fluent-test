@@ -137,6 +137,9 @@ export const Settings: React.FC<SettingsProps> = ({
 
   const [isFocused, setIsFocused] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const [isLightModeUnlockOpen, setIsLightModeUnlockOpen] = useState(false);
+  const [lightModeUnlockCode, setLightModeUnlockCode] = useState('');
+  const [lightModeUnlockError, setLightModeUnlockError] = useState('');
   const [editingKeybindId, setEditingKeybindId] = useState<KeybindAction | null>(null);
   const [keybindError, setKeybindError] = useState<{ id: KeybindAction; message: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -776,10 +779,15 @@ export const Settings: React.FC<SettingsProps> = ({
                         type="button"
                         id={`theme-btn-${val}`}
                         onClick={() => {
-                          updateDraft('theme', val);
                           if (val === 'light') {
-                            updateDraft('spatialGlassOpacity', 43);
-                          } else if (draftSettings.spatialGlassOpacity === 43) {
+                            setLightModeUnlockCode('');
+                            setLightModeUnlockError('');
+                            setIsLightModeUnlockOpen(true);
+                            return;
+                          }
+
+                          updateDraft('theme', val);
+                          if (draftSettings.spatialGlassOpacity === 43) {
                             updateDraft('spatialGlassOpacity', 20);
                           }
                         }}
@@ -1999,6 +2007,90 @@ export const Settings: React.FC<SettingsProps> = ({
               </section>
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Temporary light mode maintenance lock */}
+      <AnimatePresence>
+        {isLightModeUnlockOpen && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={() => setIsLightModeUnlockOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="light-mode-lock-title"
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.04 }}
+              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+              className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            >
+              <div className="p-6 pb-5">
+                <h2 id="light-mode-lock-title" className="text-[19px] sm:text-[20px] font-semibold text-[#111827] dark:text-white tracking-tight leading-snug">
+                  Tính năng bị khóa
+                </h2>
+                <p className="text-[13.5px] sm:text-[14px] text-[#4b5563] dark:text-[#a1a1aa] leading-relaxed mt-2.5">
+                  Chế độ ban ngày tạm thời bị khóa để bảo trì. Nếu bạn là nhà phát triển thử nghiệm tính năng này, hãy nhập mã bảo vệ gồm 6 chữ số.
+                </p>
+                <input
+                  autoFocus
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={lightModeUnlockCode}
+                  onChange={(event) => {
+                    setLightModeUnlockCode(event.target.value.replace(/\\D/g, '').slice(0, 6));
+                    setLightModeUnlockError('');
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      if (lightModeUnlockCode === '366761') {
+                        updateDraft('theme', 'light');
+                        updateDraft('spatialGlassOpacity', 43);
+                        setIsLightModeUnlockOpen(false);
+                      } else {
+                        setLightModeUnlockError('Mã bảo vệ không chính xác.');
+                      }
+                    }
+                  }}
+                  placeholder="Nhập mã 6 chữ số"
+                  aria-label="Mã bảo vệ"
+                  className="mt-4 w-full h-9 rounded-[6px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 px-3 text-sm text-[#111827] dark:text-white placeholder:text-[#71717a] dark:placeholder:text-[#8e8e8e] outline-none focus:border-[#0078d4] dark:focus:border-[#4cc2ff] transition-colors"
+                />
+                {lightModeUnlockError && <p className="mt-2 text-xs text-red-500">{lightModeUnlockError}</p>}
+              </div>
+              <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsLightModeUnlockOpen(false)}
+                  className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-white border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (lightModeUnlockCode === '366761') {
+                      updateDraft('theme', 'light');
+                      updateDraft('spatialGlassOpacity', 43);
+                      setIsLightModeUnlockOpen(false);
+                    } else {
+                      setLightModeUnlockError('Mã bảo vệ không chính xác.');
+                    }
+                  }}
+                  className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 cursor-pointer text-[12.5px]"
+                >
+                  Unlock
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
