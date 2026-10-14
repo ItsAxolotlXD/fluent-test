@@ -387,7 +387,14 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   stroke: #000000 !important;
 }
 
-/* Tab Elements Slide-Up Animation: Sau loading state tab khi load các content sẽ có hiệu ứng slide up từng element (không slide cả trang) */
+  /* Gallery context menu icons stay solid black in light mode. */
+  html.light-mode .gallery-context-menu svg,
+  html.light-mode .gallery-context-menu svg * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+  }
+  
+  /* Tab Elements Slide-Up Animation: Sau loading state tab khi load các content sẽ có hiệu ứng slide up từng element (không slide cả trang) */
 @keyframes tabElementSlideUp {
   0% {
     opacity: 0;
