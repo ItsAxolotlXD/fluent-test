@@ -103,7 +103,7 @@ export const DeveloperModeModal: React.FC<DeveloperModeModalProps> = ({
                 ease: [0.16, 1, 0.3, 1],
               },
             }}
-            className="fluent-modal-dialog relative z-10 w-full max-w-[460px] bg-white dark:bg-[#38383d] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
           >
             {/* Header & Body Content Area */}
             <div className="p-6 pb-5">
@@ -139,13 +139,13 @@ export const DeveloperModeModal: React.FC<DeveloperModeModalProps> = ({
                     }}
                     onKeyDown={handleKeyDownInput}
                     placeholder="••••••"
-                    className="w-full bg-[#F9F9F9] dark:bg-[#2B2B2B] border border-black/[0.12] dark:border-white/[0.12] border-b-2 border-b-[#888888] dark:border-b-[#777777] rounded-[4px] pl-9 pr-10 py-2 text-center text-lg font-mono tracking-[0.3em] text-[#111827] dark:text-[#FFFFFF] placeholder:text-[#888888] focus:outline-none focus:border-b-[#4cc2ff] focus:border-b-2 transition-all"
+                    className="w-full h-9 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 rounded-[6px] pl-9 pr-10 py-1 text-center text-base font-mono tracking-[0.3em] text-[#111827] dark:text-[#FFFFFF] placeholder:text-[#888888] outline-none focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff] transition-all"
                     autoComplete="off"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 text-[#777777] hover:text-[#111827] dark:hover:text-[#FFFFFF] transition-colors cursor-default p-1"
+                    className="absolute right-3 text-[#777777] hover:text-[#111827] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer p-1"
                     title={showPassword ? 'Hide code' : 'Show code'}
                     aria-label={showPassword ? 'Hide code' : 'Show code'}
                   >
@@ -165,22 +165,22 @@ export const DeveloperModeModal: React.FC<DeveloperModeModalProps> = ({
             <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
 
             {/* Bottom Actions Footer */}
-            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-start gap-2.5">
-              <button
-                type="button"
-                id="btn-devmode-activate"
-                onClick={handleActivate}
-                className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#4cc2ff] hover:bg-[#6bd0ff] active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-default text-[12.5px]"
-              >
-                <span className="font-semibold">Activate</span>
-              </button>
+            <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 id="btn-devmode-close"
                 onClick={onClose}
-                className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-default"
+                className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
               >
                 Cancel
+              </button>
+              <button
+                type="button"
+                id="btn-devmode-activate"
+                onClick={handleActivate}
+                className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
+              >
+                <span className="font-semibold">Activate</span>
               </button>
             </div>
           </motion.div>

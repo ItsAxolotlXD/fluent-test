@@ -21,10 +21,10 @@ export const TriangleLoader: React.FC<TriangleLoaderProps> = ({
     >
       <svg viewBox="0 0 44 44" width={size} height={size} className="fluent-spinning-ring" aria-hidden="true">
         <defs>
-          <linearGradient id="triangle-loader-gradient" x1="8" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#4cc2ff" />
-            <stop offset="0.5" stopColor="#6bd0ff" />
-            <stop offset="1" stopColor="#3bb2ef" />
+          <linearGradient id="triangle-loader-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="50%" stopColor="#2dd4bf" />
+            <stop offset="100%" stopColor="#10b981" />
           </linearGradient>
         </defs>
         <path d="M22 5L39 36H5L22 5Z" fill="none" stroke="url(#triangle-loader-gradient)" strokeWidth={Math.max(4, Math.round(size / 14))} strokeLinejoin="round" />

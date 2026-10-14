@@ -111,11 +111,11 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   setPasswordError(false);
                 }}
                 placeholder="Enter passcode..."
-                className={`w-full px-4 py-3 rounded-full bg-[#F3F4F6] dark:bg-[#222228] border ${
+                className={`w-full h-8 sm:h-8.5 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] border ${
                   passwordError 
                     ? 'border-red-500 focus:border-red-500 ring-2 ring-red-500/20' 
-                    : 'border-[#D1D5DB] dark:border-[#383842] focus:border-[#E50914]'
-                } text-sm text-black dark:text-white placeholder-[#9CA3AF] focus:outline-none transition-all text-center`}
+                    : 'border-black/10 dark:border-white/10 focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff]'
+                } text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none transition-all text-center no-fluent-line`}
               />
             </div>
 

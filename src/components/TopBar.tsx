@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Menu, History, X, UserRound as UserRoundIcon } from 'lucide-react';
+import { Menu, History, X } from 'lucide-react';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -441,6 +441,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   : 'rounded-[6px]'
               }`}
             >
+              <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -464,7 +465,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   if (currentRoute.startsWith('/vlc')) return 'Search VLC';
                   if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';
                   if (currentRoute.startsWith('/photopea')) return 'Search Photopea';
-                  if (currentRoute.startsWith('/settings')) return 'Search Settings';
+                  if (currentRoute.startsWith('/settings')) return 'Search settings';
+                  if (currentRoute.startsWith('/winui-3') || currentRoute.startsWith('/winui')) return 'Search WinUI 3 Gallery';
                   if (currentRoute.startsWith('/channels')) return 'Search Channels';
                   if (currentRoute.startsWith('/favorites')) return 'Search Favorites';
                   if (currentRoute.startsWith('/about')) return 'Search About';
@@ -472,9 +474,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                   const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
                   return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
                 })()}
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
+                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6"
               />
-              {searchQuery ? (
+              {searchQuery && (
                 <button
                   type="button"
                   onClick={() => {
@@ -488,14 +490,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  title="Search"
-                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-                >
-                  <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
                 </button>
               )}
             </div>
@@ -551,18 +545,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* 3. Right Action Icons: Account and Settings */}
-  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
-  <button
-    type="button"
-    onClick={() => navigate('/auth')}
-    className={`flex h-9 items-center gap-2 rounded-md px-2.5 text-xs font-semibold transition-colors cursor-pointer ${currentRoute === '/auth' ? 'bg-[#4cc2ff] text-black' : 'text-black/70 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
-    title="Đăng nhập hoặc đăng ký"
-    aria-label="Đăng nhập hoặc đăng ký"
-  >
-    <UserRoundIcon />
-    <span className="hidden sm:inline">Tài khoản</span>
-  </button>
+      {/* 3. Right Action Icons: Settings */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
 
 
         {/* TopBar Mode: Settings Gear Icon */}

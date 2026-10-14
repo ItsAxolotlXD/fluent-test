@@ -136,7 +136,6 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
           className="fixed top-20 right-6 sm:right-10 z-50 flex items-center gap-2 p-2 rounded-[8px] bg-white/90 dark:bg-[#1b1f24]/90 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-2xl text-[#111827] dark:text-white"
         >
           <div className="group relative h-8 sm:h-8.5 flex items-center gap-2 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all">
-            <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white shrink-0" />
             <input
               ref={inputRef}
               type="text"

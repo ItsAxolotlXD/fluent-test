@@ -46,7 +46,7 @@ export const Updates: React.FC<UpdatesProps> = ({ navigate, onOpenUpdate }) => {
               </span>
             </div>
             <p className="text-xs text-black dark:text-[#AAAAAA] mt-0.5">
-              Sparkle version 26.11 (Build 261014) • Microsoft Fluent Design
+              Sparkle version 26.11 (Build 261016) • Microsoft Fluent Design
             </p>
           </div>
         </div>

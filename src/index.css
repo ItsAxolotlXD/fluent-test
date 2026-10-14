@@ -903,34 +903,54 @@ html.light-mode .winui3,
     color: var(--winui-text) !important;
   }
 
-  .winui-checkbox {
-    accent-color: var(--winui-primary);
+  .winui-checkbox,
+  .winui3 input[type="checkbox"],
+  .winui3 input[type="radio"] {
+    accent-color: #4cc2ff !important;
+    cursor: pointer;
   }
 
-  .winui-slider {
-    accent-color: var(--winui-primary);
+  html.light-mode .winui-checkbox,
+  .winui3-light .winui-checkbox,
+  html.light-mode .winui3 input[type="checkbox"],
+  .winui3-light input[type="checkbox"],
+  html.light-mode .winui3 input[type="radio"],
+  .winui3-light input[type="radio"] {
+    accent-color: #0078d4 !important;
+  }
+
+  .winui-slider,
+  .winui3 input[type="range"] {
+    accent-color: #4cc2ff !important;
     cursor: pointer;
+  }
+
+  html.light-mode .winui-slider,
+  .winui3-light .winui-slider,
+  html.light-mode .winui3 input[type="range"],
+  .winui3-light input[type="range"] {
+    accent-color: #0078d4 !important;
   }
 
   .winui-search-input {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    height: 2.25rem;
+    height: 2.125rem;
     padding: 0 0.75rem;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    border-radius: 0.375rem;
-    background: rgb(0 0 0 / 0.1);
-    color: rgb(255 255 255 / 0.45);
-    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background: #282c31;
+    color: #ffffff;
+    transition: all 160ms ease;
   }
 
   .winui-search-input:focus-within {
-    border-color: var(--winui-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--winui-primary) 22%, transparent);
+    border-bottom: 2px solid #4cc2ff !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    border-bottom-color: #4cc2ff !important;
   }
 
-  .winui-search-input svg { width: 0.875rem; height: 0.875rem; flex: none; }
+  .winui-search-input svg { display: none !important; }
   .winui-search-input input {
     width: 100%;
     min-width: 0;
@@ -938,9 +958,9 @@ html.light-mode .winui3,
     outline: 0;
     background: transparent;
     color: inherit;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
-  .winui-search-input input::placeholder { color: rgb(255 255 255 / 0.25); }
+  .winui-search-input input::placeholder { color: rgba(255, 255, 255, 0.7); }
 
   .winui-dialog {
     animation: winui-dialog-in 240ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -968,15 +988,19 @@ html.light-mode .winui3,
   .winui3-light .text-white\/35 { color: var(--winui-muted); }
 
   html.light-mode .winui-search-input,
-.winui3-light .winui-search-input {
-    border-color: rgb(31 41 55 / 0.14);
-    background: rgb(255 255 255 / 0.8);
-    color: rgb(31 41 55 / 0.58);
+  .winui3-light .winui-search-input {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #111827 !important;
+  }
+  html.light-mode .winui-search-input:focus-within,
+  .winui3-light .winui-search-input:focus-within {
+    border-bottom: 2px solid #005fb8 !important;
   }
   html.light-mode .winui-search-input input,
-  .winui3-light .winui-search-input input { color: #1f2937; }
+  .winui3-light .winui-search-input input { color: #111827; }
   html.light-mode .winui-search-input input::placeholder,
-  .winui3-light .winui-search-input input::placeholder { color: rgb(31 41 55 / 0.4); }
+  .winui3-light .winui-search-input input::placeholder { color: #71717a; }
 
   /* Tab Switching Loading Spinner - Clean with no glow */
 .tab-loading-spinner {
@@ -3668,7 +3692,14 @@ html.light-mode #topbar-search-box {
   border-color: rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Category Icons ở Light Mode dùng gradient xanh dương đậm, Dark Mode dùng gradient xanh dương nhạt */
+/* Category Icons (Tam giác): Gradient xanh dương - xanh lá */
+.category-icon-svg path,
+.category-icon-path,
+svg.category-icon-svg path,
+[class*="CategoryIcon"] path {
+  stroke: url(#vplay-cat-inverted-triangle-grad) !important;
+}
+
 html.light-mode .category-icon-svg path,
 html.light-mode .category-icon-path,
 html.light-mode svg.category-icon-svg path,
@@ -4238,15 +4269,19 @@ html.light-mode .fluent-btn-secondary:active {
 /* Fluent Design Input Box & Search Box: Line xám dưới chân, khi click/focus chuyển sang màu #4cc2ff */
 .fluent-input,
 .fluent-search-box,
+.winui-search-input,
 #spotlight-search-container,
 #immersive-search-capsule,
 #sidebar-search-box,
 #channels-search-box,
 #settings-search-box,
 #topbar-search-box,
-input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input),
-input[type="url"]:not(.no-fluent-line),
-input[type="password"]:not(.no-fluent-line) {
+#find-words-bar > div,
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="number"]:not([data-no-line]) {
   border-bottom: 2px solid #777777 !important;
   transition: border-bottom-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
@@ -4254,45 +4289,57 @@ input[type="password"]:not(.no-fluent-line) {
 .fluent-input:focus,
 .fluent-input:focus-within,
 .fluent-search-box:focus-within,
+.winui-search-input:focus-within,
 #spotlight-search-container:focus-within,
 #immersive-search-capsule:focus-within,
 #sidebar-search-box:focus-within,
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
 #topbar-search-box:focus-within,
-input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):focus,
-input[type="url"]:not(.no-fluent-line):focus,
-input[type="password"]:not(.no-fluent-line):focus {
+#find-words-bar > div:focus-within,
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus {
   border-bottom: 2px solid #4cc2ff !important;
   outline: none !important;
 }
 
 html.light-mode .fluent-input,
 html.light-mode .fluent-search-box,
+html.light-mode .winui-search-input,
 html.light-mode #spotlight-search-container,
 html.light-mode #immersive-search-capsule,
 html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
 html.light-mode #topbar-search-box,
-html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input),
-html.light-mode input[type="url"]:not(.no-fluent-line),
-html.light-mode input[type="password"]:not(.no-fluent-line) {
+html.light-mode #find-words-bar > div,
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
+html.light-mode input[type="email"],
+html.light-mode input[type="url"],
+html.light-mode input[type="password"],
+html.light-mode input[type="number"]:not([data-no-line]) {
   border-bottom: 2px solid #8e8e93 !important;
 }
 
 html.light-mode .fluent-input:focus,
 html.light-mode .fluent-input:focus-within,
 html.light-mode .fluent-search-box:focus-within,
+html.light-mode .winui-search-input:focus-within,
 html.light-mode #spotlight-search-container:focus-within,
 html.light-mode #immersive-search-capsule:focus-within,
 html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
 html.light-mode #topbar-search-box:focus-within,
-html.light-mode input[type="text"]:not(.no-fluent-line):not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):focus,
-html.light-mode input[type="url"]:not(.no-fluent-line):focus,
-html.light-mode input[type="password"]:not(.no-fluent-line):focus {
+html.light-mode #find-words-bar > div:focus-within,
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
+html.light-mode input[type="email"]:focus,
+html.light-mode input[type="url"]:focus,
+html.light-mode input[type="password"]:focus,
+html.light-mode input[type="number"]:focus {
   border-bottom: 2px solid #005fb8 !important;
 }
 
@@ -4315,7 +4362,9 @@ html.light-mode input[type="password"]:not(.no-fluent-line):focus {
 #sidebar-search-box input,
 #settings-search-box input,
 #channels-search-box input,
-#topbar-search-box input {
+#topbar-search-box input,
+.winui-search-input input,
+#find-words-bar input {
   border: none !important;
   border-bottom: none !important;
   outline: none !important;

@@ -210,7 +210,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
-            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#38383d] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
+            className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
           >
             {viewMode === 'settings' ? (
               /* View 2: Search Settings Menu (Without navigating to Settings tab) */
@@ -232,7 +232,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     <div className="w-6 h-6 rounded-full bg-[#4cc2ff]/15 flex items-center justify-center text-[#4cc2ff]">
                       <SlidersHorizontal className="w-3.5 h-3.5" />
                     </div>
-                    <span className="text-sm font-semibold text-[#111827] dark:text-white tracking-wide">Search Settings</span>
+                    <span className="text-sm font-semibold text-[#111827] dark:text-white tracking-wide">Search settings</span>
                   </div>
 
                   <button
@@ -427,21 +427,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                   }}
                   className="group relative w-full h-9 sm:h-9.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 rounded-[6px] focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all cursor-text select-none"
                 >
-                  <motion.div 
-                    animate={{
-                      x: isFocused || query ? 0 : 'calc(50% - 75px)',
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 350,
-                      damping: 28,
-                      mass: 0.8
-                    }}
-                    className={`flex items-center gap-2.5 w-full ${isFocused || isListening || query ? 'pr-24' : 'pr-14'}`}
-                  >
-                    <div className="w-[18px] h-[18px] min-w-[18px] min-h-[18px] max-w-[18px] max-h-[18px] flex items-center justify-center shrink-0">
-                      <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
-                    </div>
+                  <div className={`flex items-center gap-2.5 w-full ${isFocused || isListening || query ? 'pr-24' : 'pr-14'}`}>
                     <input
                       ref={inputRef}
                       type="text"
@@ -454,7 +440,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                       placeholder={isListening ? "Listening..." : "Spotlight Search"}
                       className="bg-transparent text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white text-xs sm:text-[13px] focus:outline-none border-none font-medium w-full text-left no-fluent-line"
                     />
-                  </motion.div>
+                  </div>
 
                   {/* Right Side Actions: Clear, Voice Search Mic & Search Settings */}
                   <div className="absolute right-2 flex items-center gap-1 shrink-0 overflow-visible">

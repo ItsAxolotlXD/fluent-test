@@ -4,7 +4,6 @@ import { ChannelCard } from '../components/ChannelCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite, X } from 'lucide-react';
-import { FluentSearchIcon } from '../components/FluentIcons';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
 
@@ -104,7 +103,7 @@ export const Channels: React.FC<ChannelsProps> = ({
             placeholder="Search in Channels"
             className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
           />
-          {searchQuery ? (
+          {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
@@ -113,10 +112,6 @@ export const Channels: React.FC<ChannelsProps> = ({
             >
               <X className="w-3.5 h-3.5" />
             </button>
-          ) : (
-            <div className="absolute right-2 text-[#71717a] dark:text-white pointer-events-none">
-              <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
-            </div>
           )}
         </div>
       </div>

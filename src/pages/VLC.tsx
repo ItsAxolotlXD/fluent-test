@@ -1523,13 +1523,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               {/* Playlist Search Filter */}
               <div className="p-2 border-b border-black/5 dark:border-white/5">
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={playlistSearch}
                     onChange={(e) => setPlaylistSearch(e.target.value)}
                     placeholder="Search in playlist..."
-                    className="w-full h-7 pl-8 pr-2.5 text-xs rounded-[6px] bg-black/5 dark:bg-black/40 text-neutral-900 dark:text-white placeholder-neutral-500 border border-black/10 dark:border-white/10 focus:outline-none focus:border-orange-500"
+                    className="w-full h-8 sm:h-8.5 px-3 text-xs sm:text-[13px] rounded-[6px] bg-black/5 dark:bg-[#282c31] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white border border-black/10 dark:border-white/10 outline-none focus:border-[#0078d4] dark:focus:border-[#4cc2ff] transition-all"
                   />
                 </div>
               </div>
@@ -1820,15 +1819,35 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
       <AnimatePresence>
         {isOpenMediaModal && (
           <div 
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setIsOpenMediaModal(false)}
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-white/95 dark:bg-[#222226]/95 backdrop-blur-2xl rounded-[12px] shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden text-neutral-800 dark:text-neutral-200"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={() => setIsOpenMediaModal(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              className="fluent-modal-dialog relative z-10 w-full max-w-lg bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
               {/* Modal Header */}
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
@@ -1984,11 +2003,11 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               </div>
 
               {/* Modal Footer */}
-              <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-t border-black/10 dark:border-white/10 flex items-center justify-end gap-2 text-xs">
+              <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5 border-t border-[#E5E5E5] dark:border-[#2F2F2F]">
                 <button
                   type="button"
                   onClick={() => setIsOpenMediaModal(false)}
-                  className="px-3 py-1.5 rounded-[6px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-700 dark:text-neutral-300 border border-black/10 dark:border-white/10 transition-colors"
+                  className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1996,7 +2015,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   <button
                     type="button"
                     onClick={handleAddNetworkStream}
-                    className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs transition-colors"
+                    className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
                   >
                     Play Stream
                   </button>
@@ -2005,7 +2024,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   <button
                     type="button"
                     onClick={handleOpenDisc}
-                    className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs transition-colors"
+                    className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
                   >
                     Play Disc
                   </button>
@@ -2014,7 +2033,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   <button
                     type="button"
                     onClick={handleOpenCaptureDevice}
-                    className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs transition-colors"
+                    className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
                   >
                     Start Capture
                   </button>
@@ -2029,15 +2048,35 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
       <AnimatePresence>
         {isEffectsModalOpen && (
           <div 
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setIsEffectsModalOpen(false)}
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-2xl bg-white/95 dark:bg-[#222226]/95 backdrop-blur-2xl rounded-[12px] shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden text-neutral-800 dark:text-neutral-200"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={() => setIsEffectsModalOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              className="fluent-modal-dialog relative z-10 w-full max-w-2xl bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
               {/* Header */}
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">

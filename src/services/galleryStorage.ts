@@ -543,8 +543,8 @@ class GalleryDatabase {
         req.onerror = () => reject(req.error);
       });
 
-      // For Build 261014: Ensure initial gallery is empty by default unless user has uploaded files or explicitly loaded demo
-      const initializedBuild = localStorage.getItem('vone_gallery_build_261014_init');
+      // For Build 261016: Ensure initial gallery is empty by default unless user has uploaded files or explicitly loaded demo
+      const initializedBuild = localStorage.getItem('vone_gallery_build_261016_init');
       if (!initializedBuild) {
         // If there were only auto-seeded default items from previous version, clear them so user starts with a clean empty gallery
         const onlyDefaults = items.length > 0 && items.every((it) => it.source === 'default');
@@ -552,7 +552,7 @@ class GalleryDatabase {
           await this.clearAll();
           items = [];
         }
-        localStorage.setItem('vone_gallery_build_261014_init', 'true');
+        localStorage.setItem('vone_gallery_build_261016_init', 'true');
       }
 
       // Sort newest first
@@ -576,7 +576,7 @@ class GalleryDatabase {
         tx.onerror = () => reject(tx.error);
       });
       localStorage.setItem('vone_gallery_initialized', 'true');
-      localStorage.setItem('vone_gallery_build_261014_init', 'true');
+      localStorage.setItem('vone_gallery_build_261016_init', 'true');
       this.notify();
     } catch (e) {
       console.error('Failed to seed defaults', e);

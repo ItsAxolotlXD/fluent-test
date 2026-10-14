@@ -305,7 +305,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               placeholder={isMobile ? "Search" : "Find and search"}
               className="w-full bg-transparent text-xs sm:text-[13.5px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-7 no-fluent-line"
             />
-            {query ? (
+            {query && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -318,10 +318,6 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
               >
                 <X className="w-3.5 h-3.5" />
               </button>
-            ) : (
-              <div className="absolute right-2.5 text-[#71717a] dark:text-white pointer-events-none">
-                <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white" />
-              </div>
             )}
           </div>
         </div>

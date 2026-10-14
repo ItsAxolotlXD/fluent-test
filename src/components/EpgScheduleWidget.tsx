@@ -168,7 +168,7 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
               placeholder="Search for programs"
               className="w-full bg-transparent text-xs sm:text-[13px] text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
             />
-            {filterQuery ? (
+            {filterQuery && (
               <button
                 type="button"
                 onClick={() => setFilterQuery('')}
@@ -176,14 +176,6 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
                 title="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                title="Search"
-                className="absolute right-1 text-[#71717a] dark:text-white p-0.5 transition-colors cursor-pointer"
-              >
-                <FluentSearchIcon className="w-3.5 h-3.5 text-[#71717a] dark:text-white" />
               </button>
             )}
           </div>

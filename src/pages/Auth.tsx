@@ -98,9 +98,51 @@ export const Auth: React.FC<AuthProps> = ({ navigate }) => {
       </div>
       <div className="my-5 flex items-center gap-3 text-xs text-white/35"><span className="h-px flex-1 bg-white/10" />hoặc email<span className="h-px flex-1 bg-white/10" /></div>
       <form onSubmit={submit} className="flex flex-col gap-4">
-        {mode === 'signup' && <label className="flex flex-col gap-2 text-sm font-medium text-white/80">Tên hiển thị<div className="relative"><UserRound className="absolute left-3 top-3 text-white/35" size={18} /><input required value={name} onChange={e => setName(e.target.value)} className="h-11 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-white outline-none transition focus:border-[#4cc2ff]" placeholder="Tên của bạn" /></div></label>}
-        <label className="flex flex-col gap-2 text-sm font-medium text-white/80">Email<div className="relative"><Mail className="absolute left-3 top-3 text-white/35" size={18} /><input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-3 text-white outline-none transition focus:border-[#4cc2ff]" placeholder="you@example.com" /></div></label>
-        <label className="flex flex-col gap-2 text-sm font-medium text-white/80">Mật khẩu<div className="relative"><LockKeyhole className="absolute left-3 top-3 text-white/35" size={18} /><input required minLength={6} type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} className="h-11 w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-11 text-white outline-none transition focus:border-[#4cc2ff]" placeholder="Tối thiểu 6 ký tự" /><button type="button" aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-3 text-white/40 hover:text-white">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></label>
+        {mode === 'signup' && (
+          <label className="flex flex-col gap-1.5 text-xs sm:text-[13px] font-medium text-white/80">
+            Tên hiển thị
+            <input
+              required
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="h-8 sm:h-8.5 w-full rounded-[6px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-[#282c31] px-3 text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none transition focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff] no-fluent-line"
+              placeholder="Tên của bạn"
+            />
+          </label>
+        )}
+        <label className="flex flex-col gap-1.5 text-xs sm:text-[13px] font-medium text-white/80">
+          Email
+          <input
+            required
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="h-8 sm:h-8.5 w-full rounded-[6px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-[#282c31] px-3 text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none transition focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff] no-fluent-line"
+            placeholder="you@example.com"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5 text-xs sm:text-[13px] font-medium text-white/80">
+          Mật khẩu
+          <div className="relative flex items-center">
+            <input
+              required
+              minLength={6}
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="h-8 sm:h-8.5 w-full rounded-[6px] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-[#282c31] px-3 pr-10 text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none transition focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff] no-fluent-line"
+              placeholder="Tối thiểu 6 ký tự"
+            />
+            <button
+              type="button"
+              aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-2.5 text-white/40 hover:text-white p-0.5 cursor-pointer"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </label>
         {error && <p role="alert" className="rounded-xl bg-red-400/10 px-3 py-2 text-sm text-red-300">{error}</p>}
         {message && <p role="status" className="rounded-xl bg-emerald-400/10 px-3 py-2 text-sm text-emerald-300">{message}</p>}
         <button disabled={loading} className="mt-2 h-11 rounded-xl bg-[#4cc2ff] font-bold text-black transition hover:bg-[#6bd0ff] disabled:cursor-not-allowed disabled:opacity-60">{loading ? 'Đang xử lý...' : mode === 'signin' ? 'Đăng nhập' : 'Tạo tài khoản'}</button>

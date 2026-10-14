@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Check,
   ChevronRight,
@@ -7,7 +8,6 @@ import {
   Info,
   PanelTop,
   Play,
-  Search,
   X,
 } from 'lucide-react';
 
@@ -86,24 +86,35 @@ export const WinUI3: React.FC = () => {
                 <div className="mt-6 flex flex-col gap-5">
                   <label className="flex items-center justify-between gap-4 text-sm"><span><span className="block font-medium">Notifications</span><span className="text-xs text-white/45">Get updates from Waves</span></span><button type="button" role="switch" aria-checked={notifications} onClick={() => setNotifications(!notifications)} className={`relative h-6 w-11 rounded-full transition ${notifications ? 'bg-[#4cc2ff]' : 'bg-white/20'}`}><span className={`absolute top-1 size-4 rounded-full bg-white shadow transition ${notifications ? 'left-6' : 'left-1'}`} /></button></label>
                   <label className="flex items-center justify-between gap-4 text-sm"><span><span className="block font-medium">Dark appearance</span><span className="text-xs text-white/45">Use the dark canvas</span></span><button type="button" role="switch" aria-checked={isDarkMode} onClick={() => setIsDarkMode(!isDarkMode)} className={`relative h-6 w-11 rounded-full transition ${isDarkMode ? 'bg-[#4cc2ff]' : 'bg-white/20'}`}><span className={`absolute top-1 size-4 rounded-full bg-white shadow transition ${isDarkMode ? 'left-6' : 'left-1'}`} /></button></label>
-                  <label className="text-sm"><span className="flex justify-between"><span>Volume</span><span className="text-white/45">{volume}%</span></span><input aria-label="Volume" type="range" min="0" max="100" value={volume} onChange={(event) => setVolume(Number(event.target.value))} className="winui-slider mt-3 h-1.5 w-full" /></label>
+                  <label className="text-sm"><span className="flex justify-between"><span>Volume</span><span className="text-white/45">{volume}%</span></span><input aria-label="Volume" type="range" min="0" max="100" value={volume} onChange={(event) => setVolume(Number(event.target.value))} className="winui-slider mt-3 h-1.5 w-full accent-[#4cc2ff] cursor-pointer" /></label>
                 </div>
               </section>
 
               <section className="rounded-xl border border-white/10 bg-[#30353b] p-5 sm:p-6">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-[#4cc2ff]">03 / Selection</p><h2 className="mt-1 text-xl font-bold">Checkboxes & radios</h2>
                 <div className="mt-6 flex flex-col gap-4 text-sm">
-                  <label className="flex items-center gap-3"><input type="checkbox" defaultChecked className="winui-checkbox size-4" /> Remember my preference</label>
-                  <label className="flex items-center gap-3"><input type="checkbox" className="winui-checkbox size-4" /> Show system labels</label>
+                  <label className="flex items-center gap-3"><input type="checkbox" defaultChecked className="winui-checkbox size-4 accent-[#4cc2ff] rounded cursor-pointer" /> Remember my preference</label>
+                  <label className="flex items-center gap-3"><input type="checkbox" className="winui-checkbox size-4 accent-[#4cc2ff] rounded cursor-pointer" /> Show system labels</label>
                   <div className="my-1 h-px bg-white/10" />
-                  <fieldset className="flex flex-col gap-3"><legend className="mb-1 text-xs text-white/45">Accent color</legend><label className="flex items-center gap-3"><input type="radio" name="accent" defaultChecked className="winui-checkbox size-4" /> Blue accent</label><label className="flex items-center gap-3"><input type="radio" name="accent" className="winui-checkbox size-4" /> System default</label></fieldset>
+                  <fieldset className="flex flex-col gap-3"><legend className="mb-1 text-xs text-white/45">Accent color</legend><label className="flex items-center gap-3"><input type="radio" name="accent" defaultChecked className="winui-checkbox size-4 accent-[#4cc2ff] cursor-pointer" /> Blue accent</label><label className="flex items-center gap-3"><input type="radio" name="accent" className="winui-checkbox size-4 accent-[#4cc2ff] cursor-pointer" /> System default</label></fieldset>
                 </div>
               </section>
             </div>
 
             <section className="rounded-xl border border-white/10 bg-[#30353b] p-5 sm:p-6">
               <div className="mb-5 flex items-start justify-between gap-4"><div><p className="text-[11px] font-semibold uppercase tracking-wider text-[#4cc2ff]">04 / Content</p><h2 className="mt-1 text-xl font-bold">Input boxes</h2></div><span className="text-xs text-white/35">TextBox · PasswordBox</span></div>
-              <div className="grid gap-4 md:grid-cols-2"><label className="text-sm font-medium">Display name<div className="winui-search-input mt-2"><Search aria-hidden="true" /><input placeholder="Enter a name" /></div></label><label className="text-sm font-medium">Email address<div className="winui-search-input mt-2"><Search aria-hidden="true" /><input type="email" placeholder="you@example.com" /></div></label></div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm font-medium">Display name
+                  <div className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 rounded-[6px] transition-all focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] mt-2">
+                    <input placeholder="Enter a name" className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 no-fluent-line" />
+                  </div>
+                </label>
+                <label className="text-sm font-medium">Email address
+                  <div className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 rounded-[6px] transition-all focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] mt-2">
+                    <input type="email" placeholder="you@example.com" className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 no-fluent-line" />
+                  </div>
+                </label>
+              </div>
             </section>
 
             <section className="flex flex-col gap-4 rounded-xl border border-[#4cc2ff]/25 bg-[#4cc2ff]/[0.06] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div className="flex gap-3"><Info className="mt-0.5 size-5 shrink-0 text-[#4cc2ff]" /><div><h2 className="font-bold">Modal popup dialogs</h2><p className="mt-1 text-sm text-white/50">Preview an accessible confirmation dialog with keyboard-friendly actions.</p></div></div><button type="button" onClick={() => setIsDialogOpen(true)} className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-[#4cc2ff] px-4 text-sm font-semibold text-black transition hover:bg-[#6bd0ff]">Open dialog <ChevronRight className="size-4" /></button></section>
@@ -111,7 +122,75 @@ export const WinUI3: React.FC = () => {
         </div>
       </div>
 
-      {isDialogOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs" role="presentation" onMouseDown={() => setIsDialogOpen(false)}><section role="dialog" aria-modal="true" aria-labelledby="winui-dialog-title" onMouseDown={(event) => event.stopPropagation()} className="fluent-modal-dialog winui-dialog w-full max-w-[480px] overflow-hidden rounded-[10px] border border-black/[0.08] bg-white text-[#111827] shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:border-white/[0.08] dark:bg-[#202020] dark:text-[#f3f4f6] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)]"><div className="p-6 pb-5"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wider text-[#0078d4] dark:text-[#4cc2ff]">ContentDialog</p><h2 id="winui-dialog-title" className="mt-2 text-[19px] font-semibold tracking-tight">Apply these settings?</h2></div><button type="button" aria-label="Close dialog" onClick={() => setIsDialogOpen(false)} className="rounded-md p-1.5 text-[#4b5563] hover:bg-[#f3f3f3] dark:text-white/45 dark:hover:bg-white/10"><X className="size-4" /></button></div><p className="mt-2.5 text-sm leading-relaxed text-[#4b5563] dark:text-[#a1a1aa]">Your selected controls will be applied to the current workspace.</p></div><div className="h-px w-full bg-[#e5e5e5] dark:bg-[#2f2f2f]" /><div className="flex items-center justify-end gap-2.5 bg-[#f3f3f3] px-6 py-3 dark:bg-[#1c1c1c]"><button type="button" onClick={() => setIsDialogOpen(false)} className="h-8 rounded-[5px] border border-[#d1d1d1] bg-white px-4 text-[12.5px] text-[#111827] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[#f9f9f9] dark:border-[#3e3e3e] dark:bg-[#2c2c2c] dark:text-white dark:hover:bg-[#343434]">Cancel</button><button type="button" onClick={() => setIsDialogOpen(false)} className="h-8 rounded-[5px] border border-black/20 bg-[#0078d4] px-4 text-[12.5px] font-semibold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-[#106ebe] dark:bg-[#4cc2ff] dark:text-black dark:hover:bg-[#6bd0ff]">Apply</button></div></section></div>}
+      <AnimatePresence>
+        {isDialogOpen && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={() => setIsDialogOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="winui-dialog-title"
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            >
+              <div className="p-6 pb-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#0078d4] dark:text-[#4cc2ff]">ContentDialog</p>
+                    <h2 id="winui-dialog-title" className="mt-2 text-[19px] sm:text-[20px] font-semibold tracking-tight text-[#111827] dark:text-white leading-snug">Apply these settings?</h2>
+                  </div>
+                  <button type="button" aria-label="Close dialog" onClick={() => setIsDialogOpen(false)} className="rounded-md p-1.5 text-[#4b5563] hover:bg-[#f3f3f3] dark:text-white/45 dark:hover:bg-white/10 cursor-pointer">
+                    <X className="size-4" />
+                  </button>
+                </div>
+                <p className="mt-2.5 text-[13.5px] sm:text-[14px] leading-relaxed text-[#4b5563] dark:text-[#a1a1aa] font-normal">
+                  Your selected controls will be applied to the current workspace.
+                </p>
+              </div>
+              <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
+              <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="fluent-btn-secondary px-4 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] active:bg-[#EEEEEE] dark:active:bg-[#222222] text-[#111827] dark:text-[#FFFFFF] border border-[#d1d1d1] dark:border-[#3E3E3E] text-[12.5px] font-normal shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors flex items-center justify-center cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer text-[12.5px]"
+                >
+                  Apply
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

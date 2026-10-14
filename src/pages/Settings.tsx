@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Palette,
   Key,
-  Search, 
   Type, 
   X,
   Sparkles,
@@ -273,7 +272,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Search in settings"
+                placeholder="Search settings"
                 className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-14 no-fluent-line"
               />
 
@@ -310,17 +309,6 @@ export const Settings: React.FC<SettingsProps> = ({
                   ) : (
                     <Mic className="w-3.5 h-3.5" fill="none" />
                   )}
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    inputRef.current?.focus();
-                  }}
-                  className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-                  title="Search"
-                >
-                  <Search className="w-3.5 h-3.5 stroke-[1.75]" fill="none" />
                 </button>
               </div>
             </div>
@@ -499,7 +487,7 @@ export const Settings: React.FC<SettingsProps> = ({
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
-                <span className="font-semibold text-[#9CA3AF]">261014</span>
+                <span className="font-semibold text-[#9CA3AF]">261016</span>
               </div>
               {/* Compatible with Fluent Design */}
               <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">
@@ -2028,8 +2016,14 @@ export const Settings: React.FC<SettingsProps> = ({
               aria-labelledby="light-mode-lock-title"
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.04 }}
-              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
               className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
               <div className="p-6 pb-5">
@@ -2045,7 +2039,7 @@ export const Settings: React.FC<SettingsProps> = ({
                   maxLength={6}
                   value={lightModeUnlockCode}
                   onChange={(event) => {
-                    setLightModeUnlockCode(event.target.value.replace(/\\D/g, '').slice(0, 6));
+                    setLightModeUnlockCode(event.target.value.replace(/\D/g, '').slice(0, 6));
                     setLightModeUnlockError('');
                   }}
                   onKeyDown={(event) => {
@@ -2065,6 +2059,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 />
                 {lightModeUnlockError && <p className="mt-2 text-xs text-red-500">{lightModeUnlockError}</p>}
               </div>
+              <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
               <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
                 <button
                   type="button"

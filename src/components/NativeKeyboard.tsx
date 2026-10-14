@@ -404,7 +404,7 @@ export const NativeKeyboard: React.FC = () => {
                 placeholder="Tìm kiếm emoji..."
                 className="w-full bg-transparent text-xs text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50 focus:outline-none border-none py-0.5 pr-5 no-fluent-line"
               />
-              {emojiSearchQuery ? (
+              {emojiSearchQuery && (
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
@@ -413,10 +413,6 @@ export const NativeKeyboard: React.FC = () => {
                 >
                   <X className="w-3 h-3" />
                 </button>
-              ) : (
-                <div className="absolute right-1.5 pointer-events-none text-black/50 dark:text-white/50">
-                  <Search className="w-3.5 h-3.5" />
-                </div>
               )}
             </div>
           )}
