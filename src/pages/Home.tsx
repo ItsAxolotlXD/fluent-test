@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { HeroCarousel } from '../components/HeroCarousel';
 import { OnAirSlider } from '../components/OnAirSlider';
 import { FarewellAnnouncement } from '../components/FarewellAnnouncement';
@@ -66,247 +66,17 @@ export const Home: React.FC<HomeProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // 1. Matching App Pages
-  const matchingPages = query
-    ? APP_PAGES.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query) ||
-          p.desc.toLowerCase().includes(query) ||
-          p.keywords.toLowerCase().includes(query)
-      )
-    : [];
-
-  // 2. Matching Settings Shortcuts
-  const matchingSettings = query
-    ? SETTINGS_SHORTCUTS.filter(
-        (s) =>
-          s.title.toLowerCase().includes(query) ||
-          s.desc.toLowerCase().includes(query) ||
-          s.keywords.toLowerCase().includes(query)
-      )
-    : [];
-
-  // 3. Matching Channels
-  const matchingChannels = query
-    ? channels.filter(
-        (c) =>
-          c.name.toLowerCase().includes(query) ||
-          c.category.toLowerCase().includes(query) ||
-          (c.channelNumber && String(c.channelNumber).includes(query)) ||
-          (c.tags && c.tags.some((t) => t.toLowerCase().includes(query)))
-      )
-    : [];
-
-  // 4. Matching News
-  const matchingNews = query
-    ? NEWS_DATA.filter(
-        (a) =>
-          a.title.toLowerCase().includes(query) ||
-          a.excerpt.toLowerCase().includes(query) ||
-          a.category.toLowerCase().includes(query)
-      )
-    : [];
-
-  const totalMatches = matchingPages.length + matchingSettings.length + matchingChannels.length + matchingNews.length;
-
-  if (query) {
-    return (
-      <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto space-y-8 py-6 pb-24">
-        {/* Header with clear & Spotlight trigger */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E6005A]/20 text-[#FF4D8B] border border-[#E6005A]/30">
-                Spotlight Search
-              </span>
-              <span className="text-xs text-[#9CA3AF]">
-                {totalMatches} results across the application
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight mt-1">
-              Results for "{searchQuery}"
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            {onOpenSpotlight && (
-              <button
-                type="button"
-                onClick={onOpenSpotlight}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-colors cursor-pointer"
-                title="Open Spotlight Search window"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span>Open Spotlight (⌘K)</span>
-              </button>
-            )}
-            {onSearchChange && (
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
-              >
-                Clear Search
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* 1. Pages & Categories */}
-        {matchingPages.length > 0 && (
-          <section className="space-y-3">
-            <h2 className="text-sm font-bold font-square uppercase tracking-wider text-[#9CA3AF] flex items-center gap-2.5">
-              <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
-              <span>Pages & Categories ({matchingPages.length})</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {matchingPages.map((page) => {
-                const IconComponent = page.icon;
-                return (
-                  <div
-                    key={page.id}
-                    onClick={() => navigate(page.route)}
-                    className="p-3.5 rounded-2xl bg-[#38383d] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-[#E6005A]/15 text-[#E6005A] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                      <IconComponent className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#FF4D8B] transition-colors truncate">
-                        {page.title}
-                      </div>
-                      <div className="text-xs text-[#9CA3AF] truncate">
-                        {page.desc}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* 2. Settings Shortcuts */}
-        {matchingSettings.length > 0 && (
-          <section className="space-y-3">
-            <h2 className="text-sm font-bold font-square uppercase tracking-wider text-[#9CA3AF] flex items-center gap-2.5">
-              <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
-              <span>Settings ({matchingSettings.length})</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {matchingSettings.map((set) => (
-                <div
-                  key={set.id}
-                  onClick={() => navigate(set.route)}
-                  className="p-3.5 rounded-2xl bg-[#38383d] border border-white/10 hover:border-[#E6005A] transition-colors cursor-pointer flex items-center gap-3 group"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0 group-hover:bg-[#E6005A] transition-colors">
-                    <SettingsIcon className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#FF4D8B] transition-colors truncate">
-                      {set.title}
-                    </div>
-                    <div className="text-xs text-[#9CA3AF] truncate">
-                      {set.desc}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 3. Channels */}
-        {matchingChannels.length > 0 && (
-          <section className="space-y-3">
-            <h2 className="text-sm font-bold font-square uppercase tracking-wider text-[#9CA3AF] flex items-center gap-2.5">
-              <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
-              <span>Live TV Channels ({matchingChannels.length})</span>
-            </h2>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
-              {matchingChannels.map((ch) => (
-                <div
-                  key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
-                  id={`home-channel-card-${ch.id}`}
-                  onClick={() => onSelectChannel(ch)}
-                  className={`group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d] ${
-                    !isLoading ? 'slide-up-refresh' : ''
-                  }`}
-                  title={ch.name}
-                >
-                  {isLoading ? (
-                    <SpinningRing size={24} strokeWidth={3.5} color="#4cc2ff" />
-                  ) : (
-                    <img
-                      src={ch.logo}
-                      alt={ch.name}
-                      referrerPolicy="no-referrer"
-                      className={`${
-                        ch.category === 'Kênh địa phương' || ch.category === 'Kênh phát thanh' || ch.category === 'Kênh HTV'
-                          ? 'max-h-[78%] max-w-[92%] scale-110'
-                          : ch.category === 'Kênh VTV'
-                            ? 'max-h-[56%] max-w-[80%]'
-                            : 'max-h-[58%] max-w-[82%]'
-                      } w-auto h-auto object-contain filter drop-shadow-sm select-none pointer-events-none transition-transform`}
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 4. News */}
-        {matchingNews.length > 0 && (
-          <section className="space-y-3">
-            <h2 className="text-sm font-bold font-square uppercase tracking-wider text-[#9CA3AF] flex items-center gap-2.5">
-              <CategoryIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5 shrink-0" />
-              <span>News Articles ({matchingNews.length})</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {matchingNews.map((article) => (
-                <div
-                  key={article.id}
-                  onClick={() => navigate(`/news/${article.slug}`)}
-                  className="rounded-2xl bg-[#38383d] border border-white/10 p-4 hover:border-[#E6005A] cursor-pointer space-y-2 transition-colors"
-                >
-                  <span className="text-[10px] font-bold text-[#E6005A] uppercase tracking-wider">
-                    {article.category}
-                  </span>
-                  <h3 className="font-bold text-[#111827] dark:text-white text-sm line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-xs text-[#9CA3AF] line-clamp-2">
-                    {article.excerpt}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {totalMatches === 0 && (
-          <div className="py-16 text-center space-y-3 rounded-2xl bg-[#38383d]/60 border border-white/10 p-6">
-            <p className="text-sm font-medium text-[#9CA3AF]">
-              No results found matching "{searchQuery}" across the app
-            </p>
-            {onSearchChange && (
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#4cc2ff] text-black hover:bg-[#6bd0ff] transition-colors cursor-pointer"
-              >
-                Clear Search
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+  // Filter channels gracefully in-place when search query is active on Home tab
+  const visibleChannels = useMemo(() => {
+    if (!query) return channels;
+    return channels.filter(
+      (c) =>
+        c.name.toLowerCase().includes(query) ||
+        c.category.toLowerCase().includes(query) ||
+        (c.channelNumber && String(c.channelNumber).includes(query)) ||
+        (c.tags && c.tags.some((t) => t.toLowerCase().includes(query)))
     );
-  }
+  }, [channels, query]);
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-16">
@@ -315,7 +85,7 @@ export const Home: React.FC<HomeProps> = ({
         <HeroCarousel
           navigate={navigate}
           onSelectChannel={onSelectChannel}
-          channels={channels}
+          channels={visibleChannels}
         />
       </SequentialSection>
 
@@ -323,7 +93,7 @@ export const Home: React.FC<HomeProps> = ({
         {/* 2. Đề xuất cho bạn (Section 1) */}
         <SequentialSection order={1} enabled={settings.loadPagesSequentially}>
           <OnAirSlider
-            channels={channels}
+            channels={visibleChannels}
             onSelectChannel={onSelectChannel}
             navigate={navigate}
           />

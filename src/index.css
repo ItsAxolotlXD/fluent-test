@@ -3720,18 +3720,18 @@ html.dark #topbar-search-box.search-flyout-open {
   color: #ffffff !important;
 }
 
-/* Ensure Windows 11 Fluent Active Bottom Line Indicator is visible when search box is selected/focused */
+/* TopBar Search Box: keep uniform border with no straight bottom accent bar, allowing only the curved active indicator */
+#topbar-search-box,
 #topbar-search-box:focus-within,
 #topbar-search-box.search-flyout-open {
-  border-bottom-color: #005fb8 !important;
-  border-bottom-width: 2px !important;
+  border-bottom-width: 1px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
-html:not(.light-mode) #topbar-search-box:focus-within,
-html:not(.light-mode) #topbar-search-box.search-flyout-open,
-html.dark #topbar-search-box:focus-within,
-html.dark #topbar-search-box.search-flyout-open {
-  border-bottom-color: #4cc2ff !important;
-  border-bottom-width: 2px !important;
+html.light-mode #topbar-search-box,
+html.light-mode #topbar-search-box:focus-within,
+html.light-mode #topbar-search-box.search-flyout-open {
+  border-bottom-color: rgba(0, 0, 0, 0.1) !important;
 }
 .fluent-search-active-line {
   background-color: #005fb8 !important;
@@ -4293,7 +4293,6 @@ html.light-mode .fluent-btn-secondary:active {
 #sidebar-search-box,
 #channels-search-box,
 #settings-search-box,
-#topbar-search-box,
 #find-words-bar > div,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 input[type="email"],
@@ -4313,7 +4312,6 @@ input[type="number"]:not([data-no-line]) {
 #sidebar-search-box:focus-within,
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
-#topbar-search-box:focus-within,
 #find-words-bar > div:focus-within,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 input[type="email"]:focus,
@@ -4332,7 +4330,6 @@ html.light-mode #immersive-search-capsule,
 html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
-html.light-mode #topbar-search-box,
 html.light-mode #find-words-bar > div,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 html.light-mode input[type="email"],
@@ -4351,7 +4348,6 @@ html.light-mode #immersive-search-capsule:focus-within,
 html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
-html.light-mode #topbar-search-box:focus-within,
 html.light-mode #find-words-bar > div:focus-within,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 html.light-mode input[type="email"]:focus,

@@ -142,23 +142,47 @@ export const TopBar: React.FC<TopBarProps> = ({
     return () => unsubscribe();
   }, []);
 
-  // Search History from localStorage
-  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+  interface SearchHistoryItem {
+    query: string;
+    type?: SearchAspectItem['type'];
+    logo?: string;
+    subtitle?: string;
+  }
+
+  // Search History from localStorage (supports string[] or SearchHistoryItem[])
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem('vone_search_history');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed
+            .map((item) => {
+              if (typeof item === 'string') {
+                return { query: item };
+              }
+              return {
+                query: item.query || item.title || '',
+                type: item.type,
+                logo: item.logo,
+                subtitle: item.subtitle,
+              };
+            })
+            .filter((item) => Boolean(item.query.trim()));
+        }
       }
     } catch {}
-    return DEFAULT_HISTORY_ITEMS;
+    return DEFAULT_HISTORY_ITEMS.map((q) => ({ query: q }));
   });
 
-  const saveToHistory = (query: string) => {
+  const saveToHistory = (query: string, meta?: { type?: SearchAspectItem['type']; logo?: string; subtitle?: string }) => {
     const trimmed = query.trim();
     if (!trimmed) return;
     setSearchHistory((prev) => {
-      const next = [trimmed, ...prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase())].slice(0, 20);
+      const next = [
+        { query: trimmed, type: meta?.type, logo: meta?.logo, subtitle: meta?.subtitle },
+        ...prev.filter((item) => item.query.toLowerCase() !== trimmed.toLowerCase())
+      ].slice(0, 20);
       try {
         localStorage.setItem('vone_search_history', JSON.stringify(next));
       } catch {}
@@ -168,7 +192,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const removeFromHistory = (queryToRemove: string) => {
     setSearchHistory((prev) => {
-      const next = prev.filter((item) => item.toLowerCase() !== queryToRemove.toLowerCase());
+      const next = prev.filter((item) => item.query.toLowerCase() !== queryToRemove.toLowerCase());
       try {
         localStorage.setItem('vone_search_history', JSON.stringify(next));
       } catch {}
@@ -304,14 +328,15 @@ export const TopBar: React.FC<TopBarProps> = ({
       // Empty input: render recent search history (matches user screenshot)
       return searchHistory.map((hist, idx) => ({
         id: `history-${idx}`,
-        title: hist,
-        subtitle: 'Search history',
+        title: hist.query,
+        subtitle: hist.subtitle || 'Search history',
         type: 'history' as const,
+        logo: hist.logo,
         onSelect: () => {
-          setSearchQuery(hist);
-          saveToHistory(hist);
+          setSearchQuery(hist.query);
+          saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle });
           if (onTabSearchChange) {
-            onTabSearchChange(hist);
+            onTabSearchChange(hist.query);
           }
           setIsSearchFlyoutOpen(false);
           setShowAllResults(false);
@@ -324,17 +349,18 @@ export const TopBar: React.FC<TopBarProps> = ({
 
     // History matches
     searchHistory.forEach((hist, idx) => {
-      if (hist.toLowerCase().includes(q)) {
+      if (hist.query.toLowerCase().includes(q)) {
         matches.push({
           id: `hist-match-${idx}`,
-          title: hist,
-          subtitle: 'Search history',
+          title: hist.query,
+          subtitle: hist.subtitle || 'Search history',
           type: 'history',
+          logo: hist.logo,
           onSelect: () => {
-            setSearchQuery(hist);
-            saveToHistory(hist);
+            setSearchQuery(hist.query);
+            saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle });
             if (onTabSearchChange) {
-              onTabSearchChange(hist);
+              onTabSearchChange(hist.query);
             }
             setIsSearchFlyoutOpen(false);
             setShowAllResults(false);
@@ -382,23 +408,40 @@ export const TopBar: React.FC<TopBarProps> = ({
   }, [searchQuery, searchHistory, appAspects, galleryItems, navigate, onTabSearchChange]);
 
   const handleSelectSearchResult = (item: SearchAspectItem) => {
-    saveToHistory(item.title);
+    saveToHistory(item.title, { type: item.type, logo: item.logo, subtitle: item.subtitle });
     item.onSelect();
     setIsSearchFlyoutOpen(false);
     setShowAllResults(false);
   };
 
-  // Get 3D Fluent icon based on the recent search query
-  const getRecentSearchIcon = (query: string) => {
-    const q = query.trim().toLowerCase();
+  // Get 3D Fluent icon or real logo based on the recent search item/query
+  const getRecentSearchIcon = (query: string, logo?: string, type?: string) => {
+    if (logo) {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <img src={logo} alt="" className="w-6.5 h-6.5 object-contain rounded-[4px]" />
+        </div>
+      );
+    }
 
-    // 1. Channel check
-    const matchedChannel = channels.find(
-      (c) =>
-        c.name.toLowerCase() === q ||
-        (c.shortName && c.shortName.toLowerCase() === q) ||
-        c.slug.toLowerCase() === q
-    );
+    const q = query.trim().toLowerCase();
+    const cleanQ = q.replace(/[-_\s]/g, '');
+
+    // 1. Channel check: exact or partial name/slug/shortName
+    const matchedChannel = channels.find((c) => {
+      const cName = c.name.toLowerCase().replace(/[-_\s]/g, '');
+      const cShort = c.shortName ? c.shortName.toLowerCase().replace(/[-_\s]/g, '') : '';
+      const cSlug = c.slug.toLowerCase().replace(/[-_\s]/g, '');
+      return (
+        cleanQ === cName ||
+        cleanQ === cSlug ||
+        (cShort && cleanQ === cShort) ||
+        cleanQ.includes(cName) ||
+        (cShort && cleanQ.includes(cShort)) ||
+        cName.includes(cleanQ) ||
+        (cShort && cShort.includes(cleanQ))
+      );
+    });
     if (matchedChannel?.logo) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -408,7 +451,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     }
 
     // 2. Minecraft / Craftmine / Game
-    if (q.includes('minecraft') || q.includes('craftmine') || q.includes('game') || q.includes('play')) {
+    if (q.includes('minecraft') || q.includes('craftmine') || q.includes('game') || q.includes('play') || q.includes('chơi')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DCraftmineIcon className="w-7 h-7 drop-shadow-sm" />
@@ -417,7 +460,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     }
 
     // 3. Calculator
-    if (q.includes('calculator') || q.includes('calc') || q.includes('máy tính') || q.includes('math')) {
+    if (q.includes('calculator') || q.includes('calc') || q.includes('máy tính') || q.includes('math') || q.includes('toán')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DCalculatorIcon className="w-7 h-7 drop-shadow-sm" />
@@ -464,7 +507,9 @@ export const TopBar: React.FC<TopBarProps> = ({
       q.includes('ghi chú') ||
       q.includes('memo') ||
       q.includes('word') ||
-      q.includes('doc')
+      q.includes('doc') ||
+      q.includes('văn bản') ||
+      q.includes('soạn thảo')
     ) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -492,14 +537,15 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 8. News / Articles / Thời sự / Báo
+    // 8. News / Articles / Thời sự / Báo / Tin tức
     if (
       q.includes('news') ||
       q.includes('article') ||
       q.includes('thời sự') ||
       q.includes('thoi su') ||
       q.includes('báo') ||
-      q.includes('tin tức')
+      q.includes('tin tức') ||
+      q.includes('bão')
     ) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -508,14 +554,15 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 9. Gallery / Photos / Images
+    // 9. Gallery / Photos / Images / Album
     if (
       q.includes('photo') ||
       q.includes('gallery') ||
       q.includes('image') ||
       q.includes('ảnh') ||
       q.includes('hình') ||
-      q.includes('picture')
+      q.includes('picture') ||
+      q.includes('album')
     ) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -524,15 +571,17 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 10. Draws / Paint / Photopea
-    if (q.includes('draw') || q.includes('paint') || q.includes('vẽ') || q.includes('sketch') || q.includes('brush')) {
+    // 10. Draws / Paint
+    if (q.includes('draw') || q.includes('paint') || q.includes('vẽ') || q.includes('sketch') || q.includes('brush') || q.includes('cọ')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DDrawsIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }
-    if (q.includes('photopea') || q.includes('photoshop') || q.includes('psd')) {
+
+    // 11. Photopea / Photoshop
+    if (q.includes('photopea') || q.includes('photoshop') || q.includes('psd') || q.includes('chỉnh sửa ảnh')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DPhotopeaIcon className="w-7 h-7 drop-shadow-sm" />
@@ -540,8 +589,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 11. VLC
-    if (q.includes('vlc') || q.includes('media player') || q.includes('video player')) {
+    // 12. VLC Media Player
+    if (q.includes('vlc') || q.includes('media player') || q.includes('video player') || q.includes('phát video') || q.includes('phát nhạc')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DVlcIcon className="w-7 h-7 drop-shadow-sm" />
@@ -549,13 +598,16 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 12. Settings
+    // 13. Settings / Cài đặt
     if (
       q.includes('setting') ||
       q.includes('cài đặt') ||
       q.includes('tùy chọn') ||
       q.includes('config') ||
-      q.includes('preferences')
+      q.includes('preferences') ||
+      q.includes('giao diện') ||
+      q.includes('dark mode') ||
+      q.includes('light mode')
     ) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -564,7 +616,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 13. Updates
+    // 14. Updates / Cập nhật
     if (q.includes('update') || q.includes('cập nhật') || q.includes('version') || q.includes('changelog')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -573,8 +625,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 14. Discord
-    if (q.includes('discord') || q.includes('community')) {
+    // 15. Discord / Community
+    if (q.includes('discord') || q.includes('cộng đồng') || q.includes('community')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DDiscordIcon className="w-7 h-7 drop-shadow-sm" />
@@ -582,7 +634,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 15. Home
+    // 16. Home / Trang chủ
     if (q.includes('home') || q.includes('trang chủ')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -602,7 +654,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   // Render icon based on item type - using Microsoft Fluent Design 3D Icons
   const renderItemIcon = (item: SearchAspectItem) => {
     if (item.type === 'history') {
-      return getRecentSearchIcon(item.title);
+      return getRecentSearchIcon(item.title, item.logo, item.type);
     }
 
     if (item.logo) {
@@ -857,13 +909,13 @@ export const TopBar: React.FC<TopBarProps> = ({
               <motion.div
                 key="topbar-search-flyout"
                 layout
-                initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 14 }}
                 transition={{
-                  duration: 0.26,
+                  duration: 0.38,
                   ease: [0.16, 1, 0.3, 1],
-                  layout: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
+                  layout: { duration: 0.36, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className={`topbar-search-results-dropdown absolute top-[calc(100%+8px)] left-0 right-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
                   showAllResults ? 'max-h-[380px] overflow-y-auto sidebar-scroller' : 'overflow-hidden'
@@ -885,14 +937,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <motion.div
                     key={`${item.id}-${searchQuery}-${index}`}
                     layout
-                    initial={{ opacity: 0, y: 16, x: 0 }}
+                    initial={{ opacity: 0, y: 20, x: 0 }}
                     animate={
                       isClearingHistory && item.type === 'history'
                         ? {
                             opacity: 0,
                             x: -140,
                             transition: {
-                              duration: 0.24,
+                              duration: 0.28,
                               delay: index * 0.045,
                               ease: [0.4, 0, 0.2, 1],
                             },
@@ -902,8 +954,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                             y: 0,
                             x: 0,
                             transition: {
-                              duration: 0.28,
-                              delay: Math.min(index * 0.05, 0.25),
+                              duration: 0.38,
+                              delay: Math.min(index * 0.04, 0.2),
                               ease: [0.16, 1, 0.3, 1],
                             },
                           }
@@ -959,11 +1011,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <motion.div
                     key="recent-search-footer-actions"
                     layout
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.28,
-                      delay: Math.min(4 * 0.05, 0.25),
+                      duration: 0.38,
+                      delay: Math.min(4 * 0.04, 0.2),
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     className="w-full mt-1 flex items-center gap-1.5 pt-0.5"
@@ -1001,11 +1053,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <motion.div
                     key="recent-search-footer-clear"
                     layout
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.28,
-                      delay: Math.min(searchResults.length * 0.05, 0.25),
+                      duration: 0.38,
+                      delay: Math.min(searchResults.length * 0.04, 0.2),
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     className="w-full mt-1 pt-0.5"
@@ -1055,11 +1107,11 @@ export const TopBar: React.FC<TopBarProps> = ({
                 {searchQuery.trim() && searchResults.length > 4 && !showAllResults && (
                   <motion.button
                     key={`show-more-search-results-${searchQuery}`}
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.28,
-                      delay: Math.min(4 * 0.05, 0.25),
+                      duration: 0.38,
+                      delay: Math.min(4 * 0.04, 0.2),
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     type="button"
