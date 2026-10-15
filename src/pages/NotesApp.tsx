@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { 
   Bold, 
   Italic, 
@@ -26,12 +26,23 @@ import {
   RemoveFormatting,
   FileText,
   Type,
-  FolderPlus
+  FolderPlus,
+  Plus,
+  Search,
+  Pin,
+  PinOff,
+  MoreVertical,
+  X,
+  Clock,
+  Sparkles,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 import { FluentNotesIcon, FluentGalleryIcon } from '../components/FluentIcons';
 import { exportDocx, exportWritePdf, createDocxBlob } from '../utils/officeExport';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
-import { useNotes, STICKY_COLORS } from '../context/NotesContext';
+import { useNotes, STICKY_COLORS, NoteItem } from '../context/NotesContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface NotesAppProps {
   navigate: (route: string) => void;
@@ -120,19 +131,53 @@ const PRESET_HIGHLIGHTS = [
 
 const QUICK_FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64, 72];
 
+// Helper to strip HTML tags for clean snippet previews
+function stripHtml(html: string): string {
+  const tmp = document.createElement('DIV');
+  tmp.innerHTML = html || '';
+  return tmp.textContent || tmp.innerText || '';
+}
+
+// Format note relative time similar to Apple Notes
+function formatNoteDate(timestamp: number): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  if (isToday) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const mins = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${mins}`;
+  }
+  const isThisYear = date.getFullYear() === now.getFullYear();
+  if (isThisYear) {
+    return `${date.getDate()} thg ${date.getMonth() + 1}`;
+  }
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
+
 export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   const {
-    noteTitle,
-    setNoteTitle,
-    noteContent,
-    setNoteContent,
+    notes,
+    activeNoteId,
+    activeNote,
+    createNote,
+    deleteNote,
+    updateNote,
+    togglePinNote,
+    setActiveNoteId,
     isStickyVisible,
     setIsStickyVisible,
+    currentStickyColor,
     stickyColorId,
     setStickyColorId,
-    currentStickyColor,
   } = useNotes();
 
+  const isMobile = useIsMobile();
+  const [mobileView, setMobileView] = useState<'list' | 'editor'>('editor');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [notesFilter, setNotesFilter] = useState('');
+
+  // Rich Text Editor states
   const [selectedFont, setSelectedFont] = useState<FontOption>(PRESET_FONTS[0]);
   const [activeFontSize, setActiveFontSize] = useState<number>(16);
   const [fontSizeInput, setFontSizeInput] = useState<string>('16');
@@ -167,7 +212,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     setCharCount(text.length);
   }, []);
 
-  // Initialize editor with current note content once or on external update
+  // Sync editor innerHTML whenever activeNote changes
   useEffect(() => {
     if (editorRef.current) {
       if (isInternalChangeRef.current) {
@@ -177,12 +222,10 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
       if (document.activeElement === editorRef.current) {
         return;
       }
-      if (editorRef.current.innerHTML !== (noteContent || '')) {
-        editorRef.current.innerHTML = noteContent || '';
-        updateStats();
-      }
+      editorRef.current.innerHTML = activeNote?.content || '';
+      updateStats();
     }
-  }, [noteContent, updateStats]);
+  }, [activeNote?.id, activeNote?.content, updateStats]);
 
   // Selection & Range management
   const saveSelection = useCallback(() => {
@@ -226,15 +269,15 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   }, []);
 
   const handleEditorInput = useCallback(() => {
-    if (editorRef.current) {
+    if (editorRef.current && activeNote) {
       isInternalChangeRef.current = true;
       const html = editorRef.current.innerHTML;
-      setNoteContent(html);
+      updateNote(activeNote.id, { content: html });
       updateStats();
     }
-  }, [setNoteContent, updateStats]);
+  }, [activeNote, updateNote, updateStats]);
 
-  // Format execution helper using document.execCommand with selection retention
+  // Format execution helper using document.execCommand
   const execCmd = (cmd: string, value: string | undefined = undefined) => {
     if (editorRef.current) {
       ensureSelection();
@@ -246,127 +289,55 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     }
   };
 
-  // Keyboard Shortcuts: Ctrl+Z for Undo, Ctrl+D for Redo (disabling browser bookmarks)
+  // Keyboard Shortcuts: Ctrl+Z for Undo, Ctrl+D for Redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        const key = e.key.toLowerCase();
-        if (key === 'z') {
+      const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+      if (isCtrlOrMeta && (e.key === 'z' || e.key === 'Z')) {
+        if (!e.shiftKey) {
           e.preventDefault();
-          e.stopPropagation();
           execCmd('undo');
-        } else if (key === 'd' || key === 'y') {
+        } else {
           e.preventDefault();
-          e.stopPropagation();
           execCmd('redo');
         }
+      } else if (isCtrlOrMeta && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        execCmd('redo');
       }
     };
-    window.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown, { capture: true });
-    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, []);
 
-  const handleToggleBold = () => {
-    execCmd('bold');
-    setIsBold(!isBold);
-  };
+  // Format commands
+  const handleToggleBold = () => execCmd('bold');
+  const handleToggleItalic = () => execCmd('italic');
+  const handleToggleUnderline = () => execCmd('underline');
+  const handleToggleStrikethrough = () => execCmd('strikeThrough');
+  const handleListUl = () => execCmd('insertUnorderedList');
+  const handleListOl = () => execCmd('insertOrderedList');
+  const handleBlockquote = () => execCmd('formatBlock', 'blockquote');
+  const handleClearFormat = () => execCmd('removeFormat');
 
-  const handleToggleItalic = () => {
-    execCmd('italic');
-    setIsItalic(!isItalic);
-  };
-
-  const handleToggleUnderline = () => {
-    execCmd('underline');
-    setIsUnderline(!isUnderline);
-  };
-
-  const handleToggleStrikethrough = () => {
-    execCmd('strikeThrough');
-    setIsStrikethrough(!isStrikethrough);
-  };
-
-  const handleColorSelect = (color: string) => {
-    setActiveColor(color);
-    if (!editorRef.current) return;
-    const sel = ensureSelection();
-    
-    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
-      const range = sel.getRangeAt(0);
-      if (editorRef.current.contains(range.commonAncestorContainer)) {
-        try {
-          const span = document.createElement('span');
-          span.style.color = color;
-          const fragment = range.extractContents();
-          span.appendChild(fragment);
-          range.insertNode(span);
-          
-          const newRange = document.createRange();
-          newRange.selectNodeContents(span);
-          sel.removeAllRanges();
-          sel.addRange(newRange);
-          savedRangeRef.current = newRange.cloneRange();
-          handleEditorInput();
-          setShowColorPicker(false);
-          return;
-        } catch {}
-      }
-    }
-    
-    document.execCommand('styleWithCSS', false, true as any);
-    document.execCommand('foreColor', false, color);
-    saveSelection();
-    handleEditorInput();
+  const handleSelectColor = (hex: string) => {
+    setActiveColor(hex);
     setShowColorPicker(false);
+    execCmd('foreColor', hex);
   };
 
-  const handleHighlightSelect = (color: string) => {
-    setActiveHighlight(color);
-    if (!editorRef.current) return;
-    const sel = ensureSelection();
-    
-    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
-      const range = sel.getRangeAt(0);
-      if (editorRef.current.contains(range.commonAncestorContainer)) {
-        try {
-          const span = document.createElement('span');
-          span.style.backgroundColor = color === 'transparent' ? 'transparent' : color;
-          if (color !== 'transparent') {
-            span.style.color = '#000000';
-            span.style.padding = '0.05em 0.2em';
-            span.style.borderRadius = '3px';
-          }
-          const fragment = range.extractContents();
-          span.appendChild(fragment);
-          range.insertNode(span);
-          
-          const newRange = document.createRange();
-          newRange.selectNodeContents(span);
-          sel.removeAllRanges();
-          sel.addRange(newRange);
-          savedRangeRef.current = newRange.cloneRange();
-          handleEditorInput();
-          setShowHighlightPicker(false);
-          return;
-        } catch {}
-      }
-    }
-    
-    document.execCommand('styleWithCSS', false, true as any);
-    document.execCommand('hiliteColor', false, color === 'transparent' ? 'transparent' : color);
-    saveSelection();
-    handleEditorInput();
+  const handleSelectHighlight = (hex: string) => {
+    setActiveHighlight(hex);
     setShowHighlightPicker(false);
+    execCmd('hiliteColor', hex);
   };
 
-  const handleFontSelect = (fontObj: FontOption) => {
+  const handleSelectFont = (fontObj: FontOption) => {
     setSelectedFont(fontObj);
     setShowFontMenu(false);
     if (!editorRef.current) return;
     const sel = ensureSelection();
-    
     if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
       const range = sel.getRangeAt(0);
       if (editorRef.current.contains(range.commonAncestorContainer)) {
@@ -387,8 +358,6 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         } catch {}
       }
     }
-    
-    // If no text selected or whole note: apply default font family to editor container
     editorRef.current.style.fontFamily = fontObj.fontFamily;
     document.execCommand('styleWithCSS', false, true as any);
     document.execCommand('fontName', false, fontObj.fontFamily);
@@ -396,7 +365,6 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     handleEditorInput();
   };
 
-  // Robust font size application supporting exact 1 to 200px
   const applyExactFontSize = (sizeVal: number) => {
     const clampedSize = Math.max(1, Math.min(200, sizeVal));
     setActiveFontSize(clampedSize);
@@ -428,7 +396,6 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
       }
     }
     
-    // If collapsed or no selection, update default root font size or insert styled node
     if (!editorRef.current.innerText.trim()) {
       editorRef.current.style.fontSize = `${clampedSize}px`;
     } else {
@@ -471,36 +438,17 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     execCmd('formatBlock', tag);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.ctrlKey || e.metaKey) {
-      if (e.key === 'b' || e.key === 'B') {
-        e.preventDefault();
-        handleToggleBold();
-      } else if (e.key === 'i' || e.key === 'I') {
-        e.preventDefault();
-        handleToggleItalic();
-      } else if (e.key === 'u' || e.key === 'U') {
-        e.preventDefault();
-        handleToggleUnderline();
-      }
-    }
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      document.execCommand('insertHTML', false, '&nbsp;&nbsp;&nbsp;&nbsp;');
-      handleEditorInput();
-    }
-  };
-
   const triggerToast = (msg: string) => {
     setNotice(msg);
     setTimeout(() => setNotice(null), 3500);
   };
 
+  // Export handlers
   const handleExportDocx = async () => {
     setShowExportMenu(false);
     const rawText = editorRef.current?.innerText || '';
     try {
-      await exportDocx(noteTitle, rawText, editorRef.current?.innerHTML);
+      await exportDocx(activeNote?.title || 'Note', rawText, editorRef.current?.innerHTML);
       triggerToast('Đã xuất file Word (.docx) thành công!');
     } catch (e) {
       console.error(e);
@@ -512,7 +460,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     setShowExportMenu(false);
     const rawText = editorRef.current?.innerText || '';
     try {
-      exportWritePdf(noteTitle, rawText);
+      exportWritePdf(activeNote?.title || 'Note', rawText);
       triggerToast('Đã xuất file PDF (.pdf) thành công!');
     } catch (e) {
       console.error(e);
@@ -527,34 +475,16 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${noteTitle.trim() || 'notes'}.txt`;
+    a.download = `${(activeNote?.title || 'notes').trim()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     triggerToast('Đã xuất file văn bản (.txt) thành công!');
   };
 
-  const createStickySvgDataUrl = (title: string, content: string, bgColor: string, textColor: string) => {
-    const safeTitle = (title || 'Sticky Note').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const safeContent = (content || '').slice(0, 350).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
-      <rect width="600" height="600" rx="20" fill="${bgColor}"/>
-      <rect width="600" height="56" rx="20" fill="rgba(0,0,0,0.07)"/>
-      <circle cx="36" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
-      <circle cx="60" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
-      <text x="85" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="${textColor}" opacity="0.85">${safeTitle}</text>
-      <foreignObject x="36" y="76" width="528" height="490">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 22px; line-height: 1.45; color: ${textColor}; word-break: break-word; white-space: pre-wrap;">
-          ${safeContent}
-        </div>
-      </foreignObject>
-    </svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  };
-
   const handleSaveToGalleryAsDocument = async () => {
     setShowExportMenu(false);
     const rawText = editorRef.current?.innerText || '';
-    const title = (noteTitle || 'Document').trim();
+    const title = (activeNote?.title || 'Document').trim();
     try {
       const docxBlob = await createDocxBlob(title, rawText);
       const url = URL.createObjectURL(docxBlob);
@@ -594,7 +524,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   const handleSaveToGalleryAsStickies = async () => {
     setShowExportMenu(false);
     const rawText = editorRef.current?.innerText || '';
-    const title = (noteTitle || 'Sticky Note').trim();
+    const title = (activeNote?.title || 'Sticky Note').trim();
     try {
       const now = new Date();
       const monthNames = [
@@ -602,7 +532,21 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
       const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-      const svgUrl = createStickySvgDataUrl(title, rawText, currentStickyColor.bg, currentStickyColor.text);
+      const safeTitle = (title || 'Sticky Note').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const safeContent = (rawText || '').slice(0, 350).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+        <rect width="600" height="600" rx="20" fill="${currentStickyColor.bg}"/>
+        <rect width="600" height="56" rx="20" fill="rgba(0,0,0,0.07)"/>
+        <circle cx="36" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
+        <circle cx="60" cy="28" r="7" fill="rgba(0,0,0,0.2)"/>
+        <text x="85" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="${currentStickyColor.text}" opacity="0.85">${safeTitle}</text>
+        <foreignObject x="36" y="76" width="528" height="490">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 22px; line-height: 1.45; color: ${currentStickyColor.text}; word-break: break-word; white-space: pre-wrap;">
+            ${safeContent}
+          </div>
+        </foreignObject>
+      </svg>`;
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       const stickyBlob = new Blob([rawText], { type: 'text/plain;charset=utf-8' });
 
       const newItem: GalleryMediaItem = {
@@ -633,7 +577,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
   };
 
   const handleClear = () => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ nội dung ghi chú này không?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ nội dung của ghi chú này không?')) {
       if (editorRef.current) {
         editorRef.current.innerHTML = '';
         handleEditorInput();
@@ -641,690 +585,809 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
     }
   };
 
+  const handleDeleteActiveNote = () => {
+    if (notes.length <= 1) {
+      if (window.confirm('Xóa nội dung ghi chú này?')) {
+        updateNote(activeNote.id, { title: 'Ghi chú mới', content: '<p></p>' });
+        if (editorRef.current) editorRef.current.innerHTML = '';
+        updateStats();
+      }
+      return;
+    }
+    if (window.confirm(`Xóa ghi chú "${activeNote.title}"?`)) {
+      deleteNote(activeNote.id);
+      triggerToast('Đã xóa ghi chú');
+    }
+  };
+
   const handleToggleStickies = () => {
     setIsStickyVisible(!isStickyVisible);
     triggerToast(
       !isStickyVisible 
-        ? 'Đã mở chế độ Sticky Note! Ghi chú hiển thị trên toàn ứng dụng.' 
+        ? 'Đã mở chế độ Sticky Note! Ghi chú hiển thị nổi trên màn hình.' 
         : 'Đã ẩn Sticky Note.'
     );
   };
 
+  const handleCreateNewNote = () => {
+    const created = createNote('Ghi chú mới', '<p></p>', 'yellow');
+    if (isMobile) {
+      setMobileView('editor');
+    }
+    triggerToast('Đã tạo ghi chú mới');
+  };
+
+  // Filtered notes (supporting search in title & content)
+  const filteredNotes = useMemo(() => {
+    const q = notesFilter.trim().toLowerCase();
+    if (!q) return notes;
+    return notes.filter((n) => {
+      const matchTitle = n.title.toLowerCase().includes(q);
+      const plainText = stripHtml(n.content).toLowerCase();
+      const matchContent = plainText.includes(q);
+      return matchTitle || matchContent;
+    });
+  }, [notes, notesFilter]);
+
+  // Separate pinned and unpinned notes like Apple Notes
+  const pinnedNotes = useMemo(() => filteredNotes.filter((n) => n.pinned), [filteredNotes]);
+  const regularNotes = useMemo(() => filteredNotes.filter((n) => !n.pinned), [filteredNotes]);
+
   return (
-    <div className="flex flex-col h-full bg-[#1e1e24] text-neutral-100 select-text overflow-hidden">
-      {/* 1. TOP HEADER APP BAR */}
-      <div className="h-14 bg-[#18181f] border-b border-white/10 px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
-        <div className="flex items-center gap-3">
+    <div className="flex h-full w-full bg-[#1e1e24] text-neutral-100 select-text overflow-hidden relative">
+      {/* Toast Notification */}
+      {notice && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-[8px] bg-[#0078d4] text-white text-xs sm:text-[13px] font-medium shadow-xl border border-white/20 animate-fade-in flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-white" />
+          <span>{notice}</span>
+        </div>
+      )}
+
+      {/* 1. LEFT SIDEBAR: NOTES LIST (Apple Notes / Notion style) */}
+      <aside 
+        className={`shrink-0 flex flex-col bg-[#18181f] border-r border-white/10 transition-all duration-200 select-none ${
+          isMobile 
+            ? (mobileView === 'list' ? 'w-full' : 'hidden')
+            : (isSidebarOpen ? 'w-[290px] xl:w-[320px]' : 'w-0 overflow-hidden border-r-0')
+        }`}
+      >
+        {/* Sidebar Header: Branding & New Note Button */}
+        <div className="h-14 px-3.5 flex items-center justify-between border-b border-white/10 shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+              title="Quay lại Trang chủ"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-white">
+              <FluentNotesIcon className="w-4 h-4 text-[#4cc2ff]" />
+              <span>Notes</span>
+              <span className="text-[11px] font-normal text-neutral-400 px-1.5 py-0.5 rounded-full bg-white/5">
+                {notes.length}
+              </span>
+            </div>
+          </div>
+
           <button
             type="button"
-            onClick={() => navigate('/')}
-            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
-            title="Quay lại Trang chủ"
+            onClick={handleCreateNewNote}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[8px] bg-[#0078d4] hover:bg-[#006cc1] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer active:scale-95"
+            title="Tạo ghi chú mới (Apple Notes / Notion)"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tạo note</span>
           </button>
-          
-          {/* App Branding Badge */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0078d4]/15 border border-[#4cc2ff]/30 text-white">
-            <FluentNotesIcon className="w-4 h-4 text-[#4cc2ff]" />
-            <span className="font-semibold text-sm">Sparkle Notes</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/20 text-[#4cc2ff] font-medium hidden sm:inline">
-              Ghi chú
-            </span>
+        </div>
+
+        {/* Search filter for notes */}
+        <div className="p-2.5 border-b border-white/5">
+          <div className="relative flex items-center">
+            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 pointer-events-none" />
+            <input
+              type="text"
+              value={notesFilter}
+              onChange={(e) => setNotesFilter(e.target.value)}
+              placeholder="Tìm kiếm ghi chú..."
+              className="w-full h-8 pl-8 pr-7 bg-white/5 hover:bg-white/[0.08] focus:bg-white/10 rounded-[8px] text-xs text-white placeholder-neutral-400 outline-none border border-white/10 focus:border-[#4cc2ff] transition-all"
+            />
+            {notesFilter && (
+              <button
+                type="button"
+                onClick={() => setNotesFilter('')}
+                className="absolute right-2 text-neutral-400 hover:text-white p-0.5"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Title Input & Quick Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <input
-            type="text"
-            value={noteTitle}
-            onChange={(e) => setNoteTitle(e.target.value)}
-            className="h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 px-3 rounded-[6px] text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none focus:border-b-2 focus:border-b-[#005fb8] dark:focus:border-b-[#4cc2ff] w-36 sm:w-56 text-center transition-all no-fluent-line"
-            placeholder="Tiêu đề ghi chú..."
-          />
+        {/* Notes Scrollable List */}
+        <div className="flex-1 overflow-y-auto sidebar-scroller p-2 space-y-1">
+          {filteredNotes.length === 0 ? (
+            <div className="py-12 text-center text-xs text-neutral-400">
+              Không tìm thấy ghi chú nào khớp với "<span className="text-white font-medium">{notesFilter}</span>"
+            </div>
+          ) : (
+            <>
+              {/* Pinned Notes section */}
+              {pinnedNotes.length > 0 && (
+                <div className="mb-2">
+                  <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#4cc2ff] flex items-center gap-1.5">
+                    <Pin className="w-3 h-3" />
+                    <span>Đã ghim ({pinnedNotes.length})</span>
+                  </div>
+                  {pinnedNotes.map((note) => {
+                    const color = STICKY_COLORS.find((c) => c.id === note.colorId) || STICKY_COLORS[0];
+                    const plainSnippet = stripHtml(note.content).trim();
+                    const isSelected = note.id === activeNoteId;
 
-          {/* "Show as stickies" Button */}
-          <button
-            type="button"
-            onClick={handleToggleStickies}
-            className={`px-3 py-1.5 rounded-md font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-all cursor-pointer border ${
-              isStickyVisible
-                ? 'bg-[#ca8a04] hover:bg-[#a16207] text-white border-[#facc15] shadow-sm'
-                : 'bg-white/10 hover:bg-white/15 text-neutral-200 border-white/15'
-            }`}
-            title="Hiển thị ghi chú dưới dạng Sticky Note nổi trên màn hình"
-          >
-            <FluentNotesIcon className="w-3.5 h-3.5" style={{ color: currentStickyColor.accent }} />
-            <span className="hidden xs:inline">Show as stickies</span>
-            <span className="xs:hidden">Stickies</span>
-            {isStickyVisible && (
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse ml-0.5" />
+                    return (
+                      <div
+                        key={note.id}
+                        onClick={() => {
+                          setActiveNoteId(note.id);
+                          if (isMobile) setMobileView('editor');
+                        }}
+                        className={`group relative w-full p-2.5 rounded-[10px] text-left transition-all cursor-pointer mb-1 border ${
+                          isSelected
+                            ? 'bg-[#0078d4]/20 border-[#0078d4]/60 text-white shadow-xs'
+                            : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/5 text-neutral-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span 
+                              className="w-2 h-2 rounded-full shrink-0" 
+                              style={{ backgroundColor: color.bg }} 
+                            />
+                            <h4 className="text-[13px] font-semibold truncate leading-snug text-white">
+                              {note.title.trim() || 'Ghi chú không có tiêu đề'}
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                togglePinNote(note.id);
+                              }}
+                              className="p-1 rounded text-neutral-400 hover:text-white hover:bg-white/10"
+                              title="Bỏ ghim"
+                            >
+                              <PinOff className="w-3 h-3 text-[#4cc2ff]" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteNote(note.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-white/10 transition-opacity"
+                              title="Xóa ghi chú"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[11px] text-neutral-400 mb-1">
+                          <span className="font-medium shrink-0">{formatNoteDate(note.updatedAt)}</span>
+                          <span className="truncate text-neutral-500">
+                            {plainSnippet || 'Không có nội dung bổ sung'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Regular Notes section */}
+              {regularNotes.length > 0 && (
+                <div>
+                  {pinnedNotes.length > 0 && (
+                    <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+                      Ghi chú
+                    </div>
+                  )}
+                  {regularNotes.map((note) => {
+                    const color = STICKY_COLORS.find((c) => c.id === note.colorId) || STICKY_COLORS[0];
+                    const plainSnippet = stripHtml(note.content).trim();
+                    const isSelected = note.id === activeNoteId;
+
+                    return (
+                      <div
+                        key={note.id}
+                        onClick={() => {
+                          setActiveNoteId(note.id);
+                          if (isMobile) setMobileView('editor');
+                        }}
+                        className={`group relative w-full p-2.5 rounded-[10px] text-left transition-all cursor-pointer mb-1 border ${
+                          isSelected
+                            ? 'bg-[#0078d4]/20 border-[#0078d4]/60 text-white shadow-xs'
+                            : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/5 text-neutral-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span 
+                              className="w-2 h-2 rounded-full shrink-0" 
+                              style={{ backgroundColor: color.bg }} 
+                            />
+                            <h4 className="text-[13px] font-semibold truncate leading-snug text-white">
+                              {note.title.trim() || 'Ghi chú không có tiêu đề'}
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                togglePinNote(note.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-400 hover:text-[#4cc2ff] hover:bg-white/10 transition-opacity"
+                              title="Ghim ghi chú lên đầu"
+                            >
+                              <Pin className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteNote(note.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-white/10 transition-opacity"
+                              title="Xóa ghi chú"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[11px] text-neutral-400">
+                          <span className="font-medium shrink-0">{formatNoteDate(note.updatedAt)}</span>
+                          <span className="truncate text-neutral-500">
+                            {plainSnippet || 'Không có văn bản'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </aside>
+
+      {/* 2. RIGHT PANEL: RICH NOTE EDITOR (Notion / Apple Notes style) */}
+      <main 
+        className={`flex-1 flex flex-col min-w-0 bg-[#1e1e24] ${
+          isMobile && mobileView === 'list' ? 'hidden' : 'flex'
+        }`}
+      >
+        {/* Top Header of Editor */}
+        <div className="h-14 px-3 sm:px-6 bg-[#18181f] border-b border-white/10 flex items-center justify-between gap-2 shrink-0 z-20">
+          <div className="flex items-center gap-2 min-w-0">
+            {/* Toggle sidebar button (desktop) / Back button (mobile) */}
+            {isMobile ? (
+              <button
+                type="button"
+                onClick={() => setMobileView('list')}
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 shrink-0"
+                title="Danh sách ghi chú"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 shrink-0 cursor-pointer"
+                title={isSidebarOpen ? "Thu gọn danh sách" : "Mở rộng danh sách ghi chú"}
+              >
+                {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+              </button>
             )}
-          </button>
 
-          {/* Sticky Color Quick Switcher */}
-          <div className="relative hidden md:block">
+            {/* Note Title Input */}
+            <input
+              type="text"
+              value={activeNote?.title || ''}
+              onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
+              className="bg-transparent text-sm sm:text-base font-bold text-white placeholder-neutral-500 outline-none border-b border-transparent focus:border-[#4cc2ff] py-1 px-1 min-w-[120px] max-w-[240px] sm:max-w-xs truncate transition-colors"
+              placeholder="Tiêu đề ghi chú..."
+            />
+          </div>
+
+          {/* Quick Actions Toolbar */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Show as stickies */}
             <button
               type="button"
-              onClick={() => setShowStickyColorMenu(!showStickyColorMenu)}
-              className="px-2.5 py-1.5 rounded-md bg-white/10 hover:bg-white/15 text-neutral-200 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Đổi màu Sticky Note"
+              onClick={handleToggleStickies}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-[8px] font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer border ${
+                isStickyVisible
+                  ? 'bg-[#ca8a04] hover:bg-[#a16207] text-white border-[#facc15] shadow-sm'
+                  : 'bg-white/10 hover:bg-white/15 text-neutral-200 border-white/15'
+              }`}
+              title="Hiển thị ghi chú dưới dạng Sticky Note nổi trên màn hình"
             >
-              <div 
-                className="w-3.5 h-3.5 rounded-full border border-black/20" 
-                style={{ backgroundColor: currentStickyColor.bg }} 
-              />
-              <span className="text-[11px]">{currentStickyColor.name}</span>
-              <ChevronDown className="w-3 h-3 text-neutral-400" />
+              <FluentNotesIcon className="w-3.5 h-3.5" style={{ color: currentStickyColor.accent }} />
+              <span className="hidden sm:inline">Show as stickies</span>
+              <span className="sm:hidden">Stickies</span>
+              {isStickyVisible && (
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse ml-0.5" />
+              )}
             </button>
 
-            {showStickyColorMenu && (
-              <div
-                className="absolute right-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-4 gap-1.5 z-50 w-44"
+            {/* Sticky Color Quick Switcher */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowStickyColorMenu(!showStickyColorMenu)}
+                className="px-2 sm:px-2.5 py-1.5 rounded-[8px] bg-white/10 hover:bg-white/15 text-neutral-200 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Đổi màu Sticky Note"
+              >
+                <div 
+                  className="w-3.5 h-3.5 rounded-full border border-black/20" 
+                  style={{ backgroundColor: currentStickyColor.bg }} 
+                />
+                <span className="text-[11px] hidden md:inline">{currentStickyColor.name}</span>
+                <ChevronDown className="w-3 h-3 text-neutral-400" />
+              </button>
+
+              {showStickyColorMenu && (
+                <div
+                  className="absolute right-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-[10px] shadow-2xl grid grid-cols-4 gap-1.5 z-50 w-44"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {STICKY_COLORS.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => {
+                        setStickyColorId(c.id);
+                        setShowStickyColorMenu(false);
+                      }}
+                      className="w-8 h-8 rounded-lg border border-white/20 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer"
+                      style={{ backgroundColor: c.bg }}
+                      title={c.name}
+                    >
+                      {activeNote?.colorId === c.id && (
+                        <Check className="w-3.5 h-3.5 text-black font-bold" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Export Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="px-2.5 py-1.5 rounded-[8px] bg-white/10 hover:bg-white/15 text-neutral-200 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Xuất file hoặc lưu vào Gallery"
+              >
+                <Download className="w-3.5 h-3.5 text-neutral-300" />
+                <span className="hidden sm:inline">Xuất file</span>
+                <ChevronDown className="w-3 h-3 text-neutral-400" />
+              </button>
+
+              {showExportMenu && (
+                <div 
+                  className="absolute right-0 mt-1.5 w-56 bg-[#25252e] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1.5 z-50 text-xs"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={handleExportDocx}
+                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4 text-[#0078d4]" />
+                    <div>
+                      <div className="font-semibold text-white">Xuất file Word (.docx)</div>
+                      <div className="text-[10px] text-neutral-400">Tài liệu Microsoft Word đầy đủ</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportPdf}
+                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4 text-red-400" />
+                    <div>
+                      <div className="font-semibold text-white">In / Xuất PDF (.pdf)</div>
+                      <div className="text-[10px] text-neutral-400">Xuất file in chuẩn tài liệu</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportTxt}
+                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                  >
+                    <FileDown className="w-4 h-4 text-emerald-400" />
+                    <div>
+                      <div className="font-semibold text-white">Xuất văn bản (.txt)</div>
+                      <div className="text-[10px] text-neutral-400">Tệp văn bản thuần</div>
+                    </div>
+                  </button>
+
+                  <div className="border-t border-white/10 my-1" />
+
+                  <button
+                    type="button"
+                    onClick={handleSaveToGalleryAsDocument}
+                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                  >
+                    <FluentGalleryIcon className="w-4 h-4 text-[#4cc2ff]" />
+                    <div>
+                      <div className="font-semibold text-white">Lưu vào Gallery (Docx)</div>
+                      <div className="text-[10px] text-neutral-400">Xem và tải lại trong Gallery</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveToGalleryAsStickies}
+                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                  >
+                    <FluentNotesIcon className="w-4 h-4 text-[#facc15]" />
+                    <div>
+                      <div className="font-semibold text-white">Lưu Stickies vào Gallery</div>
+                      <div className="text-[10px] text-neutral-400">Ảnh thẻ ghi chú màu sắc</div>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Delete note */}
+            <button
+              type="button"
+              onClick={handleDeleteActiveNote}
+              className="p-1.5 rounded-[8px] bg-white/10 hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+              title="Xóa ghi chú hiện tại"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 2. RICH TEXT FORMATTING RIBBON BAR */}
+        <div className="h-10 px-3 sm:px-6 bg-[#25252e] border-b border-white/10 flex items-center gap-1.5 overflow-x-auto sidebar-scroller select-none shrink-0 z-10">
+          {/* Undo / Redo */}
+          <button
+            type="button"
+            onClick={() => execCmd('undo')}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Hoàn tác (Ctrl+Z)"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => execCmd('redo')}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Làm lại (Ctrl+D)"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
+
+          {/* Font Selector */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowFontMenu(!showFontMenu)}
+              className="h-7 px-2 rounded bg-white/5 hover:bg-white/10 text-neutral-200 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Phông chữ"
+            >
+              <Type className="w-3 h-3 text-[#4cc2ff]" />
+              <span className="max-w-[100px] truncate">{selectedFont.name}</span>
+              <ChevronDown className="w-2.5 h-2.5 text-neutral-400" />
+            </button>
+
+            {showFontMenu && (
+              <div 
+                className="absolute left-0 mt-1 w-64 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1 z-50 max-h-60 overflow-y-auto sidebar-scroller"
                 onClick={(e) => e.stopPropagation()}
               >
-                {STICKY_COLORS.map((c) => (
+                {PRESET_FONTS.map((font) => (
                   <button
-                    key={c.id}
+                    key={font.id}
                     type="button"
-                    onClick={() => {
-                      setStickyColorId(c.id);
-                      setShowStickyColorMenu(false);
-                    }}
-                    className="w-8 h-8 rounded-lg border border-white/20 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer"
-                    style={{ backgroundColor: c.bg }}
-                    title={c.name}
+                    onClick={() => handleSelectFont(font)}
+                    className="w-full px-3 py-1.5 text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center justify-between cursor-pointer"
+                    style={{ fontFamily: font.fontFamily }}
                   >
-                    {stickyColorId === c.id && (
-                      <Check className="w-3.5 h-3.5 text-black font-bold" />
-                    )}
+                    <span>{font.label}</span>
+                    {selectedFont.id === font.id && <Check className="w-3 h-3 text-[#4cc2ff]" />}
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Export Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="px-3.5 py-1.5 rounded-md bg-[#4cc2ff] hover:bg-[#3bb2ef] text-black font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Xuất file</span>
-              <ChevronDown className="w-3 h-3" />
-            </button>
-
-            {showExportMenu && (
-              <div 
-                className="absolute right-0 mt-1.5 w-60 bg-[#282832] border border-[#3e3e48] rounded-md shadow-2xl p-1 z-50 text-xs"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={handleExportDocx}
-                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
-                >
-                  <FileDown className="w-4 h-4 text-[#4cc2ff] shrink-0" />
-                  <div>
-                    <div className="font-semibold">Word Document</div>
-                    <div className="text-[10px] text-neutral-400">Xuất định dạng .docx</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleExportPdf}
-                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
-                >
-                  <Printer className="w-4 h-4 text-[#e81123] shrink-0" />
-                  <div>
-                    <div className="font-semibold">PDF Document</div>
-                    <div className="text-[10px] text-neutral-400">Xuất định dạng .pdf</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleExportTxt}
-                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer"
-                >
-                  <FileText className="w-4 h-4 text-[#107c41] shrink-0" />
-                  <div>
-                    <div className="font-semibold">Plain Text</div>
-                    <div className="text-[10px] text-neutral-400">Xuất định dạng .txt</div>
-                  </div>
-                </button>
-
-                <div className="my-1 border-t border-white/10" />
-
-                <button
-                  type="button"
-                  onClick={handleSaveToGalleryAsDocument}
-                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer group"
-                >
-                  <FluentGalleryIcon className="w-4 h-4 text-[#4cc2ff] shrink-0" />
-                  <div>
-                    <div className="font-semibold text-[#4cc2ff] group-hover:text-white transition-colors">Save to Gallery as Document</div>
-                    <div className="text-[10px] text-neutral-400">Lưu file Word (.docx) vào Gallery</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSaveToGalleryAsStickies}
-                  className="w-full text-left px-3 py-2 rounded text-white hover:bg-white/10 flex items-center gap-2.5 transition-colors cursor-pointer group"
-                >
-                  <FluentNotesIcon className="w-4 h-4 shrink-0" style={{ color: currentStickyColor.accent }} />
-                  <div>
-                    <div className="font-semibold text-amber-300 group-hover:text-white transition-colors">Save to Gallery as Stickies</div>
-                    <div className="text-[10px] text-neutral-400">Lưu dạng Sticky Note vào Gallery</div>
-                  </div>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 2. RICH FORMATTING TOOLBAR */}
-      <div 
-        className="bg-[#212128] border-b border-white/10 px-4 sm:px-6 py-2 flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0 select-none"
-        onMouseDown={(e) => {
-          // Prevent losing selection on editor when interacting with toolbar elements
-          const target = e.target as HTMLElement;
-          if (target.tagName !== 'INPUT' && target.tagName !== 'SELECT') {
-            e.preventDefault();
-          }
-        }}
-      >
-        {/* Undo / Redo */}
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('undo')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Hoàn tác (Ctrl+Z)"
-        >
-          <Undo2 className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('redo')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Làm lại (Ctrl+D)"
-        >
-          <Redo2 className="w-3.5 h-3.5" />
-        </button>
-
-        <div className="w-[1px] h-5 bg-white/10 mx-1" />
-
-        {/* Font Family Selector Menu */}
-        <div className="relative">
-          <button
-            type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => {
-              setShowFontMenu(!showFontMenu);
-              setShowFontSizeMenu(false);
-              setShowColorPicker(false);
-              setShowHighlightPicker(false);
-            }}
-            className="flex items-center gap-1.5 bg-black/30 hover:bg-white/10 border border-white/10 rounded-md px-2.5 py-1 text-xs text-white outline-none cursor-pointer transition-colors max-w-[170px]"
-            title="Chọn phông chữ (Hỗ trợ tiếng Việt)"
-          >
-            <Type className="w-3.5 h-3.5 text-[#4cc2ff] shrink-0" />
-            <span className="truncate">{selectedFont.name}</span>
-            <ChevronDown className="w-3 h-3 text-neutral-400 shrink-0 ml-1" />
-          </button>
-
-          {showFontMenu && (
-            <div 
-              className="absolute left-0 mt-1.5 w-64 bg-[#282832] border border-[#3e3e48] rounded-lg shadow-2xl p-1 z-50 text-xs"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="px-2.5 py-1 text-[11px] font-semibold text-neutral-400 border-b border-white/10 mb-1">
-                Phông chữ hỗ trợ tiếng Việt
-              </div>
-              {PRESET_FONTS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleFontSelect(f)}
-                  className={`w-full text-left px-2.5 py-1.5 rounded flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer ${
-                    selectedFont.id === f.id ? 'bg-[#4cc2ff]/20 text-[#4cc2ff] font-semibold' : 'text-neutral-200'
-                  }`}
-                  style={{ fontFamily: f.fontFamily }}
-                >
-                  <span className="truncate">{f.label}</span>
-                  {selectedFont.id === f.id && <Check className="w-3.5 h-3.5 shrink-0 ml-1 text-[#4cc2ff]" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Font Size: Custom typing (1 - 200) + Stepper + Quick Presets */}
-        <div className="relative flex items-center">
-          <div className="flex items-center gap-1 bg-black/30 border border-white/10 rounded-md px-1.5 py-0.5" title="Cỡ chữ (Gõ số từ 1 đến 200px)">
-            <span className="text-[10px] text-neutral-400 font-medium pl-0.5">Size</span>
+          {/* Font Size Selector */}
+          <div className="relative flex items-center">
             <input
               type="number"
               min={1}
               max={200}
               value={fontSizeInput}
-              onChange={(e) => {
-                setFontSizeInput(e.target.value);
-                const num = parseInt(e.target.value, 10);
-                if (!isNaN(num) && num >= 1 && num <= 200) {
-                  applyExactFontSize(num);
-                }
-              }}
+              onChange={(e) => setFontSizeInput(e.target.value)}
               onBlur={handleFontSizeInputBlurOrEnter}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleFontSizeInputBlurOrEnter();
-                }
-              }}
-              className="w-12 bg-transparent text-xs text-center font-bold text-white outline-none"
-              placeholder="16"
+              onKeyDown={(e) => e.key === 'Enter' && handleFontSizeInputBlurOrEnter()}
+              className="w-12 h-7 bg-white/5 hover:bg-white/10 text-center rounded-l text-xs text-white border-y border-l border-white/10 outline-none"
+              title="Cỡ chữ (1 - 200px)"
             />
-            <span className="text-[10px] text-neutral-400">px</span>
-            
-            <div className="flex flex-col ml-0.5">
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => applyExactFontSize(activeFontSize + 1)}
-                className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
-                title="Tăng cỡ chữ"
-              >
-                ▲
-              </button>
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => applyExactFontSize(activeFontSize - 1)}
-                className="text-[9px] leading-[9px] text-neutral-400 hover:text-white px-0.5 cursor-pointer"
-                title="Giảm cỡ chữ"
-              >
-                ▼
-              </button>
-            </div>
-
-            {/* Quick dropdown arrow for font sizes */}
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => {
-                setShowFontSizeMenu(!showFontSizeMenu);
-                setShowFontMenu(false);
-                setShowColorPicker(false);
-                setShowHighlightPicker(false);
-              }}
-              className="ml-1 pl-1 border-l border-white/15 text-neutral-400 hover:text-white cursor-pointer"
-              title="Danh sách cỡ chữ mẫu"
+              onClick={() => setShowFontSizeMenu(!showFontSizeMenu)}
+              className="h-7 px-1 bg-white/5 hover:bg-white/10 rounded-r border border-white/10 text-neutral-400 hover:text-white cursor-pointer"
             >
-              <ChevronDown className="w-3 h-3" />
+              <ChevronDown className="w-2.5 h-2.5" />
             </button>
+
+            {showFontSizeMenu && (
+              <div 
+                className="absolute left-0 top-full mt-1 w-20 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1 z-50 max-h-48 overflow-y-auto sidebar-scroller"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {QUICK_FONT_SIZES.map((sz) => (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => applyExactFontSize(sz)}
+                    className="w-full px-2 py-1 text-center text-xs text-neutral-200 hover:bg-white/10 cursor-pointer"
+                  >
+                    {sz} px
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {showFontSizeMenu && (
-            <div 
-              className="absolute left-0 top-full mt-1.5 w-36 bg-[#282832] border border-[#3e3e48] rounded-lg shadow-2xl p-1 z-50 text-xs grid grid-cols-3 gap-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {QUICK_FONT_SIZES.map((sz) => (
-                <button
-                  key={sz}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => applyExactFontSize(sz)}
-                  className={`py-1 text-center rounded hover:bg-white/10 transition-colors cursor-pointer ${
-                    activeFontSize === sz ? 'bg-[#4cc2ff] text-black font-bold' : 'text-neutral-200'
-                  }`}
-                >
-                  {sz}px
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
 
-        <div className="w-[1px] h-5 bg-white/10 mx-1" />
-
-        {/* Bold, Italic, Underline, Strikethrough */}
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleToggleBold}
-          className={`w-7 h-7 rounded flex items-center justify-center transition-colors cursor-pointer ${
-            isBold ? 'bg-[#4cc2ff] text-black font-bold' : 'text-neutral-300 hover:bg-white/10'
-          }`}
-          title="In đậm (Ctrl+B)"
-        >
-          <Bold className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleToggleItalic}
-          className={`w-7 h-7 rounded flex items-center justify-center transition-colors cursor-pointer ${
-            isItalic ? 'bg-[#4cc2ff] text-black' : 'text-neutral-300 hover:bg-white/10'
-          }`}
-          title="In nghiêng (Ctrl+I)"
-        >
-          <Italic className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleToggleUnderline}
-          className={`w-7 h-7 rounded flex items-center justify-center transition-colors cursor-pointer ${
-            isUnderline ? 'bg-[#4cc2ff] text-black' : 'text-neutral-300 hover:bg-white/10'
-          }`}
-          title="Gạch chân (Ctrl+U)"
-        >
-          <Underline className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleToggleStrikethrough}
-          className={`w-7 h-7 rounded flex items-center justify-center transition-colors cursor-pointer ${
-            isStrikethrough ? 'bg-[#4cc2ff] text-black' : 'text-neutral-300 hover:bg-white/10'
-          }`}
-          title="Gạch ngang"
-        >
-          <Strikethrough className="w-3.5 h-3.5" />
-        </button>
-
-        <div className="w-[1px] h-5 bg-white/10 mx-1" />
-
-        {/* Text Color Picker */}
-        <div className="relative">
+          {/* Bold, Italic, Underline, Strikethrough */}
           <button
             type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => {
-              setShowColorPicker(!showColorPicker);
-              setShowHighlightPicker(false);
-              setShowFontMenu(false);
-              setShowFontSizeMenu(false);
-            }}
-            className="flex items-center gap-1.5 px-2 py-1 rounded bg-black/20 hover:bg-white/10 text-neutral-300 text-xs transition-colors cursor-pointer"
-            title="Màu chữ"
+            onClick={handleToggleBold}
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
+              isBold ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'
+            }`}
+            title="In đậm (Ctrl+B)"
           >
-            <div className="w-3.5 h-3.5 rounded-full border border-white/20" style={{ backgroundColor: activeColor }} />
-            <span>Màu</span>
-            <ChevronDown className="w-3 h-3 text-neutral-400" />
+            <Bold className="w-3.5 h-3.5" />
           </button>
-
-          {showColorPicker && (
-            <div 
-              className="absolute left-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-5 gap-1.5 z-50"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {PRESET_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleColorSelect(c)}
-                  className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform cursor-pointer flex items-center justify-center"
-                  style={{ backgroundColor: c }}
-                  title={c}
-                >
-                  {activeColor === c && (
-                    <Check className={`w-3 h-3 ${c === '#ffffff' ? 'text-black' : 'text-white'}`} />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Highlighter Picker */}
-        <div className="relative">
           <button
             type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => {
-              setShowHighlightPicker(!showHighlightPicker);
-              setShowColorPicker(false);
-              setShowFontMenu(false);
-              setShowFontSizeMenu(false);
-            }}
-            className="flex items-center gap-1 px-2 py-1 rounded bg-black/20 hover:bg-white/10 text-neutral-300 text-xs transition-colors cursor-pointer"
-            title="Màu nền đánh dấu (Highlighter)"
+            onClick={handleToggleItalic}
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
+              isItalic ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'
+            }`}
+            title="In nghiêng (Ctrl+I)"
           >
-            <Highlighter className="w-3.5 h-3.5 text-yellow-300" />
-            <ChevronDown className="w-3 h-3 text-neutral-400" />
+            <Italic className="w-3.5 h-3.5" />
           </button>
-
-          {showHighlightPicker && (
-            <div 
-              className="absolute left-0 mt-1.5 p-2 bg-[#282832] border border-[#3e3e48] rounded-md shadow-xl grid grid-cols-4 gap-1.5 z-50 w-36"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {PRESET_HIGHLIGHTS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleHighlightSelect(c)}
-                  className="w-6 h-6 rounded border border-white/20 hover:scale-110 transition-transform cursor-pointer flex items-center justify-center"
-                  style={{ backgroundColor: c === 'transparent' ? '#333' : c }}
-                  title={c === 'transparent' ? 'Không màu' : c}
-                >
-                  {activeHighlight === c && (
-                    <Check className="w-3 h-3 text-black" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="w-[1px] h-5 bg-white/10 mx-1" />
-
-        {/* Text Alignment */}
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleAlign('left')}
-          className={`w-7 h-7 rounded flex items-center justify-center cursor-pointer ${
-            textAlign === 'left' ? 'bg-white/20 text-white' : 'text-neutral-400 hover:bg-white/10'
-          }`}
-          title="Căn trái"
-        >
-          <AlignLeft className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleAlign('center')}
-          className={`w-7 h-7 rounded flex items-center justify-center cursor-pointer ${
-            textAlign === 'center' ? 'bg-white/20 text-white' : 'text-neutral-400 hover:bg-white/10'
-          }`}
-          title="Căn giữa"
-        >
-          <AlignCenter className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleAlign('right')}
-          className={`w-7 h-7 rounded flex items-center justify-center cursor-pointer ${
-            textAlign === 'right' ? 'bg-white/20 text-white' : 'text-neutral-400 hover:bg-white/10'
-          }`}
-          title="Căn phải"
-        >
-          <AlignRight className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleAlign('justify')}
-          className={`w-7 h-7 rounded flex items-center justify-center cursor-pointer ${
-            textAlign === 'justify' ? 'bg-white/20 text-white' : 'text-neutral-400 hover:bg-white/10'
-          }`}
-          title="Căn đều hai bên"
-        >
-          <AlignJustify className="w-3.5 h-3.5" />
-        </button>
-
-        <div className="w-[1px] h-5 bg-white/10 mx-1" />
-
-        {/* Headings & Blocks */}
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleFormatBlock('h1')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Tiêu đề 1 (H1)"
-        >
-          <Heading1 className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => handleFormatBlock('h2')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Tiêu đề 2 (H2)"
-        >
-          <Heading2 className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('insertUnorderedList')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Danh sách dấu đầu dòng"
-        >
-          <List className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('insertOrderedList')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Danh sách có thứ tự"
-        >
-          <ListOrdered className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('formatBlock', 'blockquote')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Trích dẫn (Quote)"
-        >
-          <Quote className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => execCmd('removeFormat')}
-          className="w-7 h-7 rounded flex items-center justify-center text-neutral-300 hover:bg-white/10 transition-colors cursor-pointer"
-          title="Xóa định dạng"
-        >
-          <RemoveFormatting className="w-3.5 h-3.5" />
-        </button>
-
-        {/* Clear Content Button */}
-        <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
-            onClick={handleClear}
-            className="w-7 h-7 rounded flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer"
-            title="Xóa trắng tài liệu"
+            onClick={handleToggleUnderline}
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
+              isUnderline ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'
+            }`}
+            title="Gạch chân (Ctrl+U)"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Underline className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={handleToggleStrikethrough}
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
+              isStrikethrough ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'
+            }`}
+            title="Gạch ngang chữ"
+          >
+            <Strikethrough className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
+
+          {/* Heading 1 & Heading 2 */}
+          <button
+            type="button"
+            onClick={() => handleFormatBlock('<h1>')}
+            className="px-2 py-1 rounded text-xs font-bold hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Tiêu đề lớn 1"
+          >
+            H1
+          </button>
+          <button
+            type="button"
+            onClick={() => handleFormatBlock('<h2>')}
+            className="px-2 py-1 rounded text-xs font-semibold hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Tiêu đề phụ 2"
+          >
+            H2
+          </button>
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
+
+          {/* Lists & Quotes */}
+          <button
+            type="button"
+            onClick={handleListUl}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Danh sách dấu chấm"
+          >
+            <List className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={handleListOl}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Danh sách đánh số"
+          >
+            <ListOrdered className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={handleBlockquote}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-300 cursor-pointer"
+            title="Trích dẫn"
+          >
+            <Quote className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
+
+          {/* Alignments */}
+          <button
+            type="button"
+            onClick={() => handleAlign('left')}
+            className={`p-1.5 rounded cursor-pointer ${textAlign === 'left' ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'}`}
+            title="Căn trái"
+          >
+            <AlignLeft className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign('center')}
+            className={`p-1.5 rounded cursor-pointer ${textAlign === 'center' ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'}`}
+            title="Căn giữa"
+          >
+            <AlignCenter className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign('right')}
+            className={`p-1.5 rounded cursor-pointer ${textAlign === 'right' ? 'bg-[#0078d4] text-white' : 'hover:bg-white/10 text-neutral-300'}`}
+            title="Căn phải"
+          >
+            <AlignRight className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />
+
+          {/* Color & Highlight */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              className="p-1.5 rounded hover:bg-white/10 flex items-center gap-1 cursor-pointer"
+              title="Màu chữ"
+            >
+              <span className="font-bold text-xs" style={{ color: activeColor }}>A</span>
+              <span className="w-2 h-0.5 rounded-full" style={{ backgroundColor: activeColor }} />
+            </button>
+            {showColorPicker && (
+              <div 
+                className="absolute left-0 mt-1 p-2 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl grid grid-cols-5 gap-1.5 z-50 w-36"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => handleSelectColor(c)}
+                    className="w-5 h-5 rounded-full border border-white/20 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowHighlightPicker(!showHighlightPicker)}
+              className="p-1.5 rounded hover:bg-white/10 flex items-center gap-1 cursor-pointer"
+              title="Màu tô sáng văn bản"
+            >
+              <Highlighter className="w-3.5 h-3.5 text-neutral-300" />
+            </button>
+            {showHighlightPicker && (
+              <div 
+                className="absolute left-0 mt-1 p-2 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl grid grid-cols-4 gap-1.5 z-50 w-36"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {PRESET_HIGHLIGHTS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => handleSelectHighlight(c)}
+                    className="w-5 h-5 rounded border border-white/20 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: c === 'transparent' ? '#333' : c }}
+                    title={c === 'transparent' ? 'Không màu' : c}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleClearFormat}
+            className="p-1.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white cursor-pointer ml-auto"
+            title="Xóa định dạng"
+          >
+            <RemoveFormatting className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
 
-      {/* 3. Toast Notice */}
-      {notice && (
-        <div className="bg-[#0078d4] text-white text-xs px-4 py-2 text-center font-medium shadow-md transition-all">
-          {notice}
-        </div>
-      )}
+        {/* 3. DOCUMENT EDITABLE BODY */}
+        <div className="flex-1 overflow-y-auto sidebar-scroller p-4 sm:p-8 flex justify-center">
+          <div className="w-full max-w-3xl min-h-[500px] flex flex-col">
+            {/* Notion style Large Title */}
+            <input
+              type="text"
+              value={activeNote?.title || ''}
+              onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
+              className="w-full bg-transparent text-2xl sm:text-3xl font-extrabold text-white placeholder-neutral-500 outline-none pb-2 mb-2 border-b border-white/10 focus:border-[#4cc2ff] transition-colors"
+              placeholder="Tiêu đề ghi chú..."
+            />
 
-      {/* 4. MAIN DOCUMENT EDITING CANVAS */}
-      <div 
-        className="flex-1 overflow-y-auto px-4 py-8 flex justify-center bg-[#15151a]"
-        onClick={() => {
-          setShowFontMenu(false);
-          setShowFontSizeMenu(false);
-          setShowColorPicker(false);
-          setShowHighlightPicker(false);
-          setShowStickyColorMenu(false);
-          setShowExportMenu(false);
-        }}
-      >
-        <div className="w-full max-w-4xl bg-[#1e1e24] border border-white/10 shadow-2xl rounded-xl min-h-[700px] flex flex-col p-8 sm:p-14">
-          <div
-            ref={editorRef}
-            contentEditable
-            suppressContentEditableWarning
-            onInput={handleEditorInput}
-            onSelect={saveSelection}
-            onKeyDown={handleKeyDown}
-            onKeyUp={() => {
-              saveSelection();
-              updateToolbarStates();
-              updateStats();
-            }}
-            onMouseUp={() => {
-              saveSelection();
-              updateToolbarStates();
-              updateStats();
-            }}
-            className="flex-1 outline-none text-neutral-200 leading-relaxed text-base empty:before:content-['Bắt_đầu_viết_ghi_chú_tại_đây...'] empty:before:text-neutral-500"
-            style={{
-              fontFamily: selectedFont.fontFamily,
-              fontSize: `${activeFontSize}px`,
-              minHeight: '600px',
-            }}
-          />
-        </div>
-      </div>
+            {/* Note metadata footer subtitle */}
+            <div className="flex items-center gap-3 text-xs text-neutral-400 pb-4 mb-4 border-b border-white/5 select-none">
+              <span className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-neutral-500" />
+                Cập nhật: {formatNoteDate(activeNote.updatedAt)}
+              </span>
+              <span>•</span>
+              <span>{wordCount} từ</span>
+              <span>•</span>
+              <span>{charCount} ký tự</span>
+            </div>
 
-      {/* 5. FOOTER STATUS BAR */}
-      <div className="h-8 bg-[#18181f] border-t border-white/5 px-4 sm:px-6 flex items-center justify-between text-[11px] text-neutral-400 shrink-0">
-        <div className="flex items-center gap-4">
-          <span>{wordCount} từ</span>
-          <span>{charCount} ký tự</span>
-          <span className="hidden sm:inline">Phông: {selectedFont.name} ({activeFontSize}px)</span>
+            {/* Rich text editable container */}
+            <div
+              ref={editorRef}
+              contentEditable
+              suppressContentEditableWarning
+              onInput={handleEditorInput}
+              onKeyUp={updateToolbarStates}
+              onMouseUp={updateToolbarStates}
+              className="flex-1 outline-none text-neutral-200 text-sm sm:text-base leading-relaxed selection:bg-[#0078d4]/40 selection:text-white pb-24"
+              style={{
+                fontFamily: selectedFont.fontFamily,
+                minHeight: '400px'
+              }}
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {isStickyVisible && (
-            <span className="text-[#facc15] font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#facc15]" />
-              Sticky Note Đang Mở
-            </span>
-          )}
-          <span>Tự động lưu vào Sparkle</span>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };

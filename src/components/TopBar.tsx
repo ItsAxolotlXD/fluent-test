@@ -9,7 +9,8 @@ import {
   Image as ImageIcon, 
   Search, 
   Tv, 
-  Settings as SettingsIcon 
+  Settings as SettingsIcon,
+  Globe 
 } from 'lucide-react';
 import { 
   FluentHomeIcon, 
@@ -43,11 +44,16 @@ import {
   Fluent3DMailIcon
 } from './Fluent3DIcons';
 import { motion, AnimatePresence } from 'motion/react';
-import { useSettings } from '../hooks/useSettings';
+import { useSettings, SystemSettings } from '../hooks/useSettings';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { useNotes } from '../context/NotesContext';
 import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
+
+function stripHtml(html: string): string {
+  return (html || '').replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+}
 
 const HOME_ICON_SRC = FLUENT_ICON_URLS.home;
 const TV_ICON_SRC = FLUENT_ICON_URLS.liveTv;
@@ -68,9 +74,20 @@ interface SearchAspectItem {
   id: string;
   title: string;
   subtitle?: string;
-  type: 'history' | 'page' | 'channel' | 'news' | 'setting' | 'tool';
+  type: 'history' | 'page' | 'channel' | 'news' | 'setting' | 'tool' | 'setting-toggle' | 'setting-action' | 'note' | 'gallery' | 'web-search';
   logo?: string;
   keywords?: string;
+  timestamp?: number;
+  settingKey?: keyof SystemSettings;
+  customToggle?: {
+    checked: boolean;
+    onToggle: () => void;
+  };
+  customAction?: {
+    label: string;
+    onAction: () => void;
+  };
+  externalUrl?: string;
   onSelect: () => void;
 }
 
@@ -120,7 +137,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   tabSearchQuery = '',
   onTabSearchChange
 }) => {
-  const { settings, hasChanges, applyDraftSettings } = useSettings();
+  const { settings, hasChanges, applyDraftSettings, updateSetting } = useSettings();
+  const { notes, setActiveNoteId, createNote, isStickyVisible, toggleSticky } = useNotes();
   const isLightMode = settings.theme === 'light';
   const searchFlyoutBg = isLightMode ? 'rgba(243, 243, 243, 0.90)' : 'rgba(27, 31, 36, 0.90)';
   const isMobile = useIsMobile();
@@ -151,7 +169,25 @@ export const TopBar: React.FC<TopBarProps> = ({
     type?: SearchAspectItem['type'];
     logo?: string;
     subtitle?: string;
+    timestamp?: number;
   }
+
+  const formatRelativeTime = (timestamp?: number): string => {
+    if (!timestamp) return 'Just now';
+    const elapsed = Math.max(0, Date.now() - timestamp);
+    const seconds = Math.floor(elapsed / 1000);
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days} day${days > 1 ? 's' : ''} ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`;
+    const years = Math.floor(days / 365);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+  };
 
   // Welcome message banner for first time search flyout visit
   const [showSearchWelcome, setShowSearchWelcome] = useState<boolean>(() => {
@@ -170,16 +206,19 @@ export const TopBar: React.FC<TopBarProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          const now = Date.now();
           return parsed
-            .map((item) => {
+            .map((item, idx) => {
               if (typeof item === 'string') {
-                return { query: item };
+                return { query: item, timestamp: now - (idx + 1) * 300000 };
               }
+              const rawSubtitle = item.subtitle === 'Do action' ? 'Switch page' : item.subtitle;
               return {
                 query: item.query || item.title || '',
                 type: item.type,
                 logo: item.logo,
-                subtitle: item.subtitle,
+                subtitle: rawSubtitle,
+                timestamp: item.timestamp || (now - (idx + 1) * 300000),
               };
             })
             .filter((item) => Boolean(item.query.trim()));
@@ -189,12 +228,14 @@ export const TopBar: React.FC<TopBarProps> = ({
     return [];
   });
 
-  const saveToHistory = (query: string, meta?: { type?: SearchAspectItem['type']; logo?: string; subtitle?: string }) => {
+  const saveToHistory = (query: string, meta?: { type?: SearchAspectItem['type']; logo?: string; subtitle?: string; timestamp?: number }) => {
     const trimmed = query.trim();
     if (!trimmed) return;
+    const now = Date.now();
+    const cleanSubtitle = meta?.subtitle === 'Do action' ? 'Switch page' : meta?.subtitle;
     setSearchHistory((prev) => {
       const next = [
-        { query: trimmed, type: meta?.type, logo: meta?.logo, subtitle: meta?.subtitle },
+        { query: trimmed, type: meta?.type, logo: meta?.logo, subtitle: cleanSubtitle, timestamp: meta?.timestamp || now },
         ...prev.filter((item) => item.query.toLowerCase() !== trimmed.toLowerCase())
       ].slice(0, 20);
       try {
@@ -272,40 +313,394 @@ export const TopBar: React.FC<TopBarProps> = ({
   // Pre-configured App Aspects (Pages, Settings, Tools) with exact original naming and subtitles matching Fluent Search UI
   const appAspects = useMemo(() => {
     const aspects: SearchAspectItem[] = [
-      // Pages
-      { id: 'page-home', title: 'Home', subtitle: 'Do action', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
-      { id: 'page-watch', title: 'Watch', subtitle: 'Do action', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
-      { id: 'page-news', title: 'Articles', subtitle: 'Do action', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
-      { id: 'page-channels', title: 'Channels', subtitle: 'Do action', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
-      { id: 'page-favs', title: 'Favorites', subtitle: 'Do action', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
-      { id: 'page-updates', title: 'Updates', subtitle: 'Do action', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
-      { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Do action', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
-      { id: 'page-photopea', title: 'Photopea', subtitle: 'Do action', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
-      { id: 'page-gallery', title: 'Gallery', subtitle: 'Do action', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
-      { id: 'page-draws', title: 'Draws', subtitle: 'Do action', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
-      { id: 'page-notes', title: 'Notes', subtitle: 'Do action', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
-      { id: 'page-vlc', title: 'VLC Media Player', subtitle: 'Do action', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
-      { id: 'page-settings', title: 'Settings', subtitle: 'System Setting', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
-      { id: 'page-about', title: 'About', subtitle: 'Do action', keywords: 'giới thiệu about sparkle', type: 'page', onSelect: () => navigate('/about') },
+      // Pages (Switch page)
+      { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
+      { id: 'page-watch', title: 'Watch', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-news', title: 'Articles', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
+      { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
+      { id: 'page-updates', title: 'Updates', subtitle: 'Switch page', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
+      { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
+      { id: 'page-photopea', title: 'Photopea', subtitle: 'Switch page', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
+      { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
+      { id: 'page-draws', title: 'Draws', subtitle: 'Switch page', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
+      { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
+      { id: 'page-vlc', title: 'VLC Media Player', subtitle: 'Switch page', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
+      { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
+      // All Interactive System Settings & Action Toggles (Search & execute right on Search UI)
+      {
+        id: 'flag-theme-toggle',
+        title: 'Dark / Light Mode',
+        subtitle: 'System Setting',
+        keywords: 'dark light mode theme sáng tối giao diện ban đêm ban ngày',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: settings.theme === 'light',
+          onToggle: () => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light'),
+        },
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-aspect-toggle',
+        title: 'Stream Aspect Ratio (16:9 / 4:3)',
+        subtitle: 'System Setting',
+        keywords: 'stream aspect ratio tỉ lệ khung hình 16:9 4:3',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: settings.streamAspectRatio === '4:3',
+          onToggle: () => updateSetting('streamAspectRatio', settings.streamAspectRatio === '4:3' ? '16:9' : '4:3'),
+        },
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'action-toggle-sticky-widget',
+        title: 'Sticky Note Widget',
+        subtitle: 'Direct Action',
+        keywords: 'sticky note stickies ghi chú dán mở stickies',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: isStickyVisible,
+          onToggle: () => toggleSticky(),
+        },
+        onSelect: () => navigate('/notes'),
+      },
+      {
+        id: 'action-create-new-note',
+        title: 'Tạo ghi chú mới (Create Note)',
+        subtitle: 'Direct Action',
+        keywords: 'tạo ghi chú mới create note new note notion apple notes',
+        type: 'setting-action',
+        customAction: {
+          label: '+ Tạo note',
+          onAction: () => {
+            createNote('Ghi chú mới', '<p></p>');
+            navigate('/notes');
+            setIsSearchFlyoutOpen(false);
+          },
+        },
+        onSelect: () => {
+          createNote('Ghi chú mới', '<p></p>');
+          navigate('/notes');
+          setIsSearchFlyoutOpen(false);
+        },
+      },
+      {
+        id: 'action-clear-search-history',
+        title: 'Xóa lịch sử tìm kiếm (Clear History)',
+        subtitle: 'Direct Action',
+        keywords: 'xóa lịch sử tìm kiếm clear search history recent searches',
+        type: 'setting-action',
+        customAction: {
+          label: 'Xóa ngay',
+          onAction: () => {
+            clearAllHistory();
+            setIsSearchFlyoutOpen(false);
+          },
+        },
+        onSelect: () => clearAllHistory(),
+      },
+      {
+        id: 'flag-super-dark',
+        title: 'Super Dark Mode (OLED Black)',
+        subtitle: 'System Setting',
+        keywords: 'settings super dark mode oled black đen hoàn toàn',
+        type: 'setting-toggle',
+        settingKey: 'superDarkMode',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-spatial-glass',
+        title: 'Spatial Glass & Blur (Acrylic)',
+        subtitle: 'System Setting',
+        keywords: 'settings spatial glass acrylic blur kính mờ hiệu ứng mờ',
+        type: 'setting-toggle',
+        settingKey: 'spatialGlass',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-disable-shiny-outline',
+        title: 'Disable Shiny Outline',
+        subtitle: 'System Setting',
+        keywords: 'disable shiny outline tắt viền bóng sáng',
+        type: 'setting-toggle',
+        settingKey: 'disableShinyOutline',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-dock-sidebar',
+        title: 'Dock to Sidebar',
+        subtitle: 'System Setting',
+        keywords: 'dock to sidebar ghim vào thanh bên',
+        type: 'setting-toggle',
+        settingKey: 'dockToSidebar',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-autohide-sidebar',
+        title: 'Auto-hide Side View',
+        subtitle: 'System Setting',
+        keywords: 'settings auto hide sidebar side view tự động thu gọn thanh bên',
+        type: 'setting-toggle',
+        settingKey: 'autoHideSidebar',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-hover-expand',
+        title: 'Hover to Expand Sidebar',
+        subtitle: 'System Setting',
+        keywords: 'hover to expand sidebar tự động mở rộng khi rê chuột',
+        type: 'setting-toggle',
+        settingKey: 'hoverToExpand',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-floating-search',
+        title: 'Floating Search Bar',
+        subtitle: 'System Setting',
+        keywords: 'settings floating search bar thanh tìm kiếm nổi',
+        type: 'setting-toggle',
+        settingKey: 'floatingSearchBar',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-reduce-motion',
+        title: 'Reduce All Motion',
+        subtitle: 'System Setting',
+        keywords: 'settings reduce all motion giảm chuyển động animation',
+        type: 'setting-toggle',
+        settingKey: 'reduceAllMotion',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-animate-sidebar',
+        title: 'Animate Sidebar',
+        subtitle: 'System Setting',
+        keywords: 'animate sidebar hiệu ứng chuyển động thanh bên',
+        type: 'setting-toggle',
+        settingKey: 'animateSidebar',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-animate-modals',
+        title: 'Animate Modals',
+        subtitle: 'System Setting',
+        keywords: 'animate modals hiệu ứng hộp thoại',
+        type: 'setting-toggle',
+        settingKey: 'animateModals',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-animate-page-transitions',
+        title: 'Animate Page Transitions',
+        subtitle: 'System Setting',
+        keywords: 'animate page transitions chuyển trang mượt mà',
+        type: 'setting-toggle',
+        settingKey: 'animatePageTransitions',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-page-loading',
+        title: 'Page Loading Screen',
+        subtitle: 'System Setting',
+        keywords: 'page loading screen màn hình chờ tải trang',
+        type: 'setting-toggle',
+        settingKey: 'pageLoading',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-load-pages-sequentially',
+        title: 'Sequential Section Loading',
+        subtitle: 'System Setting',
+        keywords: 'load pages sequentially tải trang tuần tự',
+        type: 'setting-toggle',
+        settingKey: 'loadPagesSequentially',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-auto-scroll-banner',
+        title: 'Auto-scroll Banner',
+        subtitle: 'System Setting',
+        keywords: 'settings auto scroll banner tự động cuộn banner',
+        type: 'setting-toggle',
+        settingKey: 'autoScrollBanner',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-immersive-sidebar',
+        title: 'Immersive Sidebar Acrylic',
+        subtitle: 'System Setting',
+        keywords: 'immersive sidebar thanh bên trong suốt',
+        type: 'setting-toggle',
+        settingKey: 'immersiveSidebar',
+        onSelect: () => navigate('/settings'),
+      },
 
-      // Settings Shortcuts
-      { id: 'set-sideview', title: 'Side View', subtitle: 'System Setting', keywords: 'settings side view thanh bên', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-darkmode', title: 'Dark / Light Mode', subtitle: 'System Setting', keywords: 'settings dark light mode giao diện tối sáng', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-spatialglass', title: 'Spatial Glass & Blur', subtitle: 'System Setting', keywords: 'settings spatial glass acrylic blur kính mờ', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-fontscale', title: 'Text Scaling & Typography', subtitle: 'System Setting', keywords: 'settings text scaling font size zoom cỡ chữ', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-keyboard', title: 'Native Virtual Keyboard', subtitle: 'System Setting', keywords: 'settings native virtual keyboard bàn phím ảo', type: 'setting', onSelect: () => navigate('/settings') },
-      { id: 'set-aspect', title: 'Stream Aspect Ratio', subtitle: 'System Setting', keywords: 'settings stream aspect ratio tỉ lệ khung hình 16:9 4:3', type: 'setting', onSelect: () => navigate('/settings') },
+      // Insider Flags
+      {
+        id: 'flag-native-keyboard',
+        title: 'Native virtual keyboard',
+        subtitle: 'Insider Flags',
+        keywords: 'insider flags experimental native keyboard bàn phím ảo vni telex',
+        type: 'setting-toggle',
+        settingKey: 'nativeKeyboard',
+        onSelect: () => navigate('/test'),
+      },
+      {
+        id: 'flag-keyboard-sound',
+        title: 'Âm bàn phím (Keyboard Sound)',
+        subtitle: 'Insider Flags',
+        keywords: 'settings keyboard sound âm bàn phím gõ phím pop click',
+        type: 'setting-toggle',
+        settingKey: 'keyboardSoundEnabled',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-keyboard-number-row',
+        title: 'Bàn phím số (Number Row)',
+        subtitle: 'Insider Flags',
+        keywords: 'settings keyboard number row bàn phím số 0-9',
+        type: 'setting-toggle',
+        settingKey: 'keyboardNumberRow',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-keyboard-clipboard',
+        title: 'Keyboard Clipboard History',
+        subtitle: 'Insider Flags',
+        keywords: 'settings keyboard clipboard danh sách lịch sử sao chép',
+        type: 'setting-toggle',
+        settingKey: 'keyboardClipboard',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-immersive-search',
+        title: 'Immersive search experience',
+        subtitle: 'Insider Flags',
+        keywords: 'insider flags experimental immersive search tìm kiếm giao diện lớn',
+        type: 'setting-toggle',
+        settingKey: 'immersiveSearch',
+        onSelect: () => navigate('/test'),
+      },
+      {
+        id: 'flag-triangle',
+        title: 'Thử nghiệm Tam giác (Triangle loader)',
+        subtitle: 'Insider Flags',
+        keywords: 'insider flags experimental tam giác triangle loader biểu tượng loading xoay',
+        type: 'setting-toggle',
+        settingKey: 'triangleExperiment',
+        onSelect: () => navigate('/test'),
+      },
+      {
+        id: 'flag-fluent-icons',
+        title: 'Fluent icons (3D)',
+        subtitle: 'Insider Flags',
+        keywords: 'insider flags experimental fluent icons 3d icon biểu tượng',
+        type: 'setting-toggle',
+        settingKey: 'fluentIcons',
+        onSelect: () => navigate('/test'),
+      },
+      {
+        id: 'flag-developer-mode',
+        title: 'Developer Mode',
+        subtitle: 'Insider Flags',
+        keywords: 'developer mode chế độ nhà phát triển debug',
+        type: 'setting-toggle',
+        settingKey: 'developerMode',
+        onSelect: () => navigate('/test'),
+      },
+      {
+        id: 'flag-search-tv',
+        title: 'Search TV Channels',
+        subtitle: 'Search Setting',
+        keywords: 'settings search tv tìm kênh truyền hình',
+        type: 'setting-toggle',
+        settingKey: 'searchTv',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-search-channel-number',
+        title: 'Search by Channel Number',
+        subtitle: 'Search Setting',
+        keywords: 'settings search channel number tìm số kênh nhanh',
+        type: 'setting-toggle',
+        settingKey: 'searchChannelNumber',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-search-news',
+        title: 'Search Articles & News',
+        subtitle: 'Search Setting',
+        keywords: 'settings search news bài viết tin tức',
+        type: 'setting-toggle',
+        settingKey: 'searchNews',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-search-categories',
+        title: 'Search Categories',
+        subtitle: 'Search Setting',
+        keywords: 'settings search categories chuyên mục phân mục',
+        type: 'setting-toggle',
+        settingKey: 'searchCategories',
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-search-settings',
+        title: 'Search Settings',
+        subtitle: 'Search Setting',
+        keywords: 'settings search settings tìm kiếm trong cài đặt',
+        type: 'setting-toggle',
+        settingKey: 'searchSettings',
+        onSelect: () => navigate('/settings'),
+      },
+
+      {
+        id: 'flag-sidebar-position',
+        title: 'Sidebar Position (Right Side)',
+        subtitle: 'System Setting',
+        keywords: 'sidebar position vị trí thanh bên bên phải bên trái right left',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: settings.sidebarPosition === 'right',
+          onToggle: () => updateSetting('sidebarPosition', settings.sidebarPosition === 'right' ? 'left' : 'right'),
+        },
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-nav-mode',
+        title: 'TopBar Navigation Mode',
+        subtitle: 'System Setting',
+        keywords: 'navigation mode kiểu điều hướng topbar thanh trên cùng sidebar',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: settings.navigationMode === 'topbar',
+          onToggle: () => updateSetting('navigationMode', settings.navigationMode === 'topbar' ? 'sidebar' : 'topbar'),
+        },
+        onSelect: () => navigate('/settings'),
+      },
+      {
+        id: 'flag-page-animation',
+        title: 'Zoom Page Transitions',
+        subtitle: 'System Setting',
+        keywords: 'page transitions animation hiệu ứng chuyển trang zoom in slide up',
+        type: 'setting-toggle',
+        customToggle: {
+          checked: settings.pageAnimation === 'zoomIn',
+          onToggle: () => updateSetting('pageAnimation', settings.pageAnimation === 'zoomIn' ? 'slideUp' : 'zoomIn'),
+        },
+        onSelect: () => navigate('/settings'),
+      },
 
       // Tools
-      { id: 'tool-sticky', title: 'Sticky Note', subtitle: 'Do action', keywords: 'tools sticky note ghi chú dán', type: 'tool', onSelect: () => navigate('/notes') },
-      { id: 'tool-tts', title: 'Text-to-Speech Player', subtitle: 'Do action', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
-      { id: 'tool-findwords', title: 'Find Words', subtitle: 'Do action', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
-      { id: 'tool-addstream', title: 'Add Custom Stream', subtitle: 'Do action', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
-      { id: 'tool-discord', title: 'Discord Community', subtitle: 'Do action', keywords: 'community discord sparkle', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
+      { id: 'tool-sticky', title: 'Sticky Note', subtitle: 'Switch page', keywords: 'tools sticky note ghi chú dán', type: 'tool', onSelect: () => navigate('/notes') },
+      { id: 'tool-tts', title: 'Text-to-Speech Player', subtitle: 'Switch page', keywords: 'tools text-to-speech tts đọc bài viết', type: 'tool', onSelect: () => onOpenTextToSpeech(NEWS_DATA[0]) },
+      { id: 'tool-findwords', title: 'Find Words', subtitle: 'Switch page', keywords: 'tools find words tìm từ trong trang', type: 'tool', onSelect: () => onOpenFindWords() },
+      { id: 'tool-addstream', title: 'Add Custom Stream', subtitle: 'Switch page', keywords: 'tools add custom stream thêm luồng phát', type: 'tool', onSelect: () => onOpenAddStream() },
+      { id: 'tool-discord', title: 'Discord Community', subtitle: 'Switch page', keywords: 'community discord sparkle', type: 'tool', onSelect: () => window.open('https://discord.gg/wcdjaDDayK', '_blank') }
     ];
 
     // Channels
-    channels.forEach((ch) => {
+    (channels || []).forEach((ch) => {
       aspects.push({
         id: `channel-${ch.id}`,
         title: ch.name,
@@ -332,8 +727,64 @@ export const TopBar: React.FC<TopBarProps> = ({
       });
     });
 
+    // Notes (All notes from NotesContext, searchable by title and full text content)
+    (notes || []).forEach((note) => {
+      const plainText = stripHtml(note.content).trim();
+      aspects.push({
+        id: `note-${note.id}`,
+        title: note.title.trim() || 'Ghi chú không có tiêu đề',
+        subtitle: `Note • ${formatRelativeTime(note.updatedAt)}`,
+        keywords: `note notes ghi chú notion apple notes ${plainText}`,
+        type: 'note',
+        customAction: {
+          label: 'Mở',
+          onAction: () => {
+            setActiveNoteId(note.id);
+            saveToHistory(note.title, { subtitle: 'Note', type: 'note' });
+            navigate('/notes');
+            setIsSearchFlyoutOpen(false);
+          },
+        },
+        onSelect: () => {
+          setActiveNoteId(note.id);
+          saveToHistory(note.title, { subtitle: 'Note', type: 'note' });
+          navigate('/notes');
+        },
+      });
+    });
+
+    // Gallery Items (All media, images, videos, and documents from Gallery DB)
+    (galleryItems || []).forEach((media) => {
+      aspects.push({
+        id: `gallery-${media.id}`,
+        title: media.title,
+        subtitle: media.type === 'document' 
+          ? 'Gallery Document' 
+          : media.type === 'video' 
+            ? 'Gallery Video' 
+            : media.type === 'audio' 
+              ? 'Gallery Audio' 
+              : 'Gallery Image',
+        keywords: `gallery ${media.type} ${media.tags ? media.tags.join(' ') : ''} ${media.description || ''}`,
+        type: 'gallery',
+        logo: media.thumbnailUrl || (media.type === 'image' ? media.url : undefined),
+        customAction: {
+          label: 'Xem',
+          onAction: () => {
+            saveToHistory(media.title, { subtitle: 'Gallery', type: 'gallery' });
+            navigate(`/gallery?preview=${encodeURIComponent(media.id)}`);
+            setIsSearchFlyoutOpen(false);
+          },
+        },
+        onSelect: () => {
+          saveToHistory(media.title, { subtitle: 'Gallery', type: 'gallery' });
+          navigate(`/gallery?preview=${encodeURIComponent(media.id)}`);
+        },
+      });
+    });
+
     return aspects;
-  }, [channels, navigate, onSelectChannel, onOpenTextToSpeech, onOpenFindWords, onOpenAddStream]);
+  }, [channels, navigate, onSelectChannel, onOpenTextToSpeech, onOpenFindWords, onOpenAddStream, settings, updateSetting, isStickyVisible, toggleSticky, createNote, notes, galleryItems, setActiveNoteId]);
 
   // Trending searches: shown initially when opening search UI or when recent searches are cleared
   const trendingSearchItems: SearchAspectItem[] = useMemo(() => {
@@ -412,9 +863,10 @@ export const TopBar: React.FC<TopBarProps> = ({
         subtitle: hist.subtitle || 'Search history',
         type: 'history' as const,
         logo: hist.logo,
+        timestamp: hist.timestamp,
         onSelect: () => {
           setSearchQuery(hist.query);
-          saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle });
+          saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle, timestamp: hist.timestamp });
           if (onTabSearchChange) {
             onTabSearchChange(hist.query);
           }
@@ -442,9 +894,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           subtitle: hist.subtitle || 'Search history',
           type: 'history',
           logo: hist.logo,
+          timestamp: hist.timestamp,
           onSelect: () => {
             setSearchQuery(hist.query);
-            saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle });
+            saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle, timestamp: hist.timestamp });
             if (onTabSearchChange) {
               onTabSearchChange(hist.query);
             }
@@ -462,21 +915,22 @@ export const TopBar: React.FC<TopBarProps> = ({
       }
     });
 
-    // Gallery media and document matches
+    // All Gallery media and document matches (images, videos, audio, documents, stickies)
     galleryItems.forEach((gItem) => {
       const matchTitle = gItem.title.toLowerCase().includes(q);
       const matchTag = gItem.tags?.some((t) => t.toLowerCase().includes(q));
       const matchDesc = gItem.description?.toLowerCase().includes(q);
-      if (matchTitle || matchTag || matchDesc) {
+      const matchType = gItem.type.toLowerCase().includes(q);
+      if (matchTitle || matchTag || matchDesc || matchType) {
         const rawExt = gItem.title?.split('.').pop()?.toUpperCase() || gItem.url?.split('.').pop()?.toUpperCase();
         const validExt = rawExt && rawExt.length <= 4 ? rawExt : (gItem.type === 'image' ? 'JPG' : gItem.type.toUpperCase());
-        const fileSubtitle = `${validExt} File`;
+        const fileSubtitle = `Gallery • ${validExt} File`;
 
         matches.push({
           id: `gallery-item-${gItem.id}`,
           title: gItem.title,
           subtitle: fileSubtitle,
-          keywords: `gallery ${gItem.type} ${gItem.tags?.join(' ') || ''}`,
+          keywords: `gallery ${gItem.type} ${gItem.tags?.join(' ') || ''} ${gItem.description || ''}`,
           type: 'tool',
           logo: gItem.type === 'image' ? (gItem.thumbnailUrl || gItem.url) : undefined,
           onSelect: () => {
@@ -489,9 +943,77 @@ export const TopBar: React.FC<TopBarProps> = ({
       }
     });
 
+    // All Notes matches (search all notes title & content)
+    notes.forEach((note) => {
+      const matchTitle = note.title.toLowerCase().includes(q);
+      const plainText = stripHtml(note.content).toLowerCase();
+      const matchContent = plainText.includes(q);
+      if (matchTitle || matchContent) {
+        matches.push({
+          id: `note-item-${note.id}`,
+          title: note.title.trim() || 'Ghi chú không có tiêu đề',
+          subtitle: `Notes • ${formatRelativeTime(note.updatedAt)}`,
+          keywords: `notes ghi chú ${plainText.slice(0, 100)}`,
+          type: 'note',
+          timestamp: note.updatedAt,
+          onSelect: () => {
+            setActiveNoteId(note.id);
+            navigate('/notes');
+            setIsSearchFlyoutOpen(false);
+            setShowAllResults(false);
+          }
+        });
+      }
+    });
+
+    // When no local matches are found with the entered keyword, return the Web searches group
+    if (matches.length === 0 && q) {
+      return [
+        {
+          id: 'web-google',
+          title: 'Find on Google',
+          subtitle: `Search "${searchQuery.trim()}" on Google`,
+          type: 'web-search' as const,
+          externalUrl: `https://www.google.com/search?q=${encodeURIComponent(searchQuery.trim())}`,
+          onSelect: () => {
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery.trim())}`, '_blank');
+            saveToHistory(searchQuery.trim(), { subtitle: 'Find on Google', type: 'web-search' });
+            setIsSearchFlyoutOpen(false);
+            setShowAllResults(false);
+          }
+        },
+        {
+          id: 'web-coccoc',
+          title: 'Find on Cốc Cốc Search',
+          subtitle: `Search "${searchQuery.trim()}" on Cốc Cốc`,
+          type: 'web-search' as const,
+          externalUrl: `https://coccoc.com/search?query=${encodeURIComponent(searchQuery.trim())}`,
+          onSelect: () => {
+            window.open(`https://coccoc.com/search?query=${encodeURIComponent(searchQuery.trim())}`, '_blank');
+            saveToHistory(searchQuery.trim(), { subtitle: 'Find on Cốc Cốc Search', type: 'web-search' });
+            setIsSearchFlyoutOpen(false);
+            setShowAllResults(false);
+          }
+        },
+        {
+          id: 'web-bing',
+          title: 'Find on Bing',
+          subtitle: `Search "${searchQuery.trim()}" on Bing`,
+          type: 'web-search' as const,
+          externalUrl: `https://www.bing.com/search?q=${encodeURIComponent(searchQuery.trim())}`,
+          onSelect: () => {
+            window.open(`https://www.bing.com/search?q=${encodeURIComponent(searchQuery.trim())}`, '_blank');
+            saveToHistory(searchQuery.trim(), { subtitle: 'Find on Bing', type: 'web-search' });
+            setIsSearchFlyoutOpen(false);
+            setShowAllResults(false);
+          }
+        }
+      ];
+    }
+
     // Return ALL matches
     return matches;
-  }, [searchQuery, searchHistory, appAspects, galleryItems, navigate, onTabSearchChange]);
+  }, [searchQuery, searchHistory, appAspects, galleryItems, notes, navigate, onTabSearchChange, setActiveNoteId]);
 
   const handleSelectSearchResult = (item: SearchAspectItem) => {
     saveToHistory(item.title, { type: item.type, logo: item.logo, subtitle: item.subtitle });
@@ -771,6 +1293,39 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
+    if (item.type === 'web-search') {
+      if (item.id === 'web-google') {
+        return (
+          <div className="w-8.5 h-8.5 rounded-full bg-[#4285F4]/10 dark:bg-[#4285F4]/20 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+            </svg>
+          </div>
+        );
+      }
+      if (item.id === 'web-coccoc') {
+        return (
+          <div className="w-8.5 h-8.5 rounded-full bg-[#189947]/10 dark:bg-[#189947]/20 flex items-center justify-center shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#189947] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+              C
+            </div>
+          </div>
+        );
+      }
+      if (item.id === 'web-bing') {
+        return (
+          <div className="w-8.5 h-8.5 rounded-full bg-[#008373]/10 dark:bg-[#008373]/20 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#008373">
+              <path d="M5 3v18l5.5-3.2L15 21l4-2.3V11l-8.5-3.2V3L5 3zm6 6.8l5 1.9v4.9l-2.4 1.4-2.6-1.5V9.8z"/>
+            </svg>
+          </div>
+        );
+      }
+    }
+
     if (item.type === 'history') {
       return getRecentSearchIcon(item.title, item.logo, item.type);
     }
@@ -783,6 +1338,16 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
+    if (item.type === 'web-search') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-full bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 flex items-center justify-center text-[#005fb8] dark:text-[#4cc2ff] shadow-xs">
+            <Globe className="w-4 h-4" />
+          </div>
+        </div>
+      );
+    }
+
     if (item.type === 'page' || item.type === 'tool') {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
@@ -791,7 +1356,31 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    if (item.type === 'setting') {
+    if (item.type === 'note') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DNotesIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    if (item.type === 'gallery') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DGalleryIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    if (item.type === 'setting-action') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
+    if (item.type === 'setting-toggle' || item.type === 'setting') {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
           <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
@@ -835,6 +1424,8 @@ export const TopBar: React.FC<TopBarProps> = ({
     setIsSearchFlyoutOpen(false);
     setShowAllResults(false);
   };
+
+  const isWebSearch = Boolean(searchQuery.trim() && searchResults.length > 0 && searchResults[0].type === 'web-search');
 
   return (
     <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
@@ -947,7 +1538,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-8 sm:h-8.5 rounded-[6px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all overflow-hidden ${
+              className={`group relative w-full h-8 sm:h-8.5 rounded-[14px] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 transition-all overflow-hidden ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open bg-white dark:bg-[#282c31] shadow-xs'
                   : 'bg-black/5 dark:bg-[#282c31]'
@@ -1012,15 +1603,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-
-              {/* Windows 11 Fluent Active Bottom Line Indicator: stays inside search box, clipped by rounded-[6px] corners matching Settings search box */}
-              <span
-                className={`pointer-events-none absolute bottom-0 left-0 right-0 w-full h-[2px] rounded-b-[6px] transition-colors duration-150 z-20 ${
-                  isSearchFocused || isSearchFlyoutOpen
-                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff]'
-                    : 'bg-[#8e8e93] dark:bg-[#777777]'
-                }`}
-              />
             </div>
           </form>
 
@@ -1095,6 +1677,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   </div>
                 )}
 
+                {/* Section Header when no local results and Web searches shown */}
+                {isWebSearch && (
+                  <div className="px-2.5 pt-1 pb-1.5 text-[12px] font-semibold text-[#005fb8] dark:text-[#4cc2ff] select-none border-b border-black/5 dark:border-white/5 mb-1 flex items-center justify-between">
+                    <span>Web searches</span>
+                    <span className="text-[11px] font-normal text-[#6b7280] dark:text-[#9ca3af]">No local results</span>
+                  </div>
+                )}
+
                 {(showAllResults ? searchResults : searchResults.slice(0, 4)).map((item, index) => (
                   <motion.div
                     key={`${item.id}-${searchQuery}-${index}`}
@@ -1123,13 +1713,22 @@ export const TopBar: React.FC<TopBarProps> = ({
                           }
                     }
                     onClick={() => !isClearingHistory && handleSelectSearchResult(item)}
-                    className="w-full min-h-[50px] px-2.5 py-1.5 rounded-[8px] flex items-center gap-3 text-left text-[#111827] dark:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.1] dark:active:bg-white/[0.12] transition-colors cursor-pointer group select-none"
+                    className="w-full min-h-[50px] px-2.5 py-1.5 rounded-[8px] flex items-center gap-3 text-left text-[#111827] dark:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.1] dark:active:bg-white/[0.12] transition-none cursor-pointer group select-none"
                   >
                     {renderItemIcon(item)}
 
                     <div className="min-w-0 flex-1">
-                      <div className="text-[13.5px] font-medium text-[#111827] dark:text-white/95 truncate leading-snug">
-                        {item.title}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-[13.5px] font-medium text-[#111827] dark:text-white/95 truncate leading-snug">
+                            {item.title}
+                          </span>
+                          {item.type === 'history' && item.timestamp && (
+                            <span className="text-[11px] font-normal text-[#9ca3af] dark:text-[#9ca3af]/80 shrink-0 select-none">
+                              • {formatRelativeTime(item.timestamp)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {item.subtitle && (
                         <div className="text-[11.5px] font-normal text-[#6b7280] dark:text-[#9ca3af] truncate leading-tight mt-0.5">
@@ -1137,6 +1736,52 @@ export const TopBar: React.FC<TopBarProps> = ({
                         </div>
                       )}
                     </div>
+
+                    {/* Action toggle switch right on search UI */}
+                    {item.type === 'setting-toggle' && (item.settingKey || item.customToggle) && (
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={item.customToggle ? item.customToggle.checked : Boolean(settings[item.settingKey!])}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (item.customToggle) {
+                            item.customToggle.onToggle();
+                          } else if (item.settingKey) {
+                            const currentVal = Boolean(settings[item.settingKey]);
+                            updateSetting(item.settingKey, !currentVal);
+                          }
+                        }}
+                        className="toggle-switch-btn shrink-0"
+                        title={
+                          (item.customToggle ? item.customToggle.checked : Boolean(settings[item.settingKey!]))
+                            ? 'Turn off'
+                            : 'Turn on'
+                        }
+                      >
+                        <span className="toggle-switch-thumb" />
+                      </button>
+                    )}
+
+                    {/* Direct action button right on search UI */}
+                    {item.customAction && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          item.customAction!.onAction();
+                        }}
+                        className="px-2.5 py-1 rounded-[8px] bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 hover:bg-[#005fb8]/20 dark:hover:bg-[#4cc2ff]/25 text-[#005fb8] dark:text-[#4cc2ff] text-[12px] font-semibold shrink-0 transition-none cursor-pointer border border-[#005fb8]/20 dark:border-[#4cc2ff]/20"
+                      >
+                        {item.customAction.label}
+                      </button>
+                    )}
+
+                    {item.type === 'web-search' && (
+                      <span className="text-[11px] px-2 py-0.5 rounded-[4px] bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 text-[#005fb8] dark:text-[#4cc2ff] font-medium shrink-0">
+                        Open tab
+                      </span>
+                    )}
 
                     {item.type === 'history' && (
                       <button
@@ -1146,7 +1791,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                           removeFromHistory(item.title);
                         }}
                         title="Remove from history"
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-opacity text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white shrink-0 cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white shrink-0 cursor-pointer transition-none"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -1174,10 +1819,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                         e.stopPropagation();
                         setShowAllResults(true);
                       }}
-                      className="flex-1 h-9 px-3 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer select-none"
+                      className="flex-1 h-9 px-3 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-none cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2.5">
-                        <FluentSearchIcon className="w-4 h-4 shrink-0 pointer-events-none" />
+                        <Search className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0" />
                         <span className="font-medium text-[13px]">Show more</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0" />
@@ -1189,7 +1834,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleClearAllWithAnimation();
                       }}
                       disabled={isClearingHistory}
-                      className="h-9 px-3.5 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-colors cursor-pointer select-none shrink-0"
+                      className="h-9 px-3.5 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-none cursor-pointer select-none shrink-0"
                     >
                       Clear all
                     </button>
@@ -1217,7 +1862,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleClearAllWithAnimation();
                       }}
                       disabled={isClearingHistory}
-                      className="w-full h-9 px-3.5 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-colors cursor-pointer select-none"
+                      className="w-full h-9 px-3.5 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-none cursor-pointer select-none"
                     >
                       Clear all
                     </button>
@@ -1233,7 +1878,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         e.stopPropagation();
                         setShowAllResults(false);
                       }}
-                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer transition-none"
                     >
                       Show less
                     </button>
@@ -1244,15 +1889,15 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleClearAllWithAnimation();
                       }}
                       disabled={isClearingHistory}
-                      className="text-[#6b7280] dark:text-[#9ca3af] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                      className="text-[#6b7280] dark:text-[#9ca3af] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] hover:underline font-medium cursor-pointer transition-none"
                     >
                       Clear all
                     </button>
                   </div>
                 )}
 
-                {/* Non-empty search results: Show more results button */}
-                {searchQuery.trim() && searchResults.length > 4 && !showAllResults && (
+                {/* Non-empty search results: Show more button */}
+                {searchQuery.trim() && searchResults.length > 4 && !showAllResults && !isWebSearch && (
                   <motion.button
                     key={`show-more-search-results-${searchQuery}`}
                     initial={{ opacity: 0, y: 16 }}
@@ -1267,13 +1912,13 @@ export const TopBar: React.FC<TopBarProps> = ({
                       e.stopPropagation();
                       setShowAllResults(true);
                     }}
-                    className="w-full mt-1 h-9.5 px-3 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
+                    className="w-full mt-1 h-9 px-3 rounded-[14px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-none cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2.5">
-                      <History className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0 group-hover:rotate-[-25deg] transition-transform" />
-                      <span className="font-medium text-[13px]">Show more results</span>
+                      <Search className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0" />
+                      <span className="font-medium text-[13px]">Show more</span>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
+                    <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0" />
                   </motion.button>
                 )}
 
@@ -1287,7 +1932,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         e.stopPropagation();
                         setShowAllResults(false);
                       }}
-                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer"
+                      className="text-[#005fb8] dark:text-[#4cc2ff] hover:underline font-medium cursor-pointer transition-none"
                     >
                       Show less
                     </button>

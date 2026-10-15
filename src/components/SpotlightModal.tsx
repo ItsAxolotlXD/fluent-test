@@ -539,7 +539,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                               navigate(`/live-tv?channel=${ch.slug}`);
                               onClose();
                             }}
-                            className="flex items-center justify-between p-2.5 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-colors group"
+                            className="flex items-center justify-between p-2.5 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-none group"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
                               <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#1C1C1C] border border-black/[0.08] dark:border-white/[0.1] flex items-center justify-center text-xs font-bold text-[#111827] dark:text-white shrink-0 p-1 overflow-hidden">
@@ -561,7 +561,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                                 </div>
                               </div>
                             </div>
-                            <div className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 group-hover:bg-[#4cc2ff] flex items-center justify-center text-[#111827] dark:text-white group-hover:text-black shrink-0 transition-colors">
+                            <div className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 group-hover:bg-[#4cc2ff] flex items-center justify-center text-[#111827] dark:text-white group-hover:text-black shrink-0 transition-none">
                               <Play className="w-3 h-3 fill-current ml-0.5 group-hover:text-black" />
                             </div>
                           </div>
@@ -585,7 +585,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                                 navigate(item.route);
                                 onClose();
                               }}
-                              className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-colors"
+                              className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-none"
                             >
                               <div className="w-7 h-7 rounded-lg bg-black/5 dark:bg-white/10 flex items-center justify-center shrink-0">
                                 <IconComponent className="w-4 h-4 text-[#4cc2ff]" />
@@ -611,7 +611,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                               navigate(`/news/${n.slug}`);
                               onClose();
                             }}
-                            className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-colors"
+                            className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-none"
                           >
                             <div className="w-10 h-7 rounded bg-black/10 dark:bg-black/40 overflow-hidden shrink-0">
                               <img src={n.coverImage} alt={n.title} className="w-full h-full object-cover" />
@@ -636,7 +636,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                               navigate('/settings');
                               onClose();
                             }}
-                            className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-colors"
+                            className="flex items-center gap-2.5 p-2 rounded-xl bg-[#F9F9F9] dark:bg-[#2B2B2B] hover:bg-[#F2F2F2] dark:hover:bg-[#343434] border border-black/[0.06] dark:border-white/[0.08] cursor-default transition-none"
                           >
                             <div className="w-7 h-7 rounded-lg bg-black/5 dark:bg-white/10 flex items-center justify-center shrink-0">
                               <SettingsIcon className="w-4 h-4 text-[#4cc2ff]" />
