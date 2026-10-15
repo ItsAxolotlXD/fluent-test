@@ -895,11 +895,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-
-              {/* Windows 11 Fluent Active Indicator Line when focused/selected */}
-              {(isSearchFocused || isSearchFlyoutOpen) && (
-                <span className="fluent-search-active-line absolute bottom-0 left-2 right-2 h-[2px] bg-[#005fb8] dark:bg-[#4cc2ff] rounded-full pointer-events-none z-10" />
-              )}
             </div>
           </form>
 
