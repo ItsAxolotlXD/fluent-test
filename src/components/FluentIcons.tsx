@@ -1,5 +1,9 @@
 import React from 'react';
 
+export const SEARCH_SPARKLE_ICON_URL = '/icons/search_sparkle.png';
+export const SEARCH_SPARKLE_REMOTE_URL =
+  'https://static.wikia.nocookie.net/ep-deo/images/6/6c/Search_sparkle.png/revision/latest/scale-to-width-down/1000?cb=20261015133722';
+
 export const FLUENT_ICON_URLS = {
   home: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/main/assets/Home/SVG/ic_fluent_home_48_regular.svg',
   watch: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Movies%20and%20TV/SVG/ic_fluent_movies_and_tv_24_regular.svg',
@@ -10,7 +14,7 @@ export const FLUENT_ICON_URLS = {
   settings: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Settings/SVG/ic_fluent_settings_48_regular.svg',
   user: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person/SVG/ic_fluent_person_48_regular.svg',
   personDelete: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person%20Delete/SVG/ic_fluent_person_delete_24_regular.svg',
-  search: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Search/SVG/ic_fluent_search_48_regular.svg',
+  search: SEARCH_SPARKLE_REMOTE_URL,
   gallery: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Image%20Multiple/SVG/ic_fluent_image_multiple_24_regular.svg',
   draws: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Draw%20Shape/SVG/ic_fluent_draw_shape_24_regular.svg'
 };
@@ -56,9 +60,18 @@ export const FluentPersonDeleteIcon: React.FC<{ className?: string; style?: Reac
 );
 
 export const FluentSearchIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-    <path d="M31.3975 33.1615C28.601 35.5546 24.9693 37 21 37C12.1634 37 5 29.8366 5 21C5 12.1634 12.1634 5 21 5C29.8366 5 37 12.1634 37 21C37 24.9674 35.556 28.5975 33.1649 31.3934L42.6376 40.8661C43.1257 41.3542 43.1257 42.1457 42.6376 42.6338C42.1494 43.122 41.3579 43.122 40.8698 42.6338L31.3975 33.1615ZM34.5 21C34.5 13.5442 28.4558 7.5 21 7.5C13.5442 7.5 7.5 13.5442 7.5 21C7.5 28.4558 13.5442 34.5 21 34.5C28.4558 34.5 34.5 28.4558 34.5 21Z" fill="currentColor"/>
-  </svg>
+  <img
+    src={SEARCH_SPARKLE_ICON_URL}
+    alt="Search"
+    className={`inline-block ${className} object-contain search-sparkle-icon select-none pointer-events-none transition-all duration-150`}
+    style={style}
+    onError={(e) => {
+      const target = e.target as HTMLImageElement;
+      if (!target.src.includes('wikia')) {
+        target.src = SEARCH_SPARKLE_REMOTE_URL;
+      }
+    }}
+  />
 );
 
 export const FluentSettingsIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (

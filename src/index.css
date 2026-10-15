@@ -3681,7 +3681,8 @@ html:not(.light-mode) #topbar-search-box input {
 
 html.light-mode #topbar-search-box {
   background-color: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+  border-width: 0 !important;
 }
 
 /* Category Icons (Tam giác): Gradient xanh dương - xanh lá */
@@ -3705,19 +3706,50 @@ html.light-mode [class*="CategoryIcon"] path {
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
 }
-html.light-mode .topbar-search-results-dropdown,
-html.light-mode #topbar-search-box.search-flyout-open {
+html.light-mode .topbar-search-results-dropdown {
   background-color: rgba(243, 243, 243, 0.90) !important;
   border-color: rgba(0, 0, 0, 0.10) !important;
   color: #000000 !important;
 }
 html:not(.light-mode) .topbar-search-results-dropdown,
-html:not(.light-mode) #topbar-search-box.search-flyout-open,
-html.dark .topbar-search-results-dropdown,
-html.dark #topbar-search-box.search-flyout-open {
+html.dark .topbar-search-results-dropdown {
   background-color: rgba(27, 31, 36, 0.90) !important;
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
+}
+/* TopBar Search Box: Distinct focused background in light mode (#ffffff) and dark mode (#282c31), rounded corners matching settings search box (6px) and clipped line */
+html.light-mode #topbar-search-box {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+html.light-mode #topbar-search-box:focus-within,
+html.light-mode #topbar-search-box.search-flyout-open {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+html:not(.light-mode) #topbar-search-box,
+html.dark #topbar-search-box {
+  background-color: #282c31 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+html:not(.light-mode) #topbar-search-box:focus-within,
+html.dark #topbar-search-box:focus-within,
+html:not(.light-mode) #topbar-search-box.search-flyout-open,
+html.dark #topbar-search-box.search-flyout-open {
+  background-color: #282c31 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  border: none !important;
 }
 
 /* TopBar Search Box: active indicator line matches standard Fluent Design input bottom border */
@@ -4274,7 +4306,6 @@ html.light-mode .fluent-btn-secondary:active {
 #sidebar-search-box,
 #channels-search-box,
 #settings-search-box,
-#topbar-search-box,
 #find-words-bar > div,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 input[type="email"],
@@ -4294,8 +4325,6 @@ input[type="number"]:not([data-no-line]) {
 #sidebar-search-box:focus-within,
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
-#topbar-search-box:focus-within,
-#topbar-search-box.search-flyout-open,
 #find-words-bar > div:focus-within,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 input[type="email"]:focus,
@@ -4314,7 +4343,6 @@ html.light-mode #immersive-search-capsule,
 html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
-html.light-mode #topbar-search-box,
 html.light-mode #find-words-bar > div,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 html.light-mode input[type="email"],
@@ -4333,8 +4361,6 @@ html.light-mode #immersive-search-capsule:focus-within,
 html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
-html.light-mode #topbar-search-box:focus-within,
-html.light-mode #topbar-search-box.search-flyout-open,
 html.light-mode #find-words-bar > div:focus-within,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 html.light-mode input[type="email"]:focus,
@@ -4342,6 +4368,41 @@ html.light-mode input[type="url"]:focus,
 html.light-mode input[type="password"]:focus,
 html.light-mode input[type="number"]:focus {
   border-bottom: 2px solid #005fb8 !important;
+}
+
+/* TopBar search box: borderless surface with dedicated edge-to-edge full width indicator line */
+#topbar-search-box,
+#topbar-search-box:focus,
+#topbar-search-box:focus-within,
+#topbar-search-box.search-flyout-open,
+html.light-mode #topbar-search-box,
+html.light-mode #topbar-search-box:focus,
+html.light-mode #topbar-search-box:focus-within,
+html.light-mode #topbar-search-box.search-flyout-open,
+html.dark #topbar-search-box,
+html.dark #topbar-search-box:focus,
+html.dark #topbar-search-box:focus-within,
+html.dark #topbar-search-box.search-flyout-open {
+  border: none !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Search Sparkle Icon styling */
+.search-sparkle-icon,
+img.search-sparkle-icon {
+  display: inline-block;
+  object-fit: contain;
+}
+html.dark .search-sparkle-icon,
+.dark .search-sparkle-icon {
+  filter: brightness(1) opacity(1) !important;
+}
+html.light-mode .search-sparkle-icon,
+.light-mode .search-sparkle-icon,
+html:not(.dark) .search-sparkle-icon {
+  filter: brightness(0) opacity(0.7) !important;
 }
 
 #spotlight-search-container,

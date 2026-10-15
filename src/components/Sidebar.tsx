@@ -1,5 +1,6 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { flyoutPanelClassName, flyoutPanelStyle } from './FlyoutDropdown';
 import { 
   Sliders,
   FlaskConical,
@@ -804,115 +805,205 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  // Render Full Windows 10 Settings Style Sidebar Content
+  const SIDEBAR_MENU_MARGIN = 8;
+
+  interface SidebarContextMenuOverlayProps {
+    x: number;
+    y: number;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
+    hoverToExpand?: boolean;
+    onToggleHoverToExpand: () => void;
+    fluentIcons?: boolean;
+    onToggleFluentIcons: () => void;
+    onNavigateSettings: () => void;
+    onGoBack: () => void;
+    onClose: () => void;
+  }
+
+  const SidebarContextMenuOverlay: React.FC<SidebarContextMenuOverlayProps> = ({
+    x,
+    y,
+    isCollapsed,
+    onToggleCollapse,
+    hoverToExpand,
+    onToggleHoverToExpand,
+    fluentIcons,
+    onToggleFluentIcons,
+    onNavigateSettings,
+    onGoBack,
+    onClose,
+  }) => {
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [position, setPosition] = useState({ left: x, top: y });
+
+    useLayoutEffect(() => {
+      const el = menuRef.current;
+      if (!el) return;
+      const { width, height } = el.getBoundingClientRect();
+      const maxLeft = window.innerWidth - width - SIDEBAR_MENU_MARGIN;
+      const maxTop = window.innerHeight - height - SIDEBAR_MENU_MARGIN;
+      setPosition({
+        left: Math.max(SIDEBAR_MENU_MARGIN, Math.min(x, maxLeft)),
+        top: Math.max(SIDEBAR_MENU_MARGIN, y > maxTop ? y - height : y),
+      });
+      el.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus({ preventScroll: true });
+    }, [x, y]);
+
+    useEffect(() => {
+      const handlePointer = (e: PointerEvent) => {
+        if (!menuRef.current?.contains(e.target as Node)) onClose();
+      };
+      const handleKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+          return;
+        }
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const buttons: HTMLButtonElement[] = Array.from(
+            menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []
+          );
+          const idx = buttons.indexOf(document.activeElement as HTMLButtonElement);
+          const next = e.key === 'ArrowDown' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
+          buttons[next]?.focus();
+        }
+      };
+      document.addEventListener('pointerdown', handlePointer, true);
+      document.addEventListener('keydown', handleKey);
+      window.addEventListener('resize', onClose);
+      window.addEventListener('blur', onClose);
+      return () => {
+        document.removeEventListener('pointerdown', handlePointer, true);
+        document.removeEventListener('keydown', handleKey);
+        window.removeEventListener('resize', onClose);
+        window.removeEventListener('blur', onClose);
+      };
+    }, [onClose]);
+
+    return (
+      <motion.div
+        ref={menuRef}
+        role="menu"
+        aria-label="Sidebar actions"
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 14 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        onContextMenu={(e) => e.preventDefault()}
+        className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
+        style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
+      >
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            onClose();
+            window.location.reload();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <RefreshCw className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate">Refresh</span>
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            onClose();
+            onGoBack();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <ArrowLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate">Go back</span>
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            onClose();
+            onToggleCollapse?.();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <PanelLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate">{isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}</span>
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            onToggleHoverToExpand();
+            onClose();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <PanelsTopLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate flex-1">Hover to expand</span>
+          {hoverToExpand && (
+            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+          )}
+        </button>
+
+        <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+
+        <button
+          type="button"
+          role="menuitem"
+          title="Bật/tắt nhanh Fluent icons (Insider flag)"
+          onClick={() => {
+            onToggleFluentIcons();
+            onClose();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <Palette className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate flex-1">Fluent design icons</span>
+          {fluentIcons && (
+            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            onClose();
+            onNavigateSettings();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <Settings2 className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate">Interface settings</span>
+        </button>
+      </motion.div>
+    );
+  };
+
+  // Sidebar Context Menu Component matching Gallery Context Menu design and animation
   const renderSidebarContextMenu = () => {
     if (!sidebarContextMenu) return null;
-
-    const menuItems = [
-      { label: 'Refresh', icon: RefreshCw, onClick: () => window.location.reload() },
-      { label: 'Go back', icon: ArrowLeft, onClick: handleGoBack },
-      {
-        label: isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
-        icon: PanelLeft,
-        onClick: () => onToggleCollapse?.(),
-      },
-    ];
 
     return (
       <AnimatePresence>
         {sidebarContextMenu && (
-          <>
-            {/* Invisible backdrop to dismiss context menu on click outside */}
-            <div
-              className="fixed inset-0 z-[59]"
-              onClick={() => setSidebarContextMenu(null)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                setSidebarContextMenu(null);
-              }}
-            />
-            <motion.div
-              role="menu"
-              aria-label="Sidebar actions"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              onContextMenu={(e) => e.preventDefault()}
-              className="fixed z-[60] w-[240px] rounded-[10px] border border-black/10 bg-white/85 p-1.5 text-[#111827] shadow-[0_16px_40px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-150 dark:border-white/10 dark:bg-[#1c1c1c]/85 dark:text-white"
-              style={{
-                left: Math.min(Math.max(8, sidebarContextMenu.x), window.innerWidth - 248),
-                top: Math.min(Math.max(8, sidebarContextMenu.y), window.innerHeight - 280),
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              {menuItems.map(({ label, icon: Icon, onClick }) => (
-                <button
-                  key={label}
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setSidebarContextMenu(null);
-                    onClick();
-                  }}
-                  className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
-                >
-                  <Icon className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                  <span className="truncate">{label}</span>
-                </button>
-              ))}
-
-              {/* Hover to expand toggle option */}
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  updateSetting('hoverToExpand', !settings.hoverToExpand);
-                  setSidebarContextMenu(null);
-                }}
-                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
-              >
-                <PanelsTopLeft className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                <span className="truncate flex-1">Hover to expand</span>
-                {settings.hoverToExpand && (
-                  <Check className="h-4 w-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
-                )}
-              </button>
-
-              <div role="separator" className="my-1 h-px bg-black/10 dark:bg-white/10" />
-
-              {/* Fluent design icons shortcut toggle */}
-              <button
-                type="button"
-                role="menuitem"
-                title="Bật/tắt nhanh Fluent icons (Insider flag)"
-                onClick={() => {
-                  updateSetting('fluentIcons', !settings.fluentIcons);
-                  setSidebarContextMenu(null);
-                }}
-                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
-              >
-                <Palette className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                <span className="truncate flex-1">Fluent design icons</span>
-                {settings.fluentIcons && (
-                  <Check className="h-4 w-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  setSidebarContextMenu(null);
-                  navigate('/settings');
-                }}
-                className="flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left text-[13px] font-medium transition-colors hover:bg-black/[0.05] focus-visible:bg-black/[0.05] focus-visible:outline-none active:bg-black/[0.08] dark:hover:bg-white/[0.08] dark:focus-visible:bg-white/[0.08] dark:active:bg-white/[0.12] cursor-pointer"
-              >
-                <Settings2 className="h-4 w-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                <span>Interface settings</span>
-              </button>
-            </motion.div>
-          </>
+          <SidebarContextMenuOverlay
+            x={sidebarContextMenu.x}
+            y={sidebarContextMenu.y}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={onToggleCollapse}
+            hoverToExpand={settings.hoverToExpand}
+            onToggleHoverToExpand={() => updateSetting('hoverToExpand', !settings.hoverToExpand)}
+            fluentIcons={settings.fluentIcons}
+            onToggleFluentIcons={() => updateSetting('fluentIcons', !settings.fluentIcons)}
+            onNavigateSettings={() => navigate('/settings')}
+            onGoBack={handleGoBack}
+            onClose={() => setSidebarContextMenu(null)}
+          />
         )}
       </AnimatePresence>
     );

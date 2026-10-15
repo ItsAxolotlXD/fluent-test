@@ -14,8 +14,12 @@ import {
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
+  FluentWatchIcon,
   FluentNewsIcon, 
   FluentSearchIcon, 
+  FluentCraftmineIcon,
+  FluentGalleryIcon,
+  FluentSettingsIcon,
   FLUENT_ICON_URLS 
 } from './FluentIcons';
 import { 
@@ -149,7 +153,17 @@ export const TopBar: React.FC<TopBarProps> = ({
     subtitle?: string;
   }
 
+  // Welcome message banner for first time search flyout visit
+  const [showSearchWelcome, setShowSearchWelcome] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('vone_search_welcome_understood') !== 'true';
+    } catch {
+      return true;
+    }
+  });
+
   // Search History from localStorage (supports string[] or SearchHistoryItem[])
+  // When empty, Search UI displays "Trending searches". Once user searches and clicks an item, it stores in "Recent searches".
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem('vone_search_history');
@@ -172,7 +186,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         }
       }
     } catch {}
-    return DEFAULT_HISTORY_ITEMS.map((q) => ({ query: q }));
+    return [];
   });
 
   const saveToHistory = (query: string, meta?: { type?: SearchAspectItem['type']; logo?: string; subtitle?: string }) => {
@@ -321,11 +335,77 @@ export const TopBar: React.FC<TopBarProps> = ({
     return aspects;
   }, [channels, navigate, onSelectChannel, onOpenTextToSpeech, onOpenFindWords, onOpenAddStream]);
 
+  // Trending searches: shown initially when opening search UI or when recent searches are cleared
+  const trendingSearchItems: SearchAspectItem[] = useMemo(() => {
+    return [
+      {
+        id: 'trending-vtv1-hd',
+        title: 'VTV1 HD',
+        subtitle: 'Watch',
+        type: 'channel' as const,
+        onSelect: () => {
+          const matched = channels.find(
+            (c) =>
+              c.slug.toLowerCase().includes('vtv1') ||
+              c.name.toLowerCase().includes('vtv1') ||
+              c.shortName?.toLowerCase().includes('vtv1')
+          );
+          if (matched && onSelectChannel) {
+            onSelectChannel(matched);
+          }
+          saveToHistory('VTV1 HD', { subtitle: 'Watch', type: 'channel' });
+          navigate(`/live-tv?channel=${matched?.slug || 'vtv1-hd'}`);
+          setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
+        },
+      },
+      {
+        id: 'trending-craftmine',
+        title: 'The Craftmine',
+        subtitle: 'Play',
+        type: 'page' as const,
+        onSelect: () => {
+          saveToHistory('The Craftmine', { subtitle: 'Play', type: 'page' });
+          navigate('/craftmine');
+          setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
+        },
+      },
+      {
+        id: 'trending-memories',
+        title: 'View memories',
+        subtitle: 'Gallery',
+        type: 'page' as const,
+        onSelect: () => {
+          saveToHistory('View memories', { subtitle: 'Gallery', type: 'page' });
+          navigate('/gallery');
+          setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
+        },
+      },
+      {
+        id: 'trending-settings',
+        title: 'Flag experimental',
+        subtitle: 'Settings',
+        type: 'setting' as const,
+        onSelect: () => {
+          saveToHistory('Flag experimental', { subtitle: 'Settings', type: 'setting' });
+          navigate('/test');
+          setIsSearchFlyoutOpen(false);
+          setShowAllResults(false);
+        },
+      },
+    ];
+  }, [channels, navigate, onSelectChannel]);
+
   // Filtered search results for flyout
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
-      // Empty input: render recent search history (matches user screenshot)
+      // Empty input: render trending searches if history is empty, otherwise recent search history
+      if (searchHistory.length === 0) {
+        return trendingSearchItems;
+      }
       return searchHistory.map((hist, idx) => ({
         id: `history-${idx}`,
         title: hist.query,
@@ -337,6 +417,12 @@ export const TopBar: React.FC<TopBarProps> = ({
           saveToHistory(hist.query, { type: hist.type, logo: hist.logo, subtitle: hist.subtitle });
           if (onTabSearchChange) {
             onTabSearchChange(hist.query);
+          }
+          // Route if matching trending or app aspects
+          const found = appAspects.find((a) => a.title.toLowerCase() === hist.query.toLowerCase()) ||
+                        trendingSearchItems.find((t) => t.title.toLowerCase() === hist.query.toLowerCase());
+          if (found) {
+            found.onSelect();
           }
           setIsSearchFlyoutOpen(false);
           setShowAllResults(false);
@@ -651,8 +737,40 @@ export const TopBar: React.FC<TopBarProps> = ({
     );
   };
 
-  // Render icon based on item type - using Microsoft Fluent Design 3D Icons
+  // Render icon based on item type - using Microsoft Fluent Design Icons matching sidebar
   const renderItemIcon = (item: SearchAspectItem) => {
+    // 1. Trending search items: exact requested colored fluent icons and VTV1 HD tab watch logo
+    if (item.id === 'trending-vtv1-hd' || item.title === 'VTV1 HD') {
+      const vtv1Logo = channels.find((c) => c.slug.includes('vtv1') || c.name.toLowerCase().includes('vtv1'))?.logo ||
+        'https://img.vtvprime.vn/CK-rS1WbUz0mcRIodGxvvpqXiQB6XhphIkl2z7F_S_4/rs:fit:836:468/czM6Ly9wcmQtc24taW1hZ2VzL2NoYW5uZWwvM2ZlMDdhZmQtYzIyZS00M2QwLTgyZTgtOWNkMGUyYTc3ZTRkLnBuZw==.png';
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <img src={vtv1Logo} alt="VTV1 HD" className="w-7 h-7 object-contain rounded-[4px]" />
+        </div>
+      );
+    }
+    if (item.id === 'trending-craftmine' || item.title === 'The Craftmine') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DCraftmineIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+    if (item.id === 'trending-memories' || item.title === 'View memories') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DGalleryIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+    if (item.id === 'trending-settings' || item.title === 'Flag experimental') {
+      return (
+        <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
+          <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
+        </div>
+      );
+    }
+
     if (item.type === 'history') {
       return getRecentSearchIcon(item.title, item.logo, item.type);
     }
@@ -829,12 +947,11 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-8 sm:h-8.5 rounded-[8px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all ${
-                isSearchFlyoutOpen
-                  ? 'search-flyout-open shadow-xs'
+              className={`group relative w-full h-8 sm:h-8.5 rounded-[6px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all overflow-hidden ${
+                isSearchFlyoutOpen || isSearchFocused
+                  ? 'search-flyout-open bg-white dark:bg-[#282c31] shadow-xs'
                   : 'bg-black/5 dark:bg-[#282c31]'
               }`}
-              style={isSearchFlyoutOpen ? { backgroundColor: searchFlyoutBg } : undefined}
             >
               <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
               <input
@@ -890,17 +1007,26 @@ export const TopBar: React.FC<TopBarProps> = ({
                     }
                   }}
                   title="Clear search"
-                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer z-10"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+
+              {/* Windows 11 Fluent Active Bottom Line Indicator: stays inside search box, clipped by rounded-[6px] corners matching Settings search box */}
+              <span
+                className={`pointer-events-none absolute bottom-0 left-0 right-0 w-full h-[2px] rounded-b-[6px] transition-colors duration-150 z-20 ${
+                  isSearchFocused || isSearchFlyoutOpen
+                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff]'
+                    : 'bg-[#8e8e93] dark:bg-[#777777]'
+                }`}
+              />
             </div>
           </form>
 
           {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
           <AnimatePresence>
-            {isSearchFlyoutOpen && (searchResults.length > 0 || (!searchQuery.trim() && searchHistory.length === 0)) && (
+            {isSearchFlyoutOpen && (
               <motion.div
                 key="topbar-search-flyout"
                 layout
@@ -921,10 +1047,51 @@ export const TopBar: React.FC<TopBarProps> = ({
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
-                {/* Search History Section Header when input is empty (not capitalized) */}
-                {!searchQuery.trim() && searchHistory.length > 0 && (
-                  <div className="px-2.5 pt-1 pb-1.5 text-[12px] font-semibold text-[#6b7280] dark:text-[#9ca3af] select-none border-b border-black/5 dark:border-white/5 mb-1">
-                    <span>Recent searches</span>
+                {/* Welcome Card on first time opening Search UI */}
+                <AnimatePresence>
+                  {showSearchWelcome && (
+                    <motion.div
+                      key="search-welcome-menu"
+                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, height: 0, marginBottom: 0, padding: 0 }}
+                      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                      className="p-3 mb-2 rounded-[10px] bg-gradient-to-br from-[#005fb8]/10 via-[#005fb8]/5 to-transparent dark:from-[#4cc2ff]/15 dark:via-[#4cc2ff]/5 dark:to-transparent border border-[#005fb8]/20 dark:border-[#4cc2ff]/25 flex flex-col gap-2 select-none overflow-hidden"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md bg-[#005fb8]/15 dark:bg-[#4cc2ff]/20 flex items-center justify-center shrink-0">
+                          <FluentSearchIcon className="w-3.5 h-3.5" />
+                        </div>
+                        <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white leading-snug">
+                          Welcome to the new search
+                        </h3>
+                      </div>
+                      <p className="text-[12px] text-[#4b5563] dark:text-[#9ca3af] leading-relaxed">
+                        Search has been reimagined with a better interface, stunning visuals and much more efficient searching.
+                      </p>
+                      <div className="flex justify-end pt-0.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowSearchWelcome(false);
+                            try {
+                              localStorage.setItem('vone_search_welcome_understood', 'true');
+                            } catch {}
+                          }}
+                          className="px-3.5 py-1.5 rounded-[6px] bg-[#005fb8] hover:bg-[#0052a3] active:bg-[#004890] dark:bg-[#4cc2ff] dark:hover:bg-[#38b6ff] dark:active:bg-[#20a7f5] text-white dark:text-[#002b4d] font-semibold text-[12px] shadow-sm transition-all cursor-pointer"
+                        >
+                          Understood
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Section Header when input is empty: "Trending searches" or "Recent searches" */}
+                {!searchQuery.trim() && (
+                  <div className="px-2.5 pt-1 pb-1.5 text-[12px] font-semibold text-[#6b7280] dark:text-[#9ca3af] select-none border-b border-black/5 dark:border-white/5 mb-1 flex items-center justify-between">
+                    <span>{searchHistory.length > 0 ? 'Recent searches' : 'Trending searches'}</span>
                   </div>
                 )}
 
@@ -987,22 +1154,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   </motion.div>
                 ))}
 
-                {/* Empty State when no recent searches exist */}
-                {!searchQuery.trim() && searchHistory.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.24 }}
-                    className="py-5 px-4 text-center flex flex-col items-center justify-center gap-2 select-none"
-                  >
-                    <Fluent3DFolderSearchIcon className="w-10 h-10 drop-shadow-sm opacity-90" />
-                    <span className="text-[13px] font-medium text-[#111827] dark:text-white">No recent searches</span>
-                    <span className="text-[11.5px] text-[#6b7280] dark:text-[#9ca3af]">Searches you perform will appear here</span>
-                  </motion.div>
-                )}
-
-                {/* Recent Searches Footer: Show more results button and Clear all button aligned */}
-                {!searchQuery.trim() && searchResults.length > 4 && !showAllResults && (
+                {/* Recent Searches Footer: Show more button and Clear all button without hover/pressed transforms */}
+                {!searchQuery.trim() && searchHistory.length > 4 && !showAllResults && (
                   <motion.div
                     key="recent-search-footer-actions"
                     layout
@@ -1021,13 +1174,13 @@ export const TopBar: React.FC<TopBarProps> = ({
                         e.stopPropagation();
                         setShowAllResults(true);
                       }}
-                      className="flex-1 h-9.5 px-3 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-all cursor-pointer select-none group"
+                      className="flex-1 h-9 px-3 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-left text-[13px] text-[#374151] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white transition-colors cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2.5">
-                        <History className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0 group-hover:rotate-[-25deg] transition-transform" />
-                        <span className="font-medium text-[13px]">Show more results</span>
+                        <FluentSearchIcon className="w-4 h-4 shrink-0 pointer-events-none" />
+                        <span className="font-medium text-[13px]">Show more</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight className="w-4 h-4 text-[#6b7280] dark:text-[#9ca3af] shrink-0" />
                     </button>
                     <button
                       type="button"
@@ -1036,15 +1189,15 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleClearAllWithAnimation();
                       }}
                       disabled={isClearingHistory}
-                      className="h-9.5 px-3.5 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-all cursor-pointer select-none shrink-0"
+                      className="h-9 px-3.5 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-colors cursor-pointer select-none shrink-0"
                     >
                       Clear all
                     </button>
                   </motion.div>
                 )}
 
-                {/* When 4 or fewer recent searches, Clear all is placed at the bottom where Show more results is */}
-                {!searchQuery.trim() && searchResults.length <= 4 && searchResults.length > 0 && (
+                {/* When 4 or fewer recent searches, Clear all is placed at the bottom where Show more is */}
+                {!searchQuery.trim() && searchHistory.length <= 4 && searchHistory.length > 0 && (
                   <motion.div
                     key="recent-search-footer-clear"
                     layout
@@ -1052,7 +1205,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       duration: 0.38,
-                      delay: Math.min(searchResults.length * 0.04, 0.2),
+                      delay: Math.min(searchHistory.length * 0.04, 0.2),
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     className="w-full mt-1 pt-0.5"
@@ -1064,7 +1217,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleClearAllWithAnimation();
                       }}
                       disabled={isClearingHistory}
-                      className="w-full h-9.5 px-3.5 rounded-[8px] bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.08] dark:active:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-all cursor-pointer select-none"
+                      className="w-full h-9 px-3.5 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] hover:text-[#005fb8] dark:hover:text-[#4cc2ff] active:bg-black/[0.09] dark:active:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-[12.5px] font-medium text-[#6b7280] dark:text-[#9ca3af] transition-colors cursor-pointer select-none"
                     >
                       Clear all
                     </button>

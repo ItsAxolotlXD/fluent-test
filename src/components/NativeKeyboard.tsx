@@ -14,7 +14,7 @@ import {
 } from '../utils/clipboardHistory';
 import { EmojiBoard } from './EmojiBoard';
 
-const SF_SEARCH_ICON_URL = 'https://github.com/andrewtavis/sf-symbols-online/blob/master/glyphs/magnifyingglass.png?raw=true';
+const SF_SEARCH_ICON_URL = '/icons/search_sparkle.png';
 const SF_MIC_ICON_URL = 'https://github.com/andrewtavis/sf-symbols-online/blob/master/glyphs/mic.png?raw=true';
 
 type KeyboardLayoutMode = 'alpha' | 'numeric' | 'symbols';
