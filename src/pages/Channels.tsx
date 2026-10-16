@@ -94,7 +94,7 @@ export const Channels: React.FC<ChannelsProps> = ({
         {/* Search matching Find and search Sparkle */}
         <div
           id="channels-search-box"
-          className="group relative w-full md:w-80 h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all rounded-[6px]"
+          className="group relative w-full md:w-80 h-[38px] sm:h-[41px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all rounded-[6px]"
         >
           <input
             type="text"
@@ -113,6 +113,9 @@ export const Channels: React.FC<ChannelsProps> = ({
               <X className="w-3.5 h-3.5" />
             </button>
           )}
+
+          {/* Blue bottom indicator line matching settings search box */}
+          <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#005fb8] dark:bg-[#4cc2ff] opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
         </div>
       </div>
 

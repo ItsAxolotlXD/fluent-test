@@ -262,7 +262,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 setIsFocused(true);
                 inputRef.current?.focus();
               }}
-              className="group relative w-full h-8 sm:h-8.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none"
+              className="group relative w-full h-[38px] sm:h-[41px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none"
             >
               <input
                 ref={inputRef}

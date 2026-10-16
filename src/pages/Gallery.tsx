@@ -14,7 +14,6 @@ import {
   RotateCw, 
   FolderOpen, 
   Sparkles,
-  Funnel,
   CheckSquare,
   Square,
   Copy,
@@ -53,7 +52,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const { settings } = useSettings();
   const [items, setItems] = useState<GalleryMediaItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<GalleryMediaItem | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -138,10 +136,149 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     return counts;
   }, [items]);
 
-  // Timeline years list from available items
+  const galleryScrollRef = useRef<HTMLDivElement>(null);
+
+  // Group filtered items by date/year matching Windows 11 Photos layout
+  const groupedSections = useMemo(() => {
+    if (filteredItems.length === 0) return [];
+
+    // Sort items by date descending (newest first)
+    const sorted = [...filteredItems].sort((a, b) => {
+      const timeA = new Date(a.dateAdded).getTime() || 0;
+      const timeB = new Date(b.dateAdded).getTime() || 0;
+      return timeB - timeA;
+    });
+
+    const groupsMap = new Map<string, { year: number; label: string; items: GalleryMediaItem[] }>();
+
+    for (const item of sorted) {
+      let year = item.year;
+      if (!year && item.dateAdded) {
+        const d = new Date(item.dateAdded);
+        if (!isNaN(d.getFullYear())) year = d.getFullYear();
+      }
+      year = year || 2022;
+
+      // Extract month label if possible
+      let label = item.dateLabel || `${year}`;
+      if (item.dateAdded) {
+        const d = new Date(item.dateAdded);
+        if (!isNaN(d.getTime())) {
+          const monthName = d.toLocaleString('en-US', { month: 'long' });
+          label = `${monthName} ${year}`;
+        }
+      }
+
+      const key = `${year}-${label}`;
+      if (!groupsMap.has(key)) {
+        groupsMap.set(key, { year, label, items: [] });
+      }
+      groupsMap.get(key)!.items.push(item);
+    }
+
+    return Array.from(groupsMap.entries()).map(([key, value]) => ({
+      id: key,
+      year: value.year,
+      label: value.label,
+      items: value.items,
+    }));
+  }, [filteredItems]);
+
+  // Timeline years list from available items + preset years
   const timelineYears = useMemo(() => {
-    return [2023, 2022, 2021, 2020, 2019, 2018];
-  }, []);
+    const itemYears = items
+      .map((it) => it.year || new Date(it.dateAdded).getFullYear())
+      .filter((y): y is number => typeof y === 'number' && !isNaN(y));
+    const set = new Set([2024, 2023, 2022, 2021, 2020, 2019, 2018, ...itemYears]);
+    return Array.from(set).sort((a, b) => b - a);
+  }, [items]);
+
+  // Handle clicking a timeline year: smoothly scrolls to that year's section
+  const handleTimelineClick = (year: number) => {
+    setActiveYear(year);
+    const targetSection = document.getElementById(`gallery-group-${year}`);
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast(`Scrolled to ${year}`);
+    } else {
+      // Find nearest year section if exact year section not rendered
+      const allSections = document.querySelectorAll<HTMLElement>('.gallery-year-section');
+      let closest: HTMLElement | null = null;
+      let minDiff = Infinity;
+      allSections.forEach((sec) => {
+        const secYear = Number(sec.dataset.year);
+        if (!isNaN(secYear)) {
+          const diff = Math.abs(secYear - year);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = sec;
+          }
+        }
+      });
+      if (closest) {
+        (closest as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      showToast(`Scrolled to ${year}`);
+    }
+  };
+
+  // ScrollSpy: Automatically update activeYear based on current viewport scroll
+  useEffect(() => {
+    const container = galleryScrollRef.current;
+    if (!container) return;
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const containerRect = container.getBoundingClientRect();
+          const sections = container.querySelectorAll<HTMLElement>('.gallery-year-section');
+          let currentVisibleYear: number | null = null;
+
+          for (let i = 0; i < sections.length; i++) {
+            const sec = sections[i];
+            const rect = sec.getBoundingClientRect();
+            if (rect.top <= containerRect.top + 160 && rect.bottom >= containerRect.top + 30) {
+              const y = Number(sec.dataset.year);
+              if (!isNaN(y)) {
+                currentVisibleYear = y;
+                break;
+              }
+            }
+          }
+
+          if (currentVisibleYear && currentVisibleYear !== activeYear) {
+            setActiveYear(currentVisibleYear);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => container.removeEventListener('scroll', onScroll);
+  }, [activeYear]);
+
+  // Toggle selection for all items in a date group
+  const toggleGroupSelect = (groupItems: GalleryMediaItem[]) => {
+    const groupIds = groupItems.map((i) => i.id);
+    const allSelected = groupIds.every((id) => selectedIds.has(id));
+
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        groupIds.forEach((id) => next.delete(id));
+      } else {
+        groupIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+
+    if (!isSelectMode) {
+      setIsSelectMode(true);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -501,7 +638,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   };
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-[#282c31] text-[#111827] dark:text-[#F3F4F6] relative select-none">
+    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -517,33 +654,40 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         )}
       </AnimatePresence>
 
-      {/* Photos-style gallery header */}
-      <header className="sticky top-0 z-30 px-6 py-2.5 border-b border-white/[0.06] bg-[#282c31]/95 backdrop-blur-xl flex items-center justify-between gap-4 shrink-0 overflow-visible">
-        <div className="relative text-white/60">
-          <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
-            <Funnel className="w-3.5 h-3.5" />
-          </button>
-          {isFilterMenuOpen && (
-            <div className="absolute right-0 top-9 z-[100] min-w-36 rounded-lg border border-white/10 bg-[#303030] p-1.5 shadow-2xl">
-              {[
-                { id: 'image', label: 'Photos' },
-                { id: 'video', label: 'Video' },
-                { id: 'audio', label: 'Audio' },
-                { id: 'document', label: 'Files' },
-              ].map((option) => (
-                <button key={option.id} type="button" onClick={() => { setActiveFilter(option.id as FilterType); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === option.id ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
-                  {option.label}
-                </button>
-              ))}
-              <button type="button" onClick={() => { setActiveFilter('all'); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === 'all' ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
-                All media
+      {/* Top Action Bar (No header title "Gallery", no local search bar - synced with TopBar) */}
+      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2.5 border-b border-black/10 dark:border-white/10 bg-transparent flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+        {/* Left: Filter Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {[
+            { id: 'all', label: 'All', icon: ImageIcon },
+            { id: 'image', label: 'Photos', icon: ImageIcon },
+            { id: 'video', label: 'Videos', icon: Film },
+            { id: 'audio', label: 'Audio', icon: Music },
+            { id: 'document', label: 'Files', icon: FileText },
+            { id: 'favorites', label: 'Favorites', icon: Heart },
+          ].map((tab) => {
+            const isActive = activeFilter === tab.id;
+            const IconComp = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveFilter(tab.id as FilterType)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  isActive
+                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-bold shadow-xs'
+                    : 'bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#4b5563] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white border border-black/5 dark:border-white/5'
+                }`}
+              >
+                <IconComp className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
               </button>
-            </div>
-          )}
+            );
+          })}
         </div>
 
-      {/* Right: Select Mode Actions or Normal Actions */}
-        <div className="flex items-center gap-2">
+        {/* Right: Select Mode Actions or Normal Actions */}
+        <div className="flex items-center gap-2 ml-auto">
           {isSelectMode ? (
             /* Action bar when Selection mode is Active */
             <div className="flex items-center gap-2 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-[6px] border border-black/10 dark:border-white/10">
@@ -609,32 +753,51 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Normal Mode: compact gallery actions */
+            /* Normal Mode: Upload & Select buttons */
             <>
-              <button
-                type="button"
-                onClick={handleRestoreSamples}
-                aria-label="Load samples"
-                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
-              >
-                <RotateCw className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsSelectMode(true)}
-                aria-label="Select files"
-                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
-              >
-                <CheckSquare className="w-3.5 h-3.5" />
-              </button>
+              {/* Select Button (Replaced Clear button as requested) */}
+              {filteredItems.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsSelectMode(true)}
+                  className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                  title="Select multiple files to duplicate or delete"
+                >
+                  <CheckSquare className="w-3.5 h-3.5" />
+                  <span>Select</span>
+                </button>
+              )}
+
+              {/* New Folder */}
               <button
                 type="button"
                 onClick={() => setIsNewFolderOpen(true)}
-                aria-label="New folder"
+                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
                 title="Create a new folder"
-                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
+                <span>New folder</span>
+              </button>
+
+              {/* Upload Button (.docx, .doc, .pptx, .ppt, .xlsx, .xls, images, videos, audio) */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs sm:text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
+              >
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload</span>
+              </button>
+
+              {/* Load Demo button */}
+              <button
+                type="button"
+                onClick={handleRestoreSamples}
+                className="px-2.5 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#005fb8] dark:text-[#4cc2ff] text-xs font-semibold border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                title="Load sample demo files and media"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+                <span>Load Demo</span>
               </button>
             </>
           )}
@@ -649,23 +812,12 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             className="hidden"
           />
         </div>
-        {!isSelectMode && (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            aria-label="Import files"
-            title="Import"
-            className="ml-auto size-8 rounded-[6px] bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-all cursor-pointer flex items-center justify-center shadow-sm"
-          >
-            <UploadCloud className="w-3.5 h-3.5" />
-          </button>
-        )}
       </header>
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden relative" ref={galleryContainerRef}>
         {/* Gallery Content View */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar" ref={galleryScrollRef}>
           {/* Folder breadcrumb */}
           {currentFolder && !isSearching && (
             <nav aria-label="Folder" className="flex items-center gap-1.5 mb-4 max-w-[1800px] mx-auto text-sm">
@@ -803,238 +955,287 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Populated Gallery Grid */
-            <div className="space-y-6 max-w-[1800px] mx-auto">
-              {/* Header Info */}
-              <div className="flex items-center justify-between text-xs sm:text-sm font-medium text-[#4b5563] dark:text-[#d1d5db] px-1">
-                <span>All Media & Documents</span>
-                <span className="text-[11px] text-[#6b7280] dark:text-[#9ca3af]">{filteredItems.length} items</span>
-              </div>
+            /* Populated Gallery Grid with Windows 11 Photos date/year grouped sections */
+            <div className="space-y-8 max-w-[1800px] mx-auto">
+              {groupedSections.map((group, groupIdx) => {
+                const isFirstSectionOfYear = groupIdx === 0 || groupedSections[groupIdx - 1].year !== group.year;
+                const isAllGroupSelected = group.items.every((it) => selectedIds.has(it.id));
 
-              {/* Justified fluid aspect-ratio grid */}
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 items-stretch">
-                {filteredItems.map((item) => {
-                  const ar = Math.max(0.4, Math.min(3.0, item.aspectRatio || 1.33));
-                  const isSelected = selectedIds.has(item.id);
-                  const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
+                return (
+                  <section
+                    key={group.id}
+                    id={isFirstSectionOfYear ? `gallery-group-${group.year}` : `gallery-section-${group.id}`}
+                    data-year={group.year}
+                    className="gallery-year-section space-y-3"
+                  >
+                    {/* Date Header matching Windows 11 Photos */}
+                    <div className="flex items-center justify-between px-1 py-1.5 border-b border-black/5 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md bg-[#282c31]/90 dark:bg-[#282c31]/90">
+                      <div className="flex items-baseline gap-2.5">
+                        <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white font-['Segoe_UI',system-ui,sans-serif]">
+                          {group.label}
+                        </h3>
+                        <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] font-normal font-['Segoe_UI',system-ui,sans-serif]">
+                          {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
+                        </span>
+                      </div>
 
-                  return (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                      onClick={(e) => {
-                        if (longPressTriggered.current) {
-                          longPressTriggered.current = false;
-                          return;
-                        }
-                        if (isSelectMode) {
-                          toggleSelect(item.id, e);
-                        } else {
-                          setSelectedItem(item);
-                        }
-                      }}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        clearLongPress();
-                        openContextMenu(item, e.clientX, e.clientY);
-                      }}
-                      onTouchStart={(e) => handleTouchStart(item, e)}
-                      onTouchMove={clearLongPress}
-                      onTouchEnd={clearLongPress}
-                      onTouchCancel={clearLongPress}
-                      style={{
-                        flexGrow: Math.round(ar * 100),
-                        flexBasis: `calc(${ar} * 160px)`,
-                        height: '200px',
-                        WebkitTouchCallout: 'none',
-                      }}
-                      className={`group relative rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#2a2a2a] cursor-pointer shadow-sm hover:shadow-xl transition-all select-none border ${
-                        isSelected
-                          ? 'ring-3 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
-                          : 'border-black/10 dark:border-white/10 hover:ring-2 hover:ring-[#005fb8]/70 dark:hover:ring-[#4cc2ff]/70'
-                      }`}
-                    >
-                      {/* Checkbox indicator in Select Mode */}
-                      {isSelectMode && (
-                        <div 
-                          className="absolute top-2 right-2 z-20"
-                          onClick={(e) => toggleSelect(item.id, e)}
-                        >
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                            isSelected 
-                              ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white' 
-                              : 'bg-black/50 text-white/70 hover:text-white border border-white/40'
-                          }`}>
-                            {isSelected ? <Check className="w-4 h-4 stroke-[2.5]" /> : <div className="w-2.5 h-2.5 rounded-full bg-white/40" />}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Media Thumbnail / Preview */}
-                      {item.type === 'video' ? (
-                        <div className="relative w-full h-full bg-black">
-                          <img
-                            src={item.thumbnailUrl || item.url}
-                            alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-black/25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md">
-                              <Play className="w-5 h-5 fill-current ml-0.5" />
-                            </div>
-                          </div>
-                        </div>
-                      ) : item.type === 'audio' ? (
-                        <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-4 flex flex-col justify-between">
-                          <div className="flex items-center justify-between">
-                            <div className="w-8 h-8 rounded-full bg-[#005fb8]/20 dark:bg-[#4cc2ff]/20 text-[#005fb8] dark:text-[#4cc2ff] flex items-center justify-center">
-                              <Music className="w-4 h-4" />
-                            </div>
-                            <span className="text-[10px] text-neutral-400 font-mono">
-                              {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : 'AUDIO'}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-semibold text-white truncate">{item.title}</p>
-                            <p className="text-[10px] text-neutral-400">Audio Track</p>
-                          </div>
-                        </div>
-                      ) : item.type === 'document' ? (
-                        /* Office document presentation (.docx, .doc, .pptx, .ppt, .xlsx, .xls, .pdf) or Sticky Note */
-                        item.mimeType === 'application/x-sticky-note' && (item.thumbnailUrl || item.url) ? (
-                          <div className="relative w-full h-full bg-amber-100 dark:bg-amber-950 overflow-hidden">
-                            <img
-                              src={item.thumbnailUrl || item.url}
-                              alt={item.title}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
-                              loading="lazy"
-                            />
-                          </div>
+                      {/* Group Select Button */}
+                      <button
+                        type="button"
+                        onClick={() => toggleGroupSelect(group.items)}
+                        className={`px-2.5 py-1 rounded-[6px] text-xs font-['Segoe_UI',system-ui,sans-serif] font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+                          isAllGroupSelected && isSelectMode
+                            ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold shadow-xs'
+                            : 'hover:bg-black/5 dark:hover:bg-white/10 text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white'
+                        }`}
+                        title="Select all in this section"
+                      >
+                        {isAllGroupSelected && isSelectMode ? (
+                          <>
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Selected</span>
+                          </>
                         ) : (
-                          <div 
-                            className="w-full h-full p-4 flex flex-col justify-between"
-                            style={{
-                              background: `linear-gradient(135deg, ${docInfo?.color || '#2b579a'}20 0%, #1c1c24 100%)`,
+                          <span>Select</span>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Justified fluid aspect-ratio grid */}
+                    <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
+                      {group.items.map((item) => {
+                        const ar = Math.max(0.4, Math.min(3.0, item.aspectRatio || 1.33));
+                        const isSelected = selectedIds.has(item.id);
+                        const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
+
+                        return (
+                          <motion.div
+                            key={item.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={(e) => {
+                              if (longPressTriggered.current) {
+                                longPressTriggered.current = false;
+                                return;
+                              }
+                              if (isSelectMode) {
+                                toggleSelect(item.id, e);
+                              } else {
+                                setSelectedItem(item);
+                              }
                             }}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              clearLongPress();
+                              openContextMenu(item, e.clientX, e.clientY);
+                            }}
+                            onTouchStart={(e) => handleTouchStart(item, e)}
+                            onTouchMove={clearLongPress}
+                            onTouchEnd={clearLongPress}
+                            onTouchCancel={clearLongPress}
+                            style={{
+                              flexGrow: Math.round(ar * 100),
+                              flexBasis: `calc(${ar} * 160px)`,
+                              height: '200px',
+                              WebkitTouchCallout: 'none',
+                            }}
+                            className={`group relative rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#2a2a2a] cursor-pointer shadow-xs hover:shadow-xl transition-all select-none border ${
+                              isSelected
+                                ? 'ring-3 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
+                                : 'border-black/10 dark:border-white/10 hover:ring-2 hover:ring-[#005fb8]/70 dark:hover:ring-[#4cc2ff]/70'
+                            }`}
                           >
-                            <div className="flex items-center justify-between">
-                              <div 
-                                className="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white font-bold"
-                                style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+                            {/* Checkbox indicator in Select Mode */}
+                            {isSelectMode && (
+                              <div
+                                className="absolute top-2 right-2 z-20"
+                                onClick={(e) => toggleSelect(item.id, e)}
                               >
-                                {docInfo && <docInfo.icon className="w-5 h-5" />}
+                                <div
+                                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                                    isSelected
+                                      ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white'
+                                      : 'bg-black/50 text-white/70 hover:text-white border border-white/40'
+                                  }`}
+                                >
+                                  {isSelected ? <Check className="w-4 h-4 stroke-[2.5]" /> : <div className="w-2.5 h-2.5 rounded-full bg-white/40" />}
+                                </div>
                               </div>
-                              <span 
-                                className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-xs font-mono"
-                                style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+                            )}
+
+                            {/* Media Thumbnail / Preview */}
+                            {item.type === 'video' ? (
+                              <div className="relative w-full h-full bg-black">
+                                <img
+                                  src={item.thumbnailUrl || item.url}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-black/25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md">
+                                    <Play className="w-5 h-5 fill-current ml-0.5" />
+                                  </div>
+                                </div>
+                              </div>
+                            ) : item.type === 'audio' ? (
+                              <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-4 flex flex-col justify-between">
+                                <div className="flex items-center justify-between">
+                                  <div className="w-8 h-8 rounded-full bg-[#005fb8]/20 dark:bg-[#4cc2ff]/20 text-[#005fb8] dark:text-[#4cc2ff] flex items-center justify-center">
+                                    <Music className="w-4 h-4" />
+                                  </div>
+                                  <span className="text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">
+                                    {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : 'AUDIO'}
+                                  </span>
+                                </div>
+                                <div>
+                                  <p className="text-xs font-semibold text-white truncate font-['Segoe_UI',system-ui,sans-serif]">{item.title}</p>
+                                  <p className="text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">Audio Track</p>
+                                </div>
+                              </div>
+                            ) : item.type === 'document' ? (
+                              item.mimeType === 'application/x-sticky-note' && (item.thumbnailUrl || item.url) ? (
+                                <div className="relative w-full h-full bg-amber-100 dark:bg-amber-950 overflow-hidden">
+                                  <img
+                                    src={item.thumbnailUrl || item.url}
+                                    alt={item.title}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              ) : (
+                                <div
+                                  className="w-full h-full p-4 flex flex-col justify-between"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${docInfo?.color || '#2b579a'}20 0%, #1c1c24 100%)`,
+                                  }}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div
+                                      className="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white font-bold"
+                                      style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+                                    >
+                                      {docInfo && <docInfo.icon className="w-5 h-5" />}
+                                    </div>
+                                    <span
+                                      className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-xs font-['Segoe_UI',system-ui,sans-serif]"
+                                      style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+                                    >
+                                      {docInfo?.badge || 'DOC'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-bold text-white line-clamp-2 leading-snug font-['Segoe_UI',system-ui,sans-serif]">{item.title}</p>
+                                    <div className="flex items-center justify-between mt-1 text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">
+                                      <span>{docInfo?.brand || 'Document'}</span>
+                                      <span>{(item.size ? (item.size / 1024).toFixed(0) : '150')} KB</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            ) : (
+                              <img
+                                src={item.thumbnailUrl || item.url}
+                                alt={item.title}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                loading="lazy"
+                              />
+                            )}
+
+                            {/* Top-Left Acrylic Badge Icon */}
+                            <div className="absolute top-2 left-2 z-10 flex items-center gap-1">
+                              <div className="px-1.5 py-1 rounded-[5px] bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1 shadow-xs">
+                                {item.type === 'video' ? (
+                                  <>
+                                    <Film className="w-3 h-3 text-white" />
+                                    <div className="w-2.5 h-2.5 rounded-[2px] bg-gradient-to-br from-red-500 to-amber-500 flex items-center justify-center" />
+                                  </>
+                                ) : item.type === 'audio' ? (
+                                  <Music className="w-3 h-3 text-[#4cc2ff]" />
+                                ) : item.type === 'document' ? (
+                                  <div className="flex items-center gap-1">
+                                    {docInfo && <docInfo.icon className="w-3 h-3" style={{ color: docInfo.color }} />}
+                                    <span className="text-[9px] font-bold text-white font-['Segoe_UI',system-ui,sans-serif]">{docInfo?.badge || 'DOC'}</span>
+                                  </div>
+                                ) : (
+                                  <div className="w-3 h-3 rounded-[2px] bg-gradient-to-tr from-[#3b82f6] via-[#10b981] to-[#f59e0b] shadow-xs" />
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Favorite indicator */}
+                            {!isSelectMode && item.isFavorite && (
+                              <div className="absolute top-2 right-2 z-10 p-1 rounded-full bg-black/60 backdrop-blur-md text-amber-400">
+                                <Heart className="w-3 h-3 fill-current" />
+                              </div>
+                            )}
+
+                            {/* Quick Hover Delete button */}
+                            {!isSelectMode && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteItem(item);
+                                }}
+                                className={`absolute ${item.isFavorite ? 'top-2 right-9' : 'top-2 right-2'} z-20 p-1 rounded-full bg-black/60 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md`}
+                                title="Delete item"
                               >
-                                {docInfo?.badge || 'DOC'}
-                              </span>
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+
+                            {/* Subtle hover info */}
+                            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white">
+                              <span className="text-[11px] font-medium truncate max-w-[85%] font-['Segoe_UI',system-ui,sans-serif]">{item.title}</span>
                             </div>
-                            <div>
-                              <p className="text-xs font-bold text-white line-clamp-2 leading-snug">{item.title}</p>
-                              <div className="flex items-center justify-between mt-1 text-[10px] text-neutral-400">
-                                <span>{docInfo?.brand || 'Document'}</span>
-                                <span>{(item.size ? (item.size / 1024).toFixed(0) : '150')} KB</span>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      ) : (
-                        <img
-                          src={item.thumbnailUrl || item.url}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
-                          loading="lazy"
-                        />
-                      )}
-
-                      {/* Top-Left Acrylic Badge Icon */}
-                      <div className="absolute top-2 left-2 z-10 flex items-center gap-1">
-                        <div className="px-1.5 py-1 rounded-[5px] bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1 shadow-sm">
-                          {item.type === 'video' ? (
-                            <>
-                              <Film className="w-3 h-3 text-white" />
-                              <div className="w-2.5 h-2.5 rounded-[2px] bg-gradient-to-br from-red-500 to-amber-500 flex items-center justify-center" />
-                            </>
-                          ) : item.type === 'audio' ? (
-                            <Music className="w-3 h-3 text-[#4cc2ff]" />
-                          ) : item.type === 'document' ? (
-                            <div className="flex items-center gap-1">
-                              {docInfo && <docInfo.icon className="w-3 h-3" style={{ color: docInfo.color }} />}
-                              <span className="text-[9px] font-bold text-white font-mono">{docInfo?.badge || 'DOC'}</span>
-                            </div>
-                          ) : (
-                            <div className="w-3 h-3 rounded-[2px] bg-gradient-to-tr from-[#3b82f6] via-[#10b981] to-[#f59e0b] shadow-xs" />
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Favorite indicator */}
-                      {!isSelectMode && item.isFavorite && (
-                        <div className="absolute top-2 right-2 z-10 p-1 rounded-full bg-black/60 backdrop-blur-md text-amber-400">
-                          <Heart className="w-3 h-3 fill-current" />
-                        </div>
-                      )}
-
-                      {/* Quick Hover Delete button */}
-                      {!isSelectMode && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteItem(item);
-                          }}
-                          className={`absolute ${item.isFavorite ? 'top-2 right-9' : 'top-2 right-2'} z-20 p-1 rounded-full bg-black/60 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md`}
-                          title="Delete item"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-
-                      {/* Subtle hover info */}
-                      <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white">
-                        <span className="text-[11px] font-medium truncate max-w-[85%]">{item.title}</span>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           )}
         </div>
 
-        {/* Right-Hand Timeline Scrubber Track */}
-        <div className="hidden lg:flex flex-col items-center justify-center w-14 shrink-0 border-l border-black/10 dark:border-white/10 bg-transparent select-none py-6 relative">
-          <div className="flex flex-col items-center justify-between h-[80%] relative">
-            <div className="absolute top-2 bottom-2 w-[1px] bg-black/15 dark:bg-white/20 -z-0" />
+        {/* Right-Hand Timeline Scrubber Track - Fully functional with Segoe UI font */}
+        <div className="hidden lg:flex flex-col items-center justify-center w-16 shrink-0 border-l border-black/10 dark:border-white/10 bg-transparent select-none py-6 relative">
+          <div className="flex flex-col items-center justify-between h-[80%] relative w-full px-2">
+            <div className="absolute top-2 bottom-2 left-1/2 -translate-x-1/2 w-[1px] bg-black/15 dark:bg-white/20 -z-0" />
 
             {timelineYears.map((year) => {
-              const isOct2022 = year === 2022;
+              const isActive = activeYear === year;
+              const activeLabel = year === 2022 ? 'Oct 2022' : String(year);
+
               return (
-                <div key={year} className="flex flex-col items-center gap-1.5 z-10 relative group">
-                  {isOct2022 ? (
-                    <div className="relative flex items-center">
-                      <div className="px-2 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-[10px] font-bold shadow-md cursor-pointer whitespace-nowrap -ml-16 mr-2">
-                        Oct 2022
-                      </div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] ring-2 ring-white dark:ring-black" />
+                <div key={year} className="flex flex-col items-center gap-1 z-10 relative group">
+                  {isActive ? (
+                    <div
+                      className="relative flex items-center cursor-pointer"
+                      onClick={() => handleTimelineClick(year)}
+                      title={`Current year ${year}`}
+                    >
+                      <motion.div
+                        layoutId="timeline-active-pill"
+                        className="px-2 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-[11px] font-semibold shadow-md whitespace-nowrap -ml-20 mr-1.5 font-['Segoe_UI',system-ui,sans-serif]"
+                      >
+                        {activeLabel}
+                      </motion.div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] ring-2 ring-white dark:ring-black shadow-xs" />
                     </div>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => {
-                        setActiveYear(year);
-                        showToast(`Timeline scrolled to ${year}`);
-                      }}
-                      className="flex flex-col items-center gap-1 cursor-pointer py-1"
+                      onClick={() => handleTimelineClick(year)}
+                      className="flex flex-col items-center gap-1 cursor-pointer py-1 group/btn"
+                      title={`Jump to ${year}`}
                     >
-                      <div className="w-1.5 h-1.5 rounded-full bg-black/30 dark:bg-white/40 hover:bg-[#005fb8] dark:hover:bg-white transition-colors" />
-                      <span className="text-[10px] text-[#6b7280] dark:text-neutral-400 group-hover:text-[#111827] dark:group-hover:text-white font-mono">
+                      <div className="w-1.5 h-1.5 rounded-full bg-black/35 dark:bg-white/45 group-hover/btn:bg-[#005fb8] dark:group-hover/btn:bg-[#4cc2ff] group-hover/btn:scale-125 transition-all" />
+                      <span className="text-[11px] text-[#6b7280] dark:text-neutral-400 group-hover/btn:text-[#111827] dark:group-hover/btn:text-white font-['Segoe_UI',system-ui,sans-serif] font-medium transition-colors">
                         {year}
                       </span>
                     </button>

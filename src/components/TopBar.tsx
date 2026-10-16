@@ -1538,13 +1538,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-8 sm:h-8.5 rounded-[14px] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 transition-all overflow-hidden ${
+              className={`group relative w-full h-[38px] sm:h-[41px] rounded-[6px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all overflow-hidden ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open bg-white dark:bg-[#282c31] shadow-xs'
                   : 'bg-black/5 dark:bg-[#282c31]'
               }`}
             >
-              <FluentSearchIcon className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
+              <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none drop-shadow-xs" />
               <input
                 type="text"
                 value={searchQuery}
@@ -1598,11 +1598,20 @@ export const TopBar: React.FC<TopBarProps> = ({
                     }
                   }}
                   title="Clear search"
-                  className="absolute right-1 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer z-10"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer z-10"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+
+              {/* Blue bottom indicator line matching settings search box */}
+              <div
+                className={`absolute bottom-0 left-0 right-0 h-[1.5px] transition-all duration-150 pointer-events-none z-10 ${
+                  isSearchFlyoutOpen || isSearchFocused
+                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] opacity-100'
+                    : 'bg-[#8e8e93]/60 dark:bg-[#777777]/60 opacity-70'
+                }`}
+              />
             </div>
           </form>
 

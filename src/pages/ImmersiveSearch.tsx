@@ -294,8 +294,9 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
             onClick={() => {
               inputRef.current?.focus();
             }}
-            className="group relative w-full max-w-md sm:max-w-lg h-9 sm:h-9.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2.5 rounded-[6px] transition-all cursor-text select-none"
+            className="group relative w-full max-w-md sm:max-w-lg h-[38px] sm:h-10 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2.5 rounded-[6px] transition-all cursor-text select-none"
           >
+            <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
             <input
               ref={inputRef}
               id="immersive-search-input"
@@ -319,6 +320,9 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
+
+            {/* Blue bottom indicator line matching settings search box */}
+            <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#005fb8] dark:bg-[#4cc2ff] opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
           </div>
         </div>
 

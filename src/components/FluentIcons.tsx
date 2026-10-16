@@ -59,7 +59,7 @@ export const FluentPersonDeleteIcon: React.FC<{ className?: string; style?: Reac
   </svg>
 );
 
-export const FluentSearchIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+export const FluentSearchIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-[18px] h-[18px]', style }) => (
   <img
     src={SEARCH_SPARKLE_ICON_URL}
     alt="Search"

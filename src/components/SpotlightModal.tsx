@@ -425,8 +425,9 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     setIsFocused(true);
                     inputRef.current?.focus();
                   }}
-                  className="group relative w-full h-9 sm:h-9.5 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 rounded-[6px] focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all cursor-text select-none"
+                  className="group relative w-full h-[38px] sm:h-10 bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3.5 gap-2 rounded-[6px] focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all cursor-text select-none"
                 >
+                  <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
                   <div className={`flex items-center gap-2.5 w-full ${isFocused || isListening || query ? 'pr-24' : 'pr-14'}`}>
                     <input
                       ref={inputRef}
@@ -507,6 +508,15 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                       <SettingsIcon className="w-4 h-4" />
                     </button>
                   </div>
+
+                  {/* Blue bottom indicator line matching settings search box */}
+                  <div
+                    className={`absolute bottom-0 left-0 right-0 h-[1.5px] transition-all duration-150 pointer-events-none ${
+                      isFocused || isListening || query
+                        ? 'bg-[#005fb8] dark:bg-[#4cc2ff] opacity-100'
+                        : 'bg-[#8e8e93]/60 dark:bg-[#777777]/60 opacity-60'
+                    }`}
+                  />
                 </div>
 
                 {/* Dynamic Content Area */}

@@ -3717,12 +3717,13 @@ html.dark .topbar-search-results-dropdown {
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
 }
-/* TopBar Search Box: Distinct focused background in light mode (#ffffff) and dark mode (#282c31), rounded corners matching settings search box (6px) and clipped line */
+/* TopBar Search Box: Distinct focused background in light mode (#ffffff) and dark mode (#282c31), rounded corners matching settings search box (6px) and blue accent line */
 html.light-mode #topbar-search-box {
   background-color: rgba(0, 0, 0, 0.05) !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1.5px solid #8e8e93 !important;
 }
 html.light-mode #topbar-search-box:focus-within,
 html.light-mode #topbar-search-box.search-flyout-open {
@@ -3731,14 +3732,16 @@ html.light-mode #topbar-search-box.search-flyout-open {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1.5px solid #005fb8 !important;
 }
 html:not(.light-mode) #topbar-search-box,
 html.dark #topbar-search-box {
   background-color: #282c31 !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1.5px solid #777777 !important;
 }
 html:not(.light-mode) #topbar-search-box:focus-within,
 html.dark #topbar-search-box:focus-within,
@@ -3749,7 +3752,8 @@ html.dark #topbar-search-box.search-flyout-open {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1.5px solid #4cc2ff !important;
 }
 
 /* TopBar Search Box: active indicator line matches standard Fluent Design input bottom border */
@@ -4313,7 +4317,7 @@ input[type="email"],
 input[type="url"],
 input[type="password"],
 input[type="number"]:not([data-no-line]) {
-  border-bottom: 2px solid #777777 !important;
+  border-bottom: 1.5px solid #777777 !important;
   transition: border-bottom-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
 
@@ -4338,7 +4342,7 @@ input[type="email"]:focus,
 input[type="url"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus {
-  border-bottom: 2px solid #4cc2ff !important;
+  border-bottom: 1.5px solid #4cc2ff !important;
   outline: none !important;
 }
 
@@ -4357,7 +4361,7 @@ html.light-mode input[type="email"],
 html.light-mode input[type="url"],
 html.light-mode input[type="password"],
 html.light-mode input[type="number"]:not([data-no-line]) {
-  border-bottom: 2px solid #8e8e93 !important;
+  border-bottom: 1.5px solid #8e8e93 !important;
 }
 
 html.light-mode .fluent-input:focus,
@@ -4377,7 +4381,7 @@ html.light-mode input[type="email"]:focus,
 html.light-mode input[type="url"]:focus,
 html.light-mode input[type="password"]:focus,
 html.light-mode input[type="number"]:focus {
-  border-bottom: 2px solid #005fb8 !important;
+  border-bottom: 1.5px solid #005fb8 !important;
 }
 
 /* Search Sparkle Icon styling */
