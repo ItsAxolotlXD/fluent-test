@@ -52,12 +52,12 @@ export const SequentialSection: React.FC<SequentialSectionProps> = ({
     };
   }, [enabled, order, isLoaded]);
 
-  // When placeholder enters viewport upon scrolling down, run loading ring for 3 seconds before loading more
+  // When placeholder enters viewport upon scrolling down, run loading ring for 1 second before loading more
   useEffect(() => {
     if (isTriggered && !isLoaded) {
       timerRef.current = setTimeout(() => {
         setIsLoaded(true);
-      }, 3000);
+      }, 1000);
     }
 
     return () => {

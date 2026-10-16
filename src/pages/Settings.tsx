@@ -194,7 +194,7 @@ export const Settings: React.FC<SettingsProps> = ({
       setToastMessage(`Applied ${changedKeys.length} settings changes!`);
       setShowApplyToast(true);
       setTimeout(() => setShowApplyToast(false), 2600);
-    }, 2000);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -221,15 +221,199 @@ export const Settings: React.FC<SettingsProps> = ({
     return text.toLowerCase().includes(searchQuery.toLowerCase().trim());
   };
 
+  const [activeNavSection, setActiveNavSection] = useState<string>('settings-section-spatial-glass');
+
+  const navCategories = [
+    { id: 'settings-section-spatial-glass', label: 'Fluent Design', icon: Box, color: 'text-[#0078d4] dark:text-[#4cc2ff]', badge: 'bg-[#0078d4]/10 dark:bg-[#4cc2ff]/15', desc: 'Mica & Acrylic' },
+    { id: 'settings-section-interface', label: 'Giao diện', icon: Palette, color: 'text-[#34C759]', badge: 'bg-[#34C759]/10', desc: 'Theme & Hiển thị' },
+    { id: 'settings-section-tools', label: 'Công cụ', icon: Wrench, color: 'text-[#8E8E93]', badge: 'bg-black/5 dark:bg-white/10', desc: 'Tỉ lệ & Thanh bên' },
+    { id: 'settings-section-accessibility', label: 'Trợ năng', icon: Key, color: 'text-[#0078d4] dark:text-[#4cc2ff]', badge: 'bg-[#0078d4]/10 dark:bg-[#4cc2ff]/15', desc: 'Phím tắt & Tải trang' },
+    { id: 'settings-section-experimental', label: 'Insider Flags', icon: FlaskConical, color: 'text-[#e81123]', badge: 'bg-[#e81123]/10', desc: 'Tính năng thử nghiệm' },
+    { id: 'settings-section-version', label: 'Cập nhật', icon: Info, color: 'text-[#0078d4] dark:text-[#4cc2ff]', badge: 'bg-[#0078d4]/10 dark:bg-[#4cc2ff]/15', desc: 'Thông tin phiên bản' },
+  ];
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.find((e) => e.isIntersecting);
+        if (visible?.target?.id) {
+          setActiveNavSection(visible.target.id);
+        }
+      },
+      { rootMargin: '-15% 0px -65% 0px', threshold: 0.05 }
+    );
+
+    navCategories.forEach((cat) => {
+      const el = document.getElementById(cat.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-28 pt-2 select-none">
-      {/* 1. Top Header on Main Category View OR Minimal Back Bar on Subpage */}
-      {activeCategory === null ? (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
-              Settings
-            </h1>
+    <div className="w-full max-w-7xl mx-auto pb-28 pt-2 select-none">
+      {/* 2-Column Windows 11 Settings Layout */}
+      <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
+        {/* Left Column: Authentic Windows 11 Navigation Sidebar */}
+        <aside className="w-full md:w-64 lg:w-72 shrink-0 md:sticky md:top-3 space-y-3">
+          {/* Windows 11 User Profile Tile */}
+          <div className="p-3 rounded-xl bg-white/70 dark:bg-[#282c31]/80 backdrop-blur-md border border-black/8 dark:border-white/10 shadow-xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#005fb8] to-[#4cc2ff] flex items-center justify-center text-white font-bold text-sm shadow-inner shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-sm text-[#111827] dark:text-white truncate">
+                Sparkle Waves
+              </div>
+              <div className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] truncate flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Cài đặt hệ thống
+              </div>
+            </div>
+          </div>
+
+          {/* Search Box in Sidebar - matching exact rules: no line, no border, blue outline on focus, h-[35px] sm:h-[37px] */}
+          <div 
+            id="settings-search-box"
+            onClick={() => {
+              setIsFocused(true);
+              inputRef.current?.focus();
+            }}
+            className={`group relative w-full h-[35px] sm:h-[37px] bg-black/5 dark:bg-[#282c31] border-0 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none ${
+              isFocused
+                ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] bg-white dark:bg-[#282c31]'
+                : 'ring-0'
+            }`}
+          >
+            <input
+              ref={inputRef}
+              id="settings-search-input"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder="Tìm kiếm cài đặt..."
+              className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-14 no-fluent-line"
+            />
+
+            <div className="absolute right-2.5 flex items-center gap-1">
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSearchQuery('');
+                    inputRef.current?.focus();
+                  }}
+                  className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleListening();
+                }}
+                className={`p-0.5 transition-colors cursor-pointer ${
+                  isListening
+                    ? 'text-[#E6005A] animate-pulse'
+                    : 'text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white'
+                }`}
+                title={isListening ? 'Stop listening' : 'Voice search'}
+              >
+                {isListening ? (
+                  <MicOff className="w-3.5 h-3.5" fill="none" />
+                ) : (
+                  <Mic className="w-3.5 h-3.5" fill="none" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation Categories List */}
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0 scrollbar-none" aria-label="Settings Categories">
+            {navCategories.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = activeNavSection === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveNavSection(cat.id);
+                    const el = document.getElementById(cat.id);
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
+                  className={`relative group flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs sm:text-sm font-medium transition-all shrink-0 md:shrink md:w-full cursor-pointer ${
+                    isActive
+                      ? 'bg-black/8 dark:bg-white/10 text-[#005fb8] dark:text-[#4cc2ff]'
+                      : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/4 dark:hover:bg-white/5 hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  {/* Left Accent Pill Indicator (Windows 11 style) */}
+                  {isActive && (
+                    <span className="hidden md:block absolute left-0 top-2 bottom-2 w-1 bg-[#005fb8] dark:bg-[#4cc2ff] rounded-r-full" />
+                  )}
+
+                  <div className={`w-7 h-7 rounded-md ${cat.badge} flex items-center justify-center shrink-0 transition-transform group-hover:scale-105`}>
+                    <Icon className={`w-4 h-4 ${cat.color}`} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-xs sm:text-[13px] truncate">{cat.label}</div>
+                    <div className="hidden md:block text-[11px] text-[#6b7280] dark:text-[#9ca3af] font-normal truncate">
+                      {cat.desc}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Windows 11 Quick Status Card at sidebar bottom */}
+          <div className="hidden md:block p-3 rounded-xl bg-white/40 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 text-[11px] text-[#6b7280] dark:text-[#9ca3af] space-y-1.5">
+            <div className="font-semibold text-xs text-[#111827] dark:text-white flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Thiết bị hoạt động
+            </div>
+            <div className="flex justify-between">
+              <span>Chế độ:</span>
+              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.theme === 'light' ? 'Ban ngày' : 'Ban đêm'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Mica Acrylic:</span>
+              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.spatialGlass ? `${draftSettings.spatialGlassOpacity ?? 20}%` : 'Đã tắt'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Tỉ lệ:</span>
+              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.streamAspectRatio || '16:9'}</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* Right Column: Main Content Area */}
+        <main className="flex-1 min-w-0 space-y-6">
+          {/* Top Bar Header with Title & Save button */}
+          <div className="flex items-center justify-between gap-4 pb-2 border-b border-black/5 dark:border-white/10">
+            <div>
+              <div className="text-[11px] uppercase tracking-wider font-semibold text-[#0078d4] dark:text-[#4cc2ff]">
+                Cài đặt hệ thống
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
+                Settings
+              </h1>
+              <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
+                Tùy chỉnh toàn diện ngôn ngữ thiết kế Fluent Design, hiệu năng và công cụ hiển thị.
+              </p>
+            </div>
+
             {(hasChanges || isSaving) && (
               <button
                 type="button"
@@ -250,342 +434,54 @@ export const Settings: React.FC<SettingsProps> = ({
               </button>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-[#9CA3AF]">
-            Customize your Sparkle streaming and display experience.
-          </p>
 
-          {/* Search Header - Styled and laid out exactly like TopBar search bar */}
-          <div className="pt-2">
-            <div 
-              id="settings-search-box"
-              onClick={() => {
-                setIsFocused(true);
-                inputRef.current?.focus();
-              }}
-              className="group relative w-full h-[38px] sm:h-[41px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none"
-            >
-              <input
-                ref={inputRef}
-                id="settings-search-input"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                placeholder="Search settings"
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-14 no-fluent-line"
-              />
-
-              <div className="absolute right-2.5 flex items-center gap-1">
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSearchQuery('');
-                      inputRef.current?.focus();
-                    }}
-                    className="text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-                    title="Clear search"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleListening();
-                  }}
-                  className={`p-0.5 transition-colors cursor-pointer ${
-                    isListening
-                      ? 'text-[#E6005A] animate-pulse'
-                      : 'text-[#71717a] dark:text-[#8e8e8e] hover:text-[#111827] dark:hover:text-white'
-                  }`}
-                  title={isListening ? 'Stop listening' : 'Voice search'}
-                >
-                  {isListening ? (
-                    <MicOff className="w-3.5 h-3.5" fill="none" />
-                  ) : (
-                    <Mic className="w-3.5 h-3.5" fill="none" />
-                  )}
-                </button>
+          {/* Windows 11 Hero Status Banner */}
+          <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-[#0078d4]/10 via-[#4cc2ff]/5 to-purple-500/10 dark:from-[#4cc2ff]/15 dark:via-cyan-500/10 dark:to-purple-500/10 border border-black/8 dark:border-white/10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-white dark:bg-[#30353b] border border-black/10 dark:border-white/15 flex items-center justify-center text-[#0078d4] dark:text-[#4cc2ff] shadow-sm shrink-0">
+                <Box className="w-7 h-7" />
+              </div>
+              <div>
+                <div className="font-bold text-sm sm:text-base text-[#111827] dark:text-white flex items-center gap-2">
+                  <span>Sparkle Waves Fluent</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
+                    v26.11
+                  </span>
+                </div>
+                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
+                  Chất liệu Mica & Acrylic · Trải nghiệm thị giác hiện đại theo phong cách Windows 11
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        /* Subpage Header: Fluent Back button & Category Title/Subtitle */
-        <div className="space-y-2 pb-3 border-b border-black/10 dark:border-white/10 select-none">
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              id="btn-settings-back"
-              onClick={() => setActiveCategory(null)}
-              className="inline-flex items-center gap-1.5 text-[#0078d4] dark:text-[#4cc2ff] hover:opacity-80 active:opacity-70 transition-all font-semibold text-sm py-1 px-2.5 -ml-2.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-default select-none"
-            >
-              <ChevronLeft className="w-4 h-4 stroke-[2.25]" />
-              <span>Settings</span>
-            </button>
-            {(hasChanges || isSaving) && (
+
+            <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
               <button
                 type="button"
-                id="btn-settings-subpage-save"
-                disabled={isSaving}
-                onClick={handleApplySettings}
-                className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
-                  isSaving
-                    ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
-                    : 'bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:bg-[#00458b] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold border border-transparent cursor-pointer'
-                }`}
+                onClick={() => {
+                  const el = document.getElementById('settings-section-version');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-colors shadow-xs cursor-pointer"
               >
-                {isSaving ? (
-                  <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
-                ) : (
-                  <span className="text-white dark:text-black font-semibold">Save</span>
-                )}
+                Thông tin bản dựng
               </button>
-            )}
-          </div>
-          {activeCatObj && (
-            <div className="flex items-center gap-3 pt-1">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
-                <activeCatObj.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold font-square text-[#111827] dark:text-white tracking-tight leading-tight">
-                  {activeCatObj.title}
-                </h1>
-                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 truncate">
-                  {activeCatObj.subtitle}
-                </p>
-              </div>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* 2. Main Page: Grouped Categories vs Subpages with horizontal slide animation */}
-      <AnimatePresence mode="wait" initial={false}>
-        {activeCategory === null ? (
-          <motion.div
-            key="settings-main-categories"
-            initial={{ opacity: 0, x: -60 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -60 }}
-            transition={{
-              duration: shouldAnimateMotion ? 0.28 : 0,
-              ease: [0.16, 1, 0.3, 1]
-            }}
-            className="space-y-3.5"
-          >
-          {/* Quick Search Jump Results if user typed a search query */}
-          {searchQuery.trim() && (
-            <div className="p-4 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-2">
-              <div className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider px-1">
-                Search results for "{searchQuery}"
-              </div>
-              <div className="grid grid-cols-1 gap-1">
-                {ALL_CATEGORIES.filter((cat) => 
-                  matchesSearch(cat.title) || 
-                  matchesSearch(cat.subtitle) || 
-                  cat.keywords.some(k => matchesSearch(k))
-                ).map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setActiveCategory(cat.id)}
-                    className="flex items-center justify-between p-2.5 sm:p-3 rounded-[18px] bg-white/5 hover:bg-white/10 text-left transition-colors cursor-default"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 flex items-center justify-center shrink-0">
-                        <cat.icon className="w-5 h-5 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-[#111827] dark:text-white">{cat.title}</div>
-                        <div className="text-xs text-[#9CA3AF]">{cat.subtitle}</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#8E8E93]" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Group 1: Spatial Glass, Giao diện, Trợ năng */}
-          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
-            {SETTINGS_GROUP_1.map((item, idx) => (
-              <React.Fragment key={item.id}>
-                <div
-                  id={`settings-category-${item.id}`}
-                  onClick={() => setActiveCategory(item.id)}
-                  className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
-                >
-                  {/* Clean Icon without background */}
-                  <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
-                  </div>
-
-                  {/* Label */}
-                  <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
-                    <div className="text-[#111827] dark:text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
-                      {item.title}
-                    </div>
-                  </div>
-
-                  {/* Chevron Right */}
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-[#111827] dark:group-hover:text-white transition-colors shrink-0 ml-2" />
-                </div>
-                {idx < SETTINGS_GROUP_1.length - 1 && (
-                  <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
-                )}
-              </React.Fragment>
-            ))}
           </div>
 
-          {/* Group 2: Tools, Insider Flags */}
-          <div className="settings-fluent-group rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden">
-            {SETTINGS_GROUP_2.map((item, idx) => (
-              <React.Fragment key={item.id}>
-                <div
-                  id={`settings-category-${item.id}`}
-                  onClick={() => setActiveCategory(item.id)}
-                  className="fluent-reveal-item setting-card group flex items-center px-4 py-2.5 sm:py-3 hover:bg-white/[0.06] active:bg-white/[0.1] transition-colors cursor-pointer select-none"
-                >
-                  {/* Clean Icon without background */}
-                  <div className="w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] flex items-center justify-center shrink-0">
-                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white stroke-black dark:stroke-white stroke-[1.75]" />
-                  </div>
-
-                  {/* Label */}
-                  <div className="flex-1 ml-3.5 sm:ml-4 min-w-0">
-                    <div className="text-[#111827] dark:text-white text-[15px] sm:text-[16px] font-semibold leading-tight tracking-tight">
-                      {item.title}
-                    </div>
-                  </div>
-
-                  {/* Chevron Right */}
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8E8E93] group-hover:text-[#111827] dark:group-hover:text-white transition-colors shrink-0 ml-2" />
-                </div>
-                {idx < SETTINGS_GROUP_2.length - 1 && (
-                  <div className="divider-line h-[1px] bg-white/10 ml-[54px] sm:ml-[60px]" />
-                )}
-              </React.Fragment>
-            ))}
+          {/* Settings Sections Container */}
+          <div className="space-y-8">
+        {/* SECTION 1: FLUENT DESIGN */}
+        <section id="settings-section-spatial-glass" className="space-y-2">
+          <div className="flex items-center gap-2.5 px-1 pt-1">
+            <Box className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+            <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+              Fluent Design
+            </h2>
+            <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+              — Mica, Acrylic material effects and modern visual styling
+            </span>
           </div>
-
-          {/* Thông tin phần mềm & Giới thiệu (Chuyển xuống cuối trang Cài đặt) */}
-          <section 
-            id="settings-section-version"
-            className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none"
-          >
-            <div className="p-3.5 sm:p-4 rounded-[18px] bg-black/[0.03] dark:bg-white/5 space-y-3 select-text">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="font-medium text-[#111827] dark:text-white">Software Update</span>
-                <span className="font-semibold text-[#9CA3AF]">26.11</span>
-              </div>
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
-                <span className="font-semibold text-[#9CA3AF]">261016</span>
-              </div>
-              {/* Compatible with Fluent Design */}
-              <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">
-                <p className="text-sm sm:text-base font-semibold tracking-tight text-[#111827] dark:text-white">
-                  Compatible with{' '}
-                  <span className="text-[#4cc2ff] font-semibold">
-                    Microsoft Fluent Design.
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-0.5">
-              {/* Test Sparkle Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
-                <div>
-                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Test Sparkle
-                  </div>
-                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Try our test builds of Sparkle with new, early unreleased features.
-                  </div>
-                </div>
-
-                <a
-                  id="btn-test-vplay-switch"
-                  href="https://test-vplay.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
-                >
-                  <span className="font-normal text-white dark:text-black">Switch</span>
-                </a>
-              </div>
-
-              {/* Changelogs Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
-                <div>
-                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Changelogs
-                  </div>
-                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Danh sách những sự thay đổi trong bản cập nhật mới nhất của Sparkle.
-                  </div>
-                </div>
-
-                <button
-                  id="btn-changelogs-read"
-                  type="button"
-                  onClick={() => setIsWelcomeModalOpen(true)}
-                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
-                >
-                  <span className="font-normal text-white dark:text-black">Read</span>
-                </button>
-              </div>
-
-              {/* Update Sparkle Option Card */}
-              <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
-                <div>
-                  <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
-                    Update Sparkle
-                  </div>
-                  <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                    Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Sparkle.
-                  </div>
-                </div>
-
-                <button
-                  id="btn-update-vplay"
-                  type="button"
-                  onClick={onOpenUpdate}
-                  className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
-                >
-                  <span className="font-normal text-white dark:text-black">Update</span>
-                </button>
-              </div>
-            </div>
-          </section>
-        </motion.div>
-      ) : (
-        /* 3. Subpage Content Views (Smooth horizontal slide from right to left) */
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, x: 80 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 80 }}
-          transition={{
-            duration: shouldAnimateMotion ? 0.32 : 0,
-            ease: [0.16, 1, 0.3, 1]
-          }}
-          className="space-y-6"
-        >
-            {/* SUBPAGE 1: SPATIAL GLASS */}
-            {activeCategory === 'spatial-glass' && (
-              <section 
-                id="settings-section-spatial-glass"
-                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
-              >
+          <div className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none">
                 {/* 1. Fluent Design Master Toggle */}
                 <div 
                   id="setting-spatial-glass"
@@ -737,15 +633,21 @@ export const Settings: React.FC<SettingsProps> = ({
                     </div>
                   </div>
                 </div>
-              </section>
-            )}
+              </div>
+            </section>
 
-            {/* SUBPAGE 2: GIAO DIỆN */}
-            {activeCategory === 'interface' && (
-              <section 
-                id="settings-section-interface"
-                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
-              >
+            {/* SECTION 2: GIAO DIỆN */}
+            <section id="settings-section-interface" className="space-y-2">
+              <div className="flex items-center gap-2.5 px-1 pt-1">
+                <Palette className="w-5 h-5 text-[#34C759]" />
+                <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                  Giao diện (Interface)
+                </h2>
+                <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+                  — Navigation bar, app theme, text scaling, and display mode
+                </span>
+              </div>
+              <div className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none">
                 {/* 1. Chế độ ứng dụng (Ban ngày / Ban đêm) */}
                 <div
                   id="setting-theme-mode"
@@ -982,15 +884,21 @@ export const Settings: React.FC<SettingsProps> = ({
                     />
                   </button>
                 </div>
-              </section>
-            )}
+              </div>
+            </section>
 
-            {/* SUBPAGE 3: CÔNG CỤ */}
-            {activeCategory === 'tools' && (
-              <section 
-                id="settings-section-tools"
-                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
-              >
+            {/* SECTION 3: CÔNG CỤ */}
+            <section id="settings-section-tools" className="space-y-2">
+              <div className="flex items-center gap-2.5 px-1 pt-1">
+                <Wrench className="w-5 h-5 text-[#8E8E93]" />
+                <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                  Công cụ (Tools)
+                </h2>
+                <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+                  — Aspect ratio and sidebar preferences
+                </span>
+              </div>
+              <div className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none">
                 {/* 1. Tỉ lệ khung hình */}
                 <div className="px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.04] transition-colors">
                   <div className="min-w-0 flex-1">
@@ -1078,11 +986,20 @@ export const Settings: React.FC<SettingsProps> = ({
                     <span>Mở Sparkle Notes</span>
                   </button>
                 </div>
-              </section>
-            )}
+              </div>
+            </section>
 
-            {/* SUBPAGE 4: TRỢ NĂNG */}
-            {activeCategory === 'accessibility' && (
+            {/* SECTION 4: TRỢ NĂNG */}
+            <section id="settings-section-accessibility" className="space-y-3">
+              <div className="flex items-center gap-2.5 px-1 pt-1">
+                <Key className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+                <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                  Trợ năng (Accessibility)
+                </h2>
+                <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+                  — Page loading, motion animations, search scope, and virtual keyboard
+                </span>
+              </div>
               <div className="space-y-4 select-none">
                 {/* Section: Điều hướng & Thanh bên (Sidebar & Navigation) */}
                 <div className="space-y-1.5">
@@ -1177,7 +1094,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           Load pages sequentially
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                          Loads the initial portion of page content, then displays a loading ring for 3 seconds when scrolling down to reveal more.
+                          Loads the initial portion of page content, then displays a loading ring for 1 second when scrolling down to reveal more.
                         </div>
                       </div>
 
@@ -1806,14 +1723,20 @@ export const Settings: React.FC<SettingsProps> = ({
                   </section>
                 </div>
               </div>
-            )}
+            </section>
 
-            {/* SUBPAGE 5: INSIDER FLAGS */}
-            {activeCategory === 'experimental' && (
-              <section 
-                id="settings-section-experimental"
-                className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none"
-              >
+            {/* SECTION 5: INSIDER FLAGS */}
+            <section id="settings-section-experimental" className="space-y-2">
+              <div className="flex items-center gap-2.5 px-1 pt-1">
+                <FlaskConical className="w-5 h-5 text-[#e81123]" />
+                <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                  Insider Flags
+                </h2>
+                <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+                  — Preview features and diagnostic flags
+                </span>
+              </div>
+              <div className="rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs overflow-hidden select-none">
                 {/* Native keyboard */}
                 <div 
                   id="setting-experimental-native-keyboard"
@@ -1992,11 +1915,111 @@ export const Settings: React.FC<SettingsProps> = ({
                     ]}
                   />
                 </div>
-              </section>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+            </section>
+
+            {/* SECTION 6: THÔNG TIN PHẦN MỀM & CẬP NHẬT */}
+            <section id="settings-section-version" className="space-y-2">
+              <div className="flex items-center gap-2.5 px-1 pt-1">
+                <Info className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+                <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
+                  Thông tin phiên bản & Cập nhật
+                </h2>
+                <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-normal hidden sm:inline">
+                  — Build info, testing releases and changelogs
+                </span>
+              </div>
+              <div className="fluent-reveal-item setting-card p-4 sm:p-5 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#383838] shadow-xs space-y-3.5 select-none">
+                <div className="p-3.5 sm:p-4 rounded-[18px] bg-black/[0.03] dark:bg-white/5 space-y-3 select-text">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="font-medium text-[#111827] dark:text-white">Software Update</span>
+                    <span className="font-semibold text-[#9CA3AF]">26.11</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="font-medium text-[#111827] dark:text-white">Software Build</span>
+                    <span className="font-semibold text-[#9CA3AF]">261016</span>
+                  </div>
+                  {/* Compatible with Fluent Design */}
+                  <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 border-t border-black/10 dark:border-white/10 flex items-center">
+                    <p className="text-sm sm:text-base font-semibold tracking-tight text-[#111827] dark:text-white">
+                      Compatible with{' '}
+                      <span className="text-[#4cc2ff] font-semibold">
+                        Microsoft Fluent Design.
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-0.5">
+                  {/* Test Sparkle Option Card */}
+                  <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                    <div>
+                      <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
+                        Test Sparkle
+                      </div>
+                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                        Try our test builds of Sparkle with new, early unreleased features.
+                      </div>
+                    </div>
+
+                    <a
+                      id="btn-test-vplay-switch"
+                      href="https://test-vplay.vercel.app"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center select-none"
+                    >
+                      <span className="font-normal text-white dark:text-black">Switch</span>
+                    </a>
+                  </div>
+
+                  {/* Changelogs Option Card */}
+                  <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                    <div>
+                      <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
+                        Changelogs
+                      </div>
+                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                        Danh sách những sự thay đổi trong bản cập nhật mới nhất của Sparkle.
+                      </div>
+                    </div>
+
+                    <button
+                      id="btn-changelogs-read"
+                      type="button"
+                      onClick={() => setIsWelcomeModalOpen(true)}
+                      className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                    >
+                      <span className="font-normal text-white dark:text-black">Read</span>
+                    </button>
+                  </div>
+
+                  {/* Update Sparkle Option Card */}
+                  <div className="fluent-reveal-item setting-card p-3 sm:p-3.5 rounded-[18px] flex items-center justify-between gap-3 transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                    <div>
+                      <div className="font-bold text-[#111827] dark:text-white text-xs sm:text-sm">
+                        Update Sparkle
+                      </div>
+                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
+                        Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Sparkle.
+                      </div>
+                    </div>
+
+                    <button
+                      id="btn-update-vplay"
+                      type="button"
+                      onClick={onOpenUpdate}
+                      className="px-4 py-1.5 rounded-full font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black active:scale-[0.96] transition-all text-xs cursor-default flex items-center justify-center shrink-0 shadow-md tracking-tight text-center"
+                    >
+                      <span className="font-normal text-white dark:text-black">Update</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
 
       {/* Temporary light mode maintenance lock */}
       <AnimatePresence>

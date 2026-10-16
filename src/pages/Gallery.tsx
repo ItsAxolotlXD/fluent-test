@@ -25,8 +25,20 @@ import {
   FolderPlus,
   FolderInput,
   ChevronRight,
+  ChevronLeft,
   ArrowLeft,
-  PenLine
+  ArrowRight,
+  PenLine,
+  ZoomIn,
+  ZoomOut,
+  Info,
+  SlidersHorizontal,
+  ArrowUpDown,
+  LayoutGrid,
+  Maximize2,
+  Share2,
+  ExternalLink,
+  Filter
 } from 'lucide-react';
 import { 
   galleryDB, 
@@ -36,23 +48,36 @@ import {
 } from '../services/galleryStorage';
 import { GalleryContextMenu, type GalleryContextAction } from '../components/gallery/GalleryContextMenu';
 import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryDialogs';
-
-const LONG_PRESS_MS = 500;
 import { useSettings } from '../hooks/useSettings';
 import { FluentNotesIcon } from '../components/FluentIcons';
+
+const LONG_PRESS_MS = 500;
 
 interface GalleryProps {
   navigate: (route: string) => void;
   searchQuery?: string;
 }
 
-type FilterType = 'all' | 'image' | 'video' | 'audio' | 'document' | 'favorites';
+type FilterType = 'all' | 'image' | 'video' | 'audio' | 'document' | 'favorites' | 'folders';
+type GridDensity = 'small' | 'medium' | 'large';
+type SortOrder = 'date-desc' | 'date-asc' | 'title-asc' | 'size-desc';
 
 export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) => {
   const { settings } = useSettings();
+  const isLightMode = settings.theme === 'light';
+  const dropdownBg = isLightMode ? 'rgba(243, 243, 243, 0.94)' : 'rgba(27, 31, 36, 0.94)';
   const [items, setItems] = useState<GalleryMediaItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [gridDensity, setGridDensity] = useState<GridDensity>('medium');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('date-desc');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<GalleryMediaItem | null>(null);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [rotation, setRotation] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [activeYear, setActiveYear] = useState<number>(2022);
@@ -74,6 +99,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const galleryContainerRef = useRef<HTMLDivElement>(null);
+  const galleryScrollRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Load items from database
@@ -100,9 +126,40 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     return () => unsubscribe();
   }, []);
 
-  // Filter items
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(target)) {
+        setIsFilterDropdownOpen(false);
+      }
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(target)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const FILTER_OPTIONS: { id: FilterType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: 'all', label: 'All files', icon: ImageIcon },
+    { id: 'image', label: 'Photos', icon: ImageIcon },
+    { id: 'video', label: 'Videos', icon: Film },
+    { id: 'favorites', label: 'Favorites', icon: Heart },
+    { id: 'folders', label: 'Folders', icon: Folder },
+    { id: 'document', label: 'Documents & Files', icon: FileText },
+  ];
+
+  const SORT_OPTIONS: { id: SortOrder; label: string }[] = [
+    { id: 'date-desc', label: 'Newest first' },
+    { id: 'date-asc', label: 'Oldest first' },
+    { id: 'title-asc', label: 'Name (A to Z)' },
+    { id: 'size-desc', label: 'Largest size' },
+  ];
+
+  // Filter & sort items
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    let result = items.filter((item) => {
       // Folder scope (search looks across every folder)
       if (!searchQuery.trim() && (item.folderId ?? null) !== currentFolderId) return false;
 
@@ -126,7 +183,30 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
       return true;
     });
-  }, [items, activeFilter, searchQuery, currentFolderId]);
+
+    // Sort order
+    result = [...result].sort((a, b) => {
+      if (sortOrder === 'date-desc') {
+        const timeA = new Date(a.dateAdded).getTime() || 0;
+        const timeB = new Date(b.dateAdded).getTime() || 0;
+        return timeB - timeA;
+      }
+      if (sortOrder === 'date-asc') {
+        const timeA = new Date(a.dateAdded).getTime() || 0;
+        const timeB = new Date(b.dateAdded).getTime() || 0;
+        return timeA - timeB;
+      }
+      if (sortOrder === 'title-asc') {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortOrder === 'size-desc') {
+        return (b.size || 0) - (a.size || 0);
+      }
+      return 0;
+    });
+
+    return result;
+  }, [items, activeFilter, searchQuery, currentFolderId, sortOrder]);
 
   const folderItemCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -136,22 +216,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     return counts;
   }, [items]);
 
-  const galleryScrollRef = useRef<HTMLDivElement>(null);
-
   // Group filtered items by date/year matching Windows 11 Photos layout
   const groupedSections = useMemo(() => {
     if (filteredItems.length === 0) return [];
 
-    // Sort items by date descending (newest first)
-    const sorted = [...filteredItems].sort((a, b) => {
-      const timeA = new Date(a.dateAdded).getTime() || 0;
-      const timeB = new Date(b.dateAdded).getTime() || 0;
-      return timeB - timeA;
-    });
-
     const groupsMap = new Map<string, { year: number; label: string; items: GalleryMediaItem[] }>();
 
-    for (const item of sorted) {
+    for (const item of filteredItems) {
       let year = item.year;
       if (!year && item.dateAdded) {
         const d = new Date(item.dateAdded);
@@ -159,7 +230,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       }
       year = year || 2022;
 
-      // Extract month label if possible
       let label = item.dateLabel || `${year}`;
       if (item.dateAdded) {
         const d = new Date(item.dateAdded);
@@ -189,7 +259,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     const itemYears = items
       .map((it) => it.year || new Date(it.dateAdded).getFullYear())
       .filter((y): y is number => typeof y === 'number' && !isNaN(y));
-    const set = new Set([2024, 2023, 2022, 2021, 2020, 2019, 2018, ...itemYears]);
+    const set = new Set([2024, 2023, 2022, 2021, 2020, ...itemYears]);
     return Array.from(set).sort((a, b) => b - a);
   }, [items]);
 
@@ -201,7 +271,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       showToast(`Scrolled to ${year}`);
     } else {
-      // Find nearest year section if exact year section not rendered
       const allSections = document.querySelectorAll<HTMLElement>('.gallery-year-section');
       let closest: HTMLElement | null = null;
       let minDiff = Infinity;
@@ -285,7 +354,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Upload handler supporting images, videos, audio, and all office formats (.docx, .doc, .pptx, .ppt, .xlsx, .xls, .pdf, .txt)
+  // Upload handler supporting images, videos, audio, and all office formats
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -317,7 +386,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       ];
       const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
-      // Tags and format labeling
       const tags = ['Uploaded'];
       if (fileNameLower.endsWith('.docx') || fileNameLower.endsWith('.doc')) {
         tags.push('Word', 'DOCX');
@@ -350,6 +418,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         tags,
         description: `Uploaded from device (${(file.size / (1024 * 1024)).toFixed(2)} MB)`,
         source: 'upload',
+        folderId: currentFolderId,
       };
 
       await galleryDB.add(newItem);
@@ -363,7 +432,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   };
 
   const handleDeleteItem = async (item: GalleryMediaItem) => {
-    // Optimistic local state update
     setItems((prev) => prev.filter((it) => it.id !== item.id));
     if (selectedItem?.id === item.id) setSelectedItem(null);
     await galleryDB.delete(item.id);
@@ -372,9 +440,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
   const handleToggleFavorite = async (item: GalleryMediaItem) => {
     const isFav = await galleryDB.toggleFavorite(item.id);
+    setItems((prev) =>
+      prev.map((it) => (it.id === item.id ? { ...it, isFavorite: isFav } : it))
+    );
     if (selectedItem?.id === item.id) {
       setSelectedItem({ ...selectedItem, isFavorite: isFav });
     }
+    showToast(isFav ? 'Added to favorites' : 'Removed from favorites');
   };
 
   const handleRestoreSamples = async () => {
@@ -415,11 +487,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const handleDeleteSelected = async () => {
     if (selectedIds.size === 0) return;
     const ids: string[] = Array.from(selectedIds);
-    // Optimistically update items state immediately so UI refreshes without delay
     setItems((prev) => prev.filter((it) => !selectedIds.has(it.id)));
     setSelectedIds(new Set());
     setIsSelectMode(false);
-    // Persist deletion to IndexedDB
     await galleryDB.deleteMany(ids);
     showToast(`Deleted ${ids.length} ${ids.length === 1 ? 'item' : 'items'}`);
   };
@@ -516,6 +586,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         break;
       case 'favorite': {
         const isFav = await galleryDB.toggleFavorite(item.id);
+        setItems((prev) =>
+          prev.map((it) => (it.id === item.id ? { ...it, isFavorite: isFav } : it))
+        );
         showToast(isFav ? 'Added to favorites' : 'Removed from favorites');
         break;
       }
@@ -584,6 +657,46 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     showToast(`Deleted folder "${folder.name}"`);
   };
 
+  // Lightbox navigation
+  const currentIndex = useMemo(() => {
+    if (!selectedItem) return -1;
+    return filteredItems.findIndex((it) => it.id === selectedItem.id);
+  }, [selectedItem, filteredItems]);
+
+  const handlePrevMedia = () => {
+    if (currentIndex > 0) {
+      setSelectedItem(filteredItems[currentIndex - 1]);
+      setZoomLevel(1);
+      setRotation(0);
+    }
+  };
+
+  const handleNextMedia = () => {
+    if (currentIndex < filteredItems.length - 1) {
+      setSelectedItem(filteredItems[currentIndex + 1]);
+      setZoomLevel(1);
+      setRotation(0);
+    }
+  };
+
+  // Keyboard navigation for Lightbox
+  useEffect(() => {
+    if (!selectedItem) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedItem(null);
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevMedia();
+      } else if (e.key === 'ArrowRight') {
+        handleNextMedia();
+      } else if (e.key === 'i' || e.key === 'I') {
+        setShowInfoPanel((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedItem, currentIndex, filteredItems]);
+
   // Helper to determine Office Document type info
   const getDocumentDetails = (item: GalleryMediaItem) => {
     const title = item.title.toLowerCase();
@@ -637,16 +750,28 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     };
   };
 
+  // Grid density classes
+  const gridContainerStyle = useMemo(() => {
+    if (gridDensity === 'small') {
+      return 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1.5 sm:gap-2';
+    }
+    if (gridDensity === 'large') {
+      return 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
+    }
+    // medium default
+    return 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5';
+  }, [gridDensity]);
+
   return (
-    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
+    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-[#16181d]/90 backdrop-blur-xl border border-white/10 text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2"
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-[#16181d]/90 dark:bg-[#16181d]/95 backdrop-blur-2xl border border-white/10 text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4 text-[#4cc2ff]" />
             <span>{toastMessage}</span>
@@ -654,44 +779,200 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         )}
       </AnimatePresence>
 
-      {/* Top Action Bar (No header title "Gallery", no local search bar - synced with TopBar) */}
-      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2.5 border-b border-black/10 dark:border-white/10 bg-transparent flex flex-wrap items-center justify-between gap-2.5 shrink-0">
-        {/* Left: Filter Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {[
-            { id: 'all', label: 'All', icon: ImageIcon },
-            { id: 'image', label: 'Photos', icon: ImageIcon },
-            { id: 'video', label: 'Videos', icon: Film },
-            { id: 'audio', label: 'Audio', icon: Music },
-            { id: 'document', label: 'Files', icon: FileText },
-            { id: 'favorites', label: 'Favorites', icon: Heart },
-          ].map((tab) => {
-            const isActive = activeFilter === tab.id;
-            const IconComp = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id as FilterType)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                  isActive
-                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-bold shadow-xs'
-                    : 'bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#4b5563] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white border border-black/5 dark:border-white/5'
-                }`}
-              >
-                <IconComp className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+      {/* Windows 11 Photos Fluent Command Bar */}
+      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 shrink-0">
+        {/* Left Section: Filter, Sort, Load Demo, New Folder (buttons without title) + item count badge */}
+        <div className="flex items-center gap-1.5 overflow-visible py-0.5">
+          {/* 1. Filter Dropdown (Icon phễu, button without title) */}
+          <div className="relative" ref={filterDropdownRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsFilterDropdownOpen((prev) => !prev);
+                setIsSortDropdownOpen(false);
+              }}
+              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer relative active:scale-95 ${
+                isFilterDropdownOpen || activeFilter !== 'all'
+                  ? 'bg-white dark:bg-[#2b2d31] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs border border-black/10 dark:border-white/15'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#4b5563] dark:text-[#d1d5db] border border-black/5 dark:border-white/5'
+              }`}
+              title={`Filter: ${activeFilter}`}
+              aria-label="Filter"
+            >
+              <Filter className="w-3.5 h-3.5" />
+              {activeFilter !== 'all' && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff]" />
+              )}
+            </button>
+
+            {/* Filter Dropdown Menu with Search UI animation */}
+            <AnimatePresence>
+              {isFilterDropdownOpen && (
+                <motion.div
+                  key="gallery-filter-dropdown"
+                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{
+                    duration: 0.32,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[200px]"
+                  style={{
+                    backgroundColor: dropdownBg,
+                    backdropFilter: 'blur(28px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+                  }}
+                >
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider">
+                    Filter by
+                  </div>
+                  {FILTER_OPTIONS.map((tab) => {
+                    const isActive = activeFilter === tab.id;
+                    const IconComp = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveFilter(tab.id as FilterType);
+                          if (tab.id === 'folders') {
+                            setCurrentFolderId(null);
+                          }
+                          setIsFilterDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-[8px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
+                          isActive
+                            ? 'bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 text-[#005fb8] dark:text-[#4cc2ff] font-semibold'
+                            : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <IconComp className={`w-3.5 h-3.5 ${isActive ? 'text-[#005fb8] dark:text-[#4cc2ff]' : 'text-[#6b7280] dark:text-[#9ca3af]'}`} />
+                          <span>{tab.label}</span>
+                        </div>
+                        {isActive && <Check className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* 2. Sort Dropdown (cạnh nút filter, button without title) */}
+          <div className="relative" ref={sortDropdownRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSortDropdownOpen((prev) => !prev);
+                setIsFilterDropdownOpen(false);
+              }}
+              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
+                isSortDropdownOpen
+                  ? 'bg-white dark:bg-[#2b2d31] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs border border-black/10 dark:border-white/15'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#4b5563] dark:text-[#d1d5db] border border-black/5 dark:border-white/5'
+              }`}
+              title="Sort"
+              aria-label="Sort"
+            >
+              <ArrowUpDown className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Sort Dropdown Menu with Search UI animation */}
+            <AnimatePresence>
+              {isSortDropdownOpen && (
+                <motion.div
+                  key="gallery-sort-dropdown"
+                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{
+                    duration: 0.32,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[190px]"
+                  style={{
+                    backgroundColor: dropdownBg,
+                    backdropFilter: 'blur(28px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+                  }}
+                >
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider">
+                    Sort by
+                  </div>
+                  {SORT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSortOrder(opt.id as SortOrder);
+                        setIsSortDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-[8px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
+                        sortOrder === opt.id
+                          ? 'bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 text-[#005fb8] dark:text-[#4cc2ff] font-semibold'
+                          : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10'
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {sortOrder === opt.id && <Check className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* 3. Load Demo Button (cạnh nút sort, button without title) */}
+          <button
+            type="button"
+            onClick={handleRestoreSamples}
+            className="w-8 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#005fb8] dark:text-[#4cc2ff] border border-black/5 dark:border-white/5 transition-all cursor-pointer flex items-center justify-center active:scale-95"
+            title="Load demo"
+            aria-label="Load demo"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+          </button>
+
+          {/* 4. New Folder Button (cạnh nút load demo, button without title) */}
+          <button
+            type="button"
+            onClick={() => setIsNewFolderOpen(true)}
+            className="w-8 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-amber-500 border border-black/5 dark:border-white/5 transition-all cursor-pointer flex items-center justify-center"
+            title="New folder"
+            aria-label="New folder"
+          >
+            <FolderPlus className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Item Count Pill & Active Filter Pill */}
+          <div className="flex items-center gap-1.5 ml-1">
+            <span className="hidden xs:inline-flex text-[11px] font-medium text-[#6b7280] dark:text-[#9ca3af] px-2 py-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/5 dark:border-white/5 whitespace-nowrap">
+              {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+            </span>
+            {activeFilter !== 'all' && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#005fb8] dark:text-[#4cc2ff] px-2 py-0.5 bg-[#005fb8]/10 dark:bg-[#4cc2ff]/10 rounded-full border border-[#005fb8]/20 dark:border-[#4cc2ff]/20 whitespace-nowrap">
+                {activeFilter}
+                <button
+                  type="button"
+                  onClick={() => setActiveFilter('all')}
+                  className="hover:text-rose-500 cursor-pointer ml-0.5"
+                  title="Clear filter"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Right: Select Mode Actions or Normal Actions */}
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Right Section: Windows 11 Photos Action Toolbar */}
+        <div className="flex items-center gap-1.5 ml-auto">
           {isSelectMode ? (
-            /* Action bar when Selection mode is Active */
-            <div className="flex items-center gap-2 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-[6px] border border-black/10 dark:border-white/10">
-              <span className="text-xs font-semibold text-[#111827] dark:text-white mr-1">
+            /* Multi-Select Active Toolbar */
+            <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 px-2.5 py-1 rounded-[8px] border border-black/10 dark:border-white/10 shadow-xs">
+              <span className="text-xs font-semibold text-[#111827] dark:text-white px-1">
                 {selectedIds.size} selected
               </span>
 
@@ -699,7 +980,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               <button
                 type="button"
                 onClick={handleSelectAll}
-                className="px-2.5 py-1 rounded-[4px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs text-[#111827] dark:text-white transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs text-[#111827] dark:text-white font-medium transition-colors cursor-pointer"
               >
                 {selectedIds.size === filteredItems.length && filteredItems.length > 0 ? 'Deselect All' : 'Select All'}
               </button>
@@ -709,11 +990,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={handleDuplicateSelected}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[4px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:opacity-90 disabled:opacity-40 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-                title="Duplicate selected items"
+                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-[#111827] dark:text-white text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Duplicate selected"
               >
                 <Copy className="w-3.5 h-3.5" />
-                <span>Duplicate</span>
+                <span className="hidden md:inline">Duplicate</span>
               </button>
 
               {/* Move Selected */}
@@ -721,11 +1002,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={() => setMoveTargetIds(Array.from(selectedIds))}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[4px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-xs font-semibold text-[#111827] dark:text-white flex items-center gap-1.5 transition-all cursor-pointer"
-                title="Move selected items into a folder"
+                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-xs font-medium text-[#111827] dark:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Move into folder"
               >
                 <FolderInput className="w-3.5 h-3.5" />
-                <span>Move</span>
+                <span className="hidden md:inline">Move</span>
               </button>
 
               {/* Delete Selected */}
@@ -733,76 +1014,89 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={handleDeleteSelected}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[4px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-                title="Delete selected items"
+                className="px-2.5 py-1 rounded-[6px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                title="Delete selected"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Delete{selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}</span>
+                <span>Delete</span>
               </button>
 
-              {/* Cancel / Done */}
+              {/* Cancel selection */}
               <button
                 type="button"
                 onClick={() => {
                   setIsSelectMode(false);
                   setSelectedIds(new Set());
                 }}
-                className="px-2 py-1 rounded-[4px] text-xs text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer ml-1"
+                className="px-2 py-1 rounded-[6px] text-xs text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer ml-1"
               >
-                Cancel
+                Done
               </button>
             </div>
           ) : (
-            /* Normal Mode: Upload & Select buttons */
+            /* Normal Mode Toolbar */
             <>
-              {/* Select Button (Replaced Clear button as requested) */}
+              {/* Grid Density Switcher */}
+              <div className="hidden md:flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-[6px] border border-black/10 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('small')}
+                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
+                    gridDensity === 'small' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  }`}
+                  title="Small grid tiles"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('medium')}
+                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
+                    gridDensity === 'medium' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  }`}
+                  title="Medium grid tiles"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('large')}
+                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
+                    gridDensity === 'large' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  }`}
+                  title="Large grid tiles"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* 5. Select Mode Button (cạnh nút upload bên phải toolbar, button with title) */}
               {filteredItems.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setIsSelectMode(true)}
-                  className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                  title="Select multiple files to duplicate or delete"
+                  className="px-3 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-xs font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                  title="Select multiple files"
                 >
-                  <CheckSquare className="w-3.5 h-3.5" />
+                  <CheckSquare className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />
                   <span>Select</span>
                 </button>
               )}
 
-              {/* New Folder */}
-              <button
-                type="button"
-                onClick={() => setIsNewFolderOpen(true)}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                title="Create a new folder"
-              >
-                <FolderPlus className="w-3.5 h-3.5" />
-                <span>New folder</span>
-              </button>
-
-              {/* Upload Button (.docx, .doc, .pptx, .ppt, .xlsx, .xls, images, videos, audio) */}
+              {/* Upload Button (cạnh nút select bên phải toolbar, button with title) */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs sm:text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
+                className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
+                title="Upload photos, videos, or documents"
               >
-                <UploadCloud className="w-4 h-4" />
+                <UploadCloud className="w-3.5 h-3.5" />
                 <span>Upload</span>
-              </button>
-
-              {/* Load Demo button */}
-              <button
-                type="button"
-                onClick={handleRestoreSamples}
-                className="px-2.5 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#005fb8] dark:text-[#4cc2ff] text-xs font-semibold border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                title="Load sample demo files and media"
-              >
-                <RotateCw className="w-3.5 h-3.5" />
-                <span>Load Demo</span>
               </button>
             </>
           )}
 
-          {/* Hidden File Input supporting all requested Office formats */}
+          {/* Hidden File Input */}
           <input
             ref={fileInputRef}
             type="file"
@@ -818,13 +1112,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       <div className="flex-1 flex overflow-hidden relative" ref={galleryContainerRef}>
         {/* Gallery Content View */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar" ref={galleryScrollRef}>
-          {/* Folder breadcrumb */}
+          {/* Folder breadcrumb navigation */}
           {currentFolder && !isSearching && (
-            <nav aria-label="Folder" className="flex items-center gap-1.5 mb-4 max-w-[1800px] mx-auto text-sm">
+            <nav aria-label="Folder Breadcrumb" className="flex items-center gap-2 mb-5 max-w-[1800px] mx-auto text-sm bg-black/[0.02] dark:bg-white/[0.03] p-2 rounded-lg border border-black/5 dark:border-white/5">
               <button
                 type="button"
                 onClick={() => setCurrentFolderId(null)}
-                className="w-8 h-8 rounded-[6px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                className="w-8 h-8 rounded-[6px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors text-[#005fb8] dark:text-[#4cc2ff]"
                 aria-label="Back to Gallery"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -832,41 +1126,49 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               <button
                 type="button"
                 onClick={() => setCurrentFolderId(null)}
-                className="px-1.5 py-1 rounded-[4px] text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer"
+                className="px-2 py-1 rounded-[4px] text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer font-medium"
               >
                 Gallery
               </button>
               <ChevronRight className="w-3.5 h-3.5 text-[#9ca3af]" />
-              <span className="font-semibold truncate" aria-current="page">{currentFolder.name}</span>
-              <div className="ml-auto flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
+                <Folder className="w-4 h-4 text-amber-500 fill-amber-500/30" />
+                <span className="font-semibold text-[#111827] dark:text-white" aria-current="page">{currentFolder.name}</span>
+              </div>
+              <div className="ml-auto flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setRenameTarget({ kind: 'folder', id: currentFolder.id, name: currentFolder.name })}
-                  className="h-8 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors border border-black/5 dark:border-white/5"
                 >
-                  <PenLine className="w-3.5 h-3.5" />
+                  <PenLine className="w-3 h-3" />
                   Rename
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteFolder(currentFolder)}
-                  className="h-8 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 text-[#c42b1c] dark:text-[#ff99a4] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors border border-rose-500/20"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3 h-3" />
                   Delete folder
                 </button>
               </div>
             </nav>
           )}
 
-          {/* Folder tiles at Gallery root */}
-          {!currentFolderId && !isSearching && folders.length > 0 && (
-            <section aria-label="Folders" className="max-w-[1800px] mx-auto mb-6">
-              <div className="flex items-center justify-between text-xs sm:text-sm font-medium text-[#4b5563] dark:text-[#d1d5db] px-1 mb-2.5">
-                <span>Folders</span>
-                <span className="text-[11px] text-[#6b7280] dark:text-[#9ca3af]">{folders.length}</span>
+          {/* Folder Cards (Shown at root or in Folders tab) */}
+          {(!currentFolderId || activeFilter === 'folders') && !isSearching && folders.length > 0 && (
+            <section aria-label="Folders" className="max-w-[1800px] mx-auto mb-7">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-[#4b5563] dark:text-[#d1d5db] px-1 mb-3">
+                <div className="flex items-center gap-2">
+                  <Folder className="w-4 h-4 text-amber-500 fill-amber-500/40" />
+                  <span>Folders</span>
+                </div>
+                <span className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full">
+                  {folders.length}
+                </span>
               </div>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2 sm:gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
                 {folders.map((folder) => {
                   const count = folderItemCounts.get(folder.id) ?? 0;
                   return (
@@ -874,15 +1176,20 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       key={folder.id}
                       type="button"
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex items-center gap-3 p-3 rounded-[8px] bg-black/[0.03] dark:bg-white/[0.05] hover:bg-black/[0.06] dark:hover:bg-white/[0.09] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-colors"
+                      className="group flex flex-col p-3 rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md"
                     >
-                      <Folder className="w-8 h-8 shrink-0 text-[#e8a33d] fill-[#f4c15d]/70" strokeWidth={1.5} />
-                      <div className="min-w-0">
-                        <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white">{folder.name}</p>
-                        <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af]">
-                          {count} {count === 1 ? 'item' : 'items'}
-                        </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <Folder className="w-8 h-8 text-[#e8a33d] fill-[#f4c15d]/70 transition-transform group-hover:scale-110" strokeWidth={1.5} />
+                        <span className="text-[10px] text-[#6b7280] dark:text-[#9ca3af] font-medium bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">
+                          {count}
+                        </span>
                       </div>
+                      <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
+                        {folder.name}
+                      </p>
+                      <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5">
+                        {count === 1 ? '1 item' : `${count} items`}
+                      </p>
                     </button>
                   );
                 })}
@@ -893,16 +1200,16 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           {/* Empty State */}
           {items.length === 0 && folders.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 max-w-md mx-auto">
-              <div className="w-20 h-20 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#005fb8] dark:text-[#4cc2ff] mb-5 shadow-lg">
+              <div className="w-20 h-20 rounded-2xl bg-[#005fb8]/10 dark:bg-[#4cc2ff]/10 border border-[#005fb8]/20 dark:border-[#4cc2ff]/20 flex items-center justify-center text-[#005fb8] dark:text-[#4cc2ff] mb-5 shadow-lg">
                 <FolderOpen className="w-10 h-10 stroke-[1.5]" />
               </div>
 
               <h2 className="text-xl sm:text-2xl font-bold text-[#111827] dark:text-white mb-2">
-                Your important stuff, all in one place
+                Your memories, all in one place
               </h2>
 
               <p className="text-sm text-[#4b5563] dark:text-[#9ca3af] mb-6 leading-relaxed">
-                Upload files or media from your device to save in Gallery, or load demo files to explore.
+                Upload photos, videos, audio clips, and Office documents to save in Gallery, or load demo samples to get started.
               </p>
 
               <div className="flex items-center gap-3">
@@ -912,7 +1219,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                   className="px-5 py-2.5 rounded-[8px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-sm font-semibold flex items-center gap-2 cursor-pointer shadow-md transition-all"
                 >
                   <UploadCloud className="w-4 h-4" />
-                  <span>Upload</span>
+                  <span>Upload Files</span>
                 </button>
 
                 <button
@@ -928,11 +1235,19 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           ) : filteredItems.length === 0 && activeFilter === 'all' && !isSearching ? (
             currentFolderId ? (
               <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-4 max-w-md mx-auto">
-                <Folder className="w-12 h-12 mb-3 text-[#e8a33d]" strokeWidth={1.5} />
+                <Folder className="w-12 h-12 mb-3 text-amber-500 stroke-[1.5]" />
                 <h3 className="text-base font-semibold text-[#111827] dark:text-white mb-1">This folder is empty</h3>
-                <p className="text-xs text-[#6b7280] dark:text-[#9ca3af]">
-                  Right-click or long-press a file in Gallery and choose Move into a folder.
+                <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mb-4">
+                  Right-click or select items in Gallery and move them into this folder.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>Upload into this folder</span>
+                </button>
               </div>
             ) : null
           ) : filteredItems.length === 0 ? (
@@ -941,10 +1256,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 <FolderOpen className="w-8 h-8 stroke-[1.5]" />
               </div>
               <h3 className="text-base font-semibold text-[#111827] dark:text-white mb-1">
-                No items match this filter or search
+                No items match this filter
               </h3>
               <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mb-4">
-                Try selecting a different filter category or clearing your search term.
+                Try selecting a different filter category or reset your search.
               </p>
               <button
                 type="button"
@@ -955,8 +1270,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Populated Gallery Grid with Windows 11 Photos date/year grouped sections */
-            <div className="space-y-8 max-w-[1800px] mx-auto">
+            /* Populated Windows 11 Photos Grid Grouped by Date */
+            <div className="space-y-8 max-w-[1800px] mx-auto pb-16">
               {groupedSections.map((group, groupIdx) => {
                 const isFirstSectionOfYear = groupIdx === 0 || groupedSections[groupIdx - 1].year !== group.year;
                 const isAllGroupSelected = group.items.every((it) => selectedIds.has(it.id));
@@ -969,12 +1284,12 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                     className="gallery-year-section space-y-3"
                   >
                     {/* Date Header matching Windows 11 Photos */}
-                    <div className="flex items-center justify-between px-1 py-1.5 border-b border-black/5 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md bg-[#282c31]/90 dark:bg-[#282c31]/90">
+                    <div className="flex items-center justify-between px-2 py-2 border-b border-black/5 dark:border-white/5 sticky top-0 z-20 backdrop-blur-xl bg-[#f9f9f9]/85 dark:bg-[#202020]/85 transition-colors">
                       <div className="flex items-baseline gap-2.5">
-                        <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white font-['Segoe_UI',system-ui,sans-serif]">
+                        <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white">
                           {group.label}
                         </h3>
-                        <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] font-normal font-['Segoe_UI',system-ui,sans-serif]">
+                        <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] font-normal">
                           {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
                         </span>
                       </div>
@@ -983,16 +1298,16 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       <button
                         type="button"
                         onClick={() => toggleGroupSelect(group.items)}
-                        className={`px-2.5 py-1 rounded-[6px] text-xs font-['Segoe_UI',system-ui,sans-serif] font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-[6px] text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
                           isAllGroupSelected && isSelectMode
                             ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold shadow-xs'
                             : 'hover:bg-black/5 dark:hover:bg-white/10 text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white'
                         }`}
-                        title="Select all in this section"
+                        title="Select all items in this section"
                       >
                         {isAllGroupSelected && isSelectMode ? (
                           <>
-                            <Check className="w-3.5 h-3.5" />
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                             <span>Selected</span>
                           </>
                         ) : (
@@ -1001,10 +1316,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       </button>
                     </div>
 
-                    {/* Justified fluid aspect-ratio grid */}
-                    <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
+                    {/* Responsive Grid of Cards */}
+                    <div className={gridContainerStyle}>
                       {group.items.map((item) => {
-                        const ar = Math.max(0.4, Math.min(3.0, item.aspectRatio || 1.33));
                         const isSelected = selectedIds.has(item.id);
                         const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
 
@@ -1024,6 +1338,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                 toggleSelect(item.id, e);
                               } else {
                                 setSelectedItem(item);
+                                setZoomLevel(1);
+                                setRotation(0);
                               }
                             }}
                             onContextMenu={(e) => {
@@ -1035,35 +1351,36 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                             onTouchMove={clearLongPress}
                             onTouchEnd={clearLongPress}
                             onTouchCancel={clearLongPress}
-                            style={{
-                              flexGrow: Math.round(ar * 100),
-                              flexBasis: `calc(${ar} * 160px)`,
-                              height: '200px',
-                              WebkitTouchCallout: 'none',
-                            }}
-                            className={`group relative rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#2a2a2a] cursor-pointer shadow-xs hover:shadow-xl transition-all select-none border ${
+                            className={`group relative aspect-square rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#282828] cursor-pointer shadow-xs hover:shadow-xl transition-all select-none border ${
                               isSelected
                                 ? 'ring-3 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
-                                : 'border-black/10 dark:border-white/10 hover:ring-2 hover:ring-[#005fb8]/70 dark:hover:ring-[#4cc2ff]/70'
+                                : 'border-black/5 dark:border-white/5 hover:border-[#005fb8]/50 dark:hover:border-[#4cc2ff]/50'
                             }`}
                           >
-                            {/* Checkbox indicator in Select Mode */}
-                            {isSelectMode && (
+                            {/* Checkbox indicator (Hover in normal mode, or always visible in Select Mode) */}
+                            <div
+                              className={`absolute top-2 left-2 z-20 transition-opacity ${
+                                isSelectMode
+                                  ? 'opacity-100'
+                                  : 'opacity-0 group-hover:opacity-100'
+                              }`}
+                              onClick={(e) => {
+                                if (!isSelectMode) setIsSelectMode(true);
+                                toggleSelect(item.id, e);
+                              }}
+                            >
                               <div
-                                className="absolute top-2 right-2 z-20"
-                                onClick={(e) => toggleSelect(item.id, e)}
+                                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                  isSelected
+                                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
+                                    : 'bg-black/40 hover:bg-black/60 text-white border border-white/60 backdrop-blur-sm'
+                                }`}
                               >
-                                <div
-                                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                                    isSelected
-                                      ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white'
-                                      : 'bg-black/50 text-white/70 hover:text-white border border-white/40'
-                                  }`}
-                                >
-                                  {isSelected ? <Check className="w-4 h-4 stroke-[2.5]" /> : <div className="w-2.5 h-2.5 rounded-full bg-white/40" />}
-                                </div>
+                                {isSelected ? (
+                                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                ) : null}
                               </div>
-                            )}
+                            </div>
 
                             {/* Media Thumbnail / Preview */}
                             {item.type === 'video' ? (
@@ -1071,28 +1388,32 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                 <img
                                   src={item.thumbnailUrl || item.url}
                                   alt={item.title}
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                   loading="lazy"
                                 />
-                                <div className="absolute inset-0 bg-black/25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md">
+                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg">
                                     <Play className="w-5 h-5 fill-current ml-0.5" />
                                   </div>
                                 </div>
+                                {/* Duration badge */}
+                                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-[4px] bg-black/70 backdrop-blur-md text-[10px] font-semibold text-white">
+                                  {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : '0:45'}
+                                </div>
                               </div>
                             ) : item.type === 'audio' ? (
-                              <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-4 flex flex-col justify-between">
+                              <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-3 sm:p-4 flex flex-col justify-between">
                                 <div className="flex items-center justify-between">
                                   <div className="w-8 h-8 rounded-full bg-[#005fb8]/20 dark:bg-[#4cc2ff]/20 text-[#005fb8] dark:text-[#4cc2ff] flex items-center justify-center">
                                     <Music className="w-4 h-4" />
                                   </div>
-                                  <span className="text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">
+                                  <span className="text-[10px] text-neutral-400">
                                     {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : 'AUDIO'}
                                   </span>
                                 </div>
                                 <div>
-                                  <p className="text-xs font-semibold text-white truncate font-['Segoe_UI',system-ui,sans-serif]">{item.title}</p>
-                                  <p className="text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">Audio Track</p>
+                                  <p className="text-xs font-semibold text-white truncate">{item.title}</p>
+                                  <p className="text-[10px] text-neutral-400 mt-0.5">Audio Track</p>
                                 </div>
                               </div>
                             ) : item.type === 'document' ? (
@@ -1101,13 +1422,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                   <img
                                     src={item.thumbnailUrl || item.url}
                                     alt={item.title}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     loading="lazy"
                                   />
                                 </div>
                               ) : (
                                 <div
-                                  className="w-full h-full p-4 flex flex-col justify-between"
+                                  className="w-full h-full p-3 sm:p-4 flex flex-col justify-between"
                                   style={{
                                     background: `linear-gradient(135deg, ${docInfo?.color || '#2b579a'}20 0%, #1c1c24 100%)`,
                                   }}
@@ -1120,15 +1441,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                       {docInfo && <docInfo.icon className="w-5 h-5" />}
                                     </div>
                                     <span
-                                      className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-xs font-['Segoe_UI',system-ui,sans-serif]"
+                                      className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-xs"
                                       style={{ backgroundColor: docInfo?.color || '#2b579a' }}
                                     >
                                       {docInfo?.badge || 'DOC'}
                                     </span>
                                   </div>
                                   <div>
-                                    <p className="text-xs font-bold text-white line-clamp-2 leading-snug font-['Segoe_UI',system-ui,sans-serif]">{item.title}</p>
-                                    <div className="flex items-center justify-between mt-1 text-[10px] text-neutral-400 font-['Segoe_UI',system-ui,sans-serif]">
+                                    <p className="text-xs font-bold text-white line-clamp-2 leading-snug">{item.title}</p>
+                                    <div className="flex items-center justify-between mt-1 text-[10px] text-neutral-400">
                                       <span>{docInfo?.brand || 'Document'}</span>
                                       <span>{(item.size ? (item.size / 1024).toFixed(0) : '150')} KB</span>
                                     </div>
@@ -1139,57 +1460,54 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                               <img
                                 src={item.thumbnailUrl || item.url}
                                 alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy"
                               />
                             )}
 
-                            {/* Top-Left Acrylic Badge Icon */}
-                            <div className="absolute top-2 left-2 z-10 flex items-center gap-1">
-                              <div className="px-1.5 py-1 rounded-[5px] bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1 shadow-xs">
-                                {item.type === 'video' ? (
-                                  <>
-                                    <Film className="w-3 h-3 text-white" />
-                                    <div className="w-2.5 h-2.5 rounded-[2px] bg-gradient-to-br from-red-500 to-amber-500 flex items-center justify-center" />
-                                  </>
-                                ) : item.type === 'audio' ? (
-                                  <Music className="w-3 h-3 text-[#4cc2ff]" />
-                                ) : item.type === 'document' ? (
-                                  <div className="flex items-center gap-1">
-                                    {docInfo && <docInfo.icon className="w-3 h-3" style={{ color: docInfo.color }} />}
-                                    <span className="text-[9px] font-bold text-white font-['Segoe_UI',system-ui,sans-serif]">{docInfo?.badge || 'DOC'}</span>
-                                  </div>
-                                ) : (
-                                  <div className="w-3 h-3 rounded-[2px] bg-gradient-to-tr from-[#3b82f6] via-[#10b981] to-[#f59e0b] shadow-xs" />
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Favorite indicator */}
-                            {!isSelectMode && item.isFavorite && (
-                              <div className="absolute top-2 right-2 z-10 p-1 rounded-full bg-black/60 backdrop-blur-md text-amber-400">
-                                <Heart className="w-3 h-3 fill-current" />
-                              </div>
-                            )}
-
-                            {/* Quick Hover Delete button */}
-                            {!isSelectMode && (
+                            {/* Top-Right Favorite / Action icons */}
+                            <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+                              {/* Favorite Heart */}
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteItem(item);
+                                  handleToggleFavorite(item);
                                 }}
-                                className={`absolute ${item.isFavorite ? 'top-2 right-9' : 'top-2 right-2'} z-20 p-1 rounded-full bg-black/60 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md`}
-                                title="Delete item"
+                                className={`p-1 rounded-full backdrop-blur-md transition-all cursor-pointer ${
+                                  item.isFavorite
+                                    ? 'bg-amber-400 text-black shadow-md opacity-100'
+                                    : 'bg-black/50 text-white/80 hover:text-white opacity-0 group-hover:opacity-100 hover:bg-black/70'
+                                }`}
+                                title={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Heart className={`w-3.5 h-3.5 ${item.isFavorite ? 'fill-current' : ''}`} />
                               </button>
-                            )}
 
-                            {/* Subtle hover info */}
-                            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white">
-                              <span className="text-[11px] font-medium truncate max-w-[85%] font-['Segoe_UI',system-ui,sans-serif]">{item.title}</span>
+                              {/* Quick Delete in Hover */}
+                              {!isSelectMode && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteItem(item);
+                                  }}
+                                  className="p-1 rounded-full bg-black/50 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
+                                  title="Delete item"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Subtle bottom gradient info overlay */}
+                            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white pointer-events-none">
+                              <span className="text-[11px] font-medium truncate max-w-[85%]">{item.title}</span>
+                              {item.type === 'image' && item.dimensions && (
+                                <span className="text-[9px] text-neutral-300 font-mono">
+                                  {item.dimensions.width}×{item.dimensions.height}
+                                </span>
+                              )}
                             </div>
                           </motion.div>
                         );
@@ -1202,8 +1520,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           )}
         </div>
 
-        {/* Right-Hand Timeline Scrubber Track - Fully functional with Segoe UI font */}
-        <div className="hidden lg:flex flex-col items-center justify-center w-16 shrink-0 border-l border-black/10 dark:border-white/10 bg-transparent select-none py-6 relative">
+        {/* Right-Hand Timeline Scrubber Track - Sleek Windows 11 Photos Style */}
+        <div className="hidden lg:flex flex-col items-center justify-center w-14 shrink-0 border-l border-black/10 dark:border-white/10 bg-transparent select-none py-6 relative">
           <div className="flex flex-col items-center justify-between h-[80%] relative w-full px-2">
             <div className="absolute top-2 bottom-2 left-1/2 -translate-x-1/2 w-[1px] bg-black/15 dark:bg-white/20 -z-0" />
 
@@ -1221,7 +1539,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                     >
                       <motion.div
                         layoutId="timeline-active-pill"
-                        className="px-2 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-[11px] font-semibold shadow-md whitespace-nowrap -ml-20 mr-1.5 font-['Segoe_UI',system-ui,sans-serif]"
+                        className="px-2 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-[11px] font-semibold shadow-md whitespace-nowrap -ml-20 mr-1.5"
                       >
                         {activeLabel}
                       </motion.div>
@@ -1235,7 +1553,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       title={`Jump to ${year}`}
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-black/35 dark:bg-white/45 group-hover/btn:bg-[#005fb8] dark:group-hover/btn:bg-[#4cc2ff] group-hover/btn:scale-125 transition-all" />
-                      <span className="text-[11px] text-[#6b7280] dark:text-neutral-400 group-hover/btn:text-[#111827] dark:group-hover/btn:text-white font-['Segoe_UI',system-ui,sans-serif] font-medium transition-colors">
+                      <span className="text-[11px] text-[#6b7280] dark:text-neutral-400 group-hover/btn:text-[#111827] dark:group-hover/btn:text-white font-medium transition-colors">
                         {year}
                       </span>
                     </button>
@@ -1292,21 +1610,22 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         onClose={() => setMoveTargetIds(null)}
       />
 
-      {/* Lightbox / Media Preview Modal */}
+      {/* Windows 11 Photos Fullscreen Lightbox & Media Viewer */}
       <AnimatePresence>
         {selectedItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex flex-col justify-between p-3 sm:p-6"
+            className="fixed inset-0 z-50 bg-[#16181d]/95 backdrop-blur-3xl flex flex-col justify-between select-none"
             onClick={() => setSelectedItem(null)}
           >
-            {/* Modal Header */}
-            <div 
-              className="flex items-center justify-between text-white pb-3 shrink-0"
+            {/* Top Windows 11 Title & Command Bar */}
+            <header 
+              className="flex items-center justify-between text-white px-4 py-2.5 bg-black/30 backdrop-blur-md border-b border-white/10 shrink-0 z-20"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Media Title & Metadata */}
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-8 h-8 rounded-[6px] bg-white/10 flex items-center justify-center shrink-0">
                   {selectedItem.type === 'video' ? (
@@ -1314,22 +1633,73 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                   ) : selectedItem.type === 'audio' ? (
                     <Music className="w-4 h-4 text-[#4cc2ff]" />
                   ) : (
-                    <FileText className="w-4 h-4 text-[#4cc2ff]" />
+                    <ImageIcon className="w-4 h-4 text-[#4cc2ff]" />
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm sm:text-base font-bold text-white truncate">{selectedItem.title}</h3>
+                  <h3 className="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">{selectedItem.title}</h3>
                   <p className="text-[11px] text-neutral-400">
-                    {selectedItem.dateLabel} • {selectedItem.dimensions ? `${selectedItem.dimensions.width}×${selectedItem.dimensions.height}` : 'Media'}
+                    {currentIndex + 1} of {filteredItems.length} • {selectedItem.dateLabel || 'Media'}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Action Toolbar */}
+              <div className="flex items-center gap-1.5">
+                {/* Zoom Controls (Images only) */}
+                {selectedItem.type === 'image' && (
+                  <div className="hidden sm:flex items-center bg-white/10 rounded-lg p-0.5 mr-2">
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.25))}
+                      className="p-1.5 rounded-md hover:bg-white/10 text-neutral-300 hover:text-white cursor-pointer"
+                      title="Zoom out"
+                    >
+                      <ZoomOut className="w-4 h-4" />
+                    </button>
+                    <span className="text-[10px] font-mono px-1.5 text-neutral-300 min-w-10 text-center">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel((z) => Math.min(3, z + 0.25))}
+                      className="p-1.5 rounded-md hover:bg-white/10 text-neutral-300 hover:text-white cursor-pointer"
+                      title="Zoom in"
+                    >
+                      <ZoomIn className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRotation((r) => (r + 90) % 360)}
+                      className="p-1.5 rounded-md hover:bg-white/10 text-neutral-300 hover:text-white cursor-pointer ml-1"
+                      title="Rotate 90°"
+                    >
+                      <RotateCw className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Edit in Photopea (Images) */}
+                {selectedItem.type === 'image' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedItem(null);
+                      navigate('photopea');
+                    }}
+                    className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white/10 hover:bg-white/20 text-xs font-medium text-white cursor-pointer transition-colors"
+                    title="Edit in Photopea"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-[#4cc2ff]" />
+                    <span>Edit</span>
+                  </button>
+                )}
+
+                {/* Favorite */}
                 <button
                   type="button"
                   onClick={() => handleToggleFavorite(selectedItem)}
-                  className={`p-2 rounded-full cursor-pointer transition-colors ${
+                  className={`p-2 rounded-md cursor-pointer transition-colors ${
                     selectedItem.isFavorite ? 'text-amber-400 bg-amber-400/20' : 'text-neutral-400 hover:text-white hover:bg-white/10'
                   }`}
                   title="Favorite"
@@ -1337,116 +1707,271 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                   <Heart className={`w-4 h-4 ${selectedItem.isFavorite ? 'fill-current' : ''}`} />
                 </button>
 
-                <a
-                  href={selectedItem.url}
-                  download={selectedItem.title}
-                  className="p-2 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors"
-                  title="Download"
+                {/* Share */}
+                <button
+                  type="button"
+                  onClick={() => handleShare(selectedItem)}
+                  className="p-2 rounded-md text-neutral-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors"
+                  title="Share"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+
+                {/* Download */}
+                <button
+                  type="button"
+                  onClick={() => handleSaveToDevice(selectedItem)}
+                  className="p-2 rounded-md text-neutral-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors"
+                  title="Save to device"
                 >
                   <Download className="w-4 h-4" />
-                </a>
+                </button>
 
+                {/* Info Panel Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowInfoPanel((prev) => !prev)}
+                  className={`p-2 rounded-md cursor-pointer transition-colors ${
+                    showInfoPanel ? 'bg-[#005fb8] text-white' : 'text-neutral-400 hover:text-white hover:bg-white/10'
+                  }`}
+                  title="File details"
+                >
+                  <Info className="w-4 h-4" />
+                </button>
+
+                {/* Delete */}
                 <button
                   type="button"
                   onClick={() => handleDeleteItem(selectedItem)}
-                  className="p-2 rounded-full text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
+                  className="p-2 rounded-md text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
                   title="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
 
+                {/* Close */}
                 <button
                   type="button"
                   onClick={() => setSelectedItem(null)}
-                  className="p-2 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors ml-2"
-                  title="Close"
+                  className="p-2 rounded-md text-neutral-400 hover:text-white hover:bg-white/10 cursor-pointer transition-colors ml-1"
+                  title="Close (Esc)"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-            </div>
+            </header>
 
-            {/* Modal Body */}
+            {/* Modal Body with Left/Right Navigation Arrows */}
             <div 
-              className="flex-1 flex items-center justify-center p-2 min-h-0 relative"
+              className="flex-1 flex items-center justify-center p-4 min-h-0 relative overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {selectedItem.type === 'video' ? (
-                <video
-                  src={selectedItem.url}
-                  controls
-                  autoPlay
-                  className="max-h-[75vh] max-w-[90vw] rounded-lg shadow-2xl object-contain bg-black"
-                />
-              ) : selectedItem.type === 'audio' ? (
-                <div className="w-full max-w-lg p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center">
-                  <div className="w-24 h-24 rounded-full bg-[#4cc2ff]/20 text-[#4cc2ff] flex items-center justify-center mb-4">
-                    <Music className="w-12 h-12" />
+              {/* Previous button */}
+              {currentIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={handlePrevMedia}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                  title="Previous item (Left Arrow)"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              )}
+
+              {/* Next button */}
+              {currentIndex < filteredItems.length - 1 && (
+                <button
+                  type="button"
+                  onClick={handleNextMedia}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                  title="Next item (Right Arrow)"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              )}
+
+              {/* Media Display */}
+              <div className="w-full h-full flex items-center justify-center p-2">
+                {selectedItem.type === 'video' ? (
+                  <video
+                    src={selectedItem.url}
+                    controls
+                    autoPlay
+                    className="max-h-[72vh] max-w-[85vw] rounded-xl shadow-2xl object-contain bg-black"
+                  />
+                ) : selectedItem.type === 'audio' ? (
+                  <div className="w-full max-w-md p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center shadow-2xl">
+                    <div className="w-24 h-24 rounded-full bg-[#4cc2ff]/20 text-[#4cc2ff] flex items-center justify-center mb-4">
+                      <Music className="w-12 h-12" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-1">{selectedItem.title}</h4>
+                    <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Audio track'}</p>
+                    <audio ref={audioRef} src={selectedItem.url} controls className="w-full" autoPlay />
                   </div>
-                  <h4 className="text-lg font-bold text-white mb-1">{selectedItem.title}</h4>
-                  <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Audio track'}</p>
-                  <audio ref={audioRef} src={selectedItem.url} controls className="w-full" autoPlay />
-                </div>
-              ) : selectedItem.type === 'document' ? (
-                selectedItem.mimeType === 'application/x-sticky-note' && (selectedItem.thumbnailUrl || selectedItem.url) ? (
-                  <div className="max-w-md w-full p-2 flex flex-col items-center">
-                    <img
-                      src={selectedItem.thumbnailUrl || selectedItem.url}
-                      alt={selectedItem.title}
-                      className="max-h-[70vh] w-auto rounded-2xl shadow-2xl border border-white/20 object-contain"
-                    />
-                    <div className="mt-4 flex items-center gap-3">
+                ) : selectedItem.type === 'document' ? (
+                  selectedItem.mimeType === 'application/x-sticky-note' && (selectedItem.thumbnailUrl || selectedItem.url) ? (
+                    <div className="max-w-md w-full p-2 flex flex-col items-center">
+                      <img
+                        src={selectedItem.thumbnailUrl || selectedItem.url}
+                        alt={selectedItem.title}
+                        className="max-h-[70vh] w-auto rounded-2xl shadow-2xl border border-white/20 object-contain"
+                      />
+                      <div className="mt-4 flex items-center gap-3">
+                        <a
+                          href={selectedItem.url}
+                          download={`${selectedItem.title}.svg`}
+                          className="px-4 py-2 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 cursor-pointer shadow-md"
+                        >
+                          <Download className="w-4 h-4" />
+                          <span>Download Sticky Note</span>
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-md p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center shadow-2xl">
+                      <div 
+                        className="w-16 h-16 rounded-xl flex items-center justify-center mb-4 text-white shadow-xl"
+                        style={{ backgroundColor: getDocumentDetails(selectedItem).color }}
+                      >
+                        {(() => {
+                          const Details = getDocumentDetails(selectedItem);
+                          return <Details.icon className="w-8 h-8" />;
+                        })()}
+                      </div>
+                      <h4 className="text-lg font-bold text-white mb-2">{selectedItem.title}</h4>
+                      <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Stored Office document'}</p>
                       <a
                         href={selectedItem.url}
-                        download={`${selectedItem.title}.svg`}
-                        className="px-4 py-2 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold text-xs sm:text-sm flex items-center gap-2 hover:opacity-90 cursor-pointer shadow-md"
+                        download={selectedItem.title}
+                        className="px-5 py-2.5 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold text-sm flex items-center gap-2 hover:opacity-90 cursor-pointer shadow-md"
                       >
                         <Download className="w-4 h-4" />
-                        <span>Download Sticky Note</span>
+                        <span>Download {getDocumentDetails(selectedItem).badge} File</span>
                       </a>
                     </div>
-                  </div>
+                  )
                 ) : (
-                  <div className="w-full max-w-lg p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center">
-                    <div 
-                      className="w-16 h-16 rounded-xl flex items-center justify-center mb-4 text-white shadow-xl"
-                      style={{ backgroundColor: getDocumentDetails(selectedItem).color }}
-                    >
-                      {(() => {
-                        const Details = getDocumentDetails(selectedItem);
-                        return <Details.icon className="w-8 h-8" />;
-                      })()}
+                  <motion.img
+                    src={selectedItem.url}
+                    alt={selectedItem.title}
+                    animate={{ scale: zoomLevel, rotate: rotation }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className="max-h-[72vh] max-w-[85vw] object-contain rounded-lg shadow-2xl transition-all"
+                  />
+                )}
+              </div>
+
+              {/* Side Info Panel */}
+              <AnimatePresence>
+                {showInfoPanel && (
+                  <motion.div
+                    initial={{ x: 300, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 300, opacity: 0 }}
+                    className="absolute right-0 top-0 bottom-0 w-80 bg-[#1e2025]/95 backdrop-blur-2xl border-l border-white/10 p-5 overflow-y-auto text-white z-40 text-xs space-y-4 shadow-2xl"
+                  >
+                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                      <h4 className="font-bold text-sm">File details</h4>
+                      <button
+                        type="button"
+                        onClick={() => setShowInfoPanel(false)}
+                        className="p-1 rounded-md text-neutral-400 hover:text-white"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-2">{selectedItem.title}</h4>
-                    <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Stored Office document'}</p>
-                    <a
-                      href={selectedItem.url}
-                      download={selectedItem.title}
-                      className="px-5 py-2.5 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold text-sm flex items-center gap-2 hover:opacity-90 cursor-pointer shadow-md"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download {getDocumentDetails(selectedItem).badge} File</span>
-                    </a>
-                  </div>
-                )
-              ) : (
-                <img
-                  src={selectedItem.url}
-                  alt={selectedItem.title}
-                  className="max-h-[80vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
-                />
-              )}
+
+                    <div>
+                      <p className="text-neutral-400 text-[11px] mb-1">File name</p>
+                      <p className="font-semibold text-neutral-100 break-words">{selectedItem.title}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-neutral-400 text-[11px] mb-1">Date added</p>
+                      <p className="font-medium text-neutral-200">
+                        {new Date(selectedItem.dateAdded).toLocaleString()}
+                      </p>
+                    </div>
+
+                    {selectedItem.dimensions && (
+                      <div>
+                        <p className="text-neutral-400 text-[11px] mb-1">Dimensions</p>
+                        <p className="font-medium text-neutral-200">
+                          {selectedItem.dimensions.width} × {selectedItem.dimensions.height} px
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedItem.size && (
+                      <div>
+                        <p className="text-neutral-400 text-[11px] mb-1">File size</p>
+                        <p className="font-medium text-neutral-200">
+                          {(selectedItem.size / (1024 * 1024)).toFixed(2)} MB ({(selectedItem.size / 1024).toFixed(0)} KB)
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedItem.mimeType && (
+                      <div>
+                        <p className="text-neutral-400 text-[11px] mb-1">Type</p>
+                        <p className="font-medium text-neutral-200 font-mono text-[11px]">{selectedItem.mimeType}</p>
+                      </div>
+                    )}
+
+                    {selectedItem.tags && selectedItem.tags.length > 0 && (
+                      <div>
+                        <p className="text-neutral-400 text-[11px] mb-1.5">Tags</p>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedItem.tags.map((t) => (
+                            <span key={t} className="px-2 py-0.5 rounded-full bg-white/10 text-[10px]">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Modal Footer Description */}
-            {selectedItem.description && (
-              <div 
-                className="text-center text-xs text-neutral-300 pt-3 shrink-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {selectedItem.description}
-              </div>
-            )}
+            {/* Bottom Filmstrip Carousel */}
+            <div 
+              className="px-4 py-2 bg-black/40 backdrop-blur-md border-t border-white/10 shrink-0 flex items-center justify-center gap-2 overflow-x-auto no-scrollbar z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {filteredItems.slice(Math.max(0, currentIndex - 5), currentIndex + 6).map((it) => {
+                const isCurrent = it.id === selectedItem.id;
+                return (
+                  <button
+                    key={it.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedItem(it);
+                      setZoomLevel(1);
+                      setRotation(0);
+                    }}
+                    className={`w-12 h-12 rounded-[6px] overflow-hidden shrink-0 transition-all cursor-pointer border ${
+                      isCurrent
+                        ? 'ring-2 ring-[#4cc2ff] border-white scale-110 opacity-100 shadow-md'
+                        : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-105'
+                    }`}
+                  >
+                    {it.type === 'image' ? (
+                      <img src={it.thumbnailUrl || it.url} alt={it.title} className="w-full h-full object-cover" />
+                    ) : it.type === 'video' ? (
+                      <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-white">
+                        <Play className="w-4 h-4 fill-current" />
+                      </div>
+                    ) : (
+                      <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white text-[9px] font-bold">
+                        DOC
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

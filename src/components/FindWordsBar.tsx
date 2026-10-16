@@ -135,7 +135,7 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
           transition={{ duration: 0.2 }}
           className="fixed top-20 right-6 sm:right-10 z-50 flex items-center gap-2 p-2 rounded-[8px] bg-white/90 dark:bg-[#1b1f24]/90 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-2xl text-[#111827] dark:text-white"
         >
-          <div className="group relative h-8 sm:h-8.5 flex items-center gap-2 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 focus-within:border-b-2 focus-within:border-b-[#005fb8] dark:focus-within:border-b-[#4cc2ff] transition-all">
+          <div className="group relative h-[35px] sm:h-[37px] flex items-center gap-2 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] border-0 focus-within:ring-2 focus-within:ring-[#005fb8] dark:focus-within:ring-[#4cc2ff] transition-all">
             <input
               ref={inputRef}
               type="text"

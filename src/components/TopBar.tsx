@@ -1538,10 +1538,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-[38px] sm:h-[41px] rounded-[6px] border border-black/10 dark:border-white/10 flex items-center px-3 gap-2 transition-all overflow-hidden ${
+              className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] border-0 flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
-                  ? 'search-flyout-open bg-white dark:bg-[#282c31] shadow-xs'
-                  : 'bg-black/5 dark:bg-[#282c31]'
+                  ? 'search-flyout-open bg-white dark:bg-[#282c31] ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] shadow-xs'
+                  : 'bg-black/5 dark:bg-[#282c31] ring-0'
               }`}
             >
               <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none drop-shadow-xs" />
@@ -1603,15 +1603,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-
-              {/* Blue bottom indicator line matching settings search box */}
-              <div
-                className={`absolute bottom-0 left-0 right-0 h-[1.5px] transition-all duration-150 pointer-events-none z-10 ${
-                  isSearchFlyoutOpen || isSearchFocused
-                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] opacity-100'
-                    : 'bg-[#8e8e93]/60 dark:bg-[#777777]/60 opacity-70'
-                }`}
-              />
             </div>
           </form>
 
