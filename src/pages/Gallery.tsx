@@ -14,6 +14,7 @@ import {
   RotateCw, 
   FolderOpen, 
   Sparkles,
+  Funnel,
   CheckSquare,
   Square,
   Copy,
@@ -52,6 +53,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const { settings } = useSettings();
   const [items, setItems] = useState<GalleryMediaItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<GalleryMediaItem | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -499,7 +501,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   };
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
+    <div className="flex flex-col h-full min-h-screen bg-[#282c31] text-[#111827] dark:text-[#F3F4F6] relative select-none">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -515,40 +517,33 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         )}
       </AnimatePresence>
 
-      {/* Top Action Bar (No header title "Gallery", no local search bar - synced with TopBar) */}
-      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2.5 border-b border-black/10 dark:border-white/10 bg-transparent flex flex-wrap items-center justify-between gap-2.5 shrink-0">
-        {/* Left: Filter Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {[
-            { id: 'all', label: 'All', icon: ImageIcon },
-            { id: 'image', label: 'Photos', icon: ImageIcon },
-            { id: 'video', label: 'Videos', icon: Film },
-            { id: 'audio', label: 'Audio', icon: Music },
-            { id: 'document', label: 'Files', icon: FileText },
-            { id: 'favorites', label: 'Favorites', icon: Heart },
-          ].map((tab) => {
-            const isActive = activeFilter === tab.id;
-            const IconComp = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id as FilterType)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                  isActive
-                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-bold shadow-xs'
-                    : 'bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#4b5563] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white border border-black/5 dark:border-white/5'
-                }`}
-              >
-                <IconComp className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
+      {/* Photos-style gallery header */}
+      <header className="sticky top-0 z-30 px-6 py-2.5 border-b border-white/[0.06] bg-[#282c31]/95 backdrop-blur-xl flex items-center justify-between gap-4 shrink-0 overflow-visible">
+        <div className="relative text-white/60">
+          <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Funnel className="w-3.5 h-3.5" />
+          </button>
+          {isFilterMenuOpen && (
+            <div className="absolute right-0 top-9 z-[100] min-w-36 rounded-lg border border-white/10 bg-[#303030] p-1.5 shadow-2xl">
+              {[
+                { id: 'image', label: 'Photos' },
+                { id: 'video', label: 'Video' },
+                { id: 'audio', label: 'Audio' },
+                { id: 'document', label: 'Files' },
+              ].map((option) => (
+                <button key={option.id} type="button" onClick={() => { setActiveFilter(option.id as FilterType); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === option.id ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
+                  {option.label}
+                </button>
+              ))}
+              <button type="button" onClick={() => { setActiveFilter('all'); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === 'all' ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
+                All media
               </button>
-            );
-          })}
+            </div>
+          )}
         </div>
 
-        {/* Right: Select Mode Actions or Normal Actions */}
-        <div className="flex items-center gap-2 ml-auto">
+      {/* Right: Select Mode Actions or Normal Actions */}
+        <div className="flex items-center gap-2">
           {isSelectMode ? (
             /* Action bar when Selection mode is Active */
             <div className="flex items-center gap-2 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-[6px] border border-black/10 dark:border-white/10">
@@ -614,51 +609,32 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Normal Mode: Upload & Select buttons */
+            /* Normal Mode: compact gallery actions */
             <>
-              {/* Select Button (Replaced Clear button as requested) */}
-              {filteredItems.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setIsSelectMode(true)}
-                  className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                  title="Select multiple files to duplicate or delete"
-                >
-                  <CheckSquare className="w-3.5 h-3.5" />
-                  <span>Select</span>
-                </button>
-              )}
-
-              {/* New Folder */}
-              <button
-                type="button"
-                onClick={() => setIsNewFolderOpen(true)}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                title="Create a new folder"
-              >
-                <FolderPlus className="w-3.5 h-3.5" />
-                <span>New folder</span>
-              </button>
-
-              {/* Upload Button (.docx, .doc, .pptx, .ppt, .xlsx, .xls, images, videos, audio) */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs sm:text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
-              >
-                <UploadCloud className="w-4 h-4" />
-                <span>Upload</span>
-              </button>
-
-              {/* Load Demo button */}
               <button
                 type="button"
                 onClick={handleRestoreSamples}
-                className="px-2.5 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#005fb8] dark:text-[#4cc2ff] text-xs font-semibold border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                title="Load sample demo files and media"
+                aria-label="Load samples"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <RotateCw className="w-3.5 h-3.5" />
-                <span>Load Demo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsSelectMode(true)}
+                aria-label="Select files"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
+              >
+                <CheckSquare className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsNewFolderOpen(true)}
+                aria-label="New folder"
+                title="Create a new folder"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
+              >
+                <FolderPlus className="w-3.5 h-3.5" />
               </button>
             </>
           )}
@@ -673,6 +649,17 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             className="hidden"
           />
         </div>
+        {!isSelectMode && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Import files"
+            title="Import"
+            className="ml-auto size-8 rounded-[6px] bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-all cursor-pointer flex items-center justify-center shadow-sm"
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+          </button>
+        )}
       </header>
 
       {/* Main Content Area */}
@@ -825,7 +812,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </div>
 
               {/* Justified fluid aspect-ratio grid */}
-              <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 items-stretch">
                 {filteredItems.map((item) => {
                   const ar = Math.max(0.4, Math.min(3.0, item.aspectRatio || 1.33));
                   const isSelected = selectedIds.has(item.id);
