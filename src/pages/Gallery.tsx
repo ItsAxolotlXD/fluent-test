@@ -499,7 +499,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   };
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
+    <div className="flex flex-col h-full min-h-screen bg-[#242424] text-[#111827] dark:text-[#F3F4F6] relative select-none">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -515,39 +515,33 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         )}
       </AnimatePresence>
 
-      {/* Top Action Bar (No header title "Gallery", no local search bar - synced with TopBar) */}
-      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2.5 border-b border-black/10 dark:border-white/10 bg-transparent flex flex-wrap items-center justify-between gap-2.5 shrink-0">
-        {/* Left: Filter Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {[
-            { id: 'all', label: 'All', icon: ImageIcon },
-            { id: 'image', label: 'Photos', icon: ImageIcon },
-            { id: 'video', label: 'Videos', icon: Film },
-            { id: 'audio', label: 'Audio', icon: Music },
-            { id: 'document', label: 'Files', icon: FileText },
-            { id: 'favorites', label: 'Favorites', icon: Heart },
-          ].map((tab) => {
-            const isActive = activeFilter === tab.id;
-            const IconComp = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id as FilterType)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                  isActive
-                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-bold shadow-xs'
-                    : 'bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#4b5563] dark:text-[#d1d5db] hover:text-[#111827] dark:hover:text-white border border-black/5 dark:border-white/5'
-                }`}
-              >
-                <IconComp className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+      {/* Photos-style gallery header */}
+      <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#242424]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-white/75" />
+            <h1 className="text-[15px] font-semibold tracking-tight text-white">All Photos</h1>
+          </div>
+          <p className="mt-1 text-[10px] text-white/40">{items.filter((item) => item.type === 'image').length || 0} photos, {items.filter((item) => item.type === 'video').length || 0} videos</p>
         </div>
 
-        {/* Right: Select Mode Actions or Normal Actions */}
+        <div className="flex items-center gap-1 text-white/60">
+          {[
+            { label: 'View options', icon: ImageIcon },
+            { label: 'Sort', icon: RotateCw },
+            { label: 'Filter', icon: Sparkles },
+            { label: 'Select', icon: CheckSquare },
+          ].map(({ label, icon: IconComp }) => (
+            <button key={label} type="button" aria-label={label} title={label} onClick={() => label === 'Select' ? setIsSelectMode(true) : undefined} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
+              <IconComp className="w-3.5 h-3.5" />
+            </button>
+          ))}
+          <span className="mx-1 h-4 w-px bg-white/10" />
+          <button type="button" onClick={() => fileInputRef.current?.click()} aria-label="Upload photos" title="Upload photos" className="ml-1 size-8 rounded-md flex items-center justify-center bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-colors"><UploadCloud className="w-3.5 h-3.5" /></button>
+          <button type="button" aria-label="More options" className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors"><span className="text-base leading-none">•••</span></button>
+        </div>
+
+      {/* Right: Select Mode Actions or Normal Actions */}
         <div className="flex items-center gap-2 ml-auto">
           {isSelectMode ? (
             /* Action bar when Selection mode is Active */
@@ -825,7 +819,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </div>
 
               {/* Justified fluid aspect-ratio grid */}
-              <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 items-stretch">
                 {filteredItems.map((item) => {
                   const ar = Math.max(0.4, Math.min(3.0, item.aspectRatio || 1.33));
                   const isSelected = selectedIds.has(item.id);
