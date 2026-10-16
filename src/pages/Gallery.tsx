@@ -14,6 +14,7 @@ import {
   RotateCw, 
   FolderOpen, 
   Sparkles,
+  ListFilter,
   CheckSquare,
   Square,
   Copy,
@@ -52,6 +53,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const { settings } = useSettings();
   const [items, setItems] = useState<GalleryMediaItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<GalleryMediaItem | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -517,28 +519,27 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
       {/* Photos-style gallery header */}
       <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#242424]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-white/75" />
-            <h1 className="text-[15px] font-semibold tracking-tight text-white">All Photos</h1>
-          </div>
-          <p className="mt-1 text-[10px] text-white/40">{items.filter((item) => item.type === 'image').length || 0} photos, {items.filter((item) => item.type === 'video').length || 0} videos</p>
-        </div>
-
-        <div className="flex items-center gap-1 text-white/60">
-          {[
-            { label: 'View options', icon: ImageIcon },
-            { label: 'Sort', icon: RotateCw },
-            { label: 'Filter', icon: Sparkles },
-            { label: 'Select', icon: CheckSquare },
-          ].map(({ label, icon: IconComp }) => (
-            <button key={label} type="button" aria-label={label} title={label} onClick={() => label === 'Select' ? setIsSelectMode(true) : undefined} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
-              <IconComp className="w-3.5 h-3.5" />
-            </button>
-          ))}
-          <span className="mx-1 h-4 w-px bg-white/10" />
-          <button type="button" onClick={() => fileInputRef.current?.click()} aria-label="Upload photos" title="Upload photos" className="ml-1 size-8 rounded-md flex items-center justify-center bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-colors"><UploadCloud className="w-3.5 h-3.5" /></button>
-          <button type="button" aria-label="More options" className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors"><span className="text-base leading-none">•••</span></button>
+        <div className="ml-auto relative text-white/60">
+          <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
+            <ListFilter className="w-3.5 h-3.5" />
+          </button>
+          {isFilterMenuOpen && (
+            <div className="absolute right-0 top-10 z-40 min-w-36 rounded-lg border border-white/10 bg-[#303030] p-1.5 shadow-2xl">
+              {[
+                { id: 'image', label: 'Photos' },
+                { id: 'video', label: 'Video' },
+                { id: 'audio', label: 'Audio' },
+                { id: 'document', label: 'Files' },
+              ].map((option) => (
+                <button key={option.id} type="button" onClick={() => { setActiveFilter(option.id as FilterType); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === option.id ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
+                  {option.label}
+                </button>
+              ))}
+              <button type="button" onClick={() => { setActiveFilter('all'); setIsFilterMenuOpen(false); }} className={`w-full rounded-md px-3 py-2 text-left text-xs transition-colors ${activeFilter === 'all' ? 'bg-white/15 text-white' : 'text-white/65 hover:bg-white/10 hover:text-white'}`}>
+                All media
+              </button>
+            </div>
+          )}
         </div>
 
       {/* Right: Select Mode Actions or Normal Actions */}
@@ -608,22 +609,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Normal Mode: Upload & Select buttons */
+            /* Normal Mode: folder action only */
             <>
-              {/* Select Button (Replaced Clear button as requested) */}
-              {filteredItems.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setIsSelectMode(true)}
-                  className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                  title="Select multiple files to duplicate or delete"
-                >
-                  <CheckSquare className="w-3.5 h-3.5" />
-                  <span>Select</span>
-                </button>
-              )}
-
-              {/* New Folder */}
               <button
                 type="button"
                 onClick={() => setIsNewFolderOpen(true)}
@@ -632,27 +619,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               >
                 <FolderPlus className="w-3.5 h-3.5" />
                 <span>New folder</span>
-              </button>
-
-              {/* Upload Button (.docx, .doc, .pptx, .ppt, .xlsx, .xls, images, videos, audio) */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs sm:text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
-              >
-                <UploadCloud className="w-4 h-4" />
-                <span>Upload</span>
-              </button>
-
-              {/* Load Demo button */}
-              <button
-                type="button"
-                onClick={handleRestoreSamples}
-                className="px-2.5 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#005fb8] dark:text-[#4cc2ff] text-xs font-semibold border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
-                title="Load sample demo files and media"
-              >
-                <RotateCw className="w-3.5 h-3.5" />
-                <span>Load Demo</span>
               </button>
             </>
           )}
