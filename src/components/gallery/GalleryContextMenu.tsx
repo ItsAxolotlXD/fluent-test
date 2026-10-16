@@ -83,13 +83,23 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
     };
   }, [onClose]);
 
-  const renderEntry = (entry: MenuEntry) => {
+  const renderEntry = (entry: MenuEntry, index: number) => {
     const Icon = entry.icon;
     return (
-      <button
+      <motion.button
         key={entry.action}
         type="button"
         role="menuitem"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.38,
+            delay: Math.min(index * 0.035, 0.28),
+            ease: [0.16, 1, 0.3, 1],
+          },
+        }}
         onClick={() => onAction(entry.action)}
         className={`w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] ${
           entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : ''
@@ -101,7 +111,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
           }`}
         />
         <span className="truncate">{entry.label}</span>
-      </button>
+      </motion.button>
     );
   };
 
@@ -110,17 +120,26 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       ref={menuRef}
       role="menu"
       aria-label="File actions"
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 14 }}
-      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
       onContextMenu={(e) => e.preventDefault()}
       className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
       style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
     >
-      {primary.map(renderEntry)}
-      <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
-      {secondary.map(renderEntry)}
+      {primary.map((entry, idx) => renderEntry(entry, idx))}
+      <motion.div
+        role="separator"
+        initial={{ opacity: 0, scaleX: 0.8 }}
+        animate={{
+          opacity: 1,
+          scaleX: 1,
+          transition: { duration: 0.38, delay: primary.length * 0.035, ease: [0.16, 1, 0.3, 1] },
+        }}
+        className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1 origin-left"
+      />
+      {secondary.map((entry, idx) => renderEntry(entry, primary.length + 1 + idx))}
     </motion.div>
   );
 };

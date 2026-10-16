@@ -886,17 +886,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ref={menuRef}
         role="menu"
         aria-label="Sidebar actions"
-        initial={{ opacity: 0, y: 14 }}
+        initial={{ opacity: 0, y: 22 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 14 }}
-        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
         onContextMenu={(e) => e.preventDefault()}
         className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
         style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
       >
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0, ease: [0.16, 1, 0.3, 1] },
+          }}
           onClick={() => {
             onClose();
             window.location.reload();
@@ -905,11 +911,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <RefreshCw className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <span className="truncate">Refresh</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0.04, ease: [0.16, 1, 0.3, 1] },
+          }}
           onClick={() => {
             onClose();
             onGoBack();
@@ -918,11 +930,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <ArrowLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <span className="truncate">Go back</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0.08, ease: [0.16, 1, 0.3, 1] },
+          }}
           onClick={() => {
             onClose();
             onToggleCollapse?.();
@@ -931,11 +949,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <PanelLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <span className="truncate">{isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0.12, ease: [0.16, 1, 0.3, 1] },
+          }}
           onClick={() => {
             onToggleHoverToExpand();
             onClose();
@@ -947,13 +971,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {hoverToExpand && (
             <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
           )}
-        </button>
+        </motion.button>
 
-        <div role="separator" className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+        <motion.div
+          role="separator"
+          initial={{ opacity: 0, scaleX: 0.8 }}
+          animate={{
+            opacity: 1,
+            scaleX: 1,
+            transition: { duration: 0.38, delay: 0.15, ease: [0.16, 1, 0.3, 1] },
+          }}
+          className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1 origin-left"
+        />
 
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0.18, ease: [0.16, 1, 0.3, 1] },
+          }}
           title="Bật/tắt nhanh Fluent icons (Insider flag)"
           onClick={() => {
             onToggleFluentIcons();
@@ -966,11 +1005,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {fluentIcons && (
             <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
           )}
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.38, delay: 0.22, ease: [0.16, 1, 0.3, 1] },
+          }}
           onClick={() => {
             onClose();
             onNavigateSettings();
@@ -979,19 +1024,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <Settings2 className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <span className="truncate">Interface settings</span>
-        </button>
+        </motion.button>
       </motion.div>
     );
   };
 
   // Sidebar Context Menu Component matching Gallery Context Menu design and animation
   const renderSidebarContextMenu = () => {
-    if (!sidebarContextMenu) return null;
-
     return (
       <AnimatePresence>
         {sidebarContextMenu && (
           <SidebarContextMenuOverlay
+            key="sidebar-context-menu"
             x={sidebarContextMenu.x}
             y={sidebarContextMenu.y}
             isCollapsed={isCollapsed}

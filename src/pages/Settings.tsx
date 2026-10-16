@@ -20,7 +20,8 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Layers
+  Layers,
+  Search
 } from 'lucide-react';
 import { FlyoutDropdown } from '../components/FlyoutDropdown';
 import { motion, AnimatePresence } from 'motion/react';
@@ -252,40 +253,33 @@ export const Settings: React.FC<SettingsProps> = ({
   }, []);
 
   return (
-    <div className="w-full max-w-7xl mx-auto pb-28 pt-2 select-none">
-      {/* 2-Column Windows 11 Settings Layout */}
-      <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
-        {/* Left Column: Authentic Windows 11 Navigation Sidebar */}
-        <aside className="w-full md:w-64 lg:w-72 shrink-0 md:sticky md:top-3 space-y-3">
-          {/* Windows 11 User Profile Tile */}
-          <div className="p-3 rounded-xl bg-white/70 dark:bg-[#282c31]/80 backdrop-blur-md border border-black/8 dark:border-white/10 shadow-xs flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#005fb8] to-[#4cc2ff] flex items-center justify-center text-white font-bold text-sm shadow-inner shrink-0">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-semibold text-sm text-[#111827] dark:text-white truncate">
-                Sparkle Waves
-              </div>
-              <div className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] truncate flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Cài đặt hệ thống
-              </div>
-            </div>
-          </div>
+    <div className="w-full max-w-5xl mx-auto pb-28 pt-3 px-4 sm:px-6 select-none space-y-6">
+      {/* Top Header with Title, Search Box and Save Button */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-black/8 dark:border-white/10">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
+            Settings
+          </h1>
+          <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
+            Tùy chỉnh hệ thống, giao diện Fluent Design và trợ năng.
+          </p>
+        </div>
 
-          {/* Search Box in Sidebar - matching exact rules: no line, no border, blue outline on focus, h-[35px] sm:h-[37px] */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {/* Windows 11 Fluent Search Box */}
           <div 
             id="settings-search-box"
             onClick={() => {
               setIsFocused(true);
               inputRef.current?.focus();
             }}
-            className={`group relative w-full h-[35px] sm:h-[37px] bg-black/5 dark:bg-[#282c31] border-0 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none ${
+            className={`group relative flex-1 md:w-72 h-[36px] bg-black/5 dark:bg-[#282c31] border-0 flex items-center px-3 gap-2 rounded-[6px] transition-all cursor-text select-none ${
               isFocused
                 ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] bg-white dark:bg-[#282c31]'
                 : 'ring-0'
             }`}
           >
+            <Search className="w-4 h-4 text-[#71717a] dark:text-white shrink-0 pointer-events-none" />
             <input
               ref={inputRef}
               id="settings-search-input"
@@ -335,141 +329,60 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
           </div>
 
-          {/* Navigation Categories List */}
-          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0 scrollbar-none" aria-label="Settings Categories">
-            {navCategories.map((cat) => {
-              const Icon = cat.icon;
-              const isActive = activeNavSection === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveNavSection(cat.id);
-                    const el = document.getElementById(cat.id);
-                    if (el) {
-                      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }}
-                  className={`relative group flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs sm:text-sm font-medium transition-all shrink-0 md:shrink md:w-full cursor-pointer ${
-                    isActive
-                      ? 'bg-black/8 dark:bg-white/10 text-[#005fb8] dark:text-[#4cc2ff]'
-                      : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/4 dark:hover:bg-white/5 hover:text-[#111827] dark:hover:text-white'
-                  }`}
-                >
-                  {/* Left Accent Pill Indicator (Windows 11 style) */}
-                  {isActive && (
-                    <span className="hidden md:block absolute left-0 top-2 bottom-2 w-1 bg-[#005fb8] dark:bg-[#4cc2ff] rounded-r-full" />
-                  )}
+          {/* Save Button */}
+          {(hasChanges || isSaving) && (
+            <button
+              type="button"
+              id="btn-settings-save"
+              disabled={isSaving}
+              onClick={handleApplySettings}
+              className={`min-w-[84px] h-[36px] px-4 rounded-[6px] text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-xs transition-all ${
+                isSaving
+                  ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
+                  : 'bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:bg-[#00458b] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold border border-transparent cursor-pointer'
+              }`}
+            >
+              {isSaving ? (
+                <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
+              ) : (
+                <span className="text-white dark:text-black font-semibold">Save</span>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
 
-                  <div className={`w-7 h-7 rounded-md ${cat.badge} flex items-center justify-center shrink-0 transition-transform group-hover:scale-105`}>
-                    <Icon className={`w-4 h-4 ${cat.color}`} />
-                  </div>
+      {/* Quick Navigation Category Pills */}
+      <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" aria-label="Settings Categories">
+        {navCategories.map((cat) => {
+          const Icon = cat.icon;
+          const isActive = activeNavSection === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => {
+                setActiveNavSection(cat.id);
+                const el = document.getElementById(cat.id);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#005fb8] text-white dark:bg-[#4cc2ff] dark:text-black shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#4b5563] dark:text-[#d1d5db]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{cat.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-xs sm:text-[13px] truncate">{cat.label}</div>
-                    <div className="hidden md:block text-[11px] text-[#6b7280] dark:text-[#9ca3af] font-normal truncate">
-                      {cat.desc}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Windows 11 Quick Status Card at sidebar bottom */}
-          <div className="hidden md:block p-3 rounded-xl bg-white/40 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 text-[11px] text-[#6b7280] dark:text-[#9ca3af] space-y-1.5">
-            <div className="font-semibold text-xs text-[#111827] dark:text-white flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Thiết bị hoạt động
-            </div>
-            <div className="flex justify-between">
-              <span>Chế độ:</span>
-              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.theme === 'light' ? 'Ban ngày' : 'Ban đêm'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Mica Acrylic:</span>
-              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.spatialGlass ? `${draftSettings.spatialGlassOpacity ?? 20}%` : 'Đã tắt'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Tỉ lệ:</span>
-              <span className="font-medium text-[#111827] dark:text-white">{draftSettings.streamAspectRatio || '16:9'}</span>
-            </div>
-          </div>
-        </aside>
-
-        {/* Right Column: Main Content Area */}
-        <main className="flex-1 min-w-0 space-y-6">
-          {/* Top Bar Header with Title & Save button */}
-          <div className="flex items-center justify-between gap-4 pb-2 border-b border-black/5 dark:border-white/10">
-            <div>
-              <div className="text-[11px] uppercase tracking-wider font-semibold text-[#0078d4] dark:text-[#4cc2ff]">
-                Cài đặt hệ thống
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
-                Settings
-              </h1>
-              <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
-                Tùy chỉnh toàn diện ngôn ngữ thiết kế Fluent Design, hiệu năng và công cụ hiển thị.
-              </p>
-            </div>
-
-            {(hasChanges || isSaving) && (
-              <button
-                type="button"
-                id="btn-settings-save"
-                disabled={isSaving}
-                onClick={handleApplySettings}
-                className={`min-w-[80px] h-8 px-4 rounded-full text-xs sm:text-sm flex items-center justify-center shrink-0 tracking-tight text-center select-none shadow-none transition-all ${
-                  isSaving
-                    ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white border border-black/10 dark:border-white/15 cursor-default'
-                    : 'bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:bg-[#00458b] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold border border-transparent cursor-pointer'
-                }`}
-              >
-                {isSaving ? (
-                  <SpinningRing size={16} strokeWidth={2.5} color="currentColor" />
-                ) : (
-                  <span className="text-white dark:text-black font-semibold">Save</span>
-                )}
-              </button>
-            )}
-          </div>
-
-          {/* Windows 11 Hero Status Banner */}
-          <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-[#0078d4]/10 via-[#4cc2ff]/5 to-purple-500/10 dark:from-[#4cc2ff]/15 dark:via-cyan-500/10 dark:to-purple-500/10 border border-black/8 dark:border-white/10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-white dark:bg-[#30353b] border border-black/10 dark:border-white/15 flex items-center justify-center text-[#0078d4] dark:text-[#4cc2ff] shadow-sm shrink-0">
-                <Box className="w-7 h-7" />
-              </div>
-              <div>
-                <div className="font-bold text-sm sm:text-base text-[#111827] dark:text-white flex items-center gap-2">
-                  <span>Sparkle Waves Fluent</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
-                    v26.11
-                  </span>
-                </div>
-                <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
-                  Chất liệu Mica & Acrylic · Trải nghiệm thị giác hiện đại theo phong cách Windows 11
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
-              <button
-                type="button"
-                onClick={() => {
-                  const el = document.getElementById('settings-section-version');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-colors shadow-xs cursor-pointer"
-              >
-                Thông tin bản dựng
-              </button>
-            </div>
-          </div>
-
-          {/* Settings Sections Container */}
-          <div className="space-y-8">
+      {/* Settings Sections Container */}
+      <div className="space-y-8">
         {/* SECTION 1: FLUENT DESIGN */}
         <section id="settings-section-spatial-glass" className="space-y-2">
           <div className="flex items-center gap-2.5 px-1 pt-1">
@@ -2017,8 +1930,6 @@ export const Settings: React.FC<SettingsProps> = ({
                 </div>
               </div>
             </section>
-          </div>
-        </main>
       </div>
 
       {/* Temporary light mode maintenance lock */}
@@ -2038,7 +1949,14 @@ export const Settings: React.FC<SettingsProps> = ({
               aria-modal="true"
               aria-labelledby="light-mode-lock-title"
               initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
               exit={{ 
                 opacity: 0, 
                 scale: 1.04,

@@ -2435,15 +2435,36 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
       <AnimatePresence>
         {isInfoModalOpen && (
           <div 
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
             onClick={() => setIsInfoModalOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white/95 dark:bg-[#222226]/95 backdrop-blur-2xl rounded-[12px] shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden text-neutral-800 dark:text-neutral-200"
+              className="fluent-modal-dialog relative z-10 w-full max-w-md bg-white/95 dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-neutral-800 dark:text-neutral-200"
             >
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -2453,7 +2474,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                 <button
                   type="button"
                   onClick={() => setIsInfoModalOpen(false)}
-                  className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                  className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2494,7 +2515,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                 <button
                   type="button"
                   onClick={() => setIsInfoModalOpen(false)}
-                  className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs transition-colors"
+                  className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
                 >
                   OK
                 </button>
@@ -2508,15 +2529,36 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
       <AnimatePresence>
         {isAboutModalOpen && (
           <div 
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
             onClick={() => setIsAboutModalOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-white/95 dark:bg-[#222226]/95 backdrop-blur-2xl rounded-[12px] shadow-2xl border border-black/10 dark:border-white/10 overflow-hidden text-neutral-800 dark:text-neutral-200"
+              className="fluent-modal-dialog relative z-10 w-full max-w-md bg-white/95 dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-neutral-800 dark:text-neutral-200"
             >
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">

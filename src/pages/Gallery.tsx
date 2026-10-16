@@ -51,6 +51,8 @@ import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryD
 import { useSettings } from '../hooks/useSettings';
 import { FluentNotesIcon } from '../components/FluentIcons';
 
+export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
+
 const LONG_PRESS_MS = 500;
 
 interface GalleryProps {
@@ -80,7 +82,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   const [rotation, setRotation] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [activeYear, setActiveYear] = useState<number>(2022);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Selection mode states
@@ -253,81 +254,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       items: value.items,
     }));
   }, [filteredItems]);
-
-  // Timeline years list from available items + preset years
-  const timelineYears = useMemo(() => {
-    const itemYears = items
-      .map((it) => it.year || new Date(it.dateAdded).getFullYear())
-      .filter((y): y is number => typeof y === 'number' && !isNaN(y));
-    const set = new Set([2024, 2023, 2022, 2021, 2020, ...itemYears]);
-    return Array.from(set).sort((a, b) => b - a);
-  }, [items]);
-
-  // Handle clicking a timeline year: smoothly scrolls to that year's section
-  const handleTimelineClick = (year: number) => {
-    setActiveYear(year);
-    const targetSection = document.getElementById(`gallery-group-${year}`);
-    if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      showToast(`Scrolled to ${year}`);
-    } else {
-      const allSections = document.querySelectorAll<HTMLElement>('.gallery-year-section');
-      let closest: HTMLElement | null = null;
-      let minDiff = Infinity;
-      allSections.forEach((sec) => {
-        const secYear = Number(sec.dataset.year);
-        if (!isNaN(secYear)) {
-          const diff = Math.abs(secYear - year);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closest = sec;
-          }
-        }
-      });
-      if (closest) {
-        (closest as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      showToast(`Scrolled to ${year}`);
-    }
-  };
-
-  // ScrollSpy: Automatically update activeYear based on current viewport scroll
-  useEffect(() => {
-    const container = galleryScrollRef.current;
-    if (!container) return;
-
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const containerRect = container.getBoundingClientRect();
-          const sections = container.querySelectorAll<HTMLElement>('.gallery-year-section');
-          let currentVisibleYear: number | null = null;
-
-          for (let i = 0; i < sections.length; i++) {
-            const sec = sections[i];
-            const rect = sec.getBoundingClientRect();
-            if (rect.top <= containerRect.top + 160 && rect.bottom >= containerRect.top + 30) {
-              const y = Number(sec.dataset.year);
-              if (!isNaN(y)) {
-                currentVisibleYear = y;
-                break;
-              }
-            }
-          }
-
-          if (currentVisibleYear && currentVisibleYear !== activeYear) {
-            setActiveYear(currentVisibleYear);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    container.addEventListener('scroll', onScroll, { passive: true });
-    return () => container.removeEventListener('scroll', onScroll);
-  }, [activeYear]);
 
   // Toggle selection for all items in a date group
   const toggleGroupSelect = (groupItems: GalleryMediaItem[]) => {
@@ -750,20 +676,20 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
     };
   };
 
-  // Grid density classes
-  const gridContainerStyle = useMemo(() => {
+  // Columns density classes for resolution-based display of media
+  const columnsContainerStyle = useMemo(() => {
     if (gridDensity === 'small') {
-      return 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1.5 sm:gap-2';
+      return 'columns-3 sm:columns-4 md:columns-6 lg:columns-8 gap-1.5 sm:gap-2';
     }
     if (gridDensity === 'large') {
-      return 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
+      return 'columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-4';
     }
     // medium default
-    return 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-2.5';
+    return 'columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-2 sm:gap-2.5';
   }, [gridDensity]);
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
+    <div className="flex flex-col h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] overflow-hidden bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -779,11 +705,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         )}
       </AnimatePresence>
 
-      {/* Windows 11 Photos Fluent Command Bar */}
-      <header className="sticky top-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 shrink-0">
-        {/* Left Section: Filter, Sort, Load Demo, New Folder (buttons without title) + item count badge */}
+      {/* Windows 11 Photos Fluent Command Bar - Fixed, does not scroll with page */}
+      <header className="shrink-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 rounded-none md:rounded-tl-[10px]">
+        {/* Left Section: Filter, Sort, Load Demo, New Folder (buttons with white icons) + item count badge */}
         <div className="flex items-center gap-1.5 overflow-visible py-0.5">
-          {/* 1. Filter Dropdown (Icon phễu, button without title) */}
+          {/* 1. Filter Dropdown (Icon phễu màu trắng) */}
           <div className="relative" ref={filterDropdownRef}>
             <button
               type="button"
@@ -791,17 +717,17 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 setIsFilterDropdownOpen((prev) => !prev);
                 setIsSortDropdownOpen(false);
               }}
-              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer relative active:scale-95 ${
+              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer relative active:scale-95 bg-transparent border-0 shadow-none text-white ${
                 isFilterDropdownOpen || activeFilter !== 'all'
-                  ? 'bg-white dark:bg-[#2b2d31] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs border border-black/10 dark:border-white/15'
-                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#4b5563] dark:text-[#d1d5db] border border-black/5 dark:border-white/5'
+                  ? 'bg-black/10 dark:bg-white/15'
+                  : 'hover:bg-black/10 dark:hover:bg-white/10'
               }`}
               title={`Filter: ${activeFilter}`}
               aria-label="Filter"
             >
-              <Filter className="w-3.5 h-3.5" />
+              <Filter className="w-3.5 h-3.5 text-white" />
               {activeFilter !== 'all' && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff]" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#4cc2ff]" />
               )}
             </button>
 
@@ -810,11 +736,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               {isFilterDropdownOpen && (
                 <motion.div
                   key="gallery-filter-dropdown"
-                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 22 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 14 }}
                   transition={{
-                    duration: 0.32,
+                    duration: 0.38,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[200px]"
@@ -860,7 +786,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             </AnimatePresence>
           </div>
 
-          {/* 2. Sort Dropdown (cạnh nút filter, button without title) */}
+          {/* 2. Sort Dropdown (cạnh nút filter, button without background) */}
           <div className="relative" ref={sortDropdownRef}>
             <button
               type="button"
@@ -868,15 +794,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 setIsSortDropdownOpen((prev) => !prev);
                 setIsFilterDropdownOpen(false);
               }}
-              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
+              className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer active:scale-95 bg-transparent border-0 shadow-none text-white ${
                 isSortDropdownOpen
-                  ? 'bg-white dark:bg-[#2b2d31] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs border border-black/10 dark:border-white/15'
-                  : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#4b5563] dark:text-[#d1d5db] border border-black/5 dark:border-white/5'
+                  ? 'bg-black/10 dark:bg-white/15'
+                  : 'hover:bg-black/10 dark:hover:bg-white/10'
               }`}
               title="Sort"
               aria-label="Sort"
             >
-              <ArrowUpDown className="w-3.5 h-3.5" />
+              <ArrowUpDown className="w-3.5 h-3.5 text-white" />
             </button>
 
             {/* Sort Dropdown Menu with Search UI animation */}
@@ -884,11 +810,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               {isSortDropdownOpen && (
                 <motion.div
                   key="gallery-sort-dropdown"
-                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 22 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 14 }}
                   transition={{
-                    duration: 0.32,
+                    duration: 0.38,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[190px]"
@@ -924,43 +850,43 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             </AnimatePresence>
           </div>
 
-          {/* 3. Load Demo Button (cạnh nút sort, button without title) */}
+          {/* 3. Load Demo Button (cạnh nút sort, button with white icon) */}
           <button
             type="button"
             onClick={handleRestoreSamples}
-            className="w-8 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#005fb8] dark:text-[#4cc2ff] border border-black/5 dark:border-white/5 transition-all cursor-pointer flex items-center justify-center active:scale-95"
+            className="w-8 h-8 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 text-white border-0 shadow-none transition-all cursor-pointer flex items-center justify-center active:scale-95"
             title="Load demo"
             aria-label="Load demo"
           >
-            <RotateCw className="w-3.5 h-3.5" />
+            <RotateCw className="w-3.5 h-3.5 text-white" />
           </button>
 
-          {/* 4. New Folder Button (cạnh nút load demo, button without title) */}
+          {/* 4. New Folder Button (cạnh nút load demo, button with white icon) */}
           <button
             type="button"
             onClick={() => setIsNewFolderOpen(true)}
-            className="w-8 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-amber-500 border border-black/5 dark:border-white/5 transition-all cursor-pointer flex items-center justify-center"
+            className="w-8 h-8 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-white border-0 shadow-none transition-all cursor-pointer flex items-center justify-center"
             title="New folder"
             aria-label="New folder"
           >
-            <FolderPlus className="w-3.5 h-3.5" />
+            <FolderPlus className="w-3.5 h-3.5 text-white" />
           </button>
 
           {/* Item Count Pill & Active Filter Pill */}
           <div className="flex items-center gap-1.5 ml-1">
-            <span className="hidden xs:inline-flex text-[11px] font-medium text-[#6b7280] dark:text-[#9ca3af] px-2 py-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/5 dark:border-white/5 whitespace-nowrap">
+            <span className="hidden xs:inline-flex text-[11px] font-medium text-white px-1.5 py-0.5 whitespace-nowrap">
               {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
             </span>
             {activeFilter !== 'all' && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#005fb8] dark:text-[#4cc2ff] px-2 py-0.5 bg-[#005fb8]/10 dark:bg-[#4cc2ff]/10 rounded-full border border-[#005fb8]/20 dark:border-[#4cc2ff]/20 whitespace-nowrap">
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-white px-2 py-0.5 bg-black/10 dark:bg-white/15 rounded-full border border-black/10 dark:border-white/15 whitespace-nowrap">
                 {activeFilter}
                 <button
                   type="button"
                   onClick={() => setActiveFilter('all')}
-                  className="hover:text-rose-500 cursor-pointer ml-0.5"
+                  className="hover:text-rose-400 cursor-pointer ml-0.5 text-white"
                   title="Clear filter"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3 h-3 text-white" />
                 </button>
               </span>
             )}
@@ -971,8 +897,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         <div className="flex items-center gap-1.5 ml-auto">
           {isSelectMode ? (
             /* Multi-Select Active Toolbar */
-            <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 px-2.5 py-1 rounded-[8px] border border-black/10 dark:border-white/10 shadow-xs">
-              <span className="text-xs font-semibold text-[#111827] dark:text-white px-1">
+            <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 px-2.5 py-1 rounded-[8px] border-0 shadow-xs">
+              <span className="text-xs font-semibold text-white px-1">
                 {selectedIds.size} selected
               </span>
 
@@ -980,7 +906,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               <button
                 type="button"
                 onClick={handleSelectAll}
-                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs text-[#111827] dark:text-white font-medium transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 text-xs text-white font-medium transition-colors cursor-pointer border-0"
               >
                 {selectedIds.size === filteredItems.length && filteredItems.length > 0 ? 'Deselect All' : 'Select All'}
               </button>
@@ -990,11 +916,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={handleDuplicateSelected}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-[#111827] dark:text-white text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 disabled:opacity-40 text-white text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer border-0"
                 title="Duplicate selected"
               >
-                <Copy className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Duplicate</span>
+                <Copy className="w-3.5 h-3.5 text-white" />
+                <span className="hidden md:inline text-white">Duplicate</span>
               </button>
 
               {/* Move Selected */}
@@ -1002,11 +928,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={() => setMoveTargetIds(Array.from(selectedIds))}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 disabled:opacity-40 text-xs font-medium text-[#111827] dark:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 disabled:opacity-40 text-xs font-medium text-white flex items-center gap-1.5 transition-all cursor-pointer border-0"
                 title="Move into folder"
               >
-                <FolderInput className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Move</span>
+                <FolderInput className="w-3.5 h-3.5 text-white" />
+                <span className="hidden md:inline text-white">Move</span>
               </button>
 
               {/* Delete Selected */}
@@ -1014,11 +940,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={handleDeleteSelected}
                 disabled={selectedIds.size === 0}
-                className="px-2.5 py-1 rounded-[6px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                className="px-2.5 py-1 rounded-[6px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border-0"
                 title="Delete selected"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Delete</span>
+                <Trash2 className="w-3.5 h-3.5 text-white" />
+                <span className="text-white">Delete</span>
               </button>
 
               {/* Cancel selection */}
@@ -1028,7 +954,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                   setIsSelectMode(false);
                   setSelectedIds(new Set());
                 }}
-                className="px-2 py-1 rounded-[6px] text-xs text-[#6b7280] dark:text-neutral-400 hover:text-[#111827] dark:hover:text-white cursor-pointer ml-1"
+                className="px-2 py-1 rounded-[6px] text-xs text-white hover:text-white/80 cursor-pointer ml-1 border-0"
               >
                 Done
               </button>
@@ -1036,62 +962,62 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           ) : (
             /* Normal Mode Toolbar */
             <>
-              {/* Grid Density Switcher */}
-              <div className="hidden md:flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-[6px] border border-black/10 dark:border-white/10">
+              {/* Grid Density Switcher - Icons changed to 1+, 2+, 3+, no borders */}
+              <div className="hidden md:flex items-center bg-black/10 dark:bg-white/10 p-0.5 rounded-[6px] border-0">
                 <button
                   type="button"
                   onClick={() => setGridDensity('small')}
-                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
-                    gridDensity === 'small' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
+                    gridDensity === 'small' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Small grid tiles"
+                  title="Small grid tiles (1+)"
                 >
-                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span className="text-[11px] tracking-tight text-white">1+</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGridDensity('medium')}
-                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
-                    gridDensity === 'medium' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
+                    gridDensity === 'medium' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Medium grid tiles"
+                  title="Medium grid tiles (2+)"
                 >
-                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  <span className="text-[11px] tracking-tight text-white">2+</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGridDensity('large')}
-                  className={`p-1.5 rounded-[4px] cursor-pointer transition-colors ${
-                    gridDensity === 'large' ? 'bg-white dark:bg-[#333] text-[#005fb8] dark:text-[#4cc2ff] shadow-xs' : 'text-[#6b7280] dark:text-[#9ca3af] hover:text-black dark:hover:text-white'
+                  className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
+                    gridDensity === 'large' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Large grid tiles"
+                  title="Large grid tiles (3+)"
                 >
-                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span className="text-[11px] tracking-tight text-white">3+</span>
                 </button>
               </div>
 
-              {/* 5. Select Mode Button (cạnh nút upload bên phải toolbar, button with title) */}
+              {/* 5. Select Mode Button (bỏ viền nút, icon màu trắng) */}
               {filteredItems.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setIsSelectMode(true)}
-                  className="px-3 h-8 rounded-[6px] bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-xs font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3 h-8 rounded-[6px] bg-black/10 dark:bg-white/10 hover:bg-black/15 dark:hover:bg-white/15 active:scale-95 text-xs font-semibold text-white border-0 transition-all cursor-pointer flex items-center gap-1.5"
                   title="Select multiple files"
                 >
-                  <CheckSquare className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />
-                  <span>Select</span>
+                  <CheckSquare className="w-3.5 h-3.5 text-white" />
+                  <span className="text-white">Select</span>
                 </button>
               )}
 
-              {/* Upload Button (cạnh nút select bên phải toolbar, button with title) */}
+              {/* Import Button (formerly Upload button - retains primary action styling) */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all"
-                title="Upload photos, videos, or documents"
+                className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs border-0 transition-all"
+                title="Import photos, videos, or documents"
               >
                 <UploadCloud className="w-3.5 h-3.5" />
-                <span>Upload</span>
+                <span>Import</span>
               </button>
             </>
           )}
@@ -1132,7 +1058,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
               <ChevronRight className="w-3.5 h-3.5 text-[#9ca3af]" />
               <div className="flex items-center gap-1.5">
-                <Folder className="w-4 h-4 text-amber-500 fill-amber-500/30" />
+                <img src={WINDOWS_11_FOLDER_ICON} alt="Folder" className="w-4 h-4 object-contain inline-block" />
                 <span className="font-semibold text-[#111827] dark:text-white" aria-current="page">{currentFolder.name}</span>
               </div>
               <div className="ml-auto flex items-center gap-1.5">
@@ -1156,19 +1082,19 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             </nav>
           )}
 
-          {/* Folder Cards (Shown at root or in Folders tab) */}
+          {/* Folder Cards (Shown at root or in Folders tab) - Horizontal Tiles */}
           {(!currentFolderId || activeFilter === 'folders') && !isSearching && folders.length > 0 && (
             <section aria-label="Folders" className="max-w-[1800px] mx-auto mb-7">
               <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-[#4b5563] dark:text-[#d1d5db] px-1 mb-3">
                 <div className="flex items-center gap-2">
-                  <Folder className="w-4 h-4 text-amber-500 fill-amber-500/40" />
+                  <img src={WINDOWS_11_FOLDER_ICON} alt="Folder" className="w-4 h-4 object-contain inline-block" />
                   <span>Folders</span>
                 </div>
                 <span className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full">
                   {folders.length}
                 </span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
                 {folders.map((folder) => {
                   const count = folderItemCounts.get(folder.id) ?? 0;
                   return (
@@ -1176,20 +1102,21 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       key={folder.id}
                       type="button"
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex flex-col p-3 rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md"
+                      className="group flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:shadow-md"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <Folder className="w-8 h-8 text-[#e8a33d] fill-[#f4c15d]/70 transition-transform group-hover:scale-110" strokeWidth={1.5} />
-                        <span className="text-[10px] text-[#6b7280] dark:text-[#9ca3af] font-medium bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">
-                          {count}
-                        </span>
+                      <img
+                        src={WINDOWS_11_FOLDER_ICON}
+                        alt="Folder"
+                        className="w-8 h-8 object-contain shrink-0 drop-shadow-sm transition-transform group-hover:scale-105"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
+                          {folder.name}
+                        </p>
+                        <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5">
+                          {count === 1 ? '1 item' : `${count} items`}
+                        </p>
                       </div>
-                      <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
-                        {folder.name}
-                      </p>
-                      <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5">
-                        {count === 1 ? '1 item' : `${count} items`}
-                      </p>
                     </button>
                   );
                 })}
@@ -1235,7 +1162,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
           ) : filteredItems.length === 0 && activeFilter === 'all' && !isSearching ? (
             currentFolderId ? (
               <div className="flex flex-col items-center justify-center min-h-[40vh] text-center px-4 max-w-md mx-auto">
-                <Folder className="w-12 h-12 mb-3 text-amber-500 stroke-[1.5]" />
+                <img src={WINDOWS_11_FOLDER_ICON} alt="Folder" className="w-12 h-12 mb-3 object-contain" />
                 <h3 className="text-base font-semibold text-[#111827] dark:text-white mb-1">This folder is empty</h3>
                 <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mb-4">
                   Right-click or select items in Gallery and move them into this folder.
@@ -1283,8 +1210,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                     data-year={group.year}
                     className="gallery-year-section space-y-3"
                   >
-                    {/* Date Header matching Windows 11 Photos */}
-                    <div className="flex items-center justify-between px-2 py-2 border-b border-black/5 dark:border-white/5 sticky top-0 z-20 backdrop-blur-xl bg-[#f9f9f9]/85 dark:bg-[#202020]/85 transition-colors">
+                    {/* Date Header without background or border */}
+                    <div className="flex items-center justify-between px-2 py-1.5 bg-transparent transition-colors">
                       <div className="flex items-baseline gap-2.5">
                         <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white">
                           {group.label}
@@ -1316,252 +1243,279 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                       </button>
                     </div>
 
-                    {/* Responsive Grid of Cards */}
-                    <div className={gridContainerStyle}>
-                      {group.items.map((item) => {
-                        const isSelected = selectedIds.has(item.id);
-                        const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
+                    {(() => {
+                      const tileItems = group.items.filter((it) => it.type !== 'image' && it.type !== 'video');
+                      const mediaItems = group.items.filter((it) => it.type === 'image' || it.type === 'video');
 
-                        return (
-                          <motion.div
-                            key={item.id}
-                            layout
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.2 }}
-                            onClick={(e) => {
-                              if (longPressTriggered.current) {
-                                longPressTriggered.current = false;
-                                return;
-                              }
-                              if (isSelectMode) {
-                                toggleSelect(item.id, e);
-                              } else {
-                                setSelectedItem(item);
-                                setZoomLevel(1);
-                                setRotation(0);
-                              }
-                            }}
-                            onContextMenu={(e) => {
-                              e.preventDefault();
-                              clearLongPress();
-                              openContextMenu(item, e.clientX, e.clientY);
-                            }}
-                            onTouchStart={(e) => handleTouchStart(item, e)}
-                            onTouchMove={clearLongPress}
-                            onTouchEnd={clearLongPress}
-                            onTouchCancel={clearLongPress}
-                            className={`group relative aspect-square rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#282828] cursor-pointer shadow-xs hover:shadow-xl transition-all select-none border ${
-                              isSelected
-                                ? 'ring-3 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
-                                : 'border-black/5 dark:border-white/5 hover:border-[#005fb8]/50 dark:hover:border-[#4cc2ff]/50'
-                            }`}
-                          >
-                            {/* Checkbox indicator (Hover in normal mode, or always visible in Select Mode) */}
-                            <div
-                              className={`absolute top-2 left-2 z-20 transition-opacity ${
-                                isSelectMode
-                                  ? 'opacity-100'
-                                  : 'opacity-0 group-hover:opacity-100'
-                              }`}
-                              onClick={(e) => {
-                                if (!isSelectMode) setIsSelectMode(true);
-                                toggleSelect(item.id, e);
-                              }}
-                            >
-                              <div
-                                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                  isSelected
-                                    ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
-                                    : 'bg-black/40 hover:bg-black/60 text-white border border-white/60 backdrop-blur-sm'
-                                }`}
-                              >
-                                {isSelected ? (
-                                  <Check className="w-3.5 h-3.5 stroke-[3]" />
-                                ) : null}
-                              </div>
-                            </div>
+                      return (
+                        <div className="space-y-3">
+                          {/* 1. Horizontal Tiles for Files, Audio, and Other non-media items */}
+                          {tileItems.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                              {tileItems.map((item) => {
+                                const isSelected = selectedIds.has(item.id);
+                                const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
 
-                            {/* Media Thumbnail / Preview */}
-                            {item.type === 'video' ? (
-                              <div className="relative w-full h-full bg-black">
-                                <img
-                                  src={item.thumbnailUrl || item.url}
-                                  alt={item.title}
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                  loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg">
-                                    <Play className="w-5 h-5 fill-current ml-0.5" />
-                                  </div>
-                                </div>
-                                {/* Duration badge */}
-                                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-[4px] bg-black/70 backdrop-blur-md text-[10px] font-semibold text-white">
-                                  {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : '0:45'}
-                                </div>
-                              </div>
-                            ) : item.type === 'audio' ? (
-                              <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-3 sm:p-4 flex flex-col justify-between">
-                                <div className="flex items-center justify-between">
-                                  <div className="w-8 h-8 rounded-full bg-[#005fb8]/20 dark:bg-[#4cc2ff]/20 text-[#005fb8] dark:text-[#4cc2ff] flex items-center justify-center">
-                                    <Music className="w-4 h-4" />
-                                  </div>
-                                  <span className="text-[10px] text-neutral-400">
-                                    {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : 'AUDIO'}
-                                  </span>
-                                </div>
-                                <div>
-                                  <p className="text-xs font-semibold text-white truncate">{item.title}</p>
-                                  <p className="text-[10px] text-neutral-400 mt-0.5">Audio Track</p>
-                                </div>
-                              </div>
-                            ) : item.type === 'document' ? (
-                              item.mimeType === 'application/x-sticky-note' && (item.thumbnailUrl || item.url) ? (
-                                <div className="relative w-full h-full bg-amber-100 dark:bg-amber-950 overflow-hidden">
-                                  <img
-                                    src={item.thumbnailUrl || item.url}
-                                    alt={item.title}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                    loading="lazy"
-                                  />
-                                </div>
-                              ) : (
-                                <div
-                                  className="w-full h-full p-3 sm:p-4 flex flex-col justify-between"
-                                  style={{
-                                    background: `linear-gradient(135deg, ${docInfo?.color || '#2b579a'}20 0%, #1c1c24 100%)`,
-                                  }}
-                                >
-                                  <div className="flex items-center justify-between">
+                                return (
+                                  <motion.div
+                                    key={item.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                    onClick={(e) => {
+                                      if (longPressTriggered.current) {
+                                        longPressTriggered.current = false;
+                                        return;
+                                      }
+                                      if (isSelectMode) {
+                                        toggleSelect(item.id, e);
+                                      } else {
+                                        setSelectedItem(item);
+                                        setZoomLevel(1);
+                                        setRotation(0);
+                                      }
+                                    }}
+                                    onContextMenu={(e) => {
+                                      e.preventDefault();
+                                      clearLongPress();
+                                      openContextMenu(item, e.clientX, e.clientY);
+                                    }}
+                                    onTouchStart={(e) => handleTouchStart(item, e)}
+                                    onTouchMove={clearLongPress}
+                                    onTouchEnd={clearLongPress}
+                                    onTouchCancel={clearLongPress}
+                                    className={`group relative flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer shadow-xs hover:shadow-md transition-all select-none border ${
+                                      isSelected
+                                        ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
+                                        : 'border-black/10 dark:border-white/10'
+                                    }`}
+                                  >
+                                    {/* Icon on left */}
                                     <div
-                                      className="w-9 h-9 rounded-lg flex items-center justify-center shadow-md text-white font-bold"
-                                      style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+                                      className="w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-xs"
+                                      style={{
+                                        backgroundColor: item.type === 'audio' ? '#0078d420' : (docInfo?.color ? `${docInfo.color}25` : '#4cc2ff20'),
+                                        color: item.type === 'audio' ? '#0078d4' : (docInfo?.color || '#4cc2ff'),
+                                      }}
                                     >
-                                      {docInfo && <docInfo.icon className="w-5 h-5" />}
+                                      {item.type === 'audio' ? (
+                                        <Music className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+                                      ) : docInfo ? (
+                                        <docInfo.icon className="w-5 h-5" />
+                                      ) : (
+                                        <FileText className="w-5 h-5" />
+                                      )}
                                     </div>
-                                    <span
-                                      className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white shadow-xs"
-                                      style={{ backgroundColor: docInfo?.color || '#2b579a' }}
+
+                                    {/* Title & Metadata in center */}
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
+                                        {item.title}
+                                      </p>
+                                      <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5 flex items-center gap-1.5">
+                                        <span>{item.type === 'audio' ? 'Audio file' : (docInfo?.brand || 'Document')}</span>
+                                        <span>•</span>
+                                        <span>{item.size ? `${(item.size / 1024).toFixed(0)} KB` : item.dateLabel || 'File'}</span>
+                                      </p>
+                                    </div>
+
+                                    {/* Checkbox indicator */}
+                                    <div
+                                      className={`shrink-0 transition-opacity ${
+                                        isSelectMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isSelectMode) setIsSelectMode(true);
+                                        toggleSelect(item.id, e);
+                                      }}
                                     >
-                                      {docInfo?.badge || 'DOC'}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs font-bold text-white line-clamp-2 leading-snug">{item.title}</p>
-                                    <div className="flex items-center justify-between mt-1 text-[10px] text-neutral-400">
-                                      <span>{docInfo?.brand || 'Document'}</span>
-                                      <span>{(item.size ? (item.size / 1024).toFixed(0) : '150')} KB</span>
+                                      <div
+                                        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                          isSelected
+                                            ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
+                                            : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 text-white border border-black/20 dark:border-white/30'
+                                        }`}
+                                      >
+                                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-                              )
-                            ) : (
-                              <img
-                                src={item.thumbnailUrl || item.url}
-                                alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                loading="lazy"
-                              />
-                            )}
-
-                            {/* Top-Right Favorite / Action icons */}
-                            <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
-                              {/* Favorite Heart */}
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleToggleFavorite(item);
-                                }}
-                                className={`p-1 rounded-full backdrop-blur-md transition-all cursor-pointer ${
-                                  item.isFavorite
-                                    ? 'bg-amber-400 text-black shadow-md opacity-100'
-                                    : 'bg-black/50 text-white/80 hover:text-white opacity-0 group-hover:opacity-100 hover:bg-black/70'
-                                }`}
-                                title={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                              >
-                                <Heart className={`w-3.5 h-3.5 ${item.isFavorite ? 'fill-current' : ''}`} />
-                              </button>
-
-                              {/* Quick Delete in Hover */}
-                              {!isSelectMode && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteItem(item);
-                                  }}
-                                  className="p-1 rounded-full bg-black/50 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
-                                  title="Delete item"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              )}
+                                  </motion.div>
+                                );
+                              })}
                             </div>
+                          )}
 
-                            {/* Subtle bottom gradient info overlay */}
-                            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white pointer-events-none">
-                              <span className="text-[11px] font-medium truncate max-w-[85%]">{item.title}</span>
-                              {item.type === 'image' && item.dimensions && (
-                                <span className="text-[9px] text-neutral-300 font-mono">
-                                  {item.dimensions.width}×{item.dimensions.height}
-                                </span>
-                              )}
+                          {/* 2. Media Items (Images and Videos) displayed according to native resolution ratio */}
+                          {mediaItems.length > 0 && (
+                            <div className={columnsContainerStyle}>
+                              {mediaItems.map((item) => {
+                                const isSelected = selectedIds.has(item.id);
+                                const ratio = item.aspectRatio || (item.dimensions && item.dimensions.height > 0 ? item.dimensions.width / item.dimensions.height : 16 / 9);
+
+                                return (
+                                  <motion.div
+                                    key={item.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                    onClick={(e) => {
+                                      if (longPressTriggered.current) {
+                                        longPressTriggered.current = false;
+                                        return;
+                                      }
+                                      if (isSelectMode) {
+                                        toggleSelect(item.id, e);
+                                      } else {
+                                        setSelectedItem(item);
+                                        setZoomLevel(1);
+                                        setRotation(0);
+                                      }
+                                    }}
+                                    onContextMenu={(e) => {
+                                      e.preventDefault();
+                                      clearLongPress();
+                                      openContextMenu(item, e.clientX, e.clientY);
+                                    }}
+                                    onTouchStart={(e) => handleTouchStart(item, e)}
+                                    onTouchMove={clearLongPress}
+                                    onTouchEnd={clearLongPress}
+                                    onTouchCancel={clearLongPress}
+                                    className={`gallery-media-card group relative break-inside-avoid mb-2 sm:mb-2.5 rounded-[8px] sm:rounded-[10px] overflow-hidden bg-black/5 dark:bg-[#282828] cursor-pointer shadow-xs hover:shadow-xl transition-all select-none border ${
+                                      isSelected
+                                        ? 'ring-3 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
+                                        : 'border-black/5 dark:border-white/5 hover:border-[#005fb8]/50 dark:hover:border-[#4cc2ff]/50'
+                                    }`}
+                                    style={{ aspectRatio: `${ratio}` }}
+                                  >
+                                    {/* Checkbox indicator */}
+                                    <div
+                                      className={`absolute top-2 left-2 z-20 transition-opacity ${
+                                        isSelectMode
+                                          ? 'opacity-100'
+                                          : 'opacity-0 group-hover:opacity-100'
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isSelectMode) setIsSelectMode(true);
+                                        toggleSelect(item.id, e);
+                                      }}
+                                    >
+                                      <div
+                                        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                          isSelected
+                                            ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
+                                            : 'bg-black/40 hover:bg-black/60 text-white border border-white/60 backdrop-blur-sm'
+                                        }`}
+                                      >
+                                        {isSelected ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : null}
+                                      </div>
+                                    </div>
+
+                                    {/* Media Thumbnail / Preview displaying according to resolution */}
+                                    {item.type === 'video' ? (
+                                      <div className="relative w-full h-full bg-black">
+                                        <img
+                                          src={item.thumbnailUrl || item.url}
+                                          alt={item.title}
+                                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                          loading="lazy"
+                                          onLoad={(e) => {
+                                            const nw = e.currentTarget.naturalWidth;
+                                            const nh = e.currentTarget.naturalHeight;
+                                            if (nw && nh && nh > 0) {
+                                              const cardEl = e.currentTarget.closest('.gallery-media-card') as HTMLElement | null;
+                                              if (cardEl) {
+                                                cardEl.style.aspectRatio = `${nw / nh}`;
+                                              }
+                                            }
+                                          }}
+                                        />
+                                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md shadow-lg">
+                                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                                          </div>
+                                        </div>
+                                        <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-[4px] bg-black/70 backdrop-blur-md text-[10px] font-semibold text-white">
+                                          {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : '0:45'}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <img
+                                        src={item.thumbnailUrl || item.url}
+                                        alt={item.title}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        loading="lazy"
+                                        onLoad={(e) => {
+                                          const nw = e.currentTarget.naturalWidth;
+                                          const nh = e.currentTarget.naturalHeight;
+                                          if (nw && nh && nh > 0) {
+                                            const cardEl = e.currentTarget.closest('.gallery-media-card') as HTMLElement | null;
+                                            if (cardEl) {
+                                              cardEl.style.aspectRatio = `${nw / nh}`;
+                                            }
+                                          }
+                                        }}
+                                      />
+                                    )}
+
+                                    {/* Top-Right Favorite / Action icons */}
+                                    <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleToggleFavorite(item);
+                                        }}
+                                        className={`p-1 rounded-full backdrop-blur-md transition-all cursor-pointer ${
+                                          item.isFavorite
+                                            ? 'bg-amber-400 text-black shadow-md opacity-100'
+                                            : 'bg-black/50 text-white/80 hover:text-white opacity-0 group-hover:opacity-100 hover:bg-black/70'
+                                        }`}
+                                        title={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                                      >
+                                        <Heart className={`w-3.5 h-3.5 ${item.isFavorite ? 'fill-current' : ''}`} />
+                                      </button>
+
+                                      {!isSelectMode && (
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteItem(item);
+                                          }}
+                                          className="p-1 rounded-full bg-black/50 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
+                                          title="Delete item"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {/* Subtle bottom gradient info overlay */}
+                                    <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between text-white pointer-events-none">
+                                      <span className="text-[11px] font-medium truncate max-w-[85%]">{item.title}</span>
+                                      {item.dimensions && (
+                                        <span className="text-[9px] text-neutral-300 font-mono">
+                                          {item.dimensions.width}×{item.dimensions.height}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                );
+                              })}
                             </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </section>
                 );
               })}
             </div>
           )}
-        </div>
-
-        {/* Right-Hand Timeline Scrubber Track - Sleek Windows 11 Photos Style */}
-        <div className="hidden lg:flex flex-col items-center justify-center w-14 shrink-0 border-l border-black/10 dark:border-white/10 bg-transparent select-none py-6 relative">
-          <div className="flex flex-col items-center justify-between h-[80%] relative w-full px-2">
-            <div className="absolute top-2 bottom-2 left-1/2 -translate-x-1/2 w-[1px] bg-black/15 dark:bg-white/20 -z-0" />
-
-            {timelineYears.map((year) => {
-              const isActive = activeYear === year;
-              const activeLabel = year === 2022 ? 'Oct 2022' : String(year);
-
-              return (
-                <div key={year} className="flex flex-col items-center gap-1 z-10 relative group">
-                  {isActive ? (
-                    <div
-                      className="relative flex items-center cursor-pointer"
-                      onClick={() => handleTimelineClick(year)}
-                      title={`Current year ${year}`}
-                    >
-                      <motion.div
-                        layoutId="timeline-active-pill"
-                        className="px-2 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-[11px] font-semibold shadow-md whitespace-nowrap -ml-20 mr-1.5"
-                      >
-                        {activeLabel}
-                      </motion.div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] ring-2 ring-white dark:ring-black shadow-xs" />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleTimelineClick(year)}
-                      className="flex flex-col items-center gap-1 cursor-pointer py-1 group/btn"
-                      title={`Jump to ${year}`}
-                    >
-                      <div className="w-1.5 h-1.5 rounded-full bg-black/35 dark:bg-white/45 group-hover/btn:bg-[#005fb8] dark:group-hover/btn:bg-[#4cc2ff] group-hover/btn:scale-125 transition-all" />
-                      <span className="text-[11px] text-[#6b7280] dark:text-neutral-400 group-hover/btn:text-[#111827] dark:group-hover/btn:text-white font-medium transition-colors">
-                        {year}
-                      </span>
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
 

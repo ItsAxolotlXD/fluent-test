@@ -147,7 +147,6 @@ export const MoveToFolderDialog: React.FC<MoveDialogProps> = ({ isOpen, folders,
         <ul className="px-3 max-h-[50vh] overflow-y-auto space-y-0.5" role="listbox" aria-label="Destination folder">
           {[{ id: null as string | null, name: 'Gallery (no folder)' }, ...folders].map((folder) => {
             const isCurrent = folder.id === currentFolderId;
-            const Icon = folder.id === null ? Home : Folder;
             return (
               <li key={folder.id ?? 'root'}>
                 <button
@@ -158,7 +157,15 @@ export const MoveToFolderDialog: React.FC<MoveDialogProps> = ({ isOpen, folders,
                   onClick={() => onMove(folder.id)}
                   className="w-full h-10 px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left hover:bg-black/[0.05] dark:hover:bg-white/[0.08] disabled:opacity-50 disabled:cursor-default cursor-pointer transition-colors"
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${folder.id === null ? 'text-neutral-500' : 'text-[#e8a33d]'}`} />
+                  {folder.id === null ? (
+                    <Home className="w-4 h-4 shrink-0 text-neutral-500" />
+                  ) : (
+                    <img
+                      src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail"
+                      alt="Folder"
+                      className="w-4 h-4 object-contain shrink-0"
+                    />
+                  )}
                   <span className="truncate flex-1">{folder.name}</span>
                   {isCurrent && <Check className="w-4 h-4 text-[#005fb8] dark:text-[#4cc2ff]" />}
                 </button>
