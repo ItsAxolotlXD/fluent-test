@@ -609,16 +609,41 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
               </button>
             </div>
           ) : (
-            /* Normal Mode: folder action only */
+            /* Normal Mode: compact gallery actions */
             <>
               <button
                 type="button"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Import files"
+                title="Import"
+                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleRestoreSamples}
+                aria-label="Load samples"
+                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsSelectMode(true)}
+                aria-label="Select files"
+                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+              >
+                <CheckSquare className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
                 onClick={() => setIsNewFolderOpen(true)}
-                className="px-3 h-8 sm:h-8.5 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 active:scale-95 text-xs sm:text-[13px] font-semibold text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center gap-1.5"
+                aria-label="New folder"
                 title="Create a new folder"
+                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
-                <span>New folder</span>
               </button>
             </>
           )}
