@@ -14,7 +14,7 @@ import {
   RotateCw, 
   FolderOpen, 
   Sparkles,
-  ListFilter,
+  Funnel,
   CheckSquare,
   Square,
   Copy,
@@ -518,13 +518,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       </AnimatePresence>
 
       {/* Photos-style gallery header */}
-      <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#282c31]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
+      <header className="sticky top-0 z-30 px-6 py-2.5 border-b border-white/[0.06] bg-[#282c31]/95 backdrop-blur-xl flex items-center justify-between gap-4 shrink-0 overflow-visible">
         <div className="relative text-white/60">
           <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
-            <ListFilter className="w-3.5 h-3.5" />
+            <Funnel className="w-3.5 h-3.5" />
           </button>
           {isFilterMenuOpen && (
-            <div className="absolute right-0 top-10 z-40 min-w-36 rounded-lg border border-white/10 bg-[#303030] p-1.5 shadow-2xl">
+            <div className="absolute right-0 top-9 z-[100] min-w-36 rounded-lg border border-white/10 bg-[#303030] p-1.5 shadow-2xl">
               {[
                 { id: 'image', label: 'Photos' },
                 { id: 'video', label: 'Video' },
@@ -654,7 +654,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             type="button"
             onClick={() => fileInputRef.current?.click()}
             aria-label="Import files"
-            title="Import files"
+            title="Import"
             className="ml-auto size-8 rounded-[6px] bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-all cursor-pointer flex items-center justify-center shadow-sm"
           >
             <UploadCloud className="w-3.5 h-3.5" />
