@@ -501,7 +501,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   };
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-[#242424] text-[#111827] dark:text-[#F3F4F6] relative select-none">
+    <div className="flex flex-col h-full min-h-screen bg-[#282c31] text-[#111827] dark:text-[#F3F4F6] relative select-none">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -518,7 +518,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
       </AnimatePresence>
 
       {/* Photos-style gallery header */}
-      <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#242424]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
+      <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#282c31]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
         <div className="relative text-white/60">
           <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
             <ListFilter className="w-3.5 h-3.5" />
@@ -615,7 +615,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={handleRestoreSamples}
                 aria-label="Load samples"
-                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <RotateCw className="w-3.5 h-3.5" />
               </button>
@@ -623,7 +623,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 type="button"
                 onClick={() => setIsSelectMode(true)}
                 aria-label="Select files"
-                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <CheckSquare className="w-3.5 h-3.5" />
               </button>
@@ -632,7 +632,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 onClick={() => setIsNewFolderOpen(true)}
                 aria-label="New folder"
                 title="Create a new folder"
-                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
+                className="size-8 rounded-[6px] text-[#111827] dark:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
               </button>
@@ -654,7 +654,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             type="button"
             onClick={() => fileInputRef.current?.click()}
             aria-label="Import files"
-            title="Import"
+            title="Import files"
             className="ml-auto size-8 rounded-[6px] bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-all cursor-pointer flex items-center justify-center shadow-sm"
           >
             <UploadCloud className="w-3.5 h-3.5" />
