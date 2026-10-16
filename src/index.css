@@ -1257,11 +1257,12 @@ html.light-mode #settings-section-search,
 html.light-mode #settings-section-keyboard,
 html.light-mode #settings-section-keybinds,
 html.light-mode #settings-section-experimental,
-html.light-mode #settings-section-other {
-  background-color: #FFFFFF !important;
-  border: 1px solid #E5E7EB !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-  color: #000000 !important;
+html.light-mode #settings-section-other,
+html.light-mode section[id^="settings-section-"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 html.light-mode .settings-fluent-group .divider-line {
@@ -3717,31 +3718,33 @@ html.dark .topbar-search-results-dropdown {
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
 }
-/* TopBar Search Box: Distinct focused background in light mode (#ffffff) and dark mode (#282c31), rounded corners matching settings search box (6px) and blue accent line */
+/* TopBar Search Box: No borders, no bottom lines, border-radius 6px */
 html.light-mode #topbar-search-box {
   background-color: rgba(0, 0, 0, 0.05) !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 1.5px solid #8e8e93 !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 html.light-mode #topbar-search-box:focus-within,
 html.light-mode #topbar-search-box.search-flyout-open {
   background-color: #ffffff !important;
   color: #000000 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: none !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 1.5px solid #005fb8 !important;
+  border: none !important;
+  border-bottom: none !important;
 }
 html:not(.light-mode) #topbar-search-box,
 html.dark #topbar-search-box {
   background-color: #282c31 !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-bottom: 1.5px solid #777777 !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 html:not(.light-mode) #topbar-search-box:focus-within,
 html.dark #topbar-search-box:focus-within,
@@ -3749,11 +3752,11 @@ html:not(.light-mode) #topbar-search-box.search-flyout-open,
 html.dark #topbar-search-box.search-flyout-open {
   background-color: #282c31 !important;
   color: #ffffff !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: none !important;
   border-radius: 6px !important;
   overflow: hidden !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-bottom: 1.5px solid #4cc2ff !important;
+  border: none !important;
+  border-bottom: none !important;
 }
 
 /* TopBar Search Box: active indicator line matches standard Fluent Design input bottom border */
@@ -4310,7 +4313,6 @@ html.light-mode .fluent-btn-secondary:active {
 #sidebar-search-box,
 #channels-search-box,
 #settings-search-box,
-#topbar-search-box,
 #find-words-bar > div,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 input[type="email"],
@@ -4322,7 +4324,9 @@ input[type="number"]:not([data-no-line]) {
 }
 
 #topbar-search-box {
-  border-radius: 14px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  border-bottom: none !important;
 }
 
 .fluent-input:focus,
@@ -4334,8 +4338,6 @@ input[type="number"]:not([data-no-line]) {
 #sidebar-search-box:focus-within,
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
-#topbar-search-box:focus-within,
-#topbar-search-box.search-flyout-open,
 #find-words-bar > div:focus-within,
 input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 input[type="email"]:focus,
@@ -4354,7 +4356,6 @@ html.light-mode #immersive-search-capsule,
 html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
-html.light-mode #topbar-search-box,
 html.light-mode #find-words-bar > div,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
 html.light-mode input[type="email"],
@@ -4373,8 +4374,6 @@ html.light-mode #immersive-search-capsule:focus-within,
 html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
-html.light-mode #topbar-search-box:focus-within,
-html.light-mode #topbar-search-box.search-flyout-open,
 html.light-mode #find-words-bar > div:focus-within,
 html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
 html.light-mode input[type="email"]:focus,
@@ -6377,19 +6376,21 @@ html.light-mode .floaty-bar .floaty-bar__item:hover:not(.is-active) {
   font-size: 1rem !important;
 }
 
-/* Settings categories white 10% opacity */
+/* Settings categories: pure transparent backgrounds like Tools */
 #settings-section-version,
 #settings-section-spatial-glass,
 #settings-section-interface,
+#settings-section-tools,
 #settings-section-accessibility,
 #settings-section-motion,
 #settings-section-search,
 #settings-section-keyboard,
 #settings-section-experimental,
 #settings-section-keybinds,
-#settings-section-other {
-  background: rgba(255, 255, 255, 0.10) !important;
-  background-color: rgba(255, 255, 255, 0.10) !important;
+#settings-section-other,
+section[id^="settings-section-"] {
+  background: transparent !important;
+  background-color: transparent !important;
   border: none !important;
   border-width: 0 !important;
   backdrop-filter: none !important;
@@ -7094,3 +7095,106 @@ a:hover .settings-spin-icon,
 .settings-spin-icon:hover {
   transform: rotate(360deg);
 }
+
+/* Settings: No elements zoom or scale on hover */
+#settings-page button:hover,
+#settings-page button:active,
+#settings-page a:hover,
+#settings-page a:active,
+#settings-page input:hover,
+#settings-page [role="switch"]:hover,
+#settings-page [role="switch"]:active,
+#settings-page .settings-checkmark:hover,
+#settings-page .settings-checkmark:active,
+#settings-page .toggle-switch-btn:hover,
+#settings-page .toggle-switch-btn:active,
+#settings-page .toggle-switch-thumb:hover,
+#settings-page .toggle-switch-thumb:active,
+#settings-page [class*="rounded-"]:hover,
+#settings-page [class*="rounded-"]:active,
+#btn-theme-light:hover,
+#btn-theme-dark:hover,
+#btn-theme-light:active,
+#btn-theme-dark:active,
+#btn-test-vplay-switch:hover,
+#btn-test-vplay-switch:active,
+#btn-topbar-settings-save:hover,
+#btn-topbar-settings-save:active {
+  transform: none !important;
+}
+
+#settings-page .settings-slider-thumb:hover,
+#settings-page .settings-slider-thumb:active {
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Settings: Borderless blocks and transparent categories */
+#settings-page [class*="rounded-"],
+#settings-page .settings-segmented-group,
+#settings-page section,
+#settings-page button:not(.border),
+#settings-page div[id^="setting-"] {
+  border: none !important;
+  border-color: transparent !important;
+}
+
+#settings-page section,
+section[id^="settings-section-"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* TopBar search box: borderless by default, colored outline when focused */
+#topbar-search-box {
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: all 0.15s ease-in-out;
+}
+
+#topbar-search-box:focus-within,
+#topbar-search-box.is-focused,
+#topbar-search-box.search-flyout-open {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 2px #0078d4 !important;
+}
+
+html.dark #topbar-search-box:focus-within,
+html.dark #topbar-search-box.is-focused,
+html.dark #topbar-search-box.search-flyout-open {
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 2px #4cc2ff !important;
+}
+
+html.light-mode #topbar-search-box:focus-within,
+html.light-mode #topbar-search-box.is-focused,
+html.light-mode #topbar-search-box.search-flyout-open {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 2px #0078d4 !important;
+}
+
+/* Ensure floppy disk save icon inside search box is fully visible and not corrupted */
+#btn-topbar-settings-save {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#btn-topbar-settings-save svg {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+
+

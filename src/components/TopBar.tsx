@@ -10,8 +10,10 @@ import {
   Search, 
   Tv, 
   Settings as SettingsIcon,
-  Globe 
+  Globe,
+  Save 
 } from 'lucide-react';
+import { SpinningRing } from './SpinningRing';
 import { 
   FluentHomeIcon, 
   FluentLiveTvIcon, 
@@ -308,6 +310,17 @@ export const TopBar: React.FC<TopBarProps> = ({
   const handleApplySettings = () => {
     applyDraftSettings();
     onDismissUnsavedTooltip();
+  };
+
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const handleSaveSettings = () => {
+    if (isSavingSettings) return;
+    setIsSavingSettings(true);
+    setTimeout(() => {
+      applyDraftSettings();
+      setIsSavingSettings(false);
+      window.dispatchEvent(new CustomEvent('settings-applied-toast'));
+    }, 350);
   };
 
   // Pre-configured App Aspects (Pages, Settings, Tools) with exact original naming and subtitles matching Fluent Search UI
@@ -1538,9 +1551,9 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] border-0 flex items-center px-3 gap-2 transition-all ${
+              className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] border-none flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
-                  ? 'search-flyout-open bg-white dark:bg-[#282c31] ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] shadow-xs'
+                  ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31] ring-2 ring-[#0078d4] dark:ring-[#4cc2ff]'
                   : 'bg-black/5 dark:bg-[#282c31] ring-0'
               }`}
             >
@@ -1552,14 +1565,20 @@ export const TopBar: React.FC<TopBarProps> = ({
                   const val = e.target.value;
                   setSearchQuery(val);
                   setShowAllResults(false);
-                  setIsSearchFlyoutOpen(true);
+                  if (currentRoute !== '/settings') {
+                    setIsSearchFlyoutOpen(true);
+                  } else {
+                    setIsSearchFlyoutOpen(false);
+                  }
                   if (onTabSearchChange) {
                     onTabSearchChange(val);
                   }
                 }}
                 onFocus={() => {
                   setIsSearchFocused(true);
-                  setIsSearchFlyoutOpen(true);
+                  if (currentRoute !== '/settings') {
+                    setIsSearchFlyoutOpen(true);
+                  }
                 }}
                 onBlur={() => {
                   setIsSearchFocused(false);
@@ -1584,32 +1603,70 @@ export const TopBar: React.FC<TopBarProps> = ({
                   const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
                   return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
                 })()}
-                className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6"
+                className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-1"
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setIsSearchFlyoutOpen(false);
-                    setShowAllResults(false);
-                    if (onTabSearchChange) {
-                      onTabSearchChange('');
-                    }
-                  }}
-                  title="Clear search"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer z-10"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+              <div className="flex items-center gap-1.5 shrink-0">
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setIsSearchFlyoutOpen(false);
+                      setShowAllResults(false);
+                      if (onTabSearchChange) {
+                        onTabSearchChange('');
+                      }
+                    }}
+                    title="Clear search"
+                    className="text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+
+                {/* Save button without background (pure icon button) inside search box */}
+                {(currentRoute === '/settings' || currentRoute.startsWith('/settings') || currentRoute.includes('settings') || (typeof window !== 'undefined' && window.location.pathname.includes('settings'))) && (
+                  <button
+                    type="button"
+                    id="btn-topbar-settings-save"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleSaveSettings();
+                    }}
+                    disabled={isSavingSettings}
+                    title={hasChanges ? "Save settings" : "Settings saved"}
+                    className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
+                    aria-label="Save settings"
+                  >
+                    {isSavingSettings ? (
+                      <SpinningRing size={16} strokeWidth={2.5} color={isLightMode ? '#0078d4' : '#4cc2ff'} />
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-[18px] h-[18px] shrink-0 pointer-events-none"
+                      >
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </form>
 
-          {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
-          <AnimatePresence>
-            {isSearchFlyoutOpen && (
-              <motion.div
+            {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
+            <AnimatePresence>
+              {isSearchFlyoutOpen && currentRoute !== '/settings' && (
+                <motion.div
                 key="topbar-search-flyout"
                 layout
                 initial={{ opacity: 0, y: 22 }}
