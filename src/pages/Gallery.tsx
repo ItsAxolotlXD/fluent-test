@@ -519,7 +519,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
 
       {/* Photos-style gallery header */}
       <header className="sticky top-0 z-30 px-6 pt-5 pb-4 border-b border-white/[0.06] bg-[#242424]/95 backdrop-blur-xl flex items-start justify-between gap-4 shrink-0">
-        <div className="ml-auto relative text-white/60">
+        <div className="relative text-white/60">
           <button type="button" aria-label="Filter gallery" title="Filter gallery" onClick={() => setIsFilterMenuOpen((open) => !open)} className="size-8 rounded-md flex items-center justify-center hover:bg-white/10 transition-colors">
             <ListFilter className="w-3.5 h-3.5" />
           </button>
@@ -543,7 +543,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
         </div>
 
       {/* Right: Select Mode Actions or Normal Actions */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2">
           {isSelectMode ? (
             /* Action bar when Selection mode is Active */
             <div className="flex items-center gap-2 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-[6px] border border-black/10 dark:border-white/10">
@@ -613,15 +613,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             <>
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Import files"
-                title="Import"
-                className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
                 onClick={handleRestoreSamples}
                 aria-label="Load samples"
                 className="size-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white border border-black/10 dark:border-white/10 transition-all cursor-pointer flex items-center justify-center"
@@ -658,6 +649,17 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
             className="hidden"
           />
         </div>
+        {!isSelectMode && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Import files"
+            title="Import"
+            className="ml-auto size-8 rounded-[6px] bg-[#4cc2ff] text-black hover:bg-[#76d8ff] transition-all cursor-pointer flex items-center justify-center shadow-sm"
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+          </button>
+        )}
       </header>
 
       {/* Main Content Area */}
