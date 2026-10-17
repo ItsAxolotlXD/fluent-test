@@ -187,6 +187,7 @@ export const getStoredSettings = (): SystemSettings => {
           : true,
         triangleExperimentVersion: 1,
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
+        dynamicSidebarIcons: typeof parsed.dynamicSidebarIcons === 'boolean' ? parsed.dynamicSidebarIcons : DEFAULT_SETTINGS.dynamicSidebarIcons,
         pageAnimation: parsed.pageAnimation === 'zoomIn' ? 'zoomIn' : 'slideUp',
         pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,

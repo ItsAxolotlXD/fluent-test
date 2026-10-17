@@ -598,7 +598,7 @@ export default function App() {
         return <NotesApp navigate={navigate} />;
 
       case '/gallery':
-        return <Gallery navigate={navigate} searchQuery={currentTabSearchQuery} />;
+        return <Gallery navigate={navigate} searchQuery={currentTabSearchQuery} routeState={routeState} />;
 
       case '/draws':
         return <Draws navigate={navigate} />;

@@ -57,7 +57,7 @@
     font-family: 'Segoe UI Variable Display', 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   }
 
-  /* Global typography: Segoe UI Variable for headers, headings, h1-h6, titles & big titles */
+  /* Global typography: Segoe UI Variable for headers, headings, h1-h6, titles & big titles -> semi-bold */
   .font-bold, strong, b,
   h1, h2, h3, h4, h5, h6,
   header h1, header h2, header h3, header h4, header h5, header h6,
@@ -74,37 +74,26 @@
   .modal-title,
   .card-title {
     font-family: 'Segoe UI', 'Segoe UI Variable Display', 'Segoe UI Variable', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
   }
 
   .font-extrabold {
-    font-weight: 800 !important;
+    font-weight: 600 !important;
   }
 
   .font-black {
-    font-weight: 900 !important;
+    font-weight: 600 !important;
   }
 
   .font-semibold {
     font-weight: 600 !important;
   }
 
-  /* Global typography: bold font for headers, headings, h1-h6, titles & big titles */
-  h1, h2, h3, h4, h5, h6,
-  header h1, header h2, header h3, header h4, header h5, header h6,
-  [role="heading"],
-  .title,
-  [class*="title"],
-  [id*="title"],
-  .heading,
-  [class*="heading"],
-  .big-title,
-  [class*="big-title"],
-  .header-title,
-  .section-title,
-  .modal-title,
-  .card-title {
-    font-weight: 700 !important;
+  /* Global typography: semi-bold for bold classes and titles */
+  .font-bold,
+  b,
+  strong {
+    font-weight: 600 !important;
   }
 
   html {
@@ -1029,7 +1018,7 @@ html.light-mode .tab-loading-spinner {
 .font-square,
 .category-heading {
   font-family: 'Segoe UI', 'Segoe UI Variable Display', 'Segoe UI Variable', system-ui, -apple-system, sans-serif !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   letter-spacing: -0.01em;
 }
 
@@ -6382,19 +6371,17 @@ html.light-mode #immersive-search-capsule:focus-within {
 #topbar-search-box.is-focused,
 #topbar-search-box.search-flyout-open,
 #topbar-search-box:focus-within {
-  border: 2.5px solid #4cc2ff !important;
-  outline: 3px solid #4cc2ff !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 2px rgba(76, 194, 255, 0.45) !important;
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }
 
 html.light-mode #topbar-search-box.is-focused,
 html.light-mode #topbar-search-box.search-flyout-open,
 html.light-mode #topbar-search-box:focus-within {
-  border: 2.5px solid #005fb8 !important;
-  outline: 3px solid #005fb8 !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 2px rgba(0, 95, 184, 0.35) !important;
+  outline: 2px solid #005fb8 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }
 
 #spotlight-search-container:focus-within {
@@ -7198,61 +7185,59 @@ section[id^="settings-section-"] {
   box-shadow: none !important;
 }
 
-/* TopBar search box: prominent, high-contrast, thick outline & border (not thin) */
+/* TopBar search box: no border/outline when not focused; outline ONLY appears when focused */
 #topbar-search-box {
-  border: 2.5px solid rgba(255, 255, 255, 0.45) !important;
-  outline: 2px solid rgba(255, 255, 255, 0.25) !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) !important;
-  transition: all 0.18s ease-in-out;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease-in-out;
 }
 
 #topbar-search-box:hover {
-  border: 2.5px solid rgba(255, 255, 255, 0.75) !important;
-  outline: 2px solid rgba(255, 255, 255, 0.4) !important;
-  outline-offset: 1px !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 html.light-mode #topbar-search-box {
-  border: 2.5px solid rgba(0, 0, 0, 0.45) !important;
-  outline: 2px solid rgba(0, 0, 0, 0.2) !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 html.light-mode #topbar-search-box:hover {
-  border: 2.5px solid rgba(0, 0, 0, 0.75) !important;
-  outline: 2px solid rgba(0, 0, 0, 0.35) !important;
-  outline-offset: 1px !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 #topbar-search-box:focus-within,
 #topbar-search-box.is-focused,
 #topbar-search-box.search-flyout-open {
-  border: 3.5px solid #4cc2ff !important;
-  outline: 3.5px solid #4cc2ff !important;
-  outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(76, 194, 255, 0.45) !important;
+  border-color: transparent !important;
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   z-index: 2147483647 !important;
 }
 
 html.dark #topbar-search-box:focus-within,
 html.dark #topbar-search-box.is-focused,
 html.dark #topbar-search-box.search-flyout-open {
-  border: 3.5px solid #4cc2ff !important;
-  outline: 3.5px solid #4cc2ff !important;
-  outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(76, 194, 255, 0.5) !important;
+  border-color: transparent !important;
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   z-index: 2147483647 !important;
 }
 
 html.light-mode #topbar-search-box:focus-within,
 html.light-mode #topbar-search-box.is-focused,
 html.light-mode #topbar-search-box.search-flyout-open {
-  border: 3.5px solid #005fb8 !important;
-  outline: 3.5px solid #005fb8 !important;
-  outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(0, 95, 184, 0.4) !important;
+  border-color: transparent !important;
+  outline: 2px solid #005fb8 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   z-index: 2147483647 !important;
 }
 

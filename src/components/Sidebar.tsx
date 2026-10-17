@@ -22,8 +22,15 @@ import {
   Palette,
   Settings2,
   Check,
-  Sparkles
+  Sparkles,
+  Folder,
+  Image as ImageIcon,
+  Film,
+  Music,
+  FileText,
+  FolderPlus
 } from 'lucide-react';
+import { galleryDB, GalleryFolder, GalleryMediaItem } from '../services/galleryStorage';
 import { 
   FluentHomeIcon, 
   FluentWatchIcon,
@@ -245,6 +252,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isFavoritesExpanded, setIsFavoritesExpanded] = useState(false);
   const [isDiscordModalOpen, setIsDiscordModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [galleryFolders, setGalleryFolders] = useState<GalleryFolder[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
+  const [isGalleryTreeExpanded, setIsGalleryTreeExpanded] = useState<boolean>(false);
+  const [expandedSidebarFolderIds, setExpandedSidebarFolderIds] = useState<Set<string>>(new Set());
+  const [selectedSidebarFolderId, setSelectedSidebarFolderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadGalleryTreeData = async () => {
+      try {
+        const [fList, iList] = await Promise.all([
+          galleryDB.getFolders(),
+          galleryDB.getAll(),
+        ]);
+        if (mounted) {
+          setGalleryFolders(fList);
+          setGalleryItems(iList);
+        }
+      } catch {}
+    };
+    loadGalleryTreeData();
+    const unsub = galleryDB.subscribe(loadGalleryTreeData);
+    return () => {
+      mounted = false;
+      unsub();
+    };
+  }, []);
   const [isToolsFlyoutOpen, setIsToolsFlyoutOpen] = useState(false);
   const [isSignInFlyoutOpen, setIsSignInFlyoutOpen] = useState(false);
   const [isSignInUnderConstructionOpen, setIsSignInUnderConstructionOpen] = useState(false);
@@ -1289,49 +1323,226 @@ export const Sidebar: React.FC<SidebarProps> = ({
               data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
               onClick={() => handleNavClick('/watch-preview')}
               title="Watch (Preview)"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <div className="flex items-center gap-3.5 truncate">
-                {useFluent3DForContent ? (
-                  <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
-                ) : (
-                  <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-                )}
-                <span className="truncate text-[13.5px]">Watch (Preview)</span>
-              </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold shrink-0">
-                Preview
-              </span>
+              {useFluent3DForContent ? (
+                <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
+              <span className="truncate text-[13.5px]">Watch (Preview)</span>
             </button>
           </div>
 
-          {/* 5. Gallery */}
+          {/* 5. Gallery & Folder Tree */}
           <div className="w-full">
-            <button
-              type="button"
-              id={isMobile ? 'mobile-nav-gallery' : 'sidebar-nav-gallery'}
-              data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
-              onClick={() => handleNavClick('/gallery')}
-              title="Gallery"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
-                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-              }`}
-            >
-              <div className="flex items-center gap-3.5 truncate">
-                {useFluent3DForContent ? (
-                  <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
+            <div className="flex items-center w-full">
+              <button
+                type="button"
+                id={isMobile ? 'mobile-nav-gallery' : 'sidebar-nav-gallery'}
+                data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
+                onClick={() => {
+                  setSelectedSidebarFolderId(null);
+                  try {
+                    sessionStorage.setItem('vplay_gallery_selected_folder', 'null');
+                    window.dispatchEvent(new CustomEvent('vplay:gallery:folder_selected', { detail: { folderId: null } }));
+                  } catch {}
+                  handleNavClick('/gallery', { folderId: null });
+                }}
+                title="Gallery"
+                className={`sidebar-nav-item flex-1 h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                  (currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) && selectedSidebarFolderId === null
+                    ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                    : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-3.5 truncate">
+                  {useFluent3DForContent ? (
+                    <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                  )}
+                  <span className="truncate text-[13.5px]">Gallery</span>
+                </div>
+              </button>
+
+              {/* Chevron to expand/collapse folder tree in sidebar (collapsed by default) */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsGalleryTreeExpanded((prev) => !prev);
+                }}
+                className="w-8 h-8 flex items-center justify-center rounded-[6px] hover:bg-black/5 dark:hover:bg-white/[0.08] text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer shrink-0 mr-1"
+                title={isGalleryTreeExpanded ? "Thu gọn sơ đồ cây" : "Mở rộng sơ đồ cây thư mục"}
+                aria-label="Toggle folder tree"
+              >
+                {isGalleryTreeExpanded ? (
+                  <ChevronDown className="w-3.5 h-3.5" />
                 ) : (
-                  <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 )}
-                <span className="truncate text-[13.5px]">Gallery</span>
-              </div>
-            </button>
+              </button>
+            </div>
+
+            {/* Sơ đồ cây ở sidebar - collapse by default, icon đơn sắc */}
+            <AnimatePresence initial={false}>
+              {isGalleryTreeExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="ml-5 pl-2.5 my-1 border-l border-black/10 dark:border-white/10 space-y-0.5 text-xs">
+                    {/* All Files Root Item (icon đơn sắc) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedSidebarFolderId(null);
+                        try {
+                          sessionStorage.setItem('vplay_gallery_selected_folder', 'null');
+                          window.dispatchEvent(new CustomEvent('vplay:gallery:folder_selected', { detail: { folderId: null } }));
+                        } catch {}
+                        handleNavClick('/gallery', { folderId: null });
+                      }}
+                      className={`group relative w-full h-[30px] px-2 rounded-[5px] flex items-center gap-2 text-left cursor-pointer transition-colors ${
+                        currentRoute.startsWith('/gallery') && selectedSidebarFolderId === null
+                          ? 'bg-[#0078d4]/10 dark:bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold'
+                          : 'text-neutral-700 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-2 h-[1px] bg-black/15 dark:bg-white/15 pointer-events-none" />
+                      <Folder className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-400 shrink-0 stroke-[1.75]" />
+                      <span className="truncate flex-1 text-[12px]">All Files</span>
+                      <span className="text-[10px] text-neutral-500 font-normal">
+                        {galleryItems.length}
+                      </span>
+                    </button>
+
+                    {/* Folders in tree */}
+                    {galleryFolders.length === 0 ? (
+                      <div className="text-[11px] text-neutral-400 dark:text-neutral-500 italic py-1 pl-2">
+                        No folders yet
+                      </div>
+                    ) : (
+                      galleryFolders.map((folder) => {
+                        const folderItems = galleryItems.filter((it) => it.folderId === folder.id);
+                        const isFolderExpanded = expandedSidebarFolderIds.has(folder.id);
+                        const isFolderSelected = currentRoute.startsWith('/gallery') && selectedSidebarFolderId === folder.id;
+
+                        return (
+                          <div key={folder.id} className="space-y-0.5">
+                            <div
+                              className={`group relative w-full h-[30px] px-1.5 rounded-[5px] flex items-center gap-1.5 text-left cursor-pointer transition-colors ${
+                                isFolderSelected
+                                  ? 'bg-[#0078d4]/10 dark:bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold'
+                                  : 'text-neutral-700 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/5'
+                              }`}
+                            >
+                              <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-2 h-[1px] bg-black/15 dark:bg-white/15 pointer-events-none" />
+
+                              {/* Per folder chevron (icon đơn sắc) */}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExpandedSidebarFolderIds((prev) => {
+                                    const next = new Set(prev);
+                                    if (next.has(folder.id)) next.delete(folder.id);
+                                    else next.add(folder.id);
+                                    return next;
+                                  });
+                                }}
+                                className="w-4 h-4 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors shrink-0 cursor-pointer"
+                                title={isFolderExpanded ? "Thu gọn" : "Mở rộng"}
+                              >
+                                {isFolderExpanded ? (
+                                  <ChevronDown className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
+                                ) : (
+                                  <ChevronRight className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
+                                )}
+                              </button>
+
+                              {/* Folder label (icon đơn sắc) */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSidebarFolderId(folder.id);
+                                  try {
+                                    sessionStorage.setItem('vplay_gallery_selected_folder', folder.id);
+                                    window.dispatchEvent(new CustomEvent('vplay:gallery:folder_selected', { detail: { folderId: folder.id } }));
+                                  } catch {}
+                                  handleNavClick('/gallery', { folderId: folder.id });
+                                }}
+                                className="flex items-center gap-2 flex-1 min-w-0 text-left cursor-pointer"
+                              >
+                                <Folder className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-400 shrink-0 stroke-[1.75]" />
+                                <span className="truncate flex-1 text-[12px]">{folder.name}</span>
+                                <span className="text-[10px] text-neutral-500 font-normal">
+                                  {folderItems.length}
+                                </span>
+                              </button>
+                            </div>
+
+                            {/* Nested Items inside folder in the tree (icon đơn sắc) */}
+                            {isFolderExpanded && (
+                              <div className="ml-4 pl-2 border-l border-dashed border-black/15 dark:border-white/15 space-y-0.5 py-0.5">
+                                {folderItems.length === 0 ? (
+                                  <div className="text-[11px] text-neutral-400 dark:text-neutral-500 italic py-0.5 pl-1">
+                                    (Empty)
+                                  </div>
+                                ) : (
+                                  folderItems.map((item) => (
+                                    <button
+                                      key={item.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedSidebarFolderId(folder.id);
+                                        try {
+                                          sessionStorage.setItem('vplay_gallery_selected_folder', folder.id);
+                                          window.dispatchEvent(new CustomEvent('vplay:gallery:folder_selected', { detail: { folderId: folder.id } }));
+                                          window.dispatchEvent(new CustomEvent('vplay:gallery:item_selected', { detail: { itemId: item.id } }));
+                                        } catch {}
+                                        handleNavClick('/gallery', { folderId: folder.id, itemId: item.id });
+                                      }}
+                                      className="group relative w-full h-[26px] px-2 rounded-[4px] flex items-center gap-2 text-left hover:bg-black/5 dark:hover:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                                      title={item.title}
+                                    >
+                                      <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-[1px] bg-black/15 dark:border-white/15 pointer-events-none" />
+                                      {item.type === 'image' && (
+                                        <ImageIcon className="w-3 h-3 text-neutral-500 dark:text-neutral-400 shrink-0 stroke-[1.5]" />
+                                      )}
+                                      {item.type === 'video' && (
+                                        <Film className="w-3 h-3 text-neutral-500 dark:text-neutral-400 shrink-0 stroke-[1.5]" />
+                                      )}
+                                      {item.type === 'audio' && (
+                                        <Music className="w-3 h-3 text-neutral-500 dark:text-neutral-400 shrink-0 stroke-[1.5]" />
+                                      )}
+                                      {item.type === 'document' && (
+                                        <FileText className="w-3 h-3 text-neutral-500 dark:text-neutral-400 shrink-0 stroke-[1.5]" />
+                                      )}
+                                      <span className="truncate flex-1 text-[11px] font-normal">
+                                        {item.title}
+                                      </span>
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* 6. Draws */}
@@ -1425,21 +1636,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
               onClick={() => handleNavClick('/craftmine')}
               title="Craftmine"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/craftmine'
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <div className="flex items-center gap-3.5 truncate">
-                {useFluent3DForContent ? (
-                  <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
-                ) : (
-                  <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-                )}
-                <span className="truncate text-[13.5px]">Craftmine</span>
-              </div>
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Web</span>
+              {useFluent3DForContent ? (
+                <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
+              <span className="truncate text-[13.5px]">Craftmine</span>
             </button>
           </div>
 
@@ -1451,21 +1659,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
               onClick={() => handleNavClick('/photopea')}
               title="Photopea"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/photopea'
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              <div className="flex items-center gap-3.5 truncate">
-                {useFluent3DForContent ? (
-                  <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
-                ) : (
-                  <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-                )}
-                <span className="truncate text-[13.5px]">Photopea</span>
-              </div>
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-600 dark:text-blue-400 font-semibold uppercase">Web</span>
+              {useFluent3DForContent ? (
+                <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
+              <span className="truncate text-[13.5px]">Photopea</span>
             </button>
           </div>
 
@@ -1502,17 +1707,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             data-nav-active={currentRoute === '/winui-3' ? 'true' : undefined}
             onClick={() => handleNavClick('/winui-3')}
             title="WinUI 3"
-            className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+            className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               currentRoute === '/winui-3'
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                 : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
             }`}
           >
-            <div className="flex items-center gap-3.5 truncate">
-              <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
-              <span className="truncate text-[13.5px]">WinUI 3</span>
-            </div>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold uppercase">UI</span>
+            <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
+            <span className="truncate text-[13.5px]">WinUI 3</span>
           </button>
 
           {/* Sign In item placed directly ABOVE Settings tab - icon thường khi dynamic */}
@@ -1885,8 +2087,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
               </div>
 
-              {/* Bottom Sign In & Settings Icons */}
+              {/* Bottom WinUI 3, Sign In & Settings Icons */}
               <div className="shrink-0 w-full mt-auto pt-2 pb-1 space-y-1 flex flex-col items-center relative signin-flyout-container border-t border-black/5 dark:border-white/5">
+                {/* WinUI 3 Collapsed Button (icon thường) */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-winui-3"
+                  onClick={() => handleNavClick('/winui-3')}
+                  title="WinUI 3"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    currentRoute === '/winui-3'
+                      ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                </button>
+
                 {/* Sign In Collapsed Button placed directly above Settings */}
                 <div className="relative">
                   <button
