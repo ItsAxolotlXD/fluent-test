@@ -605,26 +605,22 @@ html.light-mode #vplay-splash-screen {
 
 /* Light mode visual corrections */
 html.light-mode .sidebar-nav-item,
-html.light-mode .sidebar-nav-item svg,
-html.light-mode .sidebar-nav-item svg *,
+html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon),
+html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon) *,
 html.light-mode #waves-desktop-sidebar button,
 html.light-mode #waves-mobile-sidebar button,
-html.light-mode #waves-desktop-sidebar button svg,
-html.light-mode #waves-mobile-sidebar button svg,
-html.light-mode #waves-desktop-sidebar button svg * ,
-html.light-mode #waves-mobile-sidebar button svg * {
+html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon),
+html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon),
+html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon) * ,
+html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon) * {
   color: #000000 !important;
   stroke: #000000 !important;
 }
 
 /* Fluent 3D icons remain colorful in light mode; do not apply monochrome filters. */
 html.light-mode .fluent-3d-icon,
-html.light-mode .fluent-3d-icon svg,
-html.light-mode .fluent-3d-icon svg * {
-  color: revert !important;
-  fill: revert !important;
+html.light-mode .fluent-3d-icon img {
   filter: none !important;
-  stroke: revert !important;
 }
 
 html.light-mode #settings-search-box,
@@ -1205,6 +1201,23 @@ html.light-mode #waves-desktop-sidebar [data-nav-active="true"] svg,
 html.light-mode #waves-mobile-sidebar [data-nav-active="true"] svg {
   color: #000000 !important;
   stroke: #000000 !important;
+}
+
+/* Keep the colored Fluent 3D sidebar artwork colorful in light mode. */
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon,
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg {
+  color: revert !important;
+  stroke: revert !important;
+  filter: none !important;
+}
+
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg *,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg * {
+  color: revert !important;
+  fill: revert !important;
+  stroke: revert !important;
 }
 
 html.light-mode #waves-desktop-sidebar h2,
