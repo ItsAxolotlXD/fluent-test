@@ -67,6 +67,20 @@ const PRESET_COLORS = [
 
 const PRESET_SIZES = [1, 2, 4, 8, 12, 16, 24, 32];
 
+// Staggered slide up variant for cascading entrance animation from top to bottom
+const slideUpVariant = {
+  hidden: { opacity: 0, y: 22 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.52,
+      ease: [0.16, 1, 0.3, 1],
+      delay: Math.min(i * 0.046, 1.1),
+    },
+  }),
+};
+
 export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -693,34 +707,56 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   };
 
   if (!selectedCanvasId) {
+    let animIdx = 0;
     return (
       <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#202328] text-[#111827] dark:text-white p-6 sm:p-10">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-end justify-between gap-4 mb-8">
-            <div>
+            <motion.div
+              variants={slideUpVariant}
+              initial="hidden"
+              animate="visible"
+              custom={animIdx++}
+            >
               <p className="text-xs uppercase tracking-[0.2em] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">Ink Canvas</p>
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
-            </div>
-            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><span className="flex size-6 items-center justify-center"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span><span className="light-mode-white-label">Create canvas</span></button>
+            </motion.div>
+            <motion.button
+              variants={slideUpVariant}
+              initial="hidden"
+              animate="visible"
+              custom={animIdx++}
+              type="button" 
+              onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} 
+              className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2 cursor-pointer"
+            >
+              <span className="flex size-6 items-center justify-center"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span>
+              <span className="light-mode-white-label">Create canvas</span>
+            </motion.button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 [perspective:900px]">
             {canvasList.map((canvas) => {
               const tilt = canvasTilt[canvas.id] ?? { x: 0, y: 0 };
+              const itemIdx = animIdx++;
               return (
-                <button
+                <motion.button
                   key={canvas.id}
+                  variants={slideUpVariant}
+                  initial="hidden"
+                  animate="visible"
+                  custom={itemIdx}
                   type="button"
                   onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }}
                   onContextMenu={(event) => { event.preventDefault(); setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id }); }}
                   onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -16, y: ((event.clientX - rect.left) / rect.width - 0.5) * 18 } })); }}
                   onMouseLeave={() => setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: 0, y: 0 } }))}
                   style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`, transition: 'transform 180ms ease-out, box-shadow 180ms ease-out' }}
-                  className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5"
+                  className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
                 >
                   <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
                   <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -759,7 +795,13 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       </AnimatePresence>
 
       {/* Ink Canvas toolbar */}
-      <header className="sticky top-0 z-40 bg-transparent border-b border-black/10 dark:border-white/10 px-3 sm:px-5 py-2 flex flex-col gap-2 shrink-0">
+      <motion.header
+        variants={slideUpVariant}
+        initial="hidden"
+        animate="visible"
+        custom={0}
+        className="sticky top-0 z-40 bg-transparent border-b border-black/10 dark:border-white/10 px-3 sm:px-5 py-2 flex flex-col gap-2 shrink-0"
+      >
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           {/* Left: Undo, Redo, Clear Canvas */}
           <div className="flex items-center gap-1.5">
@@ -1070,10 +1112,14 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             </label>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Main Drawing Canvas Area with pan/zoom container and default page background */}
-      <div 
+      <motion.div 
+        variants={slideUpVariant}
+        initial="hidden"
+        animate="visible"
+        custom={1}
         ref={containerRef}
         onScroll={(event) => {
           const target = event.currentTarget;
@@ -1157,10 +1203,16 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             <button type="button" onClick={() => setCanvasSpaceHeight((height) => height + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space down</button>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Bottom Status & View Controls Bar */}
-      <footer className="sticky bottom-0 z-30 px-3 sm:px-5 py-1.5 bg-transparent border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-[#6b7280] dark:text-neutral-400 shrink-0">
+      <motion.footer
+        variants={slideUpVariant}
+        initial="hidden"
+        animate="visible"
+        custom={2}
+        className="sticky bottom-0 z-30 px-3 sm:px-5 py-1.5 bg-transparent border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-[#6b7280] dark:text-neutral-400 shrink-0"
+      >
         <div className="flex items-center gap-3">
           <span>{CANVAS_WIDTH} × {CANVAS_HEIGHT} px</span>
           <span className="hidden sm:inline">•</span>
@@ -1211,7 +1263,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             100%
           </button>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 };

@@ -52,7 +52,7 @@ interface TabItem {
 
 const DOCK_TABS: TabItem[] = [
   { id: 'dock-home', label: 'Home', route: '/', image: FLUENT_ICON_URLS.home, icon: FluentHomeIcon },
-  { id: 'dock-tv', label: 'Watch', route: '/live-tv', image: FLUENT_ICON_URLS.liveTv, icon: FluentLiveTvIcon },
+  { id: 'dock-tv', label: 'Watch (preview)', route: '/live-tv', image: '/icons/sidebar/watch-preview.png', icon: FluentLiveTvIcon },
   { id: 'dock-news', label: 'Update blogs', route: '/news', image: FLUENT_ICON_URLS.news, icon: FluentNewsIcon },
   { id: 'dock-settings', label: 'Settings', route: '/settings', image: FLUENT_ICON_URLS.settings, icon: FluentSettingsIcon },
   { id: 'dock-search', label: 'Search', isAction: true, image: FLUENT_ICON_URLS.search, icon: FluentSearchIcon },

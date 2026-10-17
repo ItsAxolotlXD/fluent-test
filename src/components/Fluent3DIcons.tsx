@@ -211,9 +211,9 @@ export const Fluent3DNotesIcon: React.FC<Fluent3DIconProps> = ({ className = "w-
   <ImageIcon src="/icons/sidebar/notes.png" alt="Notes" className={className} style={style} />
 );
 
-// 8. VLC - 3D Traffic Cone WITH 2 CLEAR WHITE HORIZONTAL STRIPES (2 thanh ngang trắng)
+// 8. Screenbox / VLC - 3D Play Button
 export const Fluent3DVlcIcon: React.FC<Fluent3DIconProps> = ({ className = "w-5 h-5", style }) => (
-  <ImageIcon src="/icons/sidebar/vlc.png" alt="VLC" className={className} style={style} />
+  <ImageIcon src="https://cdn3d.iconscout.com/3d/premium/thumb/play-button-3d-icon-png-download-13354190.png" alt="Screenbox" className={className} style={style} />
 );
 
 // 9. Craftmine - 3D Isometric Minecraft Grass Block

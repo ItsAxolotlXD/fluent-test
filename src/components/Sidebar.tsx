@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { flyoutPanelClassName, flyoutPanelStyle } from './FlyoutDropdown';
 import { 
@@ -458,8 +459,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const list = [
       {
         id: 'live-tv',
-        label: 'Watch',
-        secondary: 'Watch',
+        label: 'Watch (preview)',
+        secondary: 'Watch (preview)',
         route: '/live-tv',
         icon: FluentWatchIcon,
         hasSubmenu: true,
@@ -927,7 +928,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       };
     }, [onClose]);
 
-    return (
+    return createPortal(
       <motion.div
         ref={menuRef}
         role="menu"
@@ -937,7 +938,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         exit={{ opacity: 0, y: 14 }}
         transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
         onContextMenu={(e) => e.preventDefault()}
-        className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
+        className={`fixed z-[2147483647] w-[232px] ${flyoutPanelClassName}`}
         style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
       >
         <motion.button
@@ -1094,7 +1095,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Settings2 className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <span className="truncate">Interface settings</span>
         </motion.button>
-      </motion.div>
+      </motion.div>,
+      document.body
     );
   };
 
@@ -1247,14 +1249,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </h2>
           </div>
 
-          {/* 4. Watch */}
+          {/* 4. Watch (preview) */}
           <div className="w-full">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-live-tv' : 'sidebar-nav-live-tv'}
               data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
               onClick={() => handleNavClick('/live-tv')}
-              title="Watch"
+              title="Watch (preview)"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1263,11 +1265,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-3.5 truncate">
                 {useFluent3DForContent ? (
-                  <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                  <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 )}
-                <span className="truncate text-[13.5px]">Watch</span>
+                <span className="truncate text-[13.5px]">Watch (preview)</span>
               </div>
 
               {/* Submenu toggle */}
@@ -1315,29 +1317,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
           </div>
-
-  {/* Watch (Preview) */}
-  <div className="w-full">
-  <button
-              type="button"
-              id={isMobile ? 'mobile-nav-watch-preview' : 'sidebar-nav-watch-preview'}
-              data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
-              onClick={() => handleNavClick('/watch-preview')}
-              title="Watch (Preview)"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview'))
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
-                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-              }`}
-            >
-              {useFluent3DForContent ? (
-                <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
-              ) : (
-                <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-              )}
-              <span className="truncate text-[13.5px]">Watch (Preview)</span>
-  </button>
-  </div>
   
   {/* 5. Gallery & Folder Tree */}
           <div className="w-full">
@@ -1907,35 +1886,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {/* Divider: Apps */}
                 <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-                {/* 3. Watch Icon */}
+                {/* 3. Watch (preview) Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-watch"
                   data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/live-tv')}
-                  title="Watch"
+                  title="Watch (preview)"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
-                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                  }`}
-                >
-                  {useFluent3DForContent ? (
-                    <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
-                  ) : (
-                    <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
-                  )}
-                </button>
-
-                {/* Watch (Preview) Icon */}
-                <button
-                  type="button"
-                  id="sidebar-collapsed-watch-preview"
-                  data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
-                  onClick={() => handleNavClick('/watch-preview')}
-                  title="Watch (Preview)"
-                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    (currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}

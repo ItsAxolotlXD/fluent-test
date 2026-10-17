@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { slideUpVariant } from '../utils/animations';
 import {
   Play,
   Pause,
@@ -246,12 +248,21 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
     }
   }, [playlist]);
 
-  // Click outside to close menus
+  // Screenbox custom speed menu & context menu states
+  const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState<boolean>(false);
+  const [videoContextMenu, setVideoContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const speedDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Click outside to close menus & context menu
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (menuContainerRef.current && !menuContainerRef.current.contains(e.target as Node)) {
         setActiveMenu(null);
       }
+      if (speedDropdownRef.current && !speedDropdownRef.current.contains(e.target as Node)) {
+        setIsSpeedMenuOpen(false);
+      }
+      setVideoContextMenu(null);
     };
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
@@ -876,91 +887,101 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             >
               Media
             </button>
-            {activeMenu === 'media' && (
-              <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    fileInputRef.current?.click();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'media' && (
+                <motion.div
+                  key="vlc-menu-media"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)' }}
+                  className="vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-64 backdrop-blur-2xl rounded-[12px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.22)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-0.5 text-xs text-neutral-800 dark:text-neutral-200 z-50 select-none bg-white/80 dark:bg-[#1c1c20]/80"
                 >
-                  <span className="flex items-center gap-2">
-                    <FolderOpen className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Open File...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+O</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setOpenMediaTab('network');
-                    setIsOpenMediaModal(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Open Network Stream...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+N</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setOpenMediaTab('disc');
-                    setIsOpenMediaModal(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Disc className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Open Disc...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+D</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setOpenMediaTab('capture');
-                    setIsOpenMediaModal(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <VideoIcon className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Open Capture Device...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+C</span>
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setPlaylist(VLC_DEMO_ITEMS);
-                    setCurrentIndex(0);
-                    showToast('Loaded VLC demo playlist');
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center gap-2 rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Load Demo Media Pack
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleExportPlaylist();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Download className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Save Playlist to File...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">.m3u</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      fileInputRef.current?.click();
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FolderOpen className="w-3.5 h-3.5 text-orange-500" /> Open File...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+O</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setOpenMediaTab('network');
+                      setIsOpenMediaModal(true);
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Globe className="w-3.5 h-3.5 text-orange-500" /> Open Network Stream...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+N</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setOpenMediaTab('disc');
+                      setIsOpenMediaModal(true);
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Disc className="w-3.5 h-3.5 text-orange-500" /> Open Disc...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+D</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setOpenMediaTab('capture');
+                      setIsOpenMediaModal(true);
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <VideoIcon className="w-3.5 h-3.5 text-orange-500" /> Open Capture Device...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+C</span>
+                  </button>
+                  <div className="my-1 border-t border-black/10 dark:border-white/10" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setPlaylist(VLC_DEMO_ITEMS);
+                      setCurrentIndex(0);
+                      showToast('Loaded VLC demo playlist');
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-orange-500" /> Load Demo Media Pack
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleExportPlaylist();
+                    }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Download className="w-3.5 h-3.5 text-orange-500" /> Save Playlist to File...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">.m3u</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Playback Menu */}

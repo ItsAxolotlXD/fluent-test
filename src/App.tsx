@@ -517,6 +517,7 @@ export default function App() {
         );
 
       case '/live-tv':
+      case '/watch-preview':
         return (
           <LiveTV
             currentChannel={currentChannel}
@@ -528,9 +529,6 @@ export default function App() {
             navigate={navigate}
           />
         );
-
-      case '/watch-preview':
-        return <WatchPreview enabled={settings.newWatchTab} />;
 
       case '/test':
         return (
@@ -763,34 +761,24 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          {/* Dynamic Page Content with 0.3s fade out before switching tabs */}
-          <AnimatePresence mode="wait" initial={false}>
-            {isTabLoading ? (
-              <motion.div
-                key={`tab-loading-${currentRoute}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: settings.reduceAllMotion || !settings.animatePageTransitions ? 0 : 0.3, ease: 'easeOut' }}
-                className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]"
-              >
-                <TabLoadingScreen />
-              </motion.div>
-            ) : (
-              <motion.div
-                key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: settings.reduceAllMotion || !settings.animatePageTransitions ? 0 : 0.3, ease: 'easeOut' }}
-                className={`tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden ${
-                  settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
-                }`}
-              >
-                {renderContent()}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Dynamic Page Content without fade animation on page transitions */}
+          {isTabLoading ? (
+            <div
+              key={`tab-loading-${currentRoute}`}
+              className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]"
+            >
+              <TabLoadingScreen />
+            </div>
+          ) : (
+            <div
+              key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
+              className={`tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden ${
+                settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
+              }`}
+            >
+              {renderContent()}
+            </div>
+          )}
         </main>
 
       </div>

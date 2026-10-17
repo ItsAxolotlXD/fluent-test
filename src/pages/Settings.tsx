@@ -292,8 +292,17 @@ export const Settings: React.FC<SettingsProps> = ({
             </motion.div>
 
             {/* Individual Option Blocks */}
-            {!isCategoryCollapsed('settings-section-experimental') && (
-              <div className="space-y-2.5 bg-transparent">
+            <AnimatePresence initial={false}>
+              {!isCategoryCollapsed('settings-section-experimental') && (
+                <motion.div
+                  key="content-settings-section-experimental"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Native keyboard */}
                 {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
@@ -487,8 +496,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         )}
 
@@ -522,8 +533,17 @@ export const Settings: React.FC<SettingsProps> = ({
             </motion.div>
 
             {/* Individual Option Blocks */}
-            {!isCategoryCollapsed('settings-section-interface') && (
-              <div className="space-y-2.5 bg-transparent">
+            <AnimatePresence initial={false}>
+              {!isCategoryCollapsed('settings-section-interface') && (
+                <motion.div
+                  key="content-settings-section-interface"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Chế độ ứng dụng */}
                 {matchesSearch(['Chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'theme']) && (
                   <motion.div
@@ -781,8 +801,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         )}
 
@@ -816,8 +838,17 @@ export const Settings: React.FC<SettingsProps> = ({
             </motion.div>
 
             {/* Individual Option Blocks */}
-            {!isCategoryCollapsed('settings-section-accessibility') && (
-              <div className="space-y-2.5 bg-transparent">
+            <AnimatePresence initial={false}>
+              {!isCategoryCollapsed('settings-section-accessibility') && (
+                <motion.div
+                  key="content-settings-section-accessibility"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Hover to expand */}
                 {matchesSearch(['Hover to expand', 'sidebar', 'di chuột', 'mở rộng']) && (
                   <motion.div 
@@ -1202,8 +1233,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     </div>
                   </motion.div>
                 )}
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         )}
 
@@ -1237,8 +1270,17 @@ export const Settings: React.FC<SettingsProps> = ({
             </motion.div>
 
             {/* Individual Option Blocks */}
-            {!isCategoryCollapsed('settings-section-tools') && (
-              <div className="space-y-2.5 bg-transparent">
+            <AnimatePresence initial={false}>
+              {!isCategoryCollapsed('settings-section-tools') && (
+                <motion.div
+                  key="content-settings-section-tools"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
                 {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
                   <motion.div 
@@ -1344,8 +1386,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         )}
 
@@ -1379,8 +1423,17 @@ export const Settings: React.FC<SettingsProps> = ({
             </motion.div>
 
             {/* Individual Option Blocks */}
-            {!isCategoryCollapsed('settings-section-version') && (
-              <div className="space-y-2.5 bg-transparent">
+            <AnimatePresence initial={false}>
+              {!isCategoryCollapsed('settings-section-version') && (
+                <motion.div
+                  key="content-settings-section-version"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Software info block */}
                 {matchesSearch(['Software Update', 'Software Build', 'phiên bản', '26.11']) && (
                   <motion.div 
@@ -1467,8 +1520,10 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         )}
       </div>
