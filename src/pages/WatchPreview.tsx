@@ -17,7 +17,7 @@ export const WatchPreview: React.FC<WatchPreviewProps> = ({ enabled = false }) =
     return (
       <div className="w-full min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-16 select-none">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight">Coming soon</h1>
-        <p className="max-w-xl mt-3 text-sm sm:text-base text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">This tab is currently undergoing major construction as the third milestone of Project Orbit, aimed at phasing out the outdated Vplay interface. Stay tuned for updates</p>
+        <p className="max-w-xl mt-3 text-sm sm:text-base text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">This tab is currently undergoing major construction as the third milestone of Project Orbit, aimed at phasing out the outdated Vplay UI. Stay tuned for updates</p>
       </div>
     );
   }

@@ -1316,7 +1316,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
   {/* Watch (Preview) */}
-  {settings.newWatchTab && <div className="w-full">
+  <div className="w-full">
   <button
               type="button"
               id={isMobile ? 'mobile-nav-watch-preview' : 'sidebar-nav-watch-preview'}
@@ -1336,7 +1336,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
               <span className="truncate text-[13.5px]">Watch (Preview)</span>
   </button>
-  </div>}
+  </div>
   
   {/* 5. Gallery & Folder Tree */}
           <div className="w-full">
