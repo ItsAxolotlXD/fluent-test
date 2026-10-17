@@ -86,7 +86,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [canvasSpaceHeight, setCanvasSpaceHeight] = useState(2200);
   const [canvasSpaceWidth, setCanvasSpaceWidth] = useState(1200);
-  const [showExpansionActions, setShowExpansionActions] = useState(false);
+  const [showExpansionActions, setShowExpansionActions] = useState(true);
   const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(() => {
     const id = window.location.pathname.split('/').pop();
     return id && id !== 'draws' ? id : null;
@@ -1022,15 +1022,153 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               />
               <div className="w-5 h-5 rounded-[4px] bg-gradient-to-tr from-rose-500 via-green-500 to-blue-500 border border-black/20 dark:border-white/30 flex items-center justify-center text-[10px] text-white font-bold">
                 +
+              </div>
+            </label>
           </div>
-          {showExpansionActions && (
-            <div className="sticky bottom-6 flex flex-wrap justify-center gap-3 py-4 z-20">
-              <button type="button" onClick={() => setCanvasSpaceHeight((height) => height + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space down</button>
-              <button type="button" onClick={() => setCanvasSpaceWidth((width) => width + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space horizontally</button>
+        </div>
+      </header>
+
+      {/* Main Drawing Canvas Area with pan/zoom container and default page background */}
+      <div 
+        ref={containerRef}
+        onScroll={(event) => {
+          const target = event.currentTarget;
+          setShowExpansionActions(target.scrollTop + target.clientHeight > target.scrollHeight - 500);
+        }}
+        className="flex-1 overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-center p-4 sm:p-10 relative select-none"
+        style={{
+          minHeight: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
+          backgroundImage: showGrid 
+            ? 'radial-gradient(currentColor 1px, transparent 1px)' 
+            : 'none',
+          backgroundSize: '24px 24px',
+          opacity: showGrid ? 0.95 : 1,
+        }}
+      >
+        <div 
+          className="relative shadow-xl rounded-[6px] overflow-hidden bg-white max-w-full border border-black/10 dark:border-white/10"
+          style={{
+            minHeight: canvasSpaceHeight,
+            width: canvasSpaceWidth,
+            maxWidth: 'none',
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.1s ease-out',
+          }}
+        >
+          {/* Main Drawing Canvas */}
+          <canvas
+            ref={canvasRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            className="block touch-none cursor-crosshair bg-white max-w-full h-auto"
+            style={{
+              width: '100%',
+              maxWidth: '1280px',
+              aspectRatio: '16/9',
+            }}
+          />
+
+          {/* Live Preview Overlay Canvas for Shapes */}
+          <canvas
+            ref={previewCanvasRef}
+            className="absolute inset-0 pointer-events-none w-full h-full"
+          />
+
+          {/* Floating Text Input Box when Text tool is active */}
+          {isTypingText && (
+            <div
+              className="absolute z-30 flex items-center gap-1.5 p-1 bg-black/80 backdrop-blur-md rounded-[6px] border border-white/20 shadow-xl"
+              style={{
+                left: `${(isTypingText.x / CANVAS_WIDTH) * 100}%`,
+                top: `${(isTypingText.y / CANVAS_HEIGHT) * 100}%`,
+              }}
+            >
+              <input
+                type="text"
+                autoFocus
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleCommitText();
+                  if (e.key === 'Escape') setIsTypingText(null);
+                }}
+                placeholder="Type text..."
+                className="bg-transparent text-white text-xs px-2 py-1 outline-none border border-white/20 rounded"
+              />
+              <button
+                type="button"
+                onClick={handleCommitText}
+                className="px-2 py-1 rounded bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-xs font-semibold cursor-pointer"
+              >
+                Apply
+              </button>
             </div>
           )}
         </div>
+        {showExpansionActions && (
+          <div className="sticky bottom-6 flex flex-wrap justify-center gap-3 py-4 z-20">
+            <button type="button" onClick={() => setCanvasSpaceHeight((height) => height + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space down</button>
+            <button type="button" onClick={() => setCanvasSpaceWidth((width) => width + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space horizontally</button>
+          </div>
+        )}
       </div>
+
+      {/* Bottom Status & View Controls Bar */}
+      <footer className="sticky bottom-0 z-30 px-3 sm:px-5 py-1.5 bg-transparent border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs text-[#6b7280] dark:text-neutral-400 shrink-0">
+        <div className="flex items-center gap-3">
+          <span>{CANVAS_WIDTH} × {CANVAS_HEIGHT} px</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline">Tool: <strong className="text-[#111827] dark:text-white capitalize">{activeTool}</strong></span>
+          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline text-[11px]">Undo: <strong>Ctrl+Z</strong> / Redo: <strong>Ctrl+D</strong></span>
+        </div>
+
+        {/* Zoom & Grid view controls */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowGrid(!showGrid)}
+            title="Toggle Grid Lines"
+            className={`p-1 rounded cursor-pointer ${showGrid ? 'text-[#005fb8] dark:text-[#4cc2ff] bg-black/5 dark:bg-white/10' : 'hover:text-[#111827] dark:hover:text-white'}`}
+          >
+            <Grid className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setZoomLevel((z) => Math.max(0.4, Number((z - 0.1).toFixed(1))))}
+            title="Zoom Out"
+            className="p-1 hover:text-[#111827] dark:hover:text-white cursor-pointer"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+
+          <span className="text-[11px] font-mono text-[#111827] dark:text-white w-9 text-center">
+            {Math.round(zoomLevel * 100)}%
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setZoomLevel((z) => Math.min(2.5, Number((z + 0.1).toFixed(1))))}
+            title="Zoom In"
+            className="p-1 hover:text-[#111827] dark:hover:text-white cursor-pointer"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setZoomLevel(1)}
+            title="Reset Zoom (100%)"
+            className="p-1 hover:text-[#111827] dark:hover:text-white cursor-pointer ml-1 text-[11px]"
+          >
+            100%
+          </button>
+        </div>
+      </footer>
     </div>
   );
 };
