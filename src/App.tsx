@@ -248,6 +248,10 @@ export default function App() {
   const isEffectiveCollapsed = settings.autoHideSidebar || isSidebarCollapsed;
   const isInkCanvasEditor = currentRoute.startsWith('/draws/');
 
+  useEffect(() => {
+    setIsInkCanvasChromeVisible(false);
+  }, [isInkCanvasEditor, currentRoute]);
+
   const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
 
