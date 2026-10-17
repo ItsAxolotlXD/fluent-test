@@ -7301,5 +7301,26 @@ html.light-mode #topbar-search-box.search-flyout-open {
   visibility: visible !important;
 }
 
+/* Fluent 3D sidebar icons must keep their original colored SVG fills in light mode. */
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon,
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg {
+  color: revert !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
 
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg *,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg * {
+  fill: revert !important;
+  stroke: revert !important;
+  color: revert !important;
+}
+
+html.light-mode #waves-desktop-sidebar .fluent-3d-icon img,
+html.light-mode #waves-mobile-sidebar .fluent-3d-icon img {
+  filter: none !important;
+  opacity: 1 !important;
+}
 
