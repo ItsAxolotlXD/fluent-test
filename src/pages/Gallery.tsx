@@ -765,7 +765,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       </AnimatePresence>
 
       {/* Windows 11 Photos Fluent Command Bar - Fixed, does not scroll with page */}
-      <header className="shrink-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 rounded-none md:rounded-tl-[10px]">
+      <header className="gallery-toolbar shrink-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 rounded-none md:rounded-tl-[10px]">
         {/* Left Section: Filter, Sort, Load Demo, New Folder (buttons with white icons) + item count badge */}
         <div className="flex items-center gap-1.5 overflow-visible py-0.5">
           {/* 1. Filter Dropdown (Icon phễu màu trắng) */}
@@ -1087,7 +1087,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs border-0 transition-all"
                 title="Import photos, videos, or documents"
               >
-                <UploadCloud className="w-3.5 h-3.5" />
+                <UploadCloud className="gallery-import-icon w-3.5 h-3.5 text-white" />
                 <span>Import</span>
               </button>
             </>
@@ -1244,7 +1244,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                     <span className="text-[14px] font-semibold text-[#111827] dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
                       Add photos here
                     </span>
-                    <span className="text-[13px] text-[#0078d4] dark:text-[#4cc2ff] group-hover:underline">
+                    <span className="text-[13px] text-white dark:text-[#4cc2ff] group-hover:underline">
                       Upload from your device
                     </span>
                   </div>

@@ -568,7 +568,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           aria-pressed={(draftSettings.theme || 'dark') === val}
                         >
                           <IconComponent className="w-3.5 h-3.5 text-white" />
-                          <span>{label}</span>
+                          <span className="text-white dark:text-inherit">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -906,7 +906,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         Load pages sequentially
                       </div>
                       <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Tải nội dung ban đầu của trang, sau đó hiển thị vòng xoay tải trong 1 giây khi cuộn xuống để khám phá thêm.
+                        Tải nội dung ban đầu của trang, sau đó hiển thị v��ng xoay tải trong 1 giây khi cuộn xuống để khám phá thêm.
                       </div>
                     </div>
 
