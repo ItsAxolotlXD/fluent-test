@@ -702,7 +702,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
             </div>
-            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><span className="flex size-6 items-center justify-center"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span><span>Create canvas</span></button>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><span className="flex size-6 items-center justify-center"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span><span className="light-mode-white-label">Create canvas</span></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 [perspective:900px]">
             {canvasList.map((canvas) => {

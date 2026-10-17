@@ -74,29 +74,6 @@ export const FarewellAnnouncement: React.FC = () => {
             </p>
           </div>
 
-          {/* Sơ đồ tư duy về tiêu chí 3 mới */}
-          <div className="mt-5 rounded-xl overflow-hidden border border-black/10 dark:border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-[#0d131a] transition-all">
-            <div className="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#0078d4] via-[#0284c7] to-[#10b981] dark:from-[#38bdf8] dark:via-[#34d399] dark:to-[#4ade80]">
-                  Sơ đồ tư duy • Tiêu chí 3 MỚI
-                </span>
-              </div>
-              <span className="text-[11px] text-white/60 font-medium">
-                Sparkle • 14/10/2026
-              </span>
-            </div>
-            <div className="relative group overflow-hidden bg-[#070b0e] flex items-center justify-center p-2 sm:p-3">
-              <img
-                src="/banners/mindmap_sparkle_3moi.jpg"
-                alt="Sơ đồ tư duy về tiêu chí 3 mới: Tên gọi mới, Nhận diện mới, Định hướng mới"
-                className="w-full h-auto object-contain rounded-lg max-h-[540px] drop-shadow-2xl transition-transform duration-300 group-hover:scale-[1.01]"
-                loading="lazy"
-              />
-            </div>
-          </div>
-
           <div className="farewell-quote p-4 sm:p-5 rounded-xl bg-black/[0.04] dark:bg-white/5 border-l-4 border-[#4cc2ff] text-[#111827] dark:text-white font-medium leading-relaxed my-3">
             <span className="font-bold text-[#0078d4] dark:text-[#4cc2ff]">NOTE:</span> Sparkle là dự án phát triển độc lập, không liên quan đến Vplay tiền nhiệm cũng như các dự án sắp tới của VNRT.
           </div>

@@ -11,7 +11,6 @@ import {
   Tv, 
   Settings as SettingsIcon,
   Globe,
-  Save,
   ArrowLeft
 } from 'lucide-react';
 import { SpinningRing } from './SpinningRing';
@@ -407,7 +406,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         keywords: 'xóa lịch sử tìm kiếm clear search history recent searches',
         type: 'setting-action',
         customAction: {
-          label: 'X��a ngay',
+          label: 'X�����a ngay',
           onAction: () => {
             clearAllHistory();
             setIsSearchFlyoutOpen(false);
@@ -1391,7 +1390,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (item.type === 'setting-action') {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
-          <Fluent3DSettingsIcon className="w-7 h-7 drop-shadow-sm" />
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png" alt="" className="topbar-settings-save-icon w-7 h-7 object-contain" aria-hidden="true" />
         </div>
       );
     }
@@ -1686,20 +1685,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                     {isSavingSettings ? (
                       <SpinningRing size={16} strokeWidth={2.5} color={isLightMode ? '#0078d4' : '#4cc2ff'} />
                     ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="w-[18px] h-[18px] shrink-0 pointer-events-none"
-                      >
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                        <polyline points="17 21 17 13 7 13 7 21" />
-                        <polyline points="7 3 7 8 15 8" />
-                      </svg>
+                      <img
+                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"
+                        alt=""
+                        className="topbar-settings-save-icon w-[18px] h-[18px] shrink-0 object-contain pointer-events-none"
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 )}
