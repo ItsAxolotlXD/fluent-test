@@ -402,12 +402,12 @@ html.light-mode #btn-desktop-sidebar-toggle svg,
 html.light-mode #btn-mobile-sidebar-toggle svg,
 html.light-mode #btn-sidebar-expand-toggle svg,
 html.light-mode #btn-mobile-menu-toggle svg,
-html.light-mode #sidebar-nav-updates svg,
-html.light-mode #mobile-nav-updates svg,
-html.light-mode #sidebar-collapsed-updates svg,
-html.light-mode #sidebar-nav-craftmine svg,
-html.light-mode #mobile-nav-craftmine svg,
-html.light-mode #sidebar-collapsed-craftmine svg,
+html.light-mode #sidebar-nav-updates svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #mobile-nav-updates svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-collapsed-updates svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-nav-craftmine svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #mobile-nav-craftmine svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-collapsed-craftmine svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
 html.light-mode [class*="FluentUpdatesIcon"],
 html.light-mode [class*="FluentCraftmineIcon"] {
   color: #000000 !important;
@@ -418,12 +418,12 @@ html.light-mode #btn-desktop-sidebar-toggle svg *,
 html.light-mode #btn-mobile-sidebar-toggle svg *,
 html.light-mode #btn-sidebar-expand-toggle svg *,
 html.light-mode #btn-mobile-menu-toggle svg *,
-html.light-mode #sidebar-nav-updates svg *,
-html.light-mode #mobile-nav-updates svg *,
-html.light-mode #sidebar-collapsed-updates svg *,
-html.light-mode #sidebar-nav-craftmine svg *,
-html.light-mode #mobile-nav-craftmine svg *,
-html.light-mode #sidebar-collapsed-craftmine svg *,
+html.light-mode #sidebar-nav-updates svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #mobile-nav-updates svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-collapsed-updates svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-nav-craftmine svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #mobile-nav-craftmine svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #sidebar-collapsed-craftmine svg *:not(.fluent-3d-icon):not(.fluent-3d-icon *),
 html.light-mode [class*="FluentUpdatesIcon"] *,
 html.light-mode [class*="FluentCraftmineIcon"] * {
   stroke: #000000 !important;
@@ -605,14 +605,14 @@ html.light-mode #vplay-splash-screen {
 
 /* Light mode visual corrections */
 html.light-mode .sidebar-nav-item,
-html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon),
-html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon) *,
+html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon) *:not(.fluent-3d-icon *),
 html.light-mode #waves-desktop-sidebar button,
 html.light-mode #waves-mobile-sidebar button,
-html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon),
-html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon),
-html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon) * ,
-html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon) * {
+html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode #waves-desktop-sidebar button svg:not(.fluent-3d-icon) *:not(.fluent-3d-icon *) ,
+html.light-mode #waves-mobile-sidebar button svg:not(.fluent-3d-icon) *:not(.fluent-3d-icon *) {
   color: #000000 !important;
   stroke: #000000 !important;
 }
@@ -1209,15 +1209,12 @@ html.light-mode #waves-mobile-sidebar .fluent-3d-icon,
 html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg,
 html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg {
   color: revert !important;
-  stroke: revert !important;
   filter: none !important;
 }
 
 html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg *,
 html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg * {
   color: revert !important;
-  fill: revert !important;
-  stroke: revert !important;
 }
 
 html.light-mode #waves-desktop-sidebar h2,
@@ -4527,28 +4524,28 @@ html.light-mode .text-\[\#a1a1aa\] {
 }
 
 /* 2. Mặc định toàn bộ Icon (SVG, Lucide, Path) ở Light Mode là MÀU ĐEN */
-html.light-mode svg,
+html.light-mode svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
 html.light-mode .lucide,
 html.light-mode [data-lucide] {
   color: #000000 !important;
   stroke: #000000 !important;
 }
 
-html.light-mode svg path,
-html.light-mode svg circle:not([stroke="#005fb8"]):not([stroke="#4cc2ff"]),
-html.light-mode svg rect,
-html.light-mode svg line,
-html.light-mode svg polyline,
-html.light-mode svg polygon {
+html.light-mode svg path:not(.fluent-3d-icon *),
+html.light-mode svg circle:not([stroke="#005fb8"]):not([stroke="#4cc2ff"]):not(.fluent-3d-icon *),
+html.light-mode svg rect:not(.fluent-3d-icon *),
+html.light-mode svg line:not(.fluent-3d-icon *),
+html.light-mode svg polyline:not(.fluent-3d-icon *),
+html.light-mode svg polygon:not(.fluent-3d-icon *) {
   stroke: #000000 !important;
 }
 
-html.light-mode svg.fill-current,
-html.light-mode svg [fill="currentColor"],
-html.light-mode svg [fill="#FFFFFF"],
-html.light-mode svg [fill="#fff"],
-html.light-mode svg [fill="#4cc2ff"],
-html.light-mode svg [fill="#4CC2FF"],
+html.light-mode svg.fill-current:not(.fluent-3d-icon *),
+html.light-mode svg [fill="currentColor"]:not(.fluent-3d-icon *),
+html.light-mode svg [fill="#FFFFFF"]:not(.fluent-3d-icon *),
+html.light-mode svg [fill="#fff"]:not(.fluent-3d-icon *),
+html.light-mode svg [fill="#4cc2ff"]:not(.fluent-3d-icon *),
+html.light-mode svg [fill="#4CC2FF"]:not(.fluent-3d-icon *),
 html.light-mode svg[fill="#FFFFFF"],
 html.light-mode svg[fill="#fff"],
 html.light-mode svg[fill="#4cc2ff"],
@@ -4558,8 +4555,8 @@ html.light-mode svg[fill="#4CC2FF"] {
 
 /* Icon ảnh png trong dock bar và sidebar ở Light Mode chuyển sang màu đen */
 html.light-mode .floaty-bar__item:not(.is-active) img,
-html.light-mode #waves-desktop-sidebar .sidebar-nav-item img,
-html.light-mode #waves-mobile-sidebar .sidebar-nav-item img,
+html.light-mode #waves-desktop-sidebar .sidebar-nav-item img:not(.fluent-3d-icon):not(.fluent-3d-icon img),
+html.light-mode #waves-mobile-sidebar .sidebar-nav-item img:not(.fluent-3d-icon):not(.fluent-3d-icon img),
 html.light-mode #topbar-navigation button img {
   filter: brightness(0) !important;
 }
@@ -7313,8 +7310,6 @@ html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg {
 
 html.light-mode #waves-desktop-sidebar .fluent-3d-icon svg *,
 html.light-mode #waves-mobile-sidebar .fluent-3d-icon svg * {
-  fill: revert !important;
-  stroke: revert !important;
   color: revert !important;
 }
 
