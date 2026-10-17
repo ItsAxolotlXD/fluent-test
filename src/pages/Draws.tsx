@@ -702,7 +702,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
             </div>
-            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><Plus aria-hidden="true" className="w-5 h-5" strokeWidth={2.5} />Create canvas</button>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><span className="flex size-6 items-center justify-center rounded-md bg-white/15 dark:bg-black/10"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span><span>Create canvas</span></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 [perspective:900px]">
             {canvasList.map((canvas) => {
@@ -713,7 +713,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                   type="button"
                   onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }}
                   onContextMenu={(event) => { event.preventDefault(); setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id }); }}
-                  onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -8, y: ((event.clientX - rect.left) / rect.width - 0.5) * 10 } })); }}
+                  onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -16, y: ((event.clientX - rect.left) / rect.width - 0.5) * 18 } })); }}
                   onMouseLeave={() => setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: 0, y: 0 } }))}
                   style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`, transition: 'transform 180ms ease-out, box-shadow 180ms ease-out' }}
                   className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5"

@@ -422,6 +422,28 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
+                {/* New Watch Tab */}
+                {matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-experimental-new-watch-tab"
+                    onClick={() => updateDraft('newWatchTab', !draftSettings.newWatchTab)}
+                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2">
+                        <span>New Watch Tab</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">New</span>
+                      </div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Hiển thị tab Watch preview mới với giao diện xem nội dung.</div>
+                    </div>
+                    <button id="toggle-new-watch-tab" type="button" role="switch" aria-checked={draftSettings.newWatchTab} onClick={(e) => { e.stopPropagation(); updateDraft('newWatchTab', !draftSettings.newWatchTab); }} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
+                  </motion.div>
+                )}
+
                 {/* Dynamic sidebar icons */}
                 {matchesSearch(['Dynamic sidebar icons', 'dynamic icons', 'sidebar icons', 'icon thanh bên']) && (
                   <motion.div

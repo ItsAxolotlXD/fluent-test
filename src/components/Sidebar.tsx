@@ -1315,9 +1315,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* Watch (Preview) */}
-          <div className="w-full">
-            <button
+  {/* Watch (Preview) */}
+  {settings.newWatchTab && <div className="w-full">
+  <button
               type="button"
               id={isMobile ? 'mobile-nav-watch-preview' : 'sidebar-nav-watch-preview'}
               data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
@@ -1335,10 +1335,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               )}
               <span className="truncate text-[13.5px]">Watch (Preview)</span>
-            </button>
-          </div>
-
-          {/* 5. Gallery & Folder Tree */}
+  </button>
+  </div>}
+  
+  {/* 5. Gallery & Folder Tree */}
           <div className="w-full">
             <div className="flex items-center w-full">
               <button
