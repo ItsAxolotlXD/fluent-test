@@ -54,6 +54,7 @@ import {
   Fluent3DArticlesIcon,
   Fluent3DUpdatesIcon,
   Fluent3DWatchIcon,
+  Fluent3DWatchPreviewIcon,
   Fluent3DGalleryIcon,
   Fluent3DDrawsIcon,
   Fluent3DNotesIcon,
@@ -645,7 +646,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <FluentInkCanvasIcon className="w-4 h-4 shrink-0" />
+            <FluentInkCanvasIcon className="fluent-3d-icon w-4 h-4 shrink-0" />
             <span>Ink Canvas</span>
           </div>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Vẽ Paint</span>
@@ -1330,7 +1331,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               {useFluent3DForContent ? (
-                <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
               ) : (
                 <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               )}
@@ -1561,7 +1562,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-3.5 truncate">
                 {useFluent3DForContent ? (
-                  <FluentInkCanvasIcon className="w-5 h-5 shrink-0" />
+                  <FluentInkCanvasIcon className="fluent-3d-icon w-5 h-5 shrink-0" />
                 ) : (
                   <FluentInkCanvasIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 )}
@@ -1940,7 +1941,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   {useFluent3DForContent ? (
-                    <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                    <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
@@ -1980,7 +1981,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   {useFluent3DForContent ? (
-                    <FluentInkCanvasIcon className="w-5 h-5 shrink-0" />
+                    <FluentInkCanvasIcon className="fluent-3d-icon w-5 h-5 shrink-0" />
                   ) : (
                     <FluentInkCanvasIcon className="w-5 h-5 text-black dark:text-white" />
                   )}

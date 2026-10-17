@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Palette,
-  Key,
   Type, 
   X,
-  Wrench,
-  FlaskConical,
   RotateCcw,
   AlertCircle,
-  Info,
   Tv,
   ChevronDown,
   Sun,
@@ -127,13 +122,13 @@ export const Settings: React.FC<SettingsProps> = ({
     return () => window.removeEventListener('settings-applied-toast', handleAppliedEvent);
   }, []);
 
-  // Ordered categories: Insider Flags -> Interface -> Accessibility -> Tools -> Updates
+  // Ordered categories: Insider experiments -> Appearance -> Accessibility -> Tools -> Updates
   const navCategories = [
-    { id: 'settings-section-experimental', label: 'Insider Flags', icon: FlaskConical },
-    { id: 'settings-section-interface', label: 'Interface', icon: Palette },
-    { id: 'settings-section-accessibility', label: 'Accessibility', icon: Key },
-    { id: 'settings-section-tools', label: 'Tools', icon: Wrench },
-    { id: 'settings-section-version', label: 'Updates', icon: Info },
+    { id: 'settings-section-experimental', label: 'Insider experiments', iconSrc: '/icons/settings/insider.png' },
+    { id: 'settings-section-interface', label: 'Appearance', iconSrc: '/icons/settings/appearance.png' },
+    { id: 'settings-section-accessibility', label: 'Accessibility', iconSrc: '/icons/settings/accessibility.png' },
+    { id: 'settings-section-tools', label: 'Tools', iconSrc: '/icons/settings/tools.png' },
+    { id: 'settings-section-version', label: 'Updates', iconSrc: '/icons/settings/updates.png' },
   ];
 
   const [activeNavSection, setActiveNavSection] = useState<string>('settings-section-experimental');
@@ -165,9 +160,9 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   const matchesExperimental = 
-    matchesSearch(['Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons']);
+    matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons']);
   const matchesInterface = 
-    matchesSearch(['Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
+    matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
   const matchesAccessibility = 
     matchesSearch(['Accessibility', 'trợ năng', 'hover to expand', 'page loading', 'tải trang', 'load pages sequentially', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'tổ hợp phím', 'phím tắt', 'keybinds']);
   const matchesTools = 
@@ -221,7 +216,6 @@ export const Settings: React.FC<SettingsProps> = ({
           aria-label="Settings Categories"
         >
           {navCategories.map((cat) => {
-            const Icon = cat.icon;
             const isActive = activeNavSection === cat.id;
             return (
               <button
@@ -240,7 +234,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     : 'bg-black/5 dark:bg-[#2c3037] hover:bg-black/10 dark:hover:bg-[#363b43] text-[#4b5563] dark:text-[#d1d5db]'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5 text-white" />
+                <img src={cat.iconSrc} alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-4 h-4 object-contain shrink-0" />
                 <span>{cat.label}</span>
               </button>
             );
@@ -284,9 +278,9 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <FlaskConical className="w-5 h-5 text-white shrink-0" />
+                  <img src="/icons/settings/insider.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
-                    Insider Flags
+                    Insider experiments
                   </h2>
                 </div>
                 <ChevronDown 
@@ -514,9 +508,9 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <Palette className="w-5 h-5 text-white shrink-0" />
+                  <img src="/icons/settings/appearance.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
-                    Interface
+                    Appearance
                   </h2>
                 </div>
                 <ChevronDown 
@@ -808,7 +802,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <Key className="w-5 h-5 text-white shrink-0" />
+                  <img src="/icons/settings/accessibility.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
                     Accessibility
                   </h2>
@@ -1229,7 +1223,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <Wrench className="w-5 h-5 text-white shrink-0" />
+                  <img src="/icons/settings/tools.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
                     Tools
                   </h2>
@@ -1371,7 +1365,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <Info className="w-5 h-5 text-white shrink-0" />
+                  <img src="/icons/settings/updates.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
                     Updates
                   </h2>
