@@ -249,6 +249,24 @@ export default function App() {
   const isInkCanvasEditor = currentRoute.startsWith('/draws/');
 
   useEffect(() => {
+    if (!isInkCanvasEditor) return;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+    const handlePointerMove = (event: MouseEvent) => {
+      const nearEdge = event.clientY <= 48 || event.clientY >= window.innerHeight - 48 || event.clientX <= 48;
+      if (nearEdge) {
+        setIsInkCanvasChromeVisible(true);
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => setIsInkCanvasChromeVisible(false), 900);
+      }
+    };
+    window.addEventListener('mousemove', handlePointerMove);
+    return () => {
+      window.removeEventListener('mousemove', handlePointerMove);
+      if (hideTimer) clearTimeout(hideTimer);
+    };
+  }, [isInkCanvasEditor]);
+
+  useEffect(() => {
     setIsInkCanvasChromeVisible(false);
   }, [isInkCanvasEditor, currentRoute]);
 
@@ -648,7 +666,7 @@ export default function App() {
         aria-hidden="true" 
       />
 
-      {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[80]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[80]" /></>}
+      {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
       {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && (

@@ -1805,7 +1805,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ? settings.sidebarPosition === 'right'
                 ? '!z-50 shadow-[-8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[-8px_0_32px_rgba(0,0,0,0.6)]'
                 : '!z-50 shadow-[8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[8px_0_32px_rgba(0,0,0,0.6)]'
-              : 'z-40 shadow-none'
+              : '!z-[200] shadow-none'
           }`}
           style={{
             backgroundColor: settings.theme === 'light' ? '#f3f3f3' : '#1b1f24',

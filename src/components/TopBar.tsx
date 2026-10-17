@@ -1445,7 +1445,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className={`w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 ${
-      isSearchFlyoutOpen || isSearchFocused ? 'z-[2147483647]' : 'z-40'
+      isSearchFlyoutOpen || isSearchFocused ? 'z-[2147483647]' : '!z-[200]'
     } select-none`}>
       {/* Sticky top-left tab corner rounded mask: keeps top-left of tab page rounded (bo cong 10px) when scrolling, hidden on mobile UI */}
       <div

@@ -1035,7 +1035,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
           const target = event.currentTarget;
           setShowExpansionActions(target.scrollTop + target.clientHeight > target.scrollHeight - 500);
         }}
-        className="flex-1 overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-center p-4 sm:p-10 relative select-none"
+        className="flex-1 overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-start p-4 sm:p-10 relative select-none"
         style={{
           minHeight: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
           backgroundImage: showGrid 
