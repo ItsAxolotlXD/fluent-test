@@ -339,7 +339,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
       { id: 'page-photopea', title: 'Photopea', subtitle: 'Switch page', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
       { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
-      { id: 'page-draws', title: 'Draws', subtitle: 'Switch page', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
+      { id: 'page-draws', title: 'Ink Canvas', subtitle: 'Switch page', keywords: 'ink canvas draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
       { id: 'page-vlc', title: 'VLC Media Player', subtitle: 'Switch page', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
       { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
@@ -1633,7 +1633,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
                   if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
                   if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
-                  if (currentRoute.startsWith('/draws')) return 'Search Draws';
+                  if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
                   if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
                   if (currentRoute.startsWith('/vlc')) return 'Search VLC';
                   if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';

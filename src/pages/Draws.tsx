@@ -26,7 +26,9 @@ import {
   Sparkles, 
   ZoomIn, 
   ZoomOut, 
-  Grid
+  Grid,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 
@@ -81,6 +83,8 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const [isTypingText, setIsTypingText] = useState<{ x: number; y: number } | null>(null);
   const [showGrid, setShowGrid] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [canvasSpaceHeight, setCanvasSpaceHeight] = useState(2200);
   const [toastMessage, setToastMessage] = useState<{ text: string; actionLabel?: string; onAction?: () => void } | null>(null);
 
   // Undo / Redo history
@@ -88,6 +92,22 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const redoStackRef = useRef<ImageData[]>([]);
   const isDrawingRef = useRef<boolean>(false);
   const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      await document.exitFullscreen?.();
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    return () => document.removeEventListener('fullscreenchange', syncFullscreen);
+  }, []);
 
   const showToast = (text: string, actionLabel?: string, onAction?: () => void) => {
     setToastMessage({ text, actionLabel, onAction });
@@ -602,7 +622,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
     const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-    const id = `draws-${Date.now()}`;
+    const id = `ink-canvas-${Date.now()}`;
 
     const newMedia: GalleryMediaItem = {
       id,
@@ -618,8 +638,8 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       dimensions: { width: CANVAS_WIDTH, height: CANVAS_HEIGHT },
       aspectRatio: CANVAS_WIDTH / CANVAS_HEIGHT,
       isFavorite: false,
-      tags: ['Draws', 'Artwork', 'Paint'],
-      description: 'Created with Sparkle Draws',
+      tags: ['Ink Canvas', 'Artwork', 'Paint'],
+      description: 'Created with Sparkle Ink Canvas',
       source: 'draws',
     };
 
@@ -658,7 +678,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
         )}
       </AnimatePresence>
 
-      {/* Toolbar Ribbon (No header title "Draws", unified app buttons and default tab background) */}
+      {/* Ink Canvas toolbar */}
       <header className="sticky top-0 z-40 bg-transparent border-b border-black/10 dark:border-white/10 px-3 sm:px-5 py-2 flex flex-col gap-2 shrink-0">
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           {/* Left: Undo, Redo, Clear Canvas */}
@@ -695,8 +715,19 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             </button>
           </div>
 
-          {/* Right: Save Dropdown adhering to standard app buttons */}
-          <div className="relative">
+          {/* Right: Canvas actions */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit fullscreen' : 'Full screen canvas'}
+              className="h-8 px-2.5 rounded-[6px] border border-black/10 dark:border-white/15 bg-white/70 dark:bg-white/5 hover:bg-black/5 dark:hover:bg-white/10 text-[#4b5563] dark:text-neutral-200 flex items-center gap-1.5 text-xs cursor-pointer transition-colors"
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              <span className="hidden sm:inline">{isFullscreen ? 'Exit' : 'Full screen'}</span>
+            </button>
+            {/* Save Dropdown adhering to standard app buttons */}
+            <div className="relative">
             <div className="flex items-center">
               <button
                 type="button"
@@ -766,6 +797,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
           </div>
         </div>
 
@@ -963,8 +995,15 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       {/* Main Drawing Canvas Area with pan/zoom container and default page background */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto bg-transparent flex items-center justify-center p-2 sm:p-6 relative select-none"
+        onScroll={(event) => {
+          const target = event.currentTarget;
+          if (target.scrollTop + target.clientHeight > target.scrollHeight - 500) {
+            setCanvasSpaceHeight((height) => height + 1200);
+          }
+        }}
+        className="flex-1 overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-center p-4 sm:p-10 relative select-none"
         style={{
+          minHeight: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
           backgroundImage: showGrid 
             ? 'radial-gradient(currentColor 1px, transparent 1px)' 
             : 'none',
@@ -975,6 +1014,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
         <div 
           className="relative shadow-xl rounded-[6px] overflow-hidden bg-white max-w-full border border-black/10 dark:border-white/10"
           style={{
+            minHeight: canvasSpaceHeight,
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'center center',
             transition: 'transform 0.1s ease-out',
