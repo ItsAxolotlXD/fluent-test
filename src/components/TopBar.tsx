@@ -407,7 +407,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         keywords: 'xóa lịch sử tìm kiếm clear search history recent searches',
         type: 'setting-action',
         customAction: {
-          label: 'Xóa ngay',
+          label: 'X��a ngay',
           onAction: () => {
             clearAllHistory();
             setIsSearchFlyoutOpen(false);
@@ -1598,7 +1598,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
-                  : 'bg-black/5 dark:bg-[#282c31]'
+                  : 'bg-black/[0.07] dark:bg-[#30343a]'
               }`}
             >
               <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none drop-shadow-xs" />

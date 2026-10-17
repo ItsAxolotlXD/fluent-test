@@ -646,8 +646,8 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       dateAdded: now.toISOString(),
       dateLabel,
       year: now.getFullYear(),
-      dimensions: { width: CANVAS_WIDTH, height: CANVAS_HEIGHT },
-      aspectRatio: CANVAS_WIDTH / CANVAS_HEIGHT,
+      dimensions: { width: CANVAS_WIDTH, height: canvasSpaceHeight },
+      aspectRatio: CANVAS_WIDTH / canvasSpaceHeight,
       isFavorite: false,
       tags: ['Ink Canvas', 'Artwork', 'Paint'],
       description: 'Created with Sparkle Ink Canvas',
@@ -673,7 +673,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
             </div>
-            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity">New canvas</button>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity"><span aria-hidden="true" className="mr-1 text-base">+</span>Create canvas</button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {canvasList.map((canvas) => (
@@ -1035,7 +1035,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
           const target = event.currentTarget;
           setShowExpansionActions(target.scrollTop + target.clientHeight > target.scrollHeight - 500);
         }}
-        className="flex-1 overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-start p-4 sm:p-10 relative select-none"
+        className="flex-1 min-h-[100vh] overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-start p-0 relative select-none"
         style={{
           minHeight: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
           backgroundImage: showGrid 
@@ -1109,9 +1109,8 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
           )}
         </div>
         {showExpansionActions && (
-          <div className="sticky bottom-6 flex flex-wrap justify-center gap-3 py-4 z-20">
+          <div className="flex flex-wrap justify-center gap-3 py-8 z-20 bg-[#f3f4f6] dark:bg-[#202328]">
             <button type="button" onClick={() => setCanvasSpaceHeight((height) => height + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space down</button>
-            <button type="button" onClick={() => setCanvasSpaceWidth((width) => width + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space horizontally</button>
           </div>
         )}
       </div>
