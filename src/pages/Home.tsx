@@ -31,7 +31,7 @@ interface HomeProps {
 const APP_PAGES = [
   { id: 'page-home', title: 'Home', desc: 'Overview, trending & featured channels', route: '/', icon: FluentHomeIcon, keywords: 'home overview trending' },
   { id: 'page-livetv', title: 'Watch', desc: 'Watch live broadcasts from VTV, HTV, VTC, Local channels', route: '/live-tv', icon: FluentLiveTvIcon, keywords: 'watch live tv vtv htv vtc broadcasting' },
-  { id: 'page-news', title: 'Articles', desc: 'Broadcasting technology news, branding & articles', route: '/news', icon: FluentNewsIcon, keywords: 'articles news announcements updates' },
+  { id: 'page-news', title: 'Update blogs', desc: 'Release notes, changelogs, broadcasting technology & articles', route: '/news', icon: FluentNewsIcon, keywords: 'update blogs articles news announcements updates changelogs' },
   { id: 'page-test', title: 'Test Channels', desc: 'Experimental feeds and test stream laboratory', route: '/test', icon: Compass, keywords: 'test channels lab developer' },
   { id: 'page-settings', title: 'Settings', desc: 'Customize theme, navigation bar, and keybinds', route: '/settings', icon: SettingsIcon, keywords: 'settings personalization font display' },
 ];

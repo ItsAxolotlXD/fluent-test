@@ -11,7 +11,8 @@ import {
   Tv, 
   Settings as SettingsIcon,
   Globe,
-  Save 
+  Save,
+  ArrowLeft
 } from 'lucide-react';
 import { SpinningRing } from './SpinningRing';
 import { 
@@ -332,10 +333,9 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
       { id: 'page-watch', title: 'Watch', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
       { id: 'page-watch-preview', title: 'Watch (Preview)', subtitle: 'Switch page', keywords: 'watch preview coming soon project orbit vplay', type: 'page', onSelect: () => navigate('/watch-preview') },
-      { id: 'page-news', title: 'Articles', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-news', title: 'Update blogs', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
       { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
       { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
-      { id: 'page-updates', title: 'Updates', subtitle: 'Switch page', keywords: 'cập nhật phiên bản updates changelog', type: 'page', onSelect: () => navigate('/updates') },
       { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
       { id: 'page-photopea', title: 'Photopea', subtitle: 'Switch page', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
       { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
@@ -1445,7 +1445,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className={`w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 ${
-      isSearchFlyoutOpen || isSearchFocused ? 'z-[99999]' : 'z-40'
+      isSearchFlyoutOpen || isSearchFocused ? 'z-[2147483647]' : 'z-40'
     } select-none`}>
       {/* Sticky top-left tab corner rounded mask: keeps top-left of tab page rounded (bo cong 10px) when scrolling, hidden on mobile UI */}
       <div
@@ -1544,22 +1544,22 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </button>
 
-            {/* Articles */}
+            {/* Update blogs */}
             <button
               id="btn-topbar-nav-news"
               type="button"
               onClick={() => navigate('/news')}
               className={`group relative flex items-center gap-2 px-3 h-8.5 rounded-[4px] text-xs sm:text-[13px] font-normal transition-colors cursor-default whitespace-nowrap outline-none select-none ${
-                currentRoute === '/news' || currentRoute.startsWith('/article')
+                currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Articles"
+              title="Update blogs"
             >
               <FluentNewsIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
-              <span>Articles</span>
+              <span>Update blogs</span>
 
-              {(currentRoute === '/news' || currentRoute.startsWith('/article')) && (
+              {(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) && (
                 <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
               )}
             </button>
@@ -1570,12 +1570,29 @@ export const TopBar: React.FC<TopBarProps> = ({
       {/* 2. Center Search Box with Flyout matching Microsoft Fluent Design and reference image */}
       <div 
         ref={searchContainerRef}
-        className={`flex-1 flex items-center justify-center min-w-0 px-1 sm:px-4 ${
-          isSearchFlyoutOpen || isSearchFocused ? 'z-[99999]' : 'z-40'
-        } md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]`}
+        id="topbar-search-container"
+        className={`flex-1 flex items-center justify-center min-w-0 transition-all ${
+          isSearchFlyoutOpen || isSearchFocused
+            ? 'fixed md:absolute inset-x-0 top-0 h-14 md:h-auto md:top-auto px-2.5 sm:px-4 z-[2147483647] bg-[#f3f3f3] dark:bg-[#1b1f24] md:bg-transparent md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]'
+            : 'px-1 sm:px-4 z-40 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]'
+        }`}
       >
-        <div className="relative w-full max-w-full md:max-w-[460px] min-w-0 mx-auto">
-          <form onSubmit={handleSearchSubmit} className="w-full">
+        <div className="relative w-full max-w-full md:max-w-[460px] min-w-0 mx-auto flex items-center gap-2">
+          {(isSearchFlyoutOpen || isSearchFocused) && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchFlyoutOpen(false);
+                setIsSearchFocused(false);
+              }}
+              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 shrink-0 cursor-pointer"
+              title="Close search"
+              aria-label="Back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
+          <form onSubmit={handleSearchSubmit} className="flex-1 w-full min-w-0">
             <div
               id="topbar-search-box"
               className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] flex items-center px-3 gap-2 transition-all ${
@@ -1614,8 +1631,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                   if (currentRoute.startsWith('/watch-preview')) return 'Search Watch (Preview)';
                   if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
-                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article')) return 'Search Articles';
-                  if (currentRoute.startsWith('/updates')) return 'Search Updates';
+                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
                   if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
                   if (currentRoute.startsWith('/draws')) return 'Search Draws';
                   if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
@@ -1705,8 +1721,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ease: [0.16, 1, 0.3, 1],
                   layout: { duration: 0.36, ease: [0.16, 1, 0.3, 1] },
                 }}
-                className={`topbar-search-results-dropdown fixed left-2 right-2 sm:left-4 sm:right-4 top-[58px] md:absolute md:top-[calc(100%+8px)] md:left-0 md:right-0 md:w-full z-[99999] backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
-                  showAllResults ? 'max-h-[calc(100vh-80px)] md:max-h-[380px] overflow-y-auto sidebar-scroller' : 'max-h-[calc(100vh-80px)] md:max-h-none overflow-hidden'
+                className={`topbar-search-results-dropdown fixed left-0 right-0 top-14 w-full rounded-none sm:rounded-b-[16px] md:rounded-[14px] md:absolute md:top-[calc(100%+8px)] md:left-0 md:right-0 md:w-full z-[2147483647] backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
+                  showAllResults ? 'max-h-[calc(100vh-70px)] md:max-h-[380px] overflow-y-auto sidebar-scroller' : 'max-h-[calc(100vh-70px)] md:max-h-none overflow-hidden'
                 }`}
                 style={{
                   backgroundColor: searchFlyoutBg,

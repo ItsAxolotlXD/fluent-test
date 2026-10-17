@@ -44,6 +44,7 @@ export interface SystemSettings {
   triangleExperiment: boolean;
   triangleExperimentVersion?: number;
   fluentIcons: boolean;
+  dynamicSidebarIcons: boolean;
   pageAnimation: 'slideUp' | 'zoomIn';
   pageLoading: boolean;
   loadPagesSequentially: boolean;
@@ -95,6 +96,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   triangleExperiment: true,
   triangleExperimentVersion: 1,
   fluentIcons: false,
+  dynamicSidebarIcons: false,
   pageAnimation: 'slideUp',
   pageLoading: true,
   loadPagesSequentially: false,

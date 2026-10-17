@@ -21,7 +21,8 @@ import {
   PanelLeft,
   Palette,
   Settings2,
-  Check
+  Check,
+  Sparkles
 } from 'lucide-react';
 import { 
   FluentHomeIcon, 
@@ -349,7 +350,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return CHANNELS_DATA.filter((ch) => favoriteChannelIds.includes(ch.id));
   }, [favoriteChannelIds]);
 
+  const isDynamicIcons = Boolean(settings.dynamicSidebarIcons);
   const isFluentIcons = Boolean(settings.fluentIcons);
+  // When Dynamic sidebar icons is active:
+  // - home, articles/update blogs, watch, gallery, notes, draws, vlc, craftmine, photopea, discord: icon fluent colore (3D)
+  // - sign in, settings, winui 3: icon thường
+  const useFluent3DForContent = isDynamicIcons || isFluentIcons;
+  const useFluent3DForSystem = !isDynamicIcons && isFluentIcons;
   const shouldAnimateSidebar = !settings.reduceAllMotion && settings.animateSidebar;
   const isHoverToExpandActive = Boolean(settings.hoverToExpand && isCollapsed);
   const isExpandedOnHover = isHovered || isToolsFlyoutOpen || isSignInFlyoutOpen || Boolean(sidebarContextMenu);
@@ -816,6 +823,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onToggleHoverToExpand: () => void;
     fluentIcons?: boolean;
     onToggleFluentIcons: () => void;
+    dynamicSidebarIcons?: boolean;
+    onToggleDynamicSidebarIcons: () => void;
     onNavigateSettings: () => void;
     onGoBack: () => void;
     onClose: () => void;
@@ -830,6 +839,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onToggleHoverToExpand,
     fluentIcons,
     onToggleFluentIcons,
+    dynamicSidebarIcons,
+    onToggleDynamicSidebarIcons,
     onNavigateSettings,
     onGoBack,
     onClose,
@@ -1014,6 +1025,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           animate={{
             opacity: 1,
             y: 0,
+            transition: { duration: 0.38, delay: 0.20, ease: [0.16, 1, 0.3, 1] },
+          }}
+          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Draws..."
+          onClick={() => {
+            onToggleDynamicSidebarIcons();
+            onClose();
+          }}
+          className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
+        >
+          <Sparkles className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <span className="truncate flex-1">Dynamic sidebar icons</span>
+          {dynamicSidebarIcons && (
+            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+          )}
+        </motion.button>
+
+        <motion.button
+          type="button"
+          role="menuitem"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
             transition: { duration: 0.38, delay: 0.22, ease: [0.16, 1, 0.3, 1] },
           }}
           onClick={() => {
@@ -1044,6 +1078,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onToggleHoverToExpand={() => updateSetting('hoverToExpand', !settings.hoverToExpand)}
             fluentIcons={settings.fluentIcons}
             onToggleFluentIcons={() => updateSetting('fluentIcons', !settings.fluentIcons)}
+            dynamicSidebarIcons={settings.dynamicSidebarIcons}
+            onToggleDynamicSidebarIcons={() => updateSetting('dynamicSidebarIcons', !settings.dynamicSidebarIcons)}
             onNavigateSettings={() => navigate('/settings')}
             onGoBack={handleGoBack}
             onClose={() => setSidebarContextMenu(null)}
@@ -1136,7 +1172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              {isFluentIcons ? (
+              {useFluent3DForContent ? (
                 <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
               ) : (
                 <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1145,49 +1181,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 2. Articles */}
+          {/* 2. Update blogs */}
           <div className="shrink-0">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-articles' : 'sidebar-nav-articles'}
-              data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
+              data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
               onClick={() => handleNavClick('/news')}
-              title="Articles"
+              title="Update blogs"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
+                (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
-              {isFluentIcons ? (
+              {useFluent3DForContent ? (
                 <Fluent3DArticlesIcon className="w-5 h-5 shrink-0" />
               ) : (
                 <FluentArticlesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               )}
-              <span className="truncate text-[13.5px]">Articles</span>
-            </button>
-          </div>
-
-          {/* 3. Updates */}
-          <div className="shrink-0">
-            <button
-              type="button"
-              id={isMobile ? 'mobile-nav-updates' : 'sidebar-nav-updates'}
-              data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
-              onClick={() => handleNavClick('/updates')}
-              title="Updates"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
-                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-              }`}
-            >
-              {isFluentIcons ? (
-                <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
-              ) : (
-                <RefreshCw className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
-              )}
-              <span className="truncate text-[13.5px]">Updates</span>
+              <span className="truncate text-[13.5px]">Update blogs</span>
             </button>
           </div>
 
@@ -1214,7 +1227,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1283,7 +1296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1311,7 +1324,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentGalleryIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1336,7 +1349,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentDrawsIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1361,7 +1374,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DNotesIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentNotesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1386,7 +1399,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
@@ -1419,7 +1432,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentCraftmineIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1445,7 +1458,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForContent ? (
                   <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentPhotopeaIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1468,7 +1481,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Discord"
               className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
             >
-              {isFluentIcons ? (
+              {useFluent3DForContent ? (
                 <Fluent3DDiscordIcon className="w-5 h-5 shrink-0" />
               ) : (
                 <svg className="w-5 h-5 fill-current shrink-0 text-black dark:text-white" viewBox="0 0 24 24">
@@ -1482,7 +1495,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Section: WinUI 3, Sign In (placed directly above Settings) & Settings */}
         <div className="px-2.5 py-2 shrink-0 mt-auto space-y-1 relative signin-flyout-container">
-          {/* WinUI 3 component library */}
+          {/* WinUI 3 component library - icon thường */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-winui-3' : 'sidebar-nav-winui-3'}
@@ -1502,7 +1515,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold uppercase">UI</span>
           </button>
 
-          {/* Sign In item placed directly ABOVE Settings tab */}
+          {/* Sign In item placed directly ABOVE Settings tab - icon thường khi dynamic */}
           <div className="relative">
             <button
               type="button"
@@ -1516,7 +1529,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
-                {isFluentIcons ? (
+                {useFluent3DForSystem ? (
                   <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
                 ) : (
                   <FluentUserIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
@@ -1534,7 +1547,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </AnimatePresence>
           </div>
 
-          {/* Bottom Settings Tab Item */}
+          {/* Bottom Settings Tab Item - icon thường khi dynamic */}
           <button
             type="button"
             id={isMobile ? 'mobile-nav-settings' : 'sidebar-nav-settings'}
@@ -1553,7 +1566,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
               />
             )}
-            {isFluentIcons ? (
+            {useFluent3DForSystem ? (
               <Fluent3DSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon" />
             ) : (
               <FluentSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon text-black dark:text-white" />
@@ -1661,57 +1674,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 2. Articles Icon */}
+                {/* 2. Update blogs Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-articles"
-                  data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/')) ? 'true' : undefined}
+                  data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/news')}
-                  title="Articles"
+                  title="Update blogs"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/'))
+                    (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DArticlesIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentArticlesIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 3. Updates Icon */}
-                <button
-                  type="button"
-                  id="sidebar-collapsed-updates"
-                  data-nav-active={(currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
-                  onClick={() => handleNavClick('/updates')}
-                  title="Updates"
-                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    (currentRoute === '/updates' || currentRoute.startsWith('/updates'))
-                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                  }`}
-                >
-                  {isFluentIcons ? (
-                    <Fluent3DUpdatesIcon className="w-5 h-5 shrink-0" />
-                  ) : (
-                    <RefreshCw className="w-5 h-5 text-black dark:text-white" aria-hidden="true" />
-                  )}
-                </button>
-
                 {/* Divider: Apps */}
                 <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-                {/* 4. Watch Icon */}
+                {/* 3. Watch Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-watch"
@@ -1724,7 +1717,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
@@ -1744,14 +1737,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 5. Gallery Icon */}
+                {/* 4. Gallery Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-gallery"
@@ -1764,14 +1757,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DGalleryIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentGalleryIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 6. Draws Icon */}
+                {/* 5. Draws Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-draws"
@@ -1784,14 +1777,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 7. Notes Icon */}
+                {/* 6. Notes Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-notes"
@@ -1804,14 +1797,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DNotesIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentNotesIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 8. VLC Icon */}
+                {/* 7. VLC Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-vlc"
@@ -1824,7 +1817,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentVlcIcon white className="w-5 h-5 text-white" />
@@ -1834,7 +1827,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {/* Divider: LAC's project */}
                 <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-                {/* 9. Craftmine Icon */}
+                {/* 8. Craftmine Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-craftmine"
@@ -1847,14 +1840,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DCraftmineIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentCraftmineIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 10. Photopea Icon */}
+                {/* 9. Photopea Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-photopea"
@@ -1867,14 +1860,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DPhotopeaIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentPhotopeaIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 
-                {/* 11. Discord Icon */}
+                {/* 10. Discord Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-discord"
@@ -1882,7 +1875,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Discord"
                   className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
                 >
-                  {isFluentIcons ? (
+                  {useFluent3DForContent ? (
                     <Fluent3DDiscordIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <svg className="w-5 h-5 fill-current text-black dark:text-white" viewBox="0 0 24 24">
@@ -1907,7 +1900,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                     }`}
                   >
-                    {isFluentIcons ? (
+                    {useFluent3DForSystem ? (
                       <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
                     ) : (
                       <FluentUserIcon className="w-5 h-5 text-[#111827] dark:text-white" />
@@ -1938,7 +1931,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
                     />
                   )}
-                  {isFluentIcons ? (
+                  {useFluent3DForSystem ? (
                     <Fluent3DSettingsIcon className="w-5 h-5 shrink-0 settings-spin-icon" />
                   ) : (
                     <FluentSettingsIcon className="w-5 h-5 settings-spin-icon text-[#111827] dark:text-white" />

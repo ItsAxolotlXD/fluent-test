@@ -519,11 +519,13 @@ export default function App() {
         );
 
       case '/news':
+      case '/updates':
         return (
           <News
             navigate={navigate}
             searchQuery={currentTabSearchQuery}
             onSearchChange={handleTabSearchChange}
+            onOpenUpdate={() => setIsUpdating(true)}
           />
         );
 
@@ -609,9 +611,6 @@ export default function App() {
 
       case '/photopea':
         return <Photopea />;
-
-      case '/updates':
-        return <Updates navigate={navigate} onOpenUpdate={() => setIsUpdating(true)} />;
 
       default:
         return (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NEWS_DATA } from '../data/news';
 import { NewsCard } from '../components/NewsCard';
-import { TrendingUp, Lock } from 'lucide-react';
+import { TrendingUp, Lock, RefreshCw, CheckCircle2, Sparkles } from 'lucide-react';
 import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
@@ -10,9 +10,10 @@ interface NewsProps {
   navigate: (route: string) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  onOpenUpdate?: () => void;
 }
 
-export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChange }) => {
+export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChange, onOpenUpdate }) => {
   const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
@@ -34,13 +35,59 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
   return (
     <div className="space-y-6 sm:space-y-8 pb-16">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white tracking-tight">
-          News Feed
-        </h1>
-        <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-1.5 leading-relaxed max-w-4xl">
-          Comprehensive updates on broadcasting technology, television branding, motion graphics, and media culture in Vietnam.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white tracking-tight">
+            Update blogs
+          </h1>
+          <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-1.5 leading-relaxed max-w-4xl">
+            Release notes, system updates, changelogs, broadcasting technology, and media culture.
+          </p>
+        </div>
+
+        {onOpenUpdate && (
+          <button
+            type="button"
+            onClick={onOpenUpdate}
+            className="fluent-btn-primary px-4 h-8.5 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors shrink-0"
+          >
+            <RefreshCw className="w-3.5 h-3.5 stroke-[2]" />
+            <span>Check for updates</span>
+          </button>
+        )}
+      </div>
+
+      {/* Merged System Update Status Banner */}
+      <div className="p-4 sm:p-5 rounded-[12px] bg-white dark:bg-[#282c31] border border-black/10 dark:border-white/10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-semibold text-black dark:text-white">
+                Sparkle 26.11 (Build 261016)
+              </h2>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
+                Latest
+              </span>
+            </div>
+            <p className="text-xs text-black/70 dark:text-[#AAAAAA] mt-0.5">
+              Microsoft Fluent Design • Dynamic Sidebar Icons • Collapsible Folder Tree
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            const updateArt = NEWS_DATA.find((a) => a.id === 'news-sparkle-update-26-11');
+            if (updateArt) navigate(`/news/${updateArt.slug}`);
+          }}
+          className="px-3.5 h-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs font-medium text-black dark:text-white transition-colors cursor-pointer shrink-0"
+        >
+          View changelog
+        </button>
       </div>
 
       {/* Featured Compact Article Header Card */}

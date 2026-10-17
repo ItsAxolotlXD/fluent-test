@@ -2,6 +2,49 @@ import { NewsArticle } from '../types';
 
 export const NEWS_DATA: NewsArticle[] = [
   {
+    id: 'news-sparkle-update-26-11',
+    slug: 'sparkle-phat-hanh-ban-cap-nhat-26-11-fluent-design',
+    title: 'Sparkle phát hành bản cập nhật 26.11 (Build 261016) - Trải nghiệm Fluent Design đồng bộ & Dynamic Icons',
+    subtitle: 'Nâng cấp toàn diện giao diện hội thoại Fluent, tối ưu hóa điều hướng tuần tự và ra mắt tính năng Dynamic Sidebar Icons',
+    coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=85',
+    category: 'Cập nhật hệ thống',
+    publishedAt: '16 Tháng 10, 2026',
+    readingTime: '5 phút đọc',
+    author: {
+      name: 'Sparkle Engineering Team',
+      role: 'System Updates & Changelog',
+      avatar: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/spark-Kj8YQWc8TjouwICxNDbMK3n2GRfvAy.png'
+    },
+    excerpt: 'Bản phát hành Sparkle v26.11 chính thức ra mắt mang đến tính năng Dynamic Sidebar Icons, sơ đồ cây thư mục trong Gallery, trải nghiệm thanh tìm kiếm toàn màn hình trên thiết bị di động, và hợp nhất các bản tin cập nhật vào Update blogs.',
+    summary: {
+      lead: 'Sparkle v26.11 tập trung hoàn thiện trải nghiệm thị giác Microsoft Fluent Design, bổ sung sơ đồ cây thư mục linh hoạt và tùy chỉnh linh hoạt biểu tượng thanh bên.',
+      points: [
+        'Dynamic Sidebar Icons: Kết hợp hài hòa giữa icon thông thường tinh gọn cho Sign In, Settings, WinUI 3 và các icon Fluent 3D đa sắc màu cho Home, Watch, Gallery, Notes, Draws...',
+        'Hợp nhất Update blogs: Đưa toàn bộ lịch sử phát hành, changelog và thông tin cập nhật phiên bản vào trung tâm Update blogs duy nhất.',
+        'Sơ đồ cây thư mục Gallery: Hỗ trợ mở rộng / thu gọn (collapse/expand) các folder, quản lý tệp tin và ảnh phương tiện một cách trực quan.',
+        'Thanh tìm kiếm nổi bật: Viền outline sắc nét 2px-3px tương phản cao, lớp hiển thị tìm kiếm luôn nổi trên cùng và kéo dài toàn chiều rộng thanh top bar trên mobile.',
+        'Tối ưu hiệu năng: Tăng tốc tải trang, loại bỏ giật khung hình và bảo vệ bộ nhớ IndexedDB.'
+      ],
+      conclusion: 'Phiên bản 26.11 mang đến sự cân bằng hoàn hảo giữa tính thẩm mỹ hiện đại của Windows 11 Fluent Design và sự tiện dụng đỉnh cao trên mọi thiết bị.'
+    },
+    featured: true,
+    tags: ['Updates', 'Changelog', 'Fluent Design', 'Dynamic Icons', 'Gallery Tree', 'Update Blogs', 'Version 26.11'],
+    content: [
+      'Chúng tôi rất vui mừng giới thiệu bản phát hành Sparkle phiên bản 26.11 (Build 261016), một bước tiến quan trọng trong việc hoàn thiện ngôn ngữ thiết kế Fluent Design và nâng cao năng suất của người dùng trên toàn bộ nền tảng.',
+      '1. TÍNH NĂNG MỚI: DYNAMIC SIDEBAR ICONS',
+      'Lắng nghe đóng góp từ cộng đồng người dùng, Sparkle giới thiệu tùy chọn "Dynamic sidebar icons" ngay trong menu chuột phải (context menu) của thanh bên. Khi kích hoạt chế độ này, hệ thống sẽ kết hợp thông minh giữa hai phong cách biểu tượng:',
+      '• Biểu tượng tiêu chuẩn tinh gọn: Dành cho các chức năng quản trị và hệ thống như Sign in, Settings và WinUI 3 Gallery.',
+      '• Biểu tượng Fluent 3D đa sắc màu: Dành cho các không gian nội dung và công cụ sáng tạo phong phú như Home, Update blogs, Watch, Gallery, Notes, Draws, VLC, Craftmine, Photopea và Discord.',
+      '2. HỢP NHẤT KHÔNG GIAN BÀI VIẾT & UPDATE BLOGS',
+      'Để đơn giản hóa trải nghiệm điều hướng, tab Updates độc lập đã được hợp nhất hoàn toàn vào Update blogs. Người dùng có thể theo dõi song song các bài phân tích chuyên sâu về truyền hình, nhận diện thương hiệu cũng như toàn bộ thông tin phát hành và nhật ký cập nhật mới nhất tại một nơi duy nhất.',
+      '3. SƠ ĐỒ CÂY THƯ MỤC TRONG GALLERY (COLLAPSIBLE FOLDER TREE)',
+      'Không gian lưu trữ kỷ niệm và tài liệu Gallery nay được trang bị sơ đồ cây thư mục (Folder Tree) chuyên nghiệp. Bạn có thể mở rộng (expand) hoặc thu gọn (collapse) các nhánh thư mục, chuyển đổi nhanh giữa các album ảnh, video và tệp tin văn phòng mà không làm mất dấu ngữ cảnh hiện tại.',
+      '4. THANH TÌM KIẾM TOÀN NĂNG & GIAO DIỆN DI ĐỘNG TỐI ƯU',
+      'Khung tìm kiếm được tăng cường đường viền outline rõ ràng, độ dày 2px-3px với màu xanh accent nổi bật khi chọn. Đặc biệt, giao diện kết quả tìm kiếm được thiết lập luôn nằm trên cùng (always on top) với độ ưu tiên tuyệt đối, và trên màn hình di động sẽ tự động trải rộng theo toàn bộ chiều ngang thanh top bar để tối ưu diện tích hiển thị.',
+      'Cảm ơn bạn đã luôn đồng hành và xây dựng Sparkle ngày càng hoàn thiện hơn!'
+    ]
+  },
+  {
     id: 'news-vtv-brand-evolution-2026',
     slug: 'nghe-thuat-cua-su-tien-hoa-tinh-te-vtv-xiaomi',
     title: 'Nghệ thuật của sự "tiến hóa tinh tế" - Từ câu chuyện của Xiaomi đến bước chuyển mình mạnh mẽ của VTV',
