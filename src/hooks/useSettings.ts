@@ -48,6 +48,7 @@ export interface SystemSettings {
   dynamicSidebarIcons: boolean;
   pageAnimation: 'slideUp' | 'zoomIn';
   pageLoading: boolean;
+  pageLoadingVersion?: number;
   loadPagesSequentially: boolean;
   customKeybinds: CustomKeybinds;
 }
@@ -100,7 +101,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   fluentIcons: false,
   dynamicSidebarIcons: true,
   pageAnimation: 'slideUp',
-  pageLoading: true,
+  pageLoading: false,
+  pageLoadingVersion: 2,
   loadPagesSequentially: false,
   customKeybinds: DEFAULT_KEYBINDS,
 };
@@ -192,7 +194,10 @@ export const getStoredSettings = (): SystemSettings => {
         fluentIcons: typeof parsed.fluentIcons === 'boolean' ? parsed.fluentIcons : DEFAULT_SETTINGS.fluentIcons,
         dynamicSidebarIcons: typeof parsed.dynamicSidebarIcons === 'boolean' ? parsed.dynamicSidebarIcons : true,
         pageAnimation: parsed.pageAnimation === 'zoomIn' ? 'zoomIn' : 'slideUp',
-        pageLoading: typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : true,
+        pageLoading: parsed.pageLoadingVersion === 2
+          ? (typeof parsed.pageLoading === 'boolean' ? parsed.pageLoading : false)
+          : false,
+        pageLoadingVersion: 2,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
         hoverToExpand: typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : DEFAULT_SETTINGS.hoverToExpand,
         fontScale,
@@ -391,7 +396,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
   if (key === 'theme' && value === 'light') {
     extraUpdates.spatialGlassOpacity = 43;
   }
-  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3 };
+  settingsStore = { ...settingsStore, [key]: value, ...extraUpdates, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));
@@ -411,7 +416,7 @@ export const updateGlobalSetting = <K extends keyof SystemSettings>(key: K, valu
 };
 
 export const updateMultipleSettings = (newSettings: Partial<SystemSettings>) => {
-  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3 };
+  settingsStore = { ...settingsStore, ...newSettings, fontScaleVersion: 2, spatialGlassVersion: 3, nativeKeyboardVersion: 3, pageLoadingVersion: 2 };
   draftSettingsStore = { ...settingsStore };
   try {
     localStorage.setItem('waves_system_settings', JSON.stringify(settingsStore));

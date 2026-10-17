@@ -629,6 +629,7 @@ export default function App() {
       case '/draws':
         return <Draws navigate={navigate} />;
 
+      case '/screenbox':
       case '/vlc':
         return <VLC navigate={navigate} />;
 
@@ -754,7 +755,7 @@ export default function App() {
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
         <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
-          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/')
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/')
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${
@@ -762,45 +763,34 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          {/* Dynamic Page Content: Slide up individual elements of the loaded tab, not the entire page as a block */}
-          {settings.pageAnimation === 'zoomIn' && !settings.reduceAllMotion && settings.animatePageTransitions ? (
-            <AnimatePresence mode="wait" initial={false}>
-              {isTabLoading ? (
-                <motion.div
-                  key={`tab-loading-${currentRoute}`}
-                  initial={{ opacity: 0, scale: 0.94 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.06 }}
-                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]"
-                >
-                  <TabLoadingScreen />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
-                  initial={{ opacity: 0, scale: 0.94 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.06 }}
-                  transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
-                  className="tab-element-slide-up-container page-anim-zoom w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden origin-center"
-                >
-                  {renderContent()}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          ) : isTabLoading ? (
-            <div key={`tab-loading-${currentRoute}`} className="tab-loading-slide-up w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
-              <TabLoadingScreen />
-            </div>
-          ) : (
-            <div
-              key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
-              className="tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden"
-            >
-              {renderContent()}
-            </div>
-          )}
+          {/* Dynamic Page Content with 0.3s fade out before switching tabs */}
+          <AnimatePresence mode="wait" initial={false}>
+            {isTabLoading ? (
+              <motion.div
+                key={`tab-loading-${currentRoute}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: settings.reduceAllMotion || !settings.animatePageTransitions ? 0 : 0.3, ease: 'easeOut' }}
+                className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]"
+              >
+                <TabLoadingScreen />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: settings.reduceAllMotion || !settings.animatePageTransitions ? 0 : 0.3, ease: 'easeOut' }}
+                className={`tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden ${
+                  settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
+                }`}
+              >
+                {renderContent()}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
 
       </div>

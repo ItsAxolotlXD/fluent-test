@@ -1332,7 +1332,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   }}
                   className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center gap-2 rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
                 >
-                  <FluentVlcIcon className="w-3.5 h-3.5" /> About VLC media player
+                  <FluentVlcIcon className="w-3.5 h-3.5" /> About Screenbox
                 </button>
               </div>
             )}
@@ -1439,7 +1439,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 shadow-xl">
                 <FluentVlcIcon className="w-16 h-16" />
               </div>
-              <h2 className="text-lg font-bold text-white mb-1">VLC Media Player</h2>
+              <h2 className="text-lg font-bold text-white mb-1">Screenbox</h2>
               <p className="text-xs text-neutral-400 max-w-xs mb-6">
                 Plays everything — Files, Discs, Webcams, Devices and Streams
               </p>
@@ -2563,7 +2563,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FluentVlcIcon className="w-4 h-4" />
-                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About VLC media player</h3>
+                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About Screenbox</h3>
                 </div>
                 <button
                   type="button"
@@ -2578,10 +2578,10 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                 <div className="w-20 h-20 mx-auto rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shadow-lg shadow-orange-500/10">
                   <FluentVlcIcon className="w-14 h-14" />
                 </div>
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">VLC media player</h3>
-                <p className="text-xs text-orange-600 dark:text-orange-400 font-mono font-semibold">Sparkle Edition 3.0.21 Vetinari</p>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Screenbox</h3>
+                <p className="text-xs text-orange-600 dark:text-orange-400 font-mono font-semibold">Sparkle Edition</p>
                 <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm mx-auto">
-                  VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
+                  Screenbox is a modern multimedia player and framework that plays most multimedia files, audio, video, and various streaming protocols.
                 </p>
                 <div className="p-2.5 rounded-[6px] bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 text-[11px] text-neutral-500 dark:text-neutral-400">
                   Copyright © 1996-2026 VideoLAN and Sparkle Project

@@ -1601,11 +1601,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               id={isMobile ? 'mobile-nav-vlc' : 'sidebar-nav-vlc'}
-              data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
+              data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox')) ? 'true' : undefined}
               onClick={() => handleNavClick('/vlc')}
-              title="VLC Media Player"
+              title="Screenbox"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
+                (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
@@ -1616,7 +1616,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 ) : (
                   <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
                 )}
-                <span className="truncate text-[13.5px]">VLC</span>
+                <span className="truncate text-[13.5px]">Screenbox</span>
               </div>
             </button>
           </div>
@@ -2007,15 +2007,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 7. VLC Icon */}
+                {/* 7. Screenbox Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-vlc"
-                  data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc')) ? 'true' : undefined}
+                  data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/vlc')}
-                  title="VLC Media Player"
+                  title="Screenbox"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))
+                    (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
