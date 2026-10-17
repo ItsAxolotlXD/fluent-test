@@ -28,9 +28,11 @@ import {
   ZoomOut, 
   Grid,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Plus
 } from 'lucide-react';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
+import { CanvasContextMenu, type CanvasContextAction } from '../components/CanvasContextMenu';
 
 interface DrawsProps {
   navigate: (route: string) => void;
@@ -97,6 +99,8 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
     { id: 'moodboard', title: 'Moodboard', updated: 'Oct 12, 2026', color: '#ec4899' },
   ]);
   const [toastMessage, setToastMessage] = useState<{ text: string; actionLabel?: string; onAction?: () => void } | null>(null);
+  const [canvasContextMenu, setCanvasContextMenu] = useState<{ x: number; y: number; canvasId: string } | null>(null);
+  const [canvasTilt, setCanvasTilt] = useState<Record<string, { x: number; y: number }>>({});
 
   // Undo / Redo history
   const undoStackRef = useRef<ImageData[]>([]);
@@ -663,6 +667,31 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
     }
   };
 
+  const handleCanvasContextAction = async (action: CanvasContextAction) => {
+    if (!canvasContextMenu) return;
+    const selectedCanvas = canvasList.find((canvas) => canvas.id === canvasContextMenu.canvasId);
+    setCanvasContextMenu(null);
+    if (!selectedCanvas) return;
+
+    if (action === 'rename') {
+      const title = window.prompt('Rename canvas', selectedCanvas.title)?.trim();
+      if (title) setCanvasList((items) => items.map((canvas) => canvas.id === selectedCanvas.id ? { ...canvas, title } : canvas));
+      return;
+    }
+    if (action === 'delete') {
+      if (!window.confirm(`Delete “${selectedCanvas.title}”?`)) return;
+      setCanvasList((items) => items.filter((canvas) => canvas.id !== selectedCanvas.id));
+      showToast('Canvas deleted');
+      return;
+    }
+    setSelectedCanvasId(selectedCanvas.id);
+    if (action === 'export') {
+      handleSaveToDevice('png');
+    } else {
+      await handleSaveToGallery();
+    }
+  };
+
   if (!selectedCanvasId) {
     return (
       <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#202328] text-[#111827] dark:text-white p-6 sm:p-10">
@@ -673,16 +702,31 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
             </div>
-            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity"><span aria-hidden="true" className="mr-1 text-base">+</span>Create canvas</button>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2"><Plus aria-hidden="true" className="w-5 h-5" strokeWidth={2.5} />Create canvas</button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {canvasList.map((canvas) => (
-              <button key={canvas.id} type="button" onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }} className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
-                <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>
-              </button>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 [perspective:900px]">
+            {canvasList.map((canvas) => {
+              const tilt = canvasTilt[canvas.id] ?? { x: 0, y: 0 };
+              return (
+                <button
+                  key={canvas.id}
+                  type="button"
+                  onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }}
+                  onContextMenu={(event) => { event.preventDefault(); setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id }); }}
+                  onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -8, y: ((event.clientX - rect.left) / rect.width - 0.5) * 10 } })); }}
+                  onMouseLeave={() => setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: 0, y: 0 } }))}
+                  style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`, transition: 'transform 180ms ease-out, box-shadow 180ms ease-out' }}
+                  className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
+                  <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>
+                </button>
+              );
+            })}
           </div>
+          <AnimatePresence>
+            {canvasContextMenu && <CanvasContextMenu x={canvasContextMenu.x} y={canvasContextMenu.y} onAction={handleCanvasContextAction} onClose={() => setCanvasContextMenu(null)} />}
+          </AnimatePresence>
         </div>
       </div>
     );
