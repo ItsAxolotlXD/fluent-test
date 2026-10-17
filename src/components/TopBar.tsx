@@ -339,7 +339,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
       { id: 'page-photopea', title: 'Photopea', subtitle: 'Switch page', keywords: 'photopea photoshop chỉnh sửa ảnh biên tập ảnh psd photo editor web app', type: 'page', onSelect: () => navigate('/photopea') },
       { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
-      { id: 'page-draws', title: 'Draws', subtitle: 'Switch page', keywords: 'draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
+      { id: 'page-draws', title: 'Ink Canvas', subtitle: 'Switch page', keywords: 'ink canvas draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
       { id: 'page-vlc', title: 'VLC Media Player', subtitle: 'Switch page', keywords: 'vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
       { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
@@ -407,7 +407,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         keywords: 'xóa lịch sử tìm kiếm clear search history recent searches',
         type: 'setting-action',
         customAction: {
-          label: 'Xóa ngay',
+          label: 'X��a ngay',
           onAction: () => {
             clearAllHistory();
             setIsSearchFlyoutOpen(false);
@@ -1445,7 +1445,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className={`w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 ${
-      isSearchFlyoutOpen || isSearchFocused ? 'z-[2147483647]' : 'z-40'
+      isSearchFlyoutOpen || isSearchFocused ? 'z-[2147483647]' : '!z-[200]'
     } select-none`}>
       {/* Sticky top-left tab corner rounded mask: keeps top-left of tab page rounded (bo cong 10px) when scrolling, hidden on mobile UI */}
       <div
@@ -1598,7 +1598,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
-                  : 'bg-black/5 dark:bg-[#282c31]'
+                  : 'bg-black/[0.07] dark:bg-[#30343a]'
               }`}
             >
               <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none drop-shadow-xs" />
@@ -1633,7 +1633,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
                   if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
                   if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
-                  if (currentRoute.startsWith('/draws')) return 'Search Draws';
+                  if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
                   if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
                   if (currentRoute.startsWith('/vlc')) return 'Search VLC';
                   if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';

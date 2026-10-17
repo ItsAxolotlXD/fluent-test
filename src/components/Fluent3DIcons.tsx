@@ -431,23 +431,12 @@ export const Fluent3DPhotopeaIcon: React.FC<Fluent3DIconProps> = ({ className = 
 
 // 11. Discord - 3D Microsoft Fluent Discord Clyde
 export const Fluent3DDiscordIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
-  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={`fluent-3d-icon ${className} shrink-0`} style={style}>
-    <defs>
-      <linearGradient id="fl3d_dc_bg" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#6366F1" />
-        <stop offset="50%" stopColor="#4F46E5" />
-        <stop offset="100%" stopColor="#3730A3" />
-      </linearGradient>
-      <filter id="fl3d_dc_shadow" x="-10%" y="-10%" width="125%" height="125%">
-        <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000" floodOpacity="0.28" />
-      </filter>
-    </defs>
-    <rect x="4" y="4" width="24" height="24" rx="6.5" fill="url(#fl3d_dc_bg)" filter="url(#fl3d_dc_shadow)" />
-    <path d="M7 5H25C26.5 5 27 6 27 7V10L5 10V7C5 6 5.5 5 7 5Z" fill="#818CF8" opacity="0.4" />
-    <g filter="url(#fl3d_dc_shadow)">
-      <path d="M23.3 11.3C22 10.7 20.6 10.3 19.1 10.1C18.9 10.4 18.7 10.9 18.6 11.2C17 11 15.3 11 13.7 11.2C13.5 10.9 13.3 10.4 13.1 10.1C11.6 10.3 10.2 10.7 8.9 11.3C6.3 15.1 5.6 18.8 6 22.4C7.8 23.7 9.4 24.5 11 25.1C11.4 24.5 11.8 23.9 12.1 23.3C11.5 23.1 10.9 22.8 10.4 22.4C10.5 22.3 10.7 22.2 10.8 22C14.1 23.6 17.9 23.6 21.2 22C21.3 22.2 21.5 22.3 21.6 22.4C21.1 22.8 20.5 23.1 19.9 23.3C20.2 23.9 20.6 24.5 21 25.1C22.6 24.5 24.2 23.7 26 22.4C26.5 18.1 25.3 14.5 23.3 11.3ZM12.7 19.2C11.7 19.2 10.9 18.3 10.9 17.2C10.9 16.1 11.7 15.2 12.7 15.2C13.7 15.2 14.5 16.1 14.5 17.2C14.5 18.3 13.7 19.2 12.7 19.2ZM19.3 19.2C18.3 19.2 17.5 18.3 17.5 17.2C17.5 16.1 18.3 15.2 19.3 15.2C20.3 15.2 21.1 16.1 21.1 17.2C21.1 18.3 20.3 19.2 19.3 19.2Z" fill="#FFFFFF" />
-    </g>
-  </svg>
+  <img
+    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-aIiiyqCXj2M4Gy2HPiavRZwWekqrS1.png"
+    alt="Discord"
+    className={`fluent-3d-icon ${className} shrink-0 object-contain`}
+    style={style}
+  />
 );
 
 // 12. Sign In / User - 3D Microsoft Fluent Profile Avatar WITH GRAY BACKGROUND (Background is gray)

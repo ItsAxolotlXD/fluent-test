@@ -26,7 +26,9 @@ import {
   Sparkles, 
   ZoomIn, 
   ZoomOut, 
-  Grid
+  Grid,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 
@@ -81,6 +83,19 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const [isTypingText, setIsTypingText] = useState<{ x: number; y: number } | null>(null);
   const [showGrid, setShowGrid] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [canvasSpaceHeight, setCanvasSpaceHeight] = useState(2200);
+  const [canvasSpaceWidth, setCanvasSpaceWidth] = useState(1200);
+  const [showExpansionActions, setShowExpansionActions] = useState(true);
+  const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(() => {
+    const id = window.location.pathname.split('/').pop();
+    return id && id !== 'draws' ? id : null;
+  });
+  const [canvasList, setCanvasList] = useState(() => [
+    { id: 'new-canvas', title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' },
+    { id: 'brainstorm', title: 'Brainstorming board', updated: 'Yesterday', color: '#f59e0b' },
+    { id: 'moodboard', title: 'Moodboard', updated: 'Oct 12, 2026', color: '#ec4899' },
+  ]);
   const [toastMessage, setToastMessage] = useState<{ text: string; actionLabel?: string; onAction?: () => void } | null>(null);
 
   // Undo / Redo history
@@ -88,6 +103,22 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const redoStackRef = useRef<ImageData[]>([]);
   const isDrawingRef = useRef<boolean>(false);
   const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      await document.exitFullscreen?.();
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    return () => document.removeEventListener('fullscreenchange', syncFullscreen);
+  }, []);
 
   const showToast = (text: string, actionLabel?: string, onAction?: () => void) => {
     setToastMessage({ text, actionLabel, onAction });
@@ -602,7 +633,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
     const dateLabel = `${monthNames[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-    const id = `draws-${Date.now()}`;
+    const id = `ink-canvas-${Date.now()}`;
 
     const newMedia: GalleryMediaItem = {
       id,
@@ -615,11 +646,11 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       dateAdded: now.toISOString(),
       dateLabel,
       year: now.getFullYear(),
-      dimensions: { width: CANVAS_WIDTH, height: CANVAS_HEIGHT },
-      aspectRatio: CANVAS_WIDTH / CANVAS_HEIGHT,
+      dimensions: { width: CANVAS_WIDTH, height: canvasSpaceHeight },
+      aspectRatio: CANVAS_WIDTH / canvasSpaceHeight,
       isFavorite: false,
-      tags: ['Draws', 'Artwork', 'Paint'],
-      description: 'Created with Sparkle Draws',
+      tags: ['Ink Canvas', 'Artwork', 'Paint'],
+      description: 'Created with Sparkle Ink Canvas',
       source: 'draws',
     };
 
@@ -631,6 +662,31 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       showToast('Failed to save to Gallery');
     }
   };
+
+  if (!selectedCanvasId) {
+    return (
+      <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#202328] text-[#111827] dark:text-white p-6 sm:p-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">Ink Canvas</p>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
+              <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
+            </div>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity"><span aria-hidden="true" className="mr-1 text-base">+</span>Create canvas</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {canvasList.map((canvas) => (
+              <button key={canvas.id} type="button" onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }} className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
+                <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
@@ -658,7 +714,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
         )}
       </AnimatePresence>
 
-      {/* Toolbar Ribbon (No header title "Draws", unified app buttons and default tab background) */}
+      {/* Ink Canvas toolbar */}
       <header className="sticky top-0 z-40 bg-transparent border-b border-black/10 dark:border-white/10 px-3 sm:px-5 py-2 flex flex-col gap-2 shrink-0">
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           {/* Left: Undo, Redo, Clear Canvas */}
@@ -695,8 +751,19 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             </button>
           </div>
 
-          {/* Right: Save Dropdown adhering to standard app buttons */}
-          <div className="relative">
+          {/* Right: Canvas actions */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit fullscreen' : 'Full screen canvas'}
+              className="h-8 px-2.5 rounded-[6px] border border-black/10 dark:border-white/15 bg-white/70 dark:bg-white/5 hover:bg-black/5 dark:hover:bg-white/10 text-[#4b5563] dark:text-neutral-200 flex items-center gap-1.5 text-xs cursor-pointer transition-colors"
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              <span className="hidden sm:inline">{isFullscreen ? 'Exit' : 'Full screen'}</span>
+            </button>
+            {/* Save Dropdown adhering to standard app buttons */}
+            <div className="relative">
             <div className="flex items-center">
               <button
                 type="button"
@@ -766,6 +833,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
           </div>
         </div>
 
@@ -963,8 +1031,13 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       {/* Main Drawing Canvas Area with pan/zoom container and default page background */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto bg-transparent flex items-center justify-center p-2 sm:p-6 relative select-none"
+        onScroll={(event) => {
+          const target = event.currentTarget;
+          setShowExpansionActions(target.scrollTop + target.clientHeight > target.scrollHeight - 500);
+        }}
+        className="flex-1 min-h-[100vh] overflow-auto bg-[#f3f4f6] dark:bg-[#202328] flex items-start justify-start p-0 relative select-none"
         style={{
+          minHeight: isFullscreen ? '100vh' : 'calc(100vh - 86px)',
           backgroundImage: showGrid 
             ? 'radial-gradient(currentColor 1px, transparent 1px)' 
             : 'none',
@@ -975,6 +1048,9 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
         <div 
           className="relative shadow-xl rounded-[6px] overflow-hidden bg-white max-w-full border border-black/10 dark:border-white/10"
           style={{
+            minHeight: canvasSpaceHeight,
+            width: canvasSpaceWidth,
+            maxWidth: 'none',
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'center center',
             transition: 'transform 0.1s ease-out',
@@ -1032,6 +1108,11 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
             </div>
           )}
         </div>
+        {showExpansionActions && (
+          <div className="flex flex-wrap justify-center gap-3 py-8 z-20 bg-[#f3f4f6] dark:bg-[#202328]">
+            <button type="button" onClick={() => setCanvasSpaceHeight((height) => height + 1200)} className="rounded-lg border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#30343b]/95 px-4 py-2.5 text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-[#3a4049] transition-colors">Create more space down</button>
+          </div>
+        )}
       </div>
 
       {/* Bottom Status & View Controls Bar */}

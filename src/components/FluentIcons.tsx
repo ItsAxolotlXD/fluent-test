@@ -4,6 +4,12 @@ export const SEARCH_SPARKLE_ICON_URL = '/icons/search_sparkle.png';
 export const SEARCH_SPARKLE_REMOTE_URL =
   'https://static.wikia.nocookie.net/ep-deo/images/6/6c/Search_sparkle.png/revision/latest/scale-to-width-down/1000?cb=20261015133722';
 
+export const INK_CANVAS_ICON_URL = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-fEvkjm5oELvCI8unT4JL0LhTiPYN3Q.png';
+
+export const FluentInkCanvasIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <img src={INK_CANVAS_ICON_URL} alt="Ink Canvas" className={className} style={style} />
+);
+
 export const FLUENT_ICON_URLS = {
   home: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/main/assets/Home/SVG/ic_fluent_home_48_regular.svg',
   watch: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Movies%20and%20TV/SVG/ic_fluent_movies_and_tv_24_regular.svg',

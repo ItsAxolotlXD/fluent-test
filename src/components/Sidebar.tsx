@@ -45,7 +45,7 @@ import {
   FluentCraftmineIcon,
   FluentUpdatesIcon,
   FluentGalleryIcon,
-  FluentDrawsIcon,
+  FluentInkCanvasIcon,
   FluentVlcIcon,
   FluentPhotopeaIcon
 } from './FluentIcons';
@@ -634,7 +634,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Bộ sưu tập</span>
         </button>
 
-        {/* Draws */}
+        {/* Ink Canvas */}
         <button
           type="button"
           id="tool-draws"
@@ -645,8 +645,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <FluentDrawsIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
-            <span>Draws</span>
+            <FluentInkCanvasIcon className="w-4 h-4 shrink-0" />
+            <span>Ink Canvas</span>
           </div>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Vẽ Paint</span>
         </button>
@@ -1061,7 +1061,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             y: 0,
             transition: { duration: 0.38, delay: 0.20, ease: [0.16, 1, 0.3, 1] },
           }}
-          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Draws..."
+          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Ink Canvas..."
           onClick={() => {
             onToggleDynamicSidebarIcons();
             onClose();
@@ -1545,14 +1545,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </AnimatePresence>
           </div>
 
-          {/* 6. Draws */}
+          {/* 6. Ink Canvas */}
           <div className="w-full">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-draws' : 'sidebar-nav-draws'}
               data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
               onClick={() => handleNavClick('/draws')}
-              title="Draws"
+              title="Ink Canvas"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1561,11 +1561,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-3.5 truncate">
                 {useFluent3DForContent ? (
-                  <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
+                  <FluentInkCanvasIcon className="w-5 h-5 shrink-0" />
                 ) : (
-                  <FluentDrawsIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                  <FluentInkCanvasIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 )}
-                <span className="truncate text-[13.5px]">Draws</span>
+                <span className="truncate text-[13.5px]">Ink Canvas</span>
               </div>
             </button>
           </div>
@@ -1805,7 +1805,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ? settings.sidebarPosition === 'right'
                 ? '!z-50 shadow-[-8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[-8px_0_32px_rgba(0,0,0,0.6)]'
                 : '!z-50 shadow-[8px_0_32px_rgba(0,0,0,0.18)] dark:shadow-[8px_0_32px_rgba(0,0,0,0.6)]'
-              : 'z-40 shadow-none'
+              : '!z-[200] shadow-none'
           }`}
           style={{
             backgroundColor: settings.theme === 'light' ? '#f3f3f3' : '#1b1f24',
@@ -1966,13 +1966,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 5. Draws Icon */}
+                {/* 5. Ink Canvas Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-draws"
                   data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/draws')}
-                  title="Draws"
+                  title="Ink Canvas"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -1980,9 +1980,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   {useFluent3DForContent ? (
-                    <Fluent3DDrawsIcon className="w-5 h-5 shrink-0" />
+                    <FluentInkCanvasIcon className="w-5 h-5 shrink-0" />
                   ) : (
-                    <FluentDrawsIcon className="w-5 h-5 text-black dark:text-white" />
+                    <FluentInkCanvasIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 

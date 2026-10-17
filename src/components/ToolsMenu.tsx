@@ -18,7 +18,7 @@ import {
   Wrench,
   FileText
 } from 'lucide-react';
-import { FluentNotesIcon, FluentSearchIcon, FluentGalleryIcon, FluentDrawsIcon, FluentVlcIcon, FluentPhotopeaIcon } from './FluentIcons';
+import { FluentNotesIcon, FluentSearchIcon, FluentGalleryIcon, FluentInkCanvasIcon, FluentVlcIcon, FluentPhotopeaIcon } from './FluentIcons';
 import { Channel, NewsArticle } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -696,8 +696,8 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                 {...revealProps}
               >
                 <div className="flex items-center gap-2.5 truncate">
-                  <FluentDrawsIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
-                  <span className="truncate">Draws</span>
+                  <FluentInkCanvasIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Ink Canvas</span>
                 </div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Vẽ Paint</span>
               </button>
