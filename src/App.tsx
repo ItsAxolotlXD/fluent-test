@@ -530,7 +530,7 @@ export default function App() {
         );
 
       case '/watch-preview':
-        return <WatchPreview />;
+        return <WatchPreview enabled={settings.newWatchTab} />;
 
       case '/test':
         return (
