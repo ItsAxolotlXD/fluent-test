@@ -621,7 +621,10 @@ html.light-mode #waves-mobile-sidebar button svg * {
 html.light-mode .fluent-3d-icon,
 html.light-mode .fluent-3d-icon svg,
 html.light-mode .fluent-3d-icon svg * {
+  color: revert !important;
+  fill: revert !important;
   filter: none !important;
+  stroke: revert !important;
 }
 
 html.light-mode #settings-search-box,
