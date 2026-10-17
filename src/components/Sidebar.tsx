@@ -54,6 +54,7 @@ import {
   Fluent3DArticlesIcon,
   Fluent3DUpdatesIcon,
   Fluent3DWatchIcon,
+  Fluent3DWatchPreviewIcon,
   Fluent3DGalleryIcon,
   Fluent3DDrawsIcon,
   Fluent3DNotesIcon,
@@ -1330,7 +1331,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
             >
               {useFluent3DForContent ? (
-                <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
               ) : (
                 <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               )}
@@ -1940,7 +1941,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   {useFluent3DForContent ? (
-                    <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                    <Fluent3DWatchPreviewIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
