@@ -281,7 +281,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   // Close flyout on click outside or Escape
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
         setIsSearchFlyoutOpen(false);
         setShowAllResults(false);
@@ -294,9 +294,11 @@ export const TopBar: React.FC<TopBarProps> = ({
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
@@ -329,6 +331,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       // Pages (Switch page)
       { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
       { id: 'page-watch', title: 'Watch', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-watch-preview', title: 'Watch (Preview)', subtitle: 'Switch page', keywords: 'watch preview coming soon project orbit vplay', type: 'page', onSelect: () => navigate('/watch-preview') },
       { id: 'page-news', title: 'Articles', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles', type: 'page', onSelect: () => navigate('/news') },
       { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
       { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
@@ -1441,7 +1444,9 @@ export const TopBar: React.FC<TopBarProps> = ({
   const isWebSearch = Boolean(searchQuery.trim() && searchResults.length > 0 && searchResults[0].type === 'web-search');
 
   return (
-    <header className="w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 z-30 select-none">
+    <header className={`w-full h-14 relative bg-[#f3f3f3] dark:bg-[#1b1f24] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-3 sticky top-0 ${
+      isSearchFlyoutOpen || isSearchFocused ? 'z-[99999]' : 'z-40'
+    } select-none`}>
       {/* Sticky top-left tab corner rounded mask: keeps top-left of tab page rounded (bo cong 10px) when scrolling, hidden on mobile UI */}
       <div
         aria-hidden="true"
@@ -1519,6 +1524,26 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </button>
 
+            {/* Watch (Preview) */}
+            <button
+              id="btn-topbar-nav-watch-preview"
+              type="button"
+              onClick={() => navigate('/watch-preview')}
+              className={`group relative flex items-center gap-2 px-3 h-8.5 rounded-[4px] text-xs sm:text-[13px] font-normal transition-colors cursor-default whitespace-nowrap outline-none select-none ${
+                currentRoute === '/watch-preview'
+                  ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
+                  : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
+              }`}
+              title="Watch (Preview)"
+            >
+              <FluentLiveTvIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
+              <span>Watch (Preview)</span>
+
+              {currentRoute === '/watch-preview' && (
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
+              )}
+            </button>
+
             {/* Articles */}
             <button
               id="btn-topbar-nav-news"
@@ -1545,16 +1570,18 @@ export const TopBar: React.FC<TopBarProps> = ({
       {/* 2. Center Search Box with Flyout matching Microsoft Fluent Design and reference image */}
       <div 
         ref={searchContainerRef}
-        className="flex-1 flex items-center justify-center min-w-0 px-2 sm:px-4 z-40 md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]"
+        className={`flex-1 flex items-center justify-center min-w-0 px-1 sm:px-4 ${
+          isSearchFlyoutOpen || isSearchFocused ? 'z-[99999]' : 'z-40'
+        } md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-[460px]`}
       >
-        <div className="relative w-full max-w-[460px] min-w-0 mx-auto">
+        <div className="relative w-full max-w-full md:max-w-[460px] min-w-0 mx-auto">
           <form onSubmit={handleSearchSubmit} className="w-full">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] border-none flex items-center px-3 gap-2 transition-all ${
+              className={`group relative w-full h-[35px] sm:h-[37px] rounded-[6px] flex items-center px-3 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
-                  ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31] ring-2 ring-[#0078d4] dark:ring-[#4cc2ff]'
-                  : 'bg-black/5 dark:bg-[#282c31] ring-0'
+                  ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
+                  : 'bg-black/5 dark:bg-[#282c31]'
               }`}
             >
               <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none drop-shadow-xs" />
@@ -1585,6 +1612,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 }}
                 placeholder={(() => {
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
+                  if (currentRoute.startsWith('/watch-preview')) return 'Search Watch (Preview)';
                   if (currentRoute.startsWith('/live-tv')) return 'Search Watch';
                   if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article')) return 'Search Articles';
                   if (currentRoute.startsWith('/updates')) return 'Search Updates';
@@ -1677,8 +1705,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ease: [0.16, 1, 0.3, 1],
                   layout: { duration: 0.36, ease: [0.16, 1, 0.3, 1] },
                 }}
-                className={`topbar-search-results-dropdown absolute top-[calc(100%+8px)] left-0 right-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
-                  showAllResults ? 'max-h-[380px] overflow-y-auto sidebar-scroller' : 'overflow-hidden'
+                className={`topbar-search-results-dropdown fixed left-2 right-2 sm:left-4 sm:right-4 top-[58px] md:absolute md:top-[calc(100%+8px)] md:left-0 md:right-0 md:w-full z-[99999] backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-2 space-y-1 ${
+                  showAllResults ? 'max-h-[calc(100vh-80px)] md:max-h-[380px] overflow-y-auto sidebar-scroller' : 'max-h-[calc(100vh-80px)] md:max-h-none overflow-hidden'
                 }`}
                 style={{
                   backgroundColor: searchFlyoutBg,
@@ -1698,8 +1726,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                       className="p-3 mb-2 rounded-[10px] bg-gradient-to-br from-[#005fb8]/10 via-[#005fb8]/5 to-transparent dark:from-[#4cc2ff]/15 dark:via-[#4cc2ff]/5 dark:to-transparent border border-[#005fb8]/20 dark:border-[#4cc2ff]/25 flex flex-col gap-2 select-none overflow-hidden"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-md bg-[#005fb8]/15 dark:bg-[#4cc2ff]/20 flex items-center justify-center shrink-0">
-                          <FluentSearchIcon className="w-3.5 h-3.5" />
+                        <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                          <FluentSearchIcon className="w-4 h-4 text-[#005fb8] dark:text-[#4cc2ff]" />
                         </div>
                         <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white leading-snug">
                           Welcome to the new search

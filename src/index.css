@@ -6356,8 +6356,9 @@ html.light-mode .floaty-bar .floaty-bar__item:hover:not(.is-active) {
   background: rgba(255, 255, 255, 0.10) !important;
   background-color: rgba(255, 255, 255, 0.10) !important;
   background-image: none !important;
-  border: 3.5px solid transparent !important;
+  border: 1px solid transparent !important;
   box-shadow: none !important;
+  outline: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
@@ -6368,8 +6369,75 @@ html.light-mode .floaty-bar .floaty-bar__item:hover:not(.is-active) {
   background: rgba(255, 255, 255, 0.10) !important;
   background-color: rgba(255, 255, 255, 0.10) !important;
   background-image: none !important;
-  border: 3.5px solid #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
   box-shadow: none !important;
+  outline: none !important;
+}
+
+html.light-mode #immersive-search-capsule {
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+html.light-mode #immersive-search-capsule:hover,
+html.light-mode #immersive-search-capsule:focus-within {
+  border: 1px solid #005fb8 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* All Search Boxes: crisp, ultra-thin 1px border and strictly no thick rings or shadows */
+#topbar-search-box,
+#spotlight-search-container,
+#floating-search-bar-pill {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#topbar-search-box.is-focused,
+#topbar-search-box.search-flyout-open,
+#topbar-search-box:focus-within {
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+html.light-mode #topbar-search-box.is-focused,
+html.light-mode #topbar-search-box.search-flyout-open,
+html.light-mode #topbar-search-box:focus-within {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+#spotlight-search-container:focus-within {
+  outline: 2px solid #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+html.light-mode #spotlight-search-container:focus-within {
+  outline: 2px solid #0078d4 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Gallery: toàn bộ element không zoom lên khi hover qua */
+#gallery-page [class*="hover:scale"],
+#gallery-page [class*="group-hover:scale"],
+.gallery-media-card:hover img,
+.gallery-media-card:hover video {
+  transform: none !important;
+}
+
+/* Settings page slide up slightly slower */
+#settings-page.settings-page-wrapper {
+  animation-duration: 0.52s !important;
 }
 
 #immersive-search-capsule input {
@@ -7146,7 +7214,7 @@ section[id^="settings-section-"] {
   box-shadow: none !important;
 }
 
-/* TopBar search box: borderless by default, colored outline when focused */
+/* TopBar search box: refined 2px outline matching Fluent Design, strictly no double rings or shadows */
 #topbar-search-box {
   border: none !important;
   border-bottom: none !important;
@@ -7159,24 +7227,44 @@ section[id^="settings-section-"] {
 #topbar-search-box.is-focused,
 #topbar-search-box.search-flyout-open {
   outline: 2px solid #0078d4 !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 2px #0078d4 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  z-index: 99999 !important;
 }
 
 html.dark #topbar-search-box:focus-within,
 html.dark #topbar-search-box.is-focused,
 html.dark #topbar-search-box.search-flyout-open {
   outline: 2px solid #4cc2ff !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 2px #4cc2ff !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  z-index: 99999 !important;
 }
 
 html.light-mode #topbar-search-box:focus-within,
 html.light-mode #topbar-search-box.is-focused,
 html.light-mode #topbar-search-box.search-flyout-open {
   outline: 2px solid #0078d4 !important;
-  outline-offset: 1px !important;
-  box-shadow: 0 0 0 2px #0078d4 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  z-index: 99999 !important;
+}
+
+/* Search UI: Always on top & Mobile full-width extension across top bar */
+.topbar-search-results-dropdown {
+  z-index: 99999 !important;
+}
+
+@media (max-width: 767px) {
+  .topbar-search-results-dropdown {
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: calc(100vw - 16px) !important;
+  }
 }
 
 /* Ensure floppy disk save icon inside search box is fully visible and not corrupted */

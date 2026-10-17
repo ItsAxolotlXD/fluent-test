@@ -21,6 +21,7 @@ import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { Home } from './pages/Home';
 import { LiveTV } from './pages/LiveTV';
+import { WatchPreview } from './pages/WatchPreview';
 import { TestChannels } from './pages/TestChannels';
 import { News } from './pages/News';
 import { Article } from './pages/Article';
@@ -501,6 +502,9 @@ export default function App() {
             navigate={navigate}
           />
         );
+
+      case '/watch-preview':
+        return <WatchPreview />;
 
       case '/test':
         return (

@@ -689,7 +689,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
   }, [gridDensity]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] overflow-hidden bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
+    <div id="gallery-page" className="flex flex-col h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] overflow-hidden bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -1095,31 +1095,41 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
-                {folders.map((folder) => {
-                  const count = folderItemCounts.get(folder.id) ?? 0;
-                  return (
-                    <button
-                      key={folder.id}
-                      type="button"
-                      onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:shadow-md"
-                    >
-                      <img
-                        src={WINDOWS_11_FOLDER_ICON}
-                        alt="Folder"
-                        className="w-8 h-8 object-contain shrink-0 drop-shadow-sm transition-transform group-hover:scale-105"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
-                          {folder.name}
-                        </p>
-                        <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5">
-                          {count === 1 ? '1 item' : `${count} items`}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+                <AnimatePresence>
+                  {folders.map((folder) => {
+                    const count = folderItemCounts.get(folder.id) ?? 0;
+                    return (
+                      <motion.div
+                        key={folder.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setCurrentFolderId(folder.id)}
+                          className="group flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:shadow-md w-full"
+                        >
+                          <img
+                            src={WINDOWS_11_FOLDER_ICON}
+                            alt="Folder"
+                            className="w-8 h-8 object-contain shrink-0 drop-shadow-sm"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
+                              {folder.name}
+                            </p>
+                            <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5">
+                              {count === 1 ? '1 item' : `${count} items`}
+                            </p>
+                          </div>
+                        </button>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             </section>
           )}
@@ -1252,115 +1262,120 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                           {/* 1. Horizontal Tiles for Files, Audio, and Other non-media items */}
                           {tileItems.length > 0 && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                              {tileItems.map((item) => {
-                                const isSelected = selectedIds.has(item.id);
-                                const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
+                              <AnimatePresence>
+                                {tileItems.map((item) => {
+                                  const isSelected = selectedIds.has(item.id);
+                                  const docInfo = item.type === 'document' ? getDocumentDetails(item) : null;
 
-                                return (
-                                  <motion.div
-                                    key={item.id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.2 }}
-                                    onClick={(e) => {
-                                      if (longPressTriggered.current) {
-                                        longPressTriggered.current = false;
-                                        return;
-                                      }
-                                      if (isSelectMode) {
-                                        toggleSelect(item.id, e);
-                                      } else {
-                                        setSelectedItem(item);
-                                        setZoomLevel(1);
-                                        setRotation(0);
-                                      }
-                                    }}
-                                    onContextMenu={(e) => {
-                                      e.preventDefault();
-                                      clearLongPress();
-                                      openContextMenu(item, e.clientX, e.clientY);
-                                    }}
-                                    onTouchStart={(e) => handleTouchStart(item, e)}
-                                    onTouchMove={clearLongPress}
-                                    onTouchEnd={clearLongPress}
-                                    onTouchCancel={clearLongPress}
-                                    className={`group relative flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer shadow-xs hover:shadow-md transition-all select-none border ${
-                                      isSelected
-                                        ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
-                                        : 'border-black/10 dark:border-white/10'
-                                    }`}
-                                  >
-                                    {/* Icon on left */}
-                                    <div
-                                      className="w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-xs"
-                                      style={{
-                                        backgroundColor: item.type === 'audio' ? '#0078d420' : (docInfo?.color ? `${docInfo.color}25` : '#4cc2ff20'),
-                                        color: item.type === 'audio' ? '#0078d4' : (docInfo?.color || '#4cc2ff'),
-                                      }}
-                                    >
-                                      {item.type === 'audio' ? (
-                                        <Music className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
-                                      ) : docInfo ? (
-                                        <docInfo.icon className="w-5 h-5" />
-                                      ) : (
-                                        <FileText className="w-5 h-5" />
-                                      )}
-                                    </div>
-
-                                    {/* Title & Metadata in center */}
-                                    <div className="min-w-0 flex-1">
-                                      <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
-                                        {item.title}
-                                      </p>
-                                      <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5 flex items-center gap-1.5">
-                                        <span>{item.type === 'audio' ? 'Audio file' : (docInfo?.brand || 'Document')}</span>
-                                        <span>•</span>
-                                        <span>{item.size ? `${(item.size / 1024).toFixed(0)} KB` : item.dateLabel || 'File'}</span>
-                                      </p>
-                                    </div>
-
-                                    {/* Checkbox indicator */}
-                                    <div
-                                      className={`shrink-0 transition-opacity ${
-                                        isSelectMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                                      }`}
+                                  return (
+                                    <motion.div
+                                      key={item.id}
+                                      layout
+                                      initial={{ opacity: 0, scale: 0.7 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.7 }}
+                                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                                       onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (!isSelectMode) setIsSelectMode(true);
-                                        toggleSelect(item.id, e);
+                                        if (longPressTriggered.current) {
+                                          longPressTriggered.current = false;
+                                          return;
+                                        }
+                                        if (isSelectMode) {
+                                          toggleSelect(item.id, e);
+                                        } else {
+                                          setSelectedItem(item);
+                                          setZoomLevel(1);
+                                          setRotation(0);
+                                        }
                                       }}
+                                      onContextMenu={(e) => {
+                                        e.preventDefault();
+                                        clearLongPress();
+                                        openContextMenu(item, e.clientX, e.clientY);
+                                      }}
+                                      onTouchStart={(e) => handleTouchStart(item, e)}
+                                      onTouchMove={clearLongPress}
+                                      onTouchEnd={clearLongPress}
+                                      onTouchCancel={clearLongPress}
+                                      className={`group relative flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer shadow-xs hover:shadow-md transition-all select-none border ${
+                                        isSelected
+                                          ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
+                                          : 'border-black/10 dark:border-white/10'
+                                      }`}
                                     >
+                                      {/* Icon on left */}
                                       <div
-                                        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                          isSelected
-                                            ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
-                                            : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 text-white border border-black/20 dark:border-white/30'
-                                        }`}
+                                        className="w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-xs"
+                                        style={{
+                                          backgroundColor: item.type === 'audio' ? '#0078d420' : (docInfo?.color ? `${docInfo.color}25` : '#4cc2ff20'),
+                                          color: item.type === 'audio' ? '#0078d4' : (docInfo?.color || '#4cc2ff'),
+                                        }}
                                       >
-                                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                        {item.type === 'audio' ? (
+                                          <Music className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
+                                        ) : docInfo ? (
+                                          <docInfo.icon className="w-5 h-5" />
+                                        ) : (
+                                          <FileText className="w-5 h-5" />
+                                        )}
                                       </div>
-                                    </div>
-                                  </motion.div>
-                                );
-                              })}
+
+                                      {/* Title & Metadata in center */}
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-[13px] font-semibold truncate text-[#111827] dark:text-white group-hover:text-[#005fb8] dark:group-hover:text-[#4cc2ff] transition-colors">
+                                          {item.title}
+                                        </p>
+                                        <p className="text-[11px] text-[#6b7280] dark:text-[#9ca3af] mt-0.5 flex items-center gap-1.5">
+                                          <span>{item.type === 'audio' ? 'Audio file' : (docInfo?.brand || 'Document')}</span>
+                                          <span>•</span>
+                                          <span>{item.size ? `${(item.size / 1024).toFixed(0)} KB` : item.dateLabel || 'File'}</span>
+                                        </p>
+                                      </div>
+
+                                      {/* Checkbox indicator */}
+                                      <div
+                                        className={`shrink-0 transition-opacity ${
+                                          isSelectMode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                                        }`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (!isSelectMode) setIsSelectMode(true);
+                                          toggleSelect(item.id, e);
+                                        }}
+                                      >
+                                        <div
+                                          className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                            isSelected
+                                              ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black shadow-md ring-2 ring-white dark:ring-black'
+                                              : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 text-white border border-black/20 dark:border-white/30'
+                                          }`}
+                                        >
+                                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  );
+                                })}
+                              </AnimatePresence>
                             </div>
                           )}
 
                           {/* 2. Media Items (Images and Videos) displayed according to native resolution ratio */}
                           {mediaItems.length > 0 && (
                             <div className={columnsContainerStyle}>
-                              {mediaItems.map((item) => {
-                                const isSelected = selectedIds.has(item.id);
-                                const ratio = item.aspectRatio || (item.dimensions && item.dimensions.height > 0 ? item.dimensions.width / item.dimensions.height : 16 / 9);
+                              <AnimatePresence>
+                                {mediaItems.map((item) => {
+                                  const isSelected = selectedIds.has(item.id);
+                                  const ratio = item.aspectRatio || (item.dimensions && item.dimensions.height > 0 ? item.dimensions.width / item.dimensions.height : 16 / 9);
 
-                                return (
-                                  <motion.div
-                                    key={item.id}
-                                    layout
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.2 }}
+                                  return (
+                                    <motion.div
+                                      key={item.id}
+                                      layout
+                                      initial={{ opacity: 0, scale: 0.7 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.7 }}
+                                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                                     onClick={(e) => {
                                       if (longPressTriggered.current) {
                                         longPressTriggered.current = false;
@@ -1420,7 +1435,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                         <img
                                           src={item.thumbnailUrl || item.url}
                                           alt={item.title}
-                                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                          className="w-full h-full object-cover"
                                           loading="lazy"
                                           onLoad={(e) => {
                                             const nw = e.currentTarget.naturalWidth;
@@ -1446,7 +1461,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                       <img
                                         src={item.thumbnailUrl || item.url}
                                         alt={item.title}
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        className="w-full h-full object-cover"
                                         loading="lazy"
                                         onLoad={(e) => {
                                           const nw = e.currentTarget.naturalWidth;
@@ -1506,7 +1521,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                                   </motion.div>
                                 );
                               })}
-                            </div>
+                            </AnimatePresence>
+                          </div>
                           )}
                         </div>
                       );
@@ -1725,7 +1741,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 <button
                   type="button"
                   onClick={handlePrevMedia}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all cursor-pointer"
                   title="Previous item (Left Arrow)"
                 >
                   <ChevronLeft className="w-6 h-6" />
@@ -1737,7 +1753,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                 <button
                   type="button"
                   onClick={handleNextMedia}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all cursor-pointer"
                   title="Next item (Right Arrow)"
                 >
                   <ChevronRight className="w-6 h-6" />
@@ -1907,8 +1923,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '' }) 
                     }}
                     className={`w-12 h-12 rounded-[6px] overflow-hidden shrink-0 transition-all cursor-pointer border ${
                       isCurrent
-                        ? 'ring-2 ring-[#4cc2ff] border-white scale-110 opacity-100 shadow-md'
-                        : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-105'
+                        ? 'ring-2 ring-[#4cc2ff] border-white opacity-100 shadow-md'
+                        : 'border-white/20 opacity-60 hover:opacity-100'
                     }`}
                   >
                     {it.type === 'image' ? (

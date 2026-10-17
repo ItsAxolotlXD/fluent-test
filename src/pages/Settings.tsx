@@ -41,9 +41,9 @@ const slideUpVariant = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.38,
+      duration: 0.52,
       ease: [0.16, 1, 0.3, 1],
-      delay: Math.min(i * 0.038, 0.95),
+      delay: Math.min(i * 0.046, 1.1),
     },
   }),
 };
@@ -187,7 +187,13 @@ export const Settings: React.FC<SettingsProps> = ({
   let elementIndex = 0;
 
   return (
-    <div id="settings-page" className="settings-page-wrapper w-full max-w-5xl mx-auto pb-28 pt-2 px-4 sm:px-6 select-none space-y-6">
+    <motion.div
+      id="settings-page"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="settings-page-wrapper w-full max-w-5xl mx-auto pb-28 pt-2 px-4 sm:px-6 select-none space-y-6"
+    >
       {/* Top Header with updated description */}
       <motion.div 
         variants={slideUpVariant}
@@ -1513,6 +1519,6 @@ export const Settings: React.FC<SettingsProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };

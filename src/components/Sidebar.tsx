@@ -1268,6 +1268,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
+          {/* Watch (Preview) */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-watch-preview' : 'sidebar-nav-watch-preview'}
+              data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/watch-preview')}
+              title="Watch (Preview)"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                {isFluentIcons ? (
+                  <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
+                <span className="truncate text-[13.5px]">Watch (Preview)</span>
+              </div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#4cc2ff]/15 text-[#0078d4] dark:text-[#4cc2ff] font-semibold shrink-0">
+                Preview
+              </span>
+            </button>
+          </div>
+
           {/* 5. Gallery */}
           <div className="w-full">
             <button
@@ -1692,6 +1720,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Watch"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  {isFluentIcons ? (
+                    <Fluent3DWatchIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentWatchIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
+                </button>
+
+                {/* Watch (Preview) Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-watch-preview"
+                  data-nav-active={(currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/watch-preview')}
+                  title="Watch (Preview)"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/watch-preview' || currentRoute.startsWith('/watch-preview'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}

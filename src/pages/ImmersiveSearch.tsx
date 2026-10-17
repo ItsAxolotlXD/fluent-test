@@ -294,7 +294,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
             onClick={() => {
               inputRef.current?.focus();
             }}
-            className="group relative w-full max-w-md sm:max-w-lg h-[35px] sm:h-[37px] bg-black/5 dark:bg-[#282c31] border-0 flex items-center px-3.5 gap-2.5 rounded-[6px] transition-all cursor-text select-none focus-within:ring-2 focus-within:ring-[#005fb8] dark:focus-within:ring-[#4cc2ff]"
+            className="group relative w-full max-w-md sm:max-w-lg h-[35px] sm:h-[37px] bg-black/5 dark:bg-[#282c31] border border-black/10 dark:border-white/10 focus-within:border-[#005fb8] dark:focus-within:border-[#4cc2ff] flex items-center px-3.5 gap-2.5 rounded-[6px] transition-all cursor-text select-none"
           >
             <FluentSearchIcon className="w-[18px] h-[18px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
             <input
