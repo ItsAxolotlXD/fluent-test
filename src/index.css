@@ -32,6 +32,12 @@
     color: #111827 !important;
   }
 
+  .topbar-settings-save-icon {
+    filter: none !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+  }
+
   html.light-mode .gallery-toolbar svg {
     color: #111827 !important;
   }
