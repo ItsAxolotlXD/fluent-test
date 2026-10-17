@@ -180,6 +180,7 @@ export default function App() {
   };
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isInkCanvasChromeVisible, setIsInkCanvasChromeVisible] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
     try {
       return localStorage.getItem('waves_sidebar_collapsed') === 'true';
@@ -245,6 +246,7 @@ export default function App() {
 
   // Determine effective sidebar width for page adaptation
   const isEffectiveCollapsed = settings.autoHideSidebar || isSidebarCollapsed;
+  const isInkCanvasEditor = currentRoute.startsWith('/draws/');
 
   const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
@@ -470,6 +472,8 @@ export default function App() {
 
   // Render Page Content based on currentRoute
   const renderContent = () => {
+    if (currentRoute.startsWith('/draws/')) return <Draws navigate={navigate} />;
+
     // Route matching for news detail: /news/:slug
     if (currentRoute.startsWith('/news/')) {
       const slug = currentRoute.replace('/news/', '');
@@ -640,8 +644,10 @@ export default function App() {
         aria-hidden="true" 
       />
 
+      {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[80]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[80]" /></>}
+
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (
+      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && (
         <Sidebar
           currentRoute={currentRoute}
           navigate={navigate}
@@ -677,7 +683,9 @@ export default function App() {
 
       {/* Main App Container */}
       <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-300 ease-in-out bg-[#f3f3f3] dark:bg-[#1b1f24] ${
-        settings.navigationMode === 'topbar'
+        isInkCanvasEditor
+          ? 'md:pl-0 md:pr-0 pb-0'
+          : settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
           : !settings.dockToSidebar || settings.navigationMode !== 'sidebar'
             ? 'md:pl-0 md:pr-0 pb-20'
@@ -689,8 +697,8 @@ export default function App() {
                 ? 'md:pl-[48px]'
                 : 'md:pl-[260px]'
       }`}>
-        {/* TopBar Header - Always displayed including on Notes tab */}
-        <TopBar
+        {/* TopBar Header - hidden on an Ink Canvas sheet until the top edge is hovered */}
+        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && <TopBar
           currentRoute={currentRoute}
           navigate={navigate}
           tabSearchQuery={currentTabSearchQuery}
@@ -720,11 +728,11 @@ export default function App() {
           onChangeFontSize={handleFontSizeChange}
           showUnsavedTooltip={showUnsavedTooltip}
           onDismissUnsavedTooltip={() => setShowUnsavedTooltip(false)}
-        />
+        />}
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
         <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
-          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/gallery' || currentRoute === '/draws'
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/')
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${

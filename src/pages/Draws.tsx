@@ -85,6 +85,15 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [canvasSpaceHeight, setCanvasSpaceHeight] = useState(2200);
+  const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(() => {
+    const id = window.location.pathname.split('/').pop();
+    return id && id !== 'draws' ? id : null;
+  });
+  const [canvasList, setCanvasList] = useState(() => [
+    { id: 'new-canvas', title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' },
+    { id: 'brainstorm', title: 'Brainstorming board', updated: 'Yesterday', color: '#f59e0b' },
+    { id: 'moodboard', title: 'Moodboard', updated: 'Oct 12, 2026', color: '#ec4899' },
+  ]);
   const [toastMessage, setToastMessage] = useState<{ text: string; actionLabel?: string; onAction?: () => void } | null>(null);
 
   // Undo / Redo history
@@ -651,6 +660,31 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
       showToast('Failed to save to Gallery');
     }
   };
+
+  if (!selectedCanvasId) {
+    return (
+      <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#202328] text-[#111827] dark:text-white p-6 sm:p-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">Ink Canvas</p>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
+              <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
+            </div>
+            <button type="button" onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity">New canvas</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {canvasList.map((canvas) => (
+              <button key={canvas.id} type="button" onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }} className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
+                <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
