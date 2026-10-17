@@ -939,7 +939,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             title="Explore highlights from your photo collection"
             aria-label="Welcome screen"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#4cc2ff]" />
+            <Sparkles className="gallery-toolbar-icon w-3.5 h-3.5 text-[#4cc2ff]" />
             <span className="hidden sm:inline text-xs font-semibold text-white">Highlights</span>
           </button>
 
@@ -1088,7 +1088,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 title="Import photos, videos, or documents"
               >
                 <UploadCloud className="gallery-import-icon w-3.5 h-3.5 text-white" />
-                <span>Import</span>
+                <span className="light-mode-white-label">Import</span>
               </button>
             </>
           )}

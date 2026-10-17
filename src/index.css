@@ -42,6 +42,10 @@
     color: #111827 !important;
   }
 
+  html.light-mode .gallery-toolbar .gallery-import-icon {
+    color: #ffffff !important;
+  }
+
   .gallery-toolbar svg {
     color: #111827;
   }
