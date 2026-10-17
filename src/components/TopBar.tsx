@@ -407,7 +407,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         keywords: 'xóa lịch sử tìm kiếm clear search history recent searches',
         type: 'setting-action',
         customAction: {
-          label: 'X���a ngay',
+          label: 'X����a ngay',
           onAction: () => {
             clearAllHistory();
             setIsSearchFlyoutOpen(false);
@@ -1391,7 +1391,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (item.type === 'setting-action') {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
-          <Save className="w-6 h-6 text-[#005fb8] dark:text-[#4cc2ff]" aria-hidden="true" />
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png" alt="" className="w-7 h-7 object-contain" aria-hidden="true" />
         </div>
       );
     }

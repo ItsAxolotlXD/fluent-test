@@ -1244,8 +1244,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                     <span className="text-[14px] font-semibold text-[#111827] dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
                       Add photos here
                     </span>
-                    <span className="text-[13px] text-white dark:text-[#4cc2ff] group-hover:underline">
-                      Upload from your device
+                    <span className="light-mode-black-label text-[13px] text-white dark:text-[#4cc2ff] group-hover:underline">
+                      Upload on your device
                     </span>
                   </div>
                 </button>
@@ -1822,8 +1822,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                       <span className="text-[13.5px] font-semibold text-[#111827] dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors">
                         Add photos here
                       </span>
-                      <span className="text-[12px] text-[#0078d4] dark:text-[#4cc2ff] group-hover:underline">
-                        Upload from your device
+                      <span className="light-mode-black-label text-[12px] text-[#0078d4] dark:text-[#4cc2ff] group-hover:underline">
+                        Upload on your device
                       </span>
                     </div>
                   </button>

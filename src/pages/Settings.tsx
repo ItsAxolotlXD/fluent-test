@@ -568,7 +568,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           aria-pressed={(draftSettings.theme || 'dark') === val}
                         >
                           <IconComponent className="w-3.5 h-3.5 text-white" />
-                          <span className="text-white dark:text-inherit">{label}</span>
+                          <span className="light-mode-white-label">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -906,7 +906,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         Load pages sequentially
                       </div>
                       <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Tải nội dung ban đầu của trang, sau đó hiển thị v��ng xoay tải trong 1 giây khi cuộn xuống để khám phá thêm.
+                        Tải nội dung ban ��ầu của trang, sau đó hiển thị v��ng xoay tải trong 1 giây khi cuộn xuống để khám phá thêm.
                       </div>
                     </div>
 
@@ -1434,7 +1434,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       rel="noopener noreferrer"
                       className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"
                     >
-                      <span>Switch</span>
+                      <span className="light-mode-white-label">Switch</span>
                     </a>
                   </motion.div>
                 )}
@@ -1463,7 +1463,7 @@ export const Settings: React.FC<SettingsProps> = ({
                       onClick={onOpenUpdate}
                       className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center border-none"
                     >
-                      <span>Update</span>
+                      <span className="light-mode-white-label">Update</span>
                     </button>
                   </motion.div>
                 )}
