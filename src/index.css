@@ -641,8 +641,7 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
 /* Splash screen gradient inspired by the supplied reference; logo and loader remain unchanged. */
 #vplay-splash-screen,
 html.dark #vplay-splash-screen,
-html:not(.light-mode) #vplay-splash-screen,
-html.light-mode #vplay-splash-screen {
+html:not(.light-mode) #vplay-splash-screen {
   background-color: #382d32 !important;
   background:
     radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
@@ -7432,7 +7431,7 @@ html.light-mode #waves-mobile-sidebar .fluent-3d-icon img {
   opacity: 1 !important;
 }
 
-/* Carry the splash palette through dark-mode app surfaces. Navigation chrome gets a darker tint. */
+/* Dark mode uses a shared tint so the topbar and sidebar read as one continuous surface. */
 html:not(.light-mode):not(.super-dark) .main-tab-page {
   background-color: #382d32 !important;
   background:
@@ -7450,9 +7449,33 @@ html:not(.light-mode):not(.super-dark) #waves-mobile-sidebar,
 html:not(.light-mode):not(.super-dark) #root header.sticky {
   background-color: #26232d !important;
   background:
-    linear-gradient(rgba(10, 11, 20, 0.34), rgba(10, 11, 20, 0.34)),
+    linear-gradient(rgba(10, 11, 20, 0.48), rgba(10, 11, 20, 0.48)),
     radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
     radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
     linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+}
+
+/* Light palette from the new reference: lavender, warm peach, and soft rose. */
+html.light-mode:not(.super-dark) #vplay-splash-screen,
+html.light-mode:not(.super-dark) .main-tab-page {
+  background-color: #f6e2eb !important;
+  background:
+    radial-gradient(ellipse at 50% 72%, rgba(255, 226, 207, 0.86) 0%, rgba(255, 226, 207, 0) 48%),
+    linear-gradient(112deg, #d9ddf8 0%, #e9e3f0 35%, #ffeadf 60%, #f8d7e5 100%) !important;
+  color: #24212b !important;
+}
+
+html.light-mode:not(.super-dark) .main-tab-page > .tab-element-slide-up-container {
+  background: transparent !important;
+}
+
+html.light-mode:not(.super-dark) #waves-desktop-sidebar,
+html.light-mode:not(.super-dark) #waves-mobile-sidebar,
+html.light-mode:not(.super-dark) #root header.sticky {
+  background-color: #f8eaf0 !important;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28)),
+    radial-gradient(ellipse at 50% 72%, rgba(255, 226, 207, 0.86) 0%, rgba(255, 226, 207, 0) 48%),
+    linear-gradient(112deg, #d9ddf8 0%, #e9e3f0 35%, #ffeadf 60%, #f8d7e5 100%) !important;
 }
 
