@@ -638,19 +638,17 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   }
 }
 
-/* Splash Screen background matches Sidebar (#1b1f24 in Dark, #f3f3f3 in Light) */
+/* Splash screen gradient inspired by the supplied reference; logo and loader remain unchanged. */
 #vplay-splash-screen,
 html.dark #vplay-splash-screen,
-html:not(.light-mode) #vplay-splash-screen {
-  background-color: #1b1f24 !important;
-  background: #1b1f24 !important;
-  color: #FFFFFF !important;
-}
-
+html:not(.light-mode) #vplay-splash-screen,
 html.light-mode #vplay-splash-screen {
-  background-color: #f3f3f3 !important;
-  background: #f3f3f3 !important;
-  color: #111827 !important;
+  background-color: #382d32 !important;
+  background:
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+  color: #FFFFFF !important;
 }
 
 /* Flyout Sign In & Search Result UI: Slide Up Animation giống animation slide up của các trang tab */
