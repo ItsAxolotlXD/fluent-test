@@ -7432,3 +7432,27 @@ html.light-mode #waves-mobile-sidebar .fluent-3d-icon img {
   opacity: 1 !important;
 }
 
+/* Carry the splash palette through dark-mode app surfaces. Navigation chrome gets a darker tint. */
+html:not(.light-mode):not(.super-dark) .main-tab-page {
+  background-color: #382d32 !important;
+  background:
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+}
+
+html:not(.light-mode):not(.super-dark) .main-tab-page > .tab-element-slide-up-container {
+  background: transparent !important;
+}
+
+html:not(.light-mode):not(.super-dark) #waves-desktop-sidebar,
+html:not(.light-mode):not(.super-dark) #waves-mobile-sidebar,
+html:not(.light-mode):not(.super-dark) #root header.sticky {
+  background-color: #26232d !important;
+  background:
+    linear-gradient(rgba(10, 11, 20, 0.34), rgba(10, 11, 20, 0.34)),
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+}
+
