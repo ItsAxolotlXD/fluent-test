@@ -47,6 +47,7 @@ import {
   FluentUpdatesIcon,
   FluentGalleryIcon,
   FluentInkCanvasIcon,
+  FluentScreenbugIcon,
   FluentVlcIcon,
   FluentPhotopeaIcon
 } from './FluentIcons';
@@ -59,6 +60,7 @@ import {
   Fluent3DGalleryIcon,
   Fluent3DDrawsIcon,
   Fluent3DNotesIcon,
+  Fluent3DScreenbugIcon,
   Fluent3DVlcIcon,
   Fluent3DCraftmineIcon,
   Fluent3DPhotopeaIcon,
@@ -1575,27 +1577,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 8. VLC */}
+          {/* 8. Screenbug */}
           <div className="w-full">
             <button
               type="button"
-              id={isMobile ? 'mobile-nav-vlc' : 'sidebar-nav-vlc'}
-              data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox')) ? 'true' : undefined}
-              onClick={() => handleNavClick('/vlc')}
-              title="Screenbox"
+              id={isMobile ? 'mobile-nav-screenbug' : 'sidebar-nav-screenbug'}
+              data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/screenbug')}
+              title="Screenbug"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox'))
+                (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3.5 truncate">
                 {useFluent3DForContent ? (
-                  <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
+                  <Fluent3DScreenbugIcon className="w-5 h-5 shrink-0" />
                 ) : (
-                  <FluentVlcIcon white className="w-5 h-5 shrink-0 text-white" />
+                  <FluentScreenbugIcon white className="w-5 h-5 shrink-0 text-white" />
                 )}
-                <span className="truncate text-[13.5px]">Screenbox</span>
+                <span className="truncate text-[13.5px]">Screenbug</span>
               </div>
             </button>
           </div>
@@ -1966,23 +1968,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 7. Screenbox Icon */}
+                {/* 7. Screenbug Icon */}
                 <button
                   type="button"
-                  id="sidebar-collapsed-vlc"
-                  data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox')) ? 'true' : undefined}
-                  onClick={() => handleNavClick('/vlc')}
-                  title="Screenbox"
+                  id="sidebar-collapsed-screenbug"
+                  data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/screenbug')}
+                  title="Screenbug"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox'))
+                    (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
                 >
                   {useFluent3DForContent ? (
-                    <Fluent3DVlcIcon className="w-5 h-5 shrink-0" />
+                    <Fluent3DScreenbugIcon className="w-5 h-5 shrink-0" />
                   ) : (
-                    <FluentVlcIcon white className="w-5 h-5 text-white" />
+                    <FluentScreenbugIcon white className="w-5 h-5 text-white" />
                   )}
                 </button>
 

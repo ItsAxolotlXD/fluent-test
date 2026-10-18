@@ -36,6 +36,7 @@ import {
   Fluent3DDrawsIcon,
   Fluent3DPhotopeaIcon,
   Fluent3DNotesIcon,
+  Fluent3DScreenbugIcon,
   Fluent3DVlcIcon,
   Fluent3DUpdatesIcon,
   Fluent3DSettingsIcon,
@@ -331,7 +332,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
       { id: 'page-draws', title: 'Ink Canvas', subtitle: 'Switch page', keywords: 'ink canvas draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
-      { id: 'page-vlc', title: 'Screenbox', subtitle: 'Switch page', keywords: 'screenbox vlc media player phát video âm thanh stream disc network equalizer', type: 'page', onSelect: () => navigate('/vlc') },
+      { id: 'page-screenbug', title: 'Screenbug', subtitle: 'Switch page', keywords: 'screenbug vlc screenbox media player phát video âm thanh stream disc network equalizer open url', type: 'page', onSelect: () => navigate('/screenbug') },
       { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
       // All Interactive System Settings & Action Toggles (Search & execute right on Search UI)
       {
@@ -1203,11 +1204,11 @@ export const TopBar: React.FC<TopBarProps> = ({
       );
     }
 
-    // 12. VLC Media Player
-    if (q.includes('vlc') || q.includes('media player') || q.includes('video player') || q.includes('phát video') || q.includes('phát nhạc')) {
+    // 12. Screenbug Media Player
+    if (q.includes('screenbug') || q.includes('vlc') || q.includes('screenbox') || q.includes('media player') || q.includes('video player') || q.includes('phát video') || q.includes('phát nhạc')) {
       return (
         <div className="w-8.5 h-8.5 flex items-center justify-center shrink-0">
-          <Fluent3DVlcIcon className="w-7 h-7 drop-shadow-sm" />
+          <Fluent3DScreenbugIcon className="w-7 h-7 drop-shadow-sm" />
         </div>
       );
     }

@@ -211,10 +211,11 @@ export const Fluent3DNotesIcon: React.FC<Fluent3DIconProps> = ({ className = "w-
   <ImageIcon src="/icons/sidebar/notes.png" alt="Notes" className={className} style={style} />
 );
 
-// 8. Screenbox / VLC - 3D Play Button
-export const Fluent3DVlcIcon: React.FC<Fluent3DIconProps> = ({ className = "w-5 h-5", style }) => (
-  <ImageIcon src="https://cdn3d.iconscout.com/3d/premium/thumb/play-button-3d-icon-png-download-13354190.png" alt="Screenbox" className={className} style={style} />
+// 8. Screenbug - 3D Fluent Media Player Icon
+export const Fluent3DScreenbugIcon: React.FC<Fluent3DIconProps> = ({ className = "w-5 h-5", style }) => (
+  <ImageIcon src="https://cdn3d.iconscout.com/3d/premium/thumb/play-button-3d-icon-png-download-13354190.png" alt="Screenbug" className={className} style={style} />
 );
+export const Fluent3DVlcIcon = Fluent3DScreenbugIcon;
 
 // 9. Craftmine - 3D Isometric Minecraft Grass Block
 export const Fluent3DCraftmineIcon: React.FC<Fluent3DIconProps> = ({ className = "w-5 h-5", style }) => (

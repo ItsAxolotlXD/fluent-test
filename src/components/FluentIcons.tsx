@@ -130,42 +130,50 @@ export const FluentDrawsIcon: React.FC<{ className?: string; style?: React.CSSPr
   </svg>
 );
 
-export const FluentVlcIcon: React.FC<{ className?: string; style?: React.CSSProperties; white?: boolean }> = ({ className = 'w-5 h-5', style, white = false }) => {
+export const FluentScreenbugIcon: React.FC<{ className?: string; style?: React.CSSProperties; white?: boolean }> = ({ className = 'w-5 h-5', style, white = false }) => {
   if (white) {
     return (
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-        {/* Base plate */}
-        <path d="M2.5 20.5C2.5 19.9477 2.94772 19.5 3.5 19.5H20.5C21.0523 19.5 21.5 19.9477 21.5 20.5C21.5 21.0523 21.0523 21.5 20.5 21.5H3.5C2.94772 21.5 2.5 21.0523 2.5 20.5Z" fill="white" fillOpacity="0.85" />
-        {/* Bottom cone segment */}
-        <path d="M5.5 19.5L7 15H17L18.5 19.5H5.5Z" fill="white" fillOpacity="0.7" />
-        {/* Lower reflective white stripe */}
-        <path d="M7.6 13H16.4L17 15H7L7.6 13Z" fill="white" fillOpacity="1" />
-        {/* Middle cone segment */}
-        <path d="M8.6 9.8H15.4L16.4 13H7.6L8.6 9.8Z" fill="white" fillOpacity="0.7" />
-        {/* Upper reflective white stripe */}
-        <path d="M9.6 6.8H14.4L15.4 9.8H8.6L9.6 6.8Z" fill="white" fillOpacity="1" />
-        {/* Top tip */}
-        <path d="M10.8 3.2C11.3 2.3 12.7 2.3 13.2 3.2L14.4 6.8H9.6L10.8 3.2Z" fill="white" fillOpacity="0.85" />
+        {/* Screen Bezel */}
+        <rect x="2" y="3.5" width="20" height="13.5" rx="3" stroke="white" strokeWidth="1.75" strokeOpacity="0.95" />
+        {/* Play bug / Screenbug badge in center */}
+        <path d="M10 7.5L16 10.25L10 13V7.5Z" fill="white" fillOpacity="0.95" />
+        {/* Screen Stand and base */}
+        <path d="M12 17V20" stroke="white" strokeWidth="1.75" strokeLinecap="round" />
+        <path d="M8 20.5H16" stroke="white" strokeWidth="1.75" strokeLinecap="round" />
+        {/* Corner bug glow dot */}
+        <circle cx="18.5" cy="6" r="1.2" fill="white" />
       </svg>
     );
   }
 
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-      {/* Authentic VLC Traffic Cone with 3D gradient look */}
-      <path d="M2.5 20.5C2.5 19.9477 2.94772 19.5 3.5 19.5H20.5C21.0523 19.5 21.5 19.9477 21.5 20.5C21.5 21.0523 21.0523 21.5 20.5 21.5H3.5C2.94772 21.5 2.5 21.0523 2.5 20.5Z" fill="#E65100"/>
-      <path d="M5.5 19.5L7 15H17L18.5 19.5H5.5Z" fill="#F57C00"/>
-      {/* Lower reflective white stripe */}
-      <path d="M7.6 13H16.4L17 15H7L7.6 13Z" fill="#FFFFFF"/>
-      {/* Middle orange body */}
-      <path d="M8.6 9.8H15.4L16.4 13H7.6L8.6 9.8Z" fill="#FF9800"/>
-      {/* Upper reflective white stripe */}
-      <path d="M9.6 6.8H14.4L15.4 9.8H8.6L9.6 6.8Z" fill="#FFFFFF"/>
-      {/* Top orange tip with rounded peak */}
-      <path d="M10.8 3.2C11.3 2.3 12.7 2.3 13.2 3.2L14.4 6.8H9.6L10.8 3.2Z" fill="#FFA726"/>
+      <defs>
+        <linearGradient id="screenbug_grad" x1="2" y1="3" x2="22" y2="18" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4cc2ff" />
+          <stop offset="100%" stopColor="#0078d4" />
+        </linearGradient>
+        <linearGradient id="screenbug_play" x1="9" y1="7" x2="16" y2="13" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#dbeafe" />
+        </linearGradient>
+      </defs>
+      {/* Screen Frame */}
+      <rect x="2" y="3.5" width="20" height="13.5" rx="3" stroke="url(#screenbug_grad)" strokeWidth="1.8" />
+      <rect x="3" y="4.5" width="18" height="11.5" rx="2" fill="url(#screenbug_grad)" fillOpacity="0.16" />
+      {/* Central Screenbug Play Emblem */}
+      <path d="M10 7.5L16 10.25L10 13V7.5Z" fill="url(#screenbug_play)" />
+      {/* Stand Neck and Foot */}
+      <path d="M12 17V20" stroke="url(#screenbug_grad)" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M8 20.5H16" stroke="url(#screenbug_grad)" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Digital On-Screen Graphic (DOG / Screenbug watermark dot) */}
+      <circle cx="18.5" cy="6.2" r="1.25" fill="#4cc2ff" />
     </svg>
   );
 };
+
+export const FluentVlcIcon = FluentScreenbugIcon;
 
 export const FluentPhotopeaIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>

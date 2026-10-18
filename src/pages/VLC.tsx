@@ -38,16 +38,19 @@ import {
   ExternalLink,
   Layers,
   Search,
-  Music
+  Music,
+  Link2
 } from 'lucide-react';
-import { FluentVlcIcon } from '../components/FluentIcons';
+import { FluentScreenbugIcon, FluentVlcIcon } from '../components/FluentIcons';
+import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
 
 export interface VlcPlaylistItem {
   id: string;
   title: string;
   artist?: string;
   url: string;
-  type: 'video' | 'audio' | 'stream' | 'capture';
+  embedUrl?: string;
+  type: 'video' | 'audio' | 'stream' | 'capture' | 'embed';
   duration?: number;
   format?: string;
   subtitlesUrl?: string;
@@ -89,7 +92,7 @@ const VLC_DEMO_ITEMS: VlcPlaylistItem[] = [
   {
     id: 'vlc-demo-4',
     title: 'Lofi Chill Hip Hop Odyssey',
-    artist: 'VLC Audio Streams',
+    artist: 'Screenbug Audio Streams',
     url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3',
     type: 'audio',
     duration: 147,
@@ -135,6 +138,156 @@ const EQ_PRESETS: Record<string, number[]> = {
   Reggae: [0, 0, -0.8, -4.0, 0, 4.0, 4.0, 2.4, 0, 0]
 };
 
+// Helper to parse any media URL (YouTube, TikTok, Spotify, Apple Music, Shazam, SoundCloud, direct audio/video/HLS)
+export function parseMediaUrl(rawUrl: string, customTitle?: string): VlcPlaylistItem {
+  const trimmed = rawUrl.trim();
+  const id = `media-${Date.now()}`;
+
+  // 1. YouTube
+  const ytMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/i);
+  if (ytMatch) {
+    const videoId = ytMatch[1];
+    return {
+      id,
+      title: customTitle?.trim() || `YouTube Video (${videoId})`,
+      artist: 'YouTube',
+      url: trimmed,
+      embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`,
+      type: 'embed',
+      format: 'YouTube Web Stream'
+    };
+  }
+
+  // 2. TikTok
+  const ttMatch = trimmed.match(/tiktok\.com\/(?:@[\w.-]+\/video\/|v\/)(\d+)/i);
+  if (ttMatch) {
+    const videoId = ttMatch[1];
+    return {
+      id,
+      title: customTitle?.trim() || `TikTok Video (${videoId})`,
+      artist: 'TikTok',
+      url: trimmed,
+      embedUrl: `https://www.tiktok.com/embed/v2/${videoId}`,
+      type: 'embed',
+      format: 'TikTok Short Video'
+    };
+  }
+
+  // 3. Spotify
+  const spMatch = trimmed.match(/open\.spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/i);
+  if (spMatch) {
+    const kind = spMatch[1];
+    const itemId = spMatch[2];
+    return {
+      id,
+      title: customTitle?.trim() || `Spotify ${kind.charAt(0).toUpperCase() + kind.slice(1)}`,
+      artist: 'Spotify',
+      url: trimmed,
+      embedUrl: `https://open.spotify.com/embed/${kind}/${itemId}?utm_source=generator&theme=0`,
+      type: 'embed',
+      format: `Spotify ${kind}`
+    };
+  }
+
+  // 4. Apple Music
+  if (trimmed.includes('music.apple.com')) {
+    const embedUrl = trimmed.replace('music.apple.com', 'embed.music.apple.com');
+    return {
+      id,
+      title: customTitle?.trim() || 'Apple Music Track',
+      artist: 'Apple Music',
+      url: trimmed,
+      embedUrl,
+      type: 'embed',
+      format: 'Apple Music Audio'
+    };
+  }
+
+  // 5. Shazam
+  const shazamMatch = trimmed.match(/shazam\.com\/track\/(\d+)/i);
+  if (shazamMatch) {
+    const trackId = shazamMatch[1];
+    return {
+      id,
+      title: customTitle?.trim() || `Shazam Track (${trackId})`,
+      artist: 'Shazam',
+      url: trimmed,
+      embedUrl: `https://www.shazam.com/embed/track/${trackId}`,
+      type: 'embed',
+      format: 'Shazam Music'
+    };
+  }
+
+  // 6. SoundCloud
+  if (trimmed.includes('soundcloud.com')) {
+    return {
+      id,
+      title: customTitle?.trim() || 'SoundCloud Audio',
+      artist: 'SoundCloud',
+      url: trimmed,
+      embedUrl: `https://w.soundcloud.com/player/?url=${encodeURIComponent(trimmed)}&color=%23ff5500&auto_play=true&show_artwork=true`,
+      type: 'embed',
+      format: 'SoundCloud Stream'
+    };
+  }
+
+  // 7. Direct HLS Stream (.m3u8)
+  if (trimmed.includes('.m3u8')) {
+    return {
+      id,
+      title: customTitle?.trim() || trimmed.split('/').pop()?.split('?')[0] || 'HLS Live Stream',
+      artist: 'HLS Live Stream',
+      url: trimmed,
+      type: 'stream',
+      format: 'HLS .m3u8'
+    };
+  }
+
+  // 8. Direct Audio File (.mp3, .wav, .aac, .flac, .ogg, .m4a)
+  if (/\.(mp3|wav|aac|flac|ogg|m4a)(\?|$)/i.test(trimmed)) {
+    const filename = trimmed.split('/').pop()?.split('?')[0] || 'Audio Stream';
+    return {
+      id,
+      title: customTitle?.trim() || filename,
+      artist: 'Audio Stream',
+      url: trimmed,
+      type: 'audio',
+      format: 'Direct Audio'
+    };
+  }
+
+  // 9. Direct Video File (.mp4, .webm, .mkv, .mov, .m4v, .ogv)
+  if (/\.(mp4|webm|mkv|mov|m4v|ogv)(\?|$)/i.test(trimmed)) {
+    const filename = trimmed.split('/').pop()?.split('?')[0] || 'Video Stream';
+    return {
+      id,
+      title: customTitle?.trim() || filename,
+      artist: 'Video Stream',
+      url: trimmed,
+      type: 'video',
+      format: 'Direct Video'
+    };
+  }
+
+  // 10. Fallback: Any generic URL that can play media
+  let fallbackDomain = 'Web Media';
+  try {
+    if (trimmed.startsWith('http')) {
+      fallbackDomain = new URL(trimmed).hostname;
+    }
+  } catch {}
+
+  return {
+    id,
+    title: customTitle?.trim() || fallbackDomain,
+    artist: 'Web Media',
+    url: trimmed,
+    embedUrl: trimmed,
+    type: 'embed',
+    format: 'Web Media URL'
+  };
+}
+
 interface VLCProps {
   navigate?: (route: string) => void;
 }
@@ -161,7 +314,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-  const [volume, setVolume] = useState<number>(100); // 0 to 200% (VLC signature)
+  const [volume, setVolume] = useState<number>(100); // 0 to 200% (Screenbug signature)
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -185,6 +338,11 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
   const [discDrive, setDiscDrive] = useState<string>('DVD Drive (D:) - Video Title');
   const [discChapter, setDiscChapter] = useState<number>(1);
   const [captureDeviceType, setCaptureDeviceType] = useState<'camera' | 'screen'>('camera');
+
+  // Open URL Modal (supports YouTube, TikTok, Spotify, Apple Music, Shazam, etc.)
+  const [isOpenUrlModal, setIsOpenUrlModal] = useState<boolean>(false);
+  const [openUrlInput, setOpenUrlInput] = useState<string>('');
+  const [openUrlTitleInput, setOpenUrlTitleInput] = useState<string>('');
 
   const [isEffectsModalOpen, setIsEffectsModalOpen] = useState<boolean>(false);
   const [effectsTab, setEffectsTab] = useState<'audio' | 'video' | 'sync'>('audio');
@@ -646,6 +804,23 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
     }
   };
 
+  // Open any playable Media URL (YouTube, TikTok, Spotify, Apple Music, Shazam, etc.)
+  const handleOpenMediaUrlSubmit = (playImmediately: boolean = true) => {
+    if (!openUrlInput.trim()) return;
+    const parsed = parseMediaUrl(openUrlInput, openUrlTitleInput);
+    setPlaylist((prev) => [...prev, parsed]);
+    if (playImmediately) {
+      setCurrentIndex(playlist.length);
+      setIsPlaying(true);
+      showToast(`Playing: ${parsed.title}`);
+    } else {
+      showToast(`Added to playlist: ${parsed.title}`);
+    }
+    setOpenUrlInput('');
+    setOpenUrlTitleInput('');
+    setIsOpenUrlModal(false);
+  };
+
   // Export M3U Playlist
   const handleExportPlaylist = () => {
     let m3u = '#EXTM3U\n';
@@ -657,7 +832,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'vlc-playlist.m3u';
+    a.download = 'screenbug-playlist.m3u';
     a.click();
     URL.revokeObjectURL(url);
     showToast('Exported playlist as M3U');
@@ -747,6 +922,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't intercept if user is typing in input
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+        e.preventDefault();
+        setIsOpenUrlModal(true);
+        return;
+      }
 
       switch (e.key) {
         case ' ':
@@ -870,10 +1051,10 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
         className="vlc-menu-bar h-9 bg-white/90 dark:bg-[#202024]/90 backdrop-blur-md border-b border-black/10 dark:border-white/10 flex items-center justify-between px-2 text-xs font-normal relative z-40 shrink-0 text-neutral-800 dark:text-neutral-200"
       >
         <div className="flex items-center gap-0.5">
-          {/* VLC Cone Branding (Iconic Orange) */}
+          {/* Screenbug Branding */}
           <div className="flex items-center gap-1.5 px-2 py-0.5 mr-1 font-semibold text-neutral-900 dark:text-white tracking-tight">
-            <FluentVlcIcon className="w-4 h-4" />
-            <span className="hidden sm:inline text-[13px] text-orange-500 dark:text-orange-400 font-bold">VLC</span>
+            <FluentScreenbugIcon className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff]" />
+            <span className="hidden sm:inline text-[13px] text-[#0078d4] dark:text-[#4cc2ff] font-bold">Screenbug</span>
           </div>
 
           {/* Media Menu */}
@@ -882,7 +1063,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'media' ? null : 'media')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'media' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'media' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Media
@@ -890,13 +1071,13 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             <AnimatePresence>
               {activeMenu === 'media' && (
                 <motion.div
-                  key="vlc-menu-media"
+                  key="screenbug-menu-media"
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)' }}
-                  className="vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-64 backdrop-blur-2xl rounded-[12px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.22)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-0.5 text-xs text-neutral-800 dark:text-neutral-200 z-50 select-none bg-white/80 dark:bg-[#1c1c20]/80"
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-64 z-50 ${flyoutPanelClassName}`}
                 >
                   <button
                     type="button"
@@ -904,13 +1085,29 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setActiveMenu(null);
                       fileInputRef.current?.click();
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
                     <span className="flex items-center gap-2">
-                      <FolderOpen className="w-3.5 h-3.5 text-orange-500" /> Open File...
+                      <FolderOpen className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Open File...
                     </span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+O</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+O</span>
                   </button>
+
+                  {/* Open URL... (Supports YouTube, TikTok, Spotify, Apple Music, Shazam, etc.) */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsOpenUrlModal(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Link2 className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Open URL...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+U</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => {
@@ -918,12 +1115,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setOpenMediaTab('network');
                       setIsOpenMediaModal(true);
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
                     <span className="flex items-center gap-2">
-                      <Globe className="w-3.5 h-3.5 text-orange-500" /> Open Network Stream...
+                      <Globe className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Open Network Stream...
                     </span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+N</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+N</span>
                   </button>
                   <button
                     type="button"
@@ -932,12 +1129,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setOpenMediaTab('disc');
                       setIsOpenMediaModal(true);
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
                     <span className="flex items-center gap-2">
-                      <Disc className="w-3.5 h-3.5 text-orange-500" /> Open Disc...
+                      <Disc className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Open Disc...
                     </span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+D</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+D</span>
                   </button>
                   <button
                     type="button"
@@ -946,25 +1143,25 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setOpenMediaTab('capture');
                       setIsOpenMediaModal(true);
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
                     <span className="flex items-center gap-2">
-                      <VideoIcon className="w-3.5 h-3.5 text-orange-500" /> Open Capture Device...
+                      <VideoIcon className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Open Capture Device...
                     </span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">Ctrl+C</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+C</span>
                   </button>
-                  <div className="my-1 border-t border-black/10 dark:border-white/10" />
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
                   <button
                     type="button"
                     onClick={() => {
                       setActiveMenu(null);
                       setPlaylist(VLC_DEMO_ITEMS);
                       setCurrentIndex(0);
-                      showToast('Loaded VLC demo playlist');
+                      showToast('Loaded Screenbug demo playlist');
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-orange-500" /> Load Demo Media Pack
+                    <Sparkles className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Load Demo Media Pack
                   </button>
                   <button
                     type="button"
@@ -972,12 +1169,12 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setActiveMenu(null);
                       handleExportPlaylist();
                     }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-700 dark:text-neutral-200 group cursor-pointer"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
                     <span className="flex items-center gap-2">
-                      <Download className="w-3.5 h-3.5 text-orange-500" /> Save Playlist to File...
+                      <Download className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Save Playlist to File...
                     </span>
-                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">.m3u</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">.m3u</span>
                   </button>
                 </motion.div>
               )}
@@ -990,82 +1187,115 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'playback' ? null : 'playback')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'playback' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'playback' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Playback
             </button>
-            {activeMenu === 'playback' && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleTogglePlay();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'playback' && (
+                <motion.div
+                  key="screenbug-menu-playback"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-56 z-50 ${flyoutPanelClassName}`}
                 >
-                  <span>{isPlaying ? 'Pause' : 'Play'}</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Space</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleStop();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Stop</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">S</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handlePlayPrev();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200"
-                >
-                  Previous Track
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handlePlayNext();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200"
-                >
-                  Next Track
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleStepFrame();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Step Forward Frame</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">E</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleToggleABLoop();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>A-B Repeat Loop</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">
-                    {loopPointA !== null && loopPointB !== null ? 'Active' : 'Off'}
-                  </span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleTogglePlay();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>{isPlaying ? 'Pause' : 'Play'}</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Space</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleStop();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Stop</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">S</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handlePlayPrev();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    Previous Track
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handlePlayNext();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    Next Track
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleStepFrame();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Step Forward Frame</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">E</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleJump(10);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Jump Forward 10s</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">→</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleJump(-10);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Jump Backward 10s</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">←</span>
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleToggleABLoop();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>A-B Repeat Loop</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">
+                      {loopPointA !== null && loopPointB !== null ? 'Active' : 'Off'}
+                    </span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Audio Menu */}
@@ -1074,63 +1304,73 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'audio' ? null : 'audio')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'audio' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'audio' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Audio
             </button>
-            {activeMenu === 'audio' && (
-              <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setEffectsTab('audio');
-                    setIsEffectsModalOpen(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'audio' && (
+                <motion.div
+                  key="screenbug-menu-audio"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-60 z-50 ${flyoutPanelClassName}`}
                 >
-                  <span className="flex items-center gap-2">
-                    <Sliders className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> 10-Band Equalizer...
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+E</span>
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setVolume(100);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200"
-                >
-                  Reset Volume to 100%
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setVolume(200);
-                    showToast('VLC Volume boosted to 200% maximum!');
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white font-semibold text-orange-500 dark:text-orange-400 group-hover:text-white rounded-[4px] transition-colors"
-                >
-                  Boost Volume to 200% (VLC Max)
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsMuted((prev) => !prev);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Mute Audio</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">M</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setEffectsTab('audio');
+                      setIsEffectsModalOpen(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sliders className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> 10-Band Equalizer...
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+E</span>
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setVolume(100);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    Reset Volume to 100%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setVolume(200);
+                      showToast('Screenbug Volume boosted to 200% maximum!');
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 font-semibold text-[#0078d4] dark:text-[#4cc2ff] rounded-[6px] transition-colors cursor-pointer text-xs"
+                  >
+                    Boost Volume to 200% (Screenbug Max)
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsMuted((prev) => !prev);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Mute Audio</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">M</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Video Menu */}
@@ -1139,61 +1379,71 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'video' ? null : 'video')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'video' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'video' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Video
             </button>
-            {activeMenu === 'video' && (
-              <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleToggleFullscreen();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'video' && (
+                <motion.div
+                  key="screenbug-menu-video"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-60 z-50 ${flyoutPanelClassName}`}
                 >
-                  <span>Fullscreen</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">F</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleTogglePiP();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200"
-                >
-                  Picture-in-Picture
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    handleTakeSnapshot();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Camera className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Take Snapshot
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Shift+S</span>
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setEffectsTab('video');
-                    setIsEffectsModalOpen(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200"
-                >
-                  Adjustments & Effects...
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleToggleFullscreen();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Fullscreen</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">F</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleTogglePiP();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    Picture-in-Picture
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      handleTakeSnapshot();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Camera className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Take Snapshot
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Shift+S</span>
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setEffectsTab('video');
+                      setIsEffectsModalOpen(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    Adjustments & Effects...
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Subtitle Menu */}
@@ -1202,61 +1452,71 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'subtitle' ? null : 'subtitle')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'subtitle' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'subtitle' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Subtitle
             </button>
-            {activeMenu === 'subtitle' && (
-              <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    subtitleInputRef.current?.click();
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center gap-2 rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'subtitle' && (
+                <motion.div
+                  key="screenbug-menu-subtitle"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-60 z-50 ${flyoutPanelClassName}`}
                 >
-                  <Subtitles className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Add Subtitle File...
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsSubtitlesEnabled((prev) => !prev);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Toggle Subtitles</span>
-                  <span className="font-semibold text-orange-500 group-hover:text-white">{isSubtitlesEnabled ? 'On' : 'Off'}</span>
-                </button>
-                <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setSubtitleDelayMs((d) => d - 50);
-                    showToast(`Subtitle Delay: ${subtitleDelayMs - 50}ms`);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Delay -50ms</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">G</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setSubtitleDelayMs((d) => d + 50);
-                    showToast(`Subtitle Delay: ${subtitleDelayMs + 50}ms`);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span>Delay +50ms</span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">H</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      subtitleInputRef.current?.click();
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <Subtitles className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Add Subtitle File...
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsSubtitlesEnabled((prev) => !prev);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Toggle Subtitles</span>
+                    <span className="font-semibold text-[#0078d4] dark:text-[#4cc2ff]">{isSubtitlesEnabled ? 'On' : 'Off'}</span>
+                  </button>
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setSubtitleDelayMs((d) => d - 50);
+                      showToast(`Subtitle Delay: ${subtitleDelayMs - 50}ms`);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Delay -50ms</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">G</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setSubtitleDelayMs((d) => d + 50);
+                      showToast(`Subtitle Delay: ${subtitleDelayMs + 50}ms`);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span>Delay +50ms</span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">H</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Tools Menu */}
@@ -1265,41 +1525,51 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'tools' ? null : 'tools')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'tools' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'tools' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Tools
             </button>
-            {activeMenu === 'tools' && (
-              <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsEffectsModalOpen(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'tools' && (
+                <motion.div
+                  key="screenbug-menu-tools"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-60 z-50 ${flyoutPanelClassName}`}
                 >
-                  <span className="flex items-center gap-2">
-                    <Sliders className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Effects and Filters
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+E</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsInfoModalOpen(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Info className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Media Information
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+I</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsEffectsModalOpen(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sliders className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Effects and Filters
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+E</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsInfoModalOpen(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Info className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Media Information
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+I</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* View Menu */}
@@ -1308,28 +1578,38 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'view' ? null : 'view')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'view' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'view' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               View
             </button>
-            {activeMenu === 'view' && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsPlaylistOpen((prev) => !prev);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center justify-between rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'view' && (
+                <motion.div
+                  key="screenbug-menu-view"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-56 z-50 ${flyoutPanelClassName}`}
                 >
-                  <span className="flex items-center gap-2">
-                    <ListMusic className="w-3.5 h-3.5 text-orange-500 group-hover:text-white" /> Toggle Playlist
-                  </span>
-                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 group-hover:text-white/80">Ctrl+L</span>
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsPlaylistOpen((prev) => !prev);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center justify-between rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <ListMusic className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> Toggle Playlist
+                    </span>
+                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">Ctrl+L</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Help Menu */}
@@ -1338,25 +1618,35 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               type="button"
               onClick={() => setActiveMenu(activeMenu === 'help' ? null : 'help')}
               className={`px-2.5 py-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
-                activeMenu === 'help' ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+                activeMenu === 'help' ? 'bg-[#0078d4]/15 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium' : 'text-neutral-700 dark:text-neutral-300'
               }`}
             >
               Help
             </button>
-            {activeMenu === 'help' && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-white/95 dark:bg-[#25252a]/95 backdrop-blur-xl rounded-[8px] shadow-2xl border border-black/10 dark:border-white/10 py-1 text-xs text-neutral-800 dark:text-neutral-200 z-50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu(null);
-                    setIsAboutModalOpen(true);
-                  }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-orange-500 hover:text-white flex items-center gap-2 rounded-[4px] transition-colors text-neutral-700 dark:text-neutral-200 group"
+            <AnimatePresence>
+              {activeMenu === 'help' && (
+                <motion.div
+                  key="screenbug-menu-help"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={flyoutPanelStyle}
+                  className={`vlc-dropdown-menu-container absolute top-full left-0 mt-1.5 w-56 z-50 ${flyoutPanelClassName}`}
                 >
-                  <FluentVlcIcon className="w-3.5 h-3.5" /> About Screenbox
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu(null);
+                      setIsAboutModalOpen(true);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
+                  >
+                    <FluentScreenbugIcon className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> About Screenbug
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -1380,26 +1670,40 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
           className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-black select-none"
           onDoubleClick={handleToggleFullscreen}
         >
-          {/* Main Video Element */}
-          <video
-            ref={videoRef}
-            src={currentItem?.url}
-            onTimeUpdate={handleTimeUpdate}
-            onDurationChange={() => {
-              if (videoRef.current) setDuration(videoRef.current.duration || 0);
-            }}
-            onEnded={handleEnded}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            crossOrigin="anonymous"
-            playsInline
-            style={{
-              filter: videoFilterStyle,
-              transform: videoTransformStyle,
-              objectFit: aspectRatio === 'fill' ? 'fill' : aspectRatio === 'default' ? 'contain' : 'contain'
-            }}
-            className={`w-full h-full transition-transform duration-150 ${currentItem?.type === 'audio' ? 'opacity-0 absolute pointer-events-none' : 'relative z-10'}`}
-          />
+          {/* Web Embed Media Stage (YouTube, TikTok, Spotify, Apple Music, Shazam, etc.) */}
+          {currentItem?.type === 'embed' && currentItem.embedUrl ? (
+            <div className="relative w-full h-full flex items-center justify-center bg-black z-10 p-2 sm:p-4">
+              <iframe
+                key={currentItem.embedUrl}
+                src={currentItem.embedUrl}
+                title={currentItem.title}
+                className="w-full h-full max-w-5xl rounded-[8px] border border-white/10 shadow-2xl bg-neutral-900"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            /* Main Video Element */
+            <video
+              ref={videoRef}
+              src={currentItem?.url}
+              onTimeUpdate={handleTimeUpdate}
+              onDurationChange={() => {
+                if (videoRef.current) setDuration(videoRef.current.duration || 0);
+              }}
+              onEnded={handleEnded}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              crossOrigin="anonymous"
+              playsInline
+              style={{
+                filter: videoFilterStyle,
+                transform: videoTransformStyle,
+                objectFit: aspectRatio === 'fill' ? 'fill' : aspectRatio === 'default' ? 'contain' : 'contain'
+              }}
+              className={`w-full h-full transition-transform duration-150 ${currentItem?.type === 'audio' || !currentItem ? 'opacity-0 absolute pointer-events-none' : 'relative z-10'}`}
+            />
+          )}
 
           {/* Audio Visualizer Stage when playing audio */}
           {currentItem?.type === 'audio' && (
@@ -1458,19 +1762,26 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
           {!currentItem && (
             <div className="flex flex-col items-center justify-center text-center p-8 z-10">
               <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 shadow-xl">
-                <FluentVlcIcon className="w-16 h-16" />
+                <FluentScreenbugIcon className="w-16 h-16" />
               </div>
-              <h2 className="text-lg font-bold text-white mb-1">Screenbox</h2>
+              <h2 className="text-lg font-bold text-white mb-1">Screenbug</h2>
               <p className="text-xs text-neutral-400 max-w-xs mb-6">
-                Plays everything — Files, Discs, Webcams, Devices and Streams
+                Plays everything — Files, Discs, URLs, Webcams, Devices and Streams
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-2 rounded-md bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-md"
+                  className="px-3 py-2 rounded-md bg-[#0078d4] hover:bg-[#106ebe] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-md"
                 >
                   <FolderOpen className="w-3.5 h-3.5" /> Open Media File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOpenUrlModal(true)}
+                  className="px-3 py-2 rounded-md bg-[#0078d4]/20 hover:bg-[#0078d4]/30 text-[#4cc2ff] border border-[#0078d4]/40 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Link2 className="w-3.5 h-3.5" /> Open URL...
                 </button>
                 <button
                   type="button"
@@ -1480,7 +1791,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                   }}
                   className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Globe className="w-3.5 h-3.5" /> Open URL / Stream
+                  <Globe className="w-3.5 h-3.5" /> Network Stream
                 </button>
                 <button
                   type="button"
@@ -1488,7 +1799,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                     setPlaylist(VLC_DEMO_ITEMS);
                     setCurrentIndex(0);
                   }}
-                  className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 text-orange-400 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5" /> Load Samples
                 </button>
@@ -1730,17 +2041,20 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             <div className="relative group ml-1">
               <button
                 type="button"
-                className="px-1.5 py-0.5 rounded-[4px] bg-orange-500/10 text-[10px] font-mono text-orange-600 dark:text-orange-400 border border-orange-500/20 hover:border-orange-500/50 cursor-pointer"
+                className="px-1.5 py-0.5 rounded-[4px] bg-[#0078d4]/10 dark:bg-[#4cc2ff]/10 text-[10px] font-mono text-[#0078d4] dark:text-[#4cc2ff] border border-[#0078d4]/20 hover:border-[#0078d4]/50 cursor-pointer"
               >
                 {playbackRate.toFixed(2)}x
               </button>
-              <div className="hidden group-hover:flex absolute bottom-full left-0 mb-1 flex-col bg-white/95 dark:bg-[#28282c]/95 backdrop-blur-xl rounded-[6px] shadow-xl border border-black/10 dark:border-white/10 py-1 text-[11px] z-50 text-neutral-800 dark:text-neutral-200">
+              <div 
+                style={flyoutPanelStyle}
+                className={`hidden group-hover:flex absolute bottom-full left-0 mb-1 flex-col z-50 text-[11px] ${flyoutPanelClassName}`}
+              >
                 {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((spd) => (
                   <button
                     key={spd}
                     type="button"
                     onClick={() => handleSpeedChange(spd)}
-                    className="px-3 py-1 text-left hover:bg-orange-500 hover:text-white whitespace-nowrap transition-colors"
+                    className="w-full text-left px-2.5 py-1.5 rounded-[6px] hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 text-neutral-800 dark:text-neutral-200 whitespace-nowrap transition-colors cursor-pointer"
                   >
                     {spd}x {spd === 1.0 ? '(Normal)' : ''}
                   </button>
@@ -1836,6 +2150,194 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
         className="hidden"
       />
 
+      {/* Open URL Modal (Supports YouTube, TikTok, Spotify, Apple Music, Shazam, etc.) */}
+      <AnimatePresence>
+        {isOpenUrlModal && (
+          <div 
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
+            onClick={() => setIsOpenUrlModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: {
+                  duration: 0.24,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                transition: {
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1]
+                }
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="fluent-modal-dialog relative z-10 w-full max-w-lg bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+            >
+              {/* Header */}
+              <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Link2 className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff]" />
+                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">Open URL...</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsOpenUrlModal(false)}
+                  className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-4 space-y-4 text-xs">
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  Enter any media URL that can play media: YouTube, TikTok, Spotify, Apple Music, Shazam, SoundCloud, direct audio/video, or live stream (.m3u8).
+                </p>
+
+                <div className="space-y-1.5">
+                  <label className="block text-neutral-700 dark:text-neutral-300 font-medium">
+                    Media URL <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="url"
+                      autoFocus
+                      value={openUrlInput}
+                      onChange={(e) => setOpenUrlInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleOpenMediaUrlSubmit(true);
+                        }
+                      }}
+                      placeholder="https://www.youtube.com/watch?v=... or tiktok, spotify, apple music, shazam, mp3, mp4..."
+                      className="w-full h-9 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-neutral-500 border border-black/10 dark:border-white/15 outline-none focus:border-[#0078d4] dark:focus:border-[#4cc2ff] transition-all font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-neutral-700 dark:text-neutral-300 font-medium">
+                    Custom Title (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={openUrlTitleInput}
+                    onChange={(e) => setOpenUrlTitleInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleOpenMediaUrlSubmit(true);
+                      }
+                    }}
+                    placeholder="e.g. My Favorite Music Track"
+                    className="w-full h-8 px-3 rounded-[6px] bg-black/5 dark:bg-[#282c31] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-neutral-500 border border-black/10 dark:border-white/15 outline-none focus:border-[#0078d4] dark:focus:border-[#4cc2ff] transition-all text-xs"
+                  />
+                </div>
+
+                {/* Quick Presets / Examples */}
+                <div className="pt-1">
+                  <span className="text-[11px] text-neutral-500 dark:text-neutral-400 block mb-1.5 font-medium">
+                    Quick Sample URLs (click to load):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.youtube.com/watch?v=jfKfPfyJRdk');
+                        setOpenUrlTitleInput('Lofi Hip Hop Radio - Beats to Relax/Study');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#0078d4] dark:text-[#4cc2ff] text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ▶ YouTube (Lofi)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT');
+                        setOpenUrlTitleInput('Never Gonna Give You Up - Rick Astley');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-emerald-600 dark:text-emerald-400 text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ♫ Spotify
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://music.apple.com/us/album/blinding-lights/1499378108?i=1499378607');
+                        setOpenUrlTitleInput('Blinding Lights - The Weeknd');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-rose-600 dark:text-rose-400 text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                       Apple Music
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.shazam.com/track/504543787/blinding-lights');
+                        setOpenUrlTitleInput('Shazam Track Preview');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-sky-600 dark:text-sky-400 text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ⚡ Shazam
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+                        setOpenUrlTitleInput('Big Buck Bunny (Direct MP4)');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-orange-600 dark:text-orange-400 text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      🎬 Direct MP4
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-4 py-3 flex items-center justify-end gap-2 border-t border-[#E5E5E5] dark:border-[#2F2F2F]">
+                <button
+                  type="button"
+                  onClick={() => setIsOpenUrlModal(false)}
+                  className="px-3.5 h-8 rounded-[5px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] text-[#111827] dark:text-white border border-[#d1d1d1] dark:border-[#3E3E3E] text-xs font-normal transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!openUrlInput.trim()}
+                  onClick={() => handleOpenMediaUrlSubmit(false)}
+                  className="px-3.5 h-8 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#111827] dark:text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Add to Playlist
+                </button>
+                <button
+                  type="button"
+                  disabled={!openUrlInput.trim()}
+                  onClick={() => handleOpenMediaUrlSubmit(true)}
+                  className="px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] text-white dark:text-black font-semibold text-xs shadow-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Play Now
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* 4. Open Media Modal (Tabbed: File, Network, Disc, Capture) */}
       <AnimatePresence>
         {isOpenMediaModal && (
@@ -1873,7 +2375,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               {/* Modal Header */}
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FluentVlcIcon className="w-4 h-4" />
+                  <FluentScreenbugIcon className="w-4 h-4" />
                   <h3 className="text-sm font-bold text-neutral-900 dark:text-white">Open Media</h3>
                 </div>
                 <button
@@ -2583,29 +3085,29 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             >
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FluentVlcIcon className="w-4 h-4" />
-                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About Screenbox</h3>
+                  <FluentScreenbugIcon className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff]" />
+                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About Screenbug</h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAboutModalOpen(false)}
-                  className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                  className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="p-6 text-center space-y-3">
-                <div className="w-20 h-20 mx-auto rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center shadow-lg shadow-orange-500/10">
-                  <FluentVlcIcon className="w-14 h-14" />
+                <div className="w-20 h-20 mx-auto rounded-2xl bg-[#0078d4]/10 dark:bg-[#4cc2ff]/10 border border-[#0078d4]/30 dark:border-[#4cc2ff]/30 flex items-center justify-center shadow-lg shadow-[#0078d4]/10">
+                  <FluentScreenbugIcon className="w-14 h-14 text-[#0078d4] dark:text-[#4cc2ff]" />
                 </div>
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Screenbox</h3>
-                <p className="text-xs text-orange-600 dark:text-orange-400 font-mono font-semibold">Sparkle Edition</p>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Screenbug</h3>
+                <p className="text-xs text-[#0078d4] dark:text-[#4cc2ff] font-mono font-semibold">Sparkle Edition</p>
                 <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm mx-auto">
-                  Screenbox is a modern multimedia player and framework that plays most multimedia files, audio, video, and various streaming protocols.
+                  Screenbug is a modern multimedia player and framework that plays files, audio, video, web URLs (YouTube, TikTok, Spotify, Apple Music, Shazam, etc.), and network streams with hardware acceleration and 200% volume boost.
                 </p>
                 <div className="p-2.5 rounded-[6px] bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 text-[11px] text-neutral-500 dark:text-neutral-400">
-                  Copyright © 1996-2026 VideoLAN and Sparkle Project
+                  Copyright © 1996-2026 Screenbug and Sparkle Project
                 </div>
               </div>
 
@@ -2613,7 +3115,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                 <button
                   type="button"
                   onClick={() => setIsAboutModalOpen(false)}
-                  className="px-4 py-1.5 rounded-[6px] bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs transition-colors"
+                  className="px-4 py-1.5 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] text-white dark:text-black font-semibold text-xs shadow-xs transition-colors cursor-pointer"
                 >
                   Close
                 </button>
