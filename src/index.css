@@ -7489,9 +7489,17 @@ html.light-mode:not(.super-dark) #root header.sticky {
   background-attachment: fixed !important;
 }
 
-/* Frosted white search surface in dark mode. */
-html:not(.light-mode) #topbar-search-box {
-  background-color: rgba(255, 255, 255, 0.2) !important;
+/* Shared frosted-white surface strength for search, channel cards, and settings options. */
+html:not(.light-mode) #topbar-search-box,
+html:not(.light-mode) [id^="recommended-channel-"],
+html:not(.light-mode) [id^="livetv-channel-card-"],
+html:not(.light-mode) [id^="home-channel-card-"],
+html:not(.light-mode) [id^="channel-card-"],
+html:not(.light-mode) [id^="test-channel-card-"],
+html:not(.light-mode) .channel-card,
+html:not(.light-mode) [class*="channel-card"],
+html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"] {
+  background-color: rgba(255, 255, 255, 0.05) !important;
   background-image: none !important;
   -webkit-backdrop-filter: blur(50px) !important;
   backdrop-filter: blur(50px) !important;
