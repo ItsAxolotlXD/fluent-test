@@ -43,6 +43,8 @@ import { exportDocx, exportWritePdf, createDocxBlob } from '../utils/officeExpor
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { useNotes, STICKY_COLORS, NoteItem } from '../context/NotesContext';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { motion, AnimatePresence } from 'motion/react';
+import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
 
 interface NotesAppProps {
   navigate: (route: string) => void;
@@ -980,74 +982,81 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                 <ChevronDown className="w-3 h-3 text-neutral-400" />
               </button>
 
-              {showExportMenu && (
-                <div 
-                  className="absolute right-0 mt-1.5 w-56 bg-[#25252e] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1.5 z-50 text-xs"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={handleExportDocx}
-                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+              <AnimatePresence>
+                {showExportMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                    className={`absolute right-0 mt-1.5 w-60 z-50 text-xs ${flyoutPanelClassName}`}
+                    style={flyoutPanelStyle}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <FileText className="w-4 h-4 text-[#0078d4]" />
-                    <div>
-                      <div className="font-semibold text-white">Xuất file Word (.docx)</div>
-                      <div className="text-[10px] text-neutral-400">Tài liệu Microsoft Word đầy đủ</div>
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleExportDocx}
+                      className="w-full px-3 py-2 text-left hover:bg-white/10 rounded-[6px] flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                    >
+                      <FileText className="w-4 h-4 text-[#0078d4]" />
+                      <div>
+                        <div className="font-semibold text-white">Xuất file Word (.docx)</div>
+                        <div className="text-[10px] text-neutral-400">Tài liệu Microsoft Word đầy đủ</div>
+                      </div>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleExportPdf}
-                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
-                  >
-                    <Printer className="w-4 h-4 text-red-400" />
-                    <div>
-                      <div className="font-semibold text-white">In / Xuất PDF (.pdf)</div>
-                      <div className="text-[10px] text-neutral-400">Xuất file in chuẩn tài liệu</div>
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleExportPdf}
+                      className="w-full px-3 py-2 text-left hover:bg-white/10 rounded-[6px] flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                    >
+                      <Printer className="w-4 h-4 text-red-400" />
+                      <div>
+                        <div className="font-semibold text-white">In / Xuất PDF (.pdf)</div>
+                        <div className="text-[10px] text-neutral-400">Xuất file in chuẩn tài liệu</div>
+                      </div>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleExportTxt}
-                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
-                  >
-                    <FileDown className="w-4 h-4 text-emerald-400" />
-                    <div>
-                      <div className="font-semibold text-white">Xuất văn bản (.txt)</div>
-                      <div className="text-[10px] text-neutral-400">Tệp văn bản thuần</div>
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleExportTxt}
+                      className="w-full px-3 py-2 text-left hover:bg-white/10 rounded-[6px] flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                    >
+                      <FileDown className="w-4 h-4 text-emerald-400" />
+                      <div>
+                        <div className="font-semibold text-white">Xuất văn bản (.txt)</div>
+                        <div className="text-[10px] text-neutral-400">Tệp văn bản thuần</div>
+                      </div>
+                    </button>
 
-                  <div className="border-t border-white/10 my-1" />
+                    <div className="border-t border-white/10 my-1 mx-1" />
 
-                  <button
-                    type="button"
-                    onClick={handleSaveToGalleryAsDocument}
-                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
-                  >
-                    <FluentGalleryIcon className="w-4 h-4 text-[#4cc2ff]" />
-                    <div>
-                      <div className="font-semibold text-white">Lưu vào Gallery (Docx)</div>
-                      <div className="text-[10px] text-neutral-400">Xem và tải lại trong Gallery</div>
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveToGalleryAsDocument}
+                      className="w-full px-3 py-2 text-left hover:bg-white/10 rounded-[6px] flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                    >
+                      <FluentGalleryIcon className="w-4 h-4 text-[#4cc2ff]" />
+                      <div>
+                        <div className="font-semibold text-white">Lưu vào Gallery (Docx)</div>
+                        <div className="text-[10px] text-neutral-400">Xem và tải lại trong Gallery</div>
+                      </div>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleSaveToGalleryAsStickies}
-                    className="w-full px-3 py-2 text-left hover:bg-white/10 flex items-center gap-2.5 text-neutral-200 cursor-pointer"
-                  >
-                    <FluentNotesIcon className="w-4 h-4 text-[#facc15]" />
-                    <div>
-                      <div className="font-semibold text-white">Lưu Stickies vào Gallery</div>
-                      <div className="text-[10px] text-neutral-400">Ảnh thẻ ghi chú màu sắc</div>
-                    </div>
-                  </button>
-                </div>
-              )}
+                    <button
+                      type="button"
+                      onClick={handleSaveToGalleryAsStickies}
+                      className="w-full px-3 py-2 text-left hover:bg-white/10 rounded-[6px] flex items-center gap-2.5 text-neutral-200 cursor-pointer"
+                    >
+                      <FluentNotesIcon className="w-4 h-4 text-[#facc15]" />
+                      <div>
+                        <div className="font-semibold text-white">Lưu Stickies vào Gallery</div>
+                        <div className="text-[10px] text-neutral-400">Ảnh thẻ ghi chú màu sắc</div>
+                      </div>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Delete note */}
@@ -1097,25 +1106,32 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               <ChevronDown className="w-2.5 h-2.5 text-neutral-400" />
             </button>
 
-            {showFontMenu && (
-              <div 
-                className="absolute left-0 mt-1 w-64 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1 z-50 max-h-60 overflow-y-auto sidebar-scroller"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {PRESET_FONTS.map((font) => (
-                  <button
-                    key={font.id}
-                    type="button"
-                    onClick={() => handleSelectFont(font)}
-                    className="w-full px-3 py-1.5 text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center justify-between cursor-pointer"
-                    style={{ fontFamily: font.fontFamily }}
-                  >
-                    <span>{font.label}</span>
-                    {selectedFont.id === font.id && <Check className="w-3 h-3 text-[#4cc2ff]" />}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showFontMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  className={`absolute left-0 mt-1 w-64 z-50 max-h-60 overflow-y-auto sidebar-scroller ${flyoutPanelClassName}`}
+                  style={flyoutPanelStyle}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {PRESET_FONTS.map((font) => (
+                    <button
+                      key={font.id}
+                      type="button"
+                      onClick={() => handleSelectFont(font)}
+                      className="w-full px-3 py-1.5 rounded-[6px] text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center justify-between cursor-pointer"
+                      style={{ fontFamily: font.fontFamily }}
+                    >
+                      <span>{font.label}</span>
+                      {selectedFont.id === font.id && <Check className="w-3 h-3 text-[#4cc2ff]" />}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Font Size Selector */}
@@ -1139,23 +1155,30 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               <ChevronDown className="w-2.5 h-2.5" />
             </button>
 
-            {showFontSizeMenu && (
-              <div 
-                className="absolute left-0 top-full mt-1 w-20 bg-[#2a2a35] border border-[#3e3e48] rounded-[10px] shadow-2xl py-1 z-50 max-h-48 overflow-y-auto sidebar-scroller"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {QUICK_FONT_SIZES.map((sz) => (
-                  <button
-                    key={sz}
-                    type="button"
-                    onClick={() => applyExactFontSize(sz)}
-                    className="w-full px-2 py-1 text-center text-xs text-neutral-200 hover:bg-white/10 cursor-pointer"
-                  >
-                    {sz} px
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showFontSizeMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  className={`absolute left-0 top-full mt-1 w-20 z-50 max-h-48 overflow-y-auto sidebar-scroller ${flyoutPanelClassName}`}
+                  style={flyoutPanelStyle}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {QUICK_FONT_SIZES.map((sz) => (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => applyExactFontSize(sz)}
+                      className="w-full px-2 py-1 rounded-[4px] text-center text-xs text-neutral-200 hover:bg-white/10 cursor-pointer"
+                    >
+                      {sz} px
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="w-[1px] h-4 bg-white/15 mx-0.5 shrink-0" />

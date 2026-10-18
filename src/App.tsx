@@ -303,21 +303,16 @@ export default function App() {
     // Scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Page loading: displays a spinning ring for 1 second before finishing loading if enabled
+    // Tab Splash screen: displays centered tab icon with spinning ring for 1 second on tab switch
     if (isDifferentTab) {
       if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
-      if (settings.pageLoading) {
-        setIsTabLoading(true);
-        tabLoadingTimerRef.current = setTimeout(() => {
-          setIsTabLoading(false);
-          setTabLoadCount((c) => c + 1);
-        }, 1000);
-      } else {
+      setIsTabLoading(true);
+      tabLoadingTimerRef.current = setTimeout(() => {
         setIsTabLoading(false);
         setTabLoadCount((c) => c + 1);
-      }
+      }, 1000);
     }
-  }, [channels, currentRoute, settings.pageLoading]);
+  }, [channels, currentRoute]);
 
   // Navigation handler
   const navigate = useCallback((path: string, state?: any) => {
@@ -435,22 +430,17 @@ export default function App() {
 
       if (isTabSwitch) {
         if (tabLoadingTimerRef.current) clearTimeout(tabLoadingTimerRef.current);
-        if (settings.pageLoading) {
-          setIsTabLoading(true);
-          tabLoadingTimerRef.current = setTimeout(() => {
-            setIsTabLoading(false);
-            setTabLoadCount((c) => c + 1);
-          }, 1000);
-        } else {
+        setIsTabLoading(true);
+        tabLoadingTimerRef.current = setTimeout(() => {
           setIsTabLoading(false);
           setTabLoadCount((c) => c + 1);
-        }
+        }, 1000);
       }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [channels, currentRoute, hasChanges, triggerUnsavedTooltip, settings.pageLoading]);
+  }, [channels, currentRoute, hasChanges, triggerUnsavedTooltip]);
 
   // Handle page reload / unload when settings are unsaved
   useEffect(() => {
@@ -761,13 +751,13 @@ export default function App() {
             ? 'pb-28 sm:pb-32'
             : ''
         }`}>
-          {/* Dynamic Page Content without fade animation on page transitions */}
+          {/* Dynamic Page Content with 1-second splash screen transition on tab switch */}
           {isTabLoading ? (
             <div
               key={`tab-loading-${currentRoute}`}
               className="w-full flex-1 flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh]"
             >
-              <TabLoadingScreen />
+              <TabLoadingScreen route={currentRoute} />
             </div>
           ) : (
             <div

@@ -52,6 +52,7 @@ import { GalleryContextMenu, type GalleryContextAction } from '../components/gal
 import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryDialogs';
 import { useSettings } from '../hooks/useSettings';
 import { FluentNotesIcon } from '../components/FluentIcons';
+import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
 
@@ -436,7 +437,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
 
   const handleRestoreSamples = async () => {
     await galleryDB.restoreSamples();
-    showToast('Loaded demo files and media');
+    showToast('Loaded sample photos (Samples demo mode)');
   };
 
   // Selection actions
@@ -790,35 +791,46 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               )}
             </button>
 
-            {/* Filter Dropdown Menu with Search UI animation */}
+            {/* Filter Dropdown Menu with Unified Flyout Style & Staggered Animation */}
             <AnimatePresence>
               {isFilterDropdownOpen && (
                 <motion.div
                   key="gallery-filter-dropdown"
-                  initial={{ opacity: 0, y: 22 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 14 }}
+                  exit={{ opacity: 0, y: 10 }}
                   transition={{
-                    duration: 0.38,
+                    duration: 0.32,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[200px]"
-                  style={{
-                    backgroundColor: dropdownBg,
-                    backdropFilter: 'blur(28px) saturate(180%)',
-                    WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-                  }}
+                  className={`absolute top-[calc(100%+8px)] left-0 z-50 min-w-[210px] ${flyoutPanelClassName}`}
+                  style={flyoutPanelStyle}
                 >
-                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider">
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                    className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider"
+                  >
                     Filter by
-                  </div>
-                  {FILTER_OPTIONS.map((tab) => {
+                  </motion.div>
+                  {FILTER_OPTIONS.map((tab, idx) => {
                     const isActive = activeFilter === tab.id;
                     const IconComp = tab.icon;
                     return (
-                      <button
+                      <motion.button
                         key={tab.id}
                         type="button"
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          transition: {
+                            duration: 0.3,
+                            delay: Math.min(idx * 0.032, 0.24),
+                            ease: [0.16, 1, 0.3, 1],
+                          },
+                        }}
                         onClick={() => {
                           setActiveFilter(tab.id as FilterType);
                           if (tab.id === 'folders') {
@@ -826,10 +838,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                           }
                           setIsFilterDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-[8px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-[6px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
                           isActive
                             ? 'bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 text-[#005fb8] dark:text-[#4cc2ff] font-semibold'
-                            : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10'
+                            : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15'
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -837,7 +849,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                           <span>{tab.label}</span>
                         </div>
                         {isActive && <Check className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </motion.div>
@@ -864,45 +876,56 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <ArrowUpDown className="w-3.5 h-3.5 text-white" />
             </button>
 
-            {/* Sort Dropdown Menu with Search UI animation */}
+            {/* Sort Dropdown Menu with Unified Flyout Style & Staggered Animation */}
             <AnimatePresence>
               {isSortDropdownOpen && (
                 <motion.div
                   key="gallery-sort-dropdown"
-                  initial={{ opacity: 0, y: 22 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 14 }}
+                  exit={{ opacity: 0, y: 10 }}
                   transition={{
-                    duration: 0.38,
+                    duration: 0.32,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="absolute top-[calc(100%+8px)] left-0 z-50 backdrop-blur-2xl rounded-[14px] border border-black/10 dark:border-white/10 shadow-[0_20px_48px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.7)] p-1.5 space-y-1 min-w-[190px]"
-                  style={{
-                    backgroundColor: dropdownBg,
-                    backdropFilter: 'blur(28px) saturate(180%)',
-                    WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-                  }}
+                  className={`absolute top-[calc(100%+8px)] left-0 z-50 min-w-[195px] ${flyoutPanelClassName}`}
+                  style={flyoutPanelStyle}
                 >
-                  <div className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider">
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                    className="px-2.5 py-1 text-[10px] font-bold text-[#6b7280] dark:text-[#9ca3af] uppercase tracking-wider"
+                  >
                     Sort by
-                  </div>
-                  {SORT_OPTIONS.map((opt) => (
-                    <button
+                  </motion.div>
+                  {SORT_OPTIONS.map((opt, idx) => (
+                    <motion.button
                       key={opt.id}
                       type="button"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        transition: {
+                          duration: 0.3,
+                          delay: Math.min(idx * 0.032, 0.24),
+                          ease: [0.16, 1, 0.3, 1],
+                        },
+                      }}
                       onClick={() => {
                         setSortOrder(opt.id as SortOrder);
                         setIsSortDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-[8px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-[6px] flex items-center justify-between text-xs font-medium cursor-pointer transition-colors ${
                         sortOrder === opt.id
                           ? 'bg-[#005fb8]/10 dark:bg-[#4cc2ff]/15 text-[#005fb8] dark:text-[#4cc2ff] font-semibold'
-                          : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10'
+                          : 'text-[#111827] dark:text-[#f3f4f6] hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15'
                       }`}
                     >
                       <span>{opt.label}</span>
                       {sortOrder === opt.id && <Check className="w-3.5 h-3.5 text-[#005fb8] dark:text-[#4cc2ff]" />}
-                    </button>
+                    </motion.button>
                   ))}
                 </motion.div>
               )}
@@ -914,8 +937,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             type="button"
             onClick={handleRestoreSamples}
             className="w-8 h-8 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 text-white border-0 shadow-none transition-all cursor-pointer flex items-center justify-center active:scale-95"
-            title="Load demo"
-            aria-label="Load demo"
+            title="Load demo samples (Demo mode)"
+            aria-label="Load demo samples"
           >
             <RotateCw className="w-3.5 h-3.5 text-white" />
           </button>

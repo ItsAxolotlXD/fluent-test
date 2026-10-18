@@ -192,15 +192,6 @@ export const TopBar: React.FC<TopBarProps> = ({
     return `${years} year${years > 1 ? 's' : ''} ago`;
   };
 
-  // Welcome message banner for first time search flyout visit
-  const [showSearchWelcome, setShowSearchWelcome] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('vone_search_welcome_understood') !== 'true';
-    } catch {
-      return true;
-    }
-  });
-
   // Search History from localStorage (supports string[] or SearchHistoryItem[])
   // When empty, Search UI displays "Trending searches". Once user searches and clicks an item, it stores in "Recent searches".
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>(() => {
@@ -1700,46 +1691,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
                 }}
               >
-                {/* Welcome Card on first time opening Search UI */}
-                <AnimatePresence>
-                  {showSearchWelcome && (
-                    <motion.div
-                      key="search-welcome-menu"
-                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, height: 0, marginBottom: 0, padding: 0 }}
-                      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-                      className="p-3 mb-2 rounded-[10px] bg-gradient-to-br from-[#005fb8]/10 via-[#005fb8]/5 to-transparent dark:from-[#4cc2ff]/15 dark:via-[#4cc2ff]/5 dark:to-transparent border border-[#005fb8]/20 dark:border-[#4cc2ff]/25 flex flex-col gap-2 select-none overflow-hidden"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                          <FluentSearchIcon className="w-4 h-4 text-[#005fb8] dark:text-[#4cc2ff]" />
-                        </div>
-                        <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white leading-snug">
-                          Welcome to the new search
-                        </h3>
-                      </div>
-                      <p className="text-[12px] text-[#4b5563] dark:text-[#9ca3af] leading-relaxed">
-                        Search has been reimagined with a better interface, stunning visuals and much more efficient searching.
-                      </p>
-                      <div className="flex justify-end pt-0.5">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowSearchWelcome(false);
-                            try {
-                              localStorage.setItem('vone_search_welcome_understood', 'true');
-                            } catch {}
-                          }}
-                          className="px-3.5 py-1.5 rounded-[6px] bg-[#005fb8] hover:bg-[#0052a3] active:bg-[#004890] dark:bg-[#4cc2ff] dark:hover:bg-[#38b6ff] dark:active:bg-[#20a7f5] text-white dark:text-[#002b4d] font-semibold text-[12px] shadow-sm transition-all cursor-pointer"
-                        >
-                          Understood
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 {/* Section Header when input is empty: "Trending searches" or "Recent searches" */}
                 {!searchQuery.trim() && (

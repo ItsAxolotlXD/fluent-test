@@ -467,11 +467,11 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   stroke: #000000 !important;
 }
 
-/* Tab Elements Slide-Up Animation: Sau loading state tab khi load các content sẽ có hiệu ứng slide up từng element (không slide cả trang) */
+/* Tab Elements Slide-Up Animation: Sau loading state tab khi load các content sẽ có hiệu ứng slide up từng element một lần lượt như ở Settings page */
 @keyframes tabElementSlideUp {
   0% {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translateY(22px);
   }
   100% {
     opacity: 1;
@@ -489,72 +489,149 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   transform: none !important;
 }
 
-.tab-element-slide-up-container > * > *:not(style):not(script):not(.fixed),
-.tab-element-slide-up-container > * > div > *:not(style):not(script):not(.fixed),
-.tab-element-slide-up-container > * > section,
-.tab-element-slide-up-container > * > header,
-.tab-element-slide-up-container > * > article,
-.tab-element-slide-up-container > * > main {
-  animation: tabElementSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+/* Settings page uses its own Framer Motion staggered engine for every option and header */
+#settings-page,
+#settings-page *,
+.settings-page-wrapper,
+.settings-page-wrapper * {
+  animation: none !important;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(1),
-.tab-element-slide-up-container > * > div > *:nth-child(1),
-.tab-element-slide-up-container > * > section:nth-child(1) {
-  animation-delay: 0.04s;
+/* Tab Elements Slide Up sequentially across all other pages */
+.tab-element-slide-up-container:not(:has(#settings-page)) > *:not(.no-tab-anim) > *:not(style):not(script):not(.fixed):not(.portal-target):not([role="dialog"]):not([role="menu"]),
+.tab-element-slide-up-container:not(:has(#settings-page)) > *:not(.no-tab-anim) > div > *:not(style):not(script):not(.fixed):not(.portal-target):not([role="dialog"]):not([role="menu"]),
+.tab-element-slide-up-container:not(:has(#settings-page)) > *:not(.no-tab-anim) > section,
+.tab-element-slide-up-container:not(:has(#settings-page)) > *:not(.no-tab-anim) > header,
+.tab-element-slide-up-container:not(:has(#settings-page)) > *:not(.no-tab-anim) > article,
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:not(style):not(script):not(.fixed),
+.tab-element-slide-up-container:not(:has(#settings-page)) [role="feed"] > *:not(style):not(script) {
+  animation: tabElementSlideUp 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(2),
-.tab-element-slide-up-container > * > div > *:nth-child(2),
-.tab-element-slide-up-container > * > section:nth-child(2) {
-  animation-delay: 0.08s;
+/* Staggered sequential entrance delays across elements */
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(1),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(1),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(1),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(1) {
+  animation-delay: 0.03s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(3),
-.tab-element-slide-up-container > * > div > *:nth-child(3),
-.tab-element-slide-up-container > * > section:nth-child(3) {
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(2),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(2),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(2),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(3),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(3),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(3),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(3) {
+  animation-delay: 0.09s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(4),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(4),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(4),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(4) {
   animation-delay: 0.12s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(4),
-.tab-element-slide-up-container > * > div > *:nth-child(4),
-.tab-element-slide-up-container > * > section:nth-child(4) {
-  animation-delay: 0.16s;
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(5),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(5),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(5),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(5) {
+  animation-delay: 0.15s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(5),
-.tab-element-slide-up-container > * > div > *:nth-child(5),
-.tab-element-slide-up-container > * > section:nth-child(5) {
-  animation-delay: 0.20s;
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(6),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(6),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(6),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(6) {
+  animation-delay: 0.18s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(6),
-.tab-element-slide-up-container > * > div > *:nth-child(6),
-.tab-element-slide-up-container > * > section:nth-child(6) {
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(7),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(7),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(7),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(7) {
+  animation-delay: 0.21s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(8),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(8),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(8),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(8) {
   animation-delay: 0.24s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(7),
-.tab-element-slide-up-container > * > div > *:nth-child(7),
-.tab-element-slide-up-container > * > section:nth-child(7) {
-  animation-delay: 0.28s;
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(9),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(9),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(9),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(9) {
+  animation-delay: 0.27s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(8),
-.tab-element-slide-up-container > * > div > *:nth-child(8),
-.tab-element-slide-up-container > * > section:nth-child(8) {
-  animation-delay: 0.32s;
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(10),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(10),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(10),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(10) {
+  animation-delay: 0.30s;
 }
 
-.tab-element-slide-up-container > * > *:nth-child(n+9),
-.tab-element-slide-up-container > * > div > *:nth-child(n+9),
-.tab-element-slide-up-container > * > section:nth-child(n+9) {
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(11),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(11),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(11),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(11) {
+  animation-delay: 0.33s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(12),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(12),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(12),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(12) {
   animation-delay: 0.36s;
 }
 
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(13),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(13),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(13),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(13) {
+  animation-delay: 0.39s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(14),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(14),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(14),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(14) {
+  animation-delay: 0.42s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(15),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(15),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(15),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(15) {
+  animation-delay: 0.45s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(16),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(16),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(16),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(16) {
+  animation-delay: 0.48s;
+}
+
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > *:nth-child(n+17),
+.tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *:nth-child(n+17),
+.tab-element-slide-up-container:not(:has(#settings-page)) .grid > *:nth-child(n+17),
+.tab-element-slide-up-container:not(:has(#settings-page)) section:nth-child(n+17) {
+  animation-delay: 0.51s;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .tab-element-slide-up-container > * > *,
-  .tab-element-slide-up-container > * > div > * {
+  .tab-element-slide-up-container:not(:has(#settings-page)) > * > *,
+  .tab-element-slide-up-container:not(:has(#settings-page)) > * > div > *,
+  .tab-element-slide-up-container:not(:has(#settings-page)) .grid > * {
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;

@@ -69,17 +69,29 @@ export function FlyoutDropdown<T extends string>({ value, options, onChange, ari
             id={listId}
             role="listbox"
             aria-label={ariaLabel}
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
             className={`absolute right-0 top-full mt-1.5 z-50 w-[200px] ${flyoutPanelClassName}`}
             style={flyoutPanelStyle}
           >
-            {options.map((option) => {
+            {options.map((option, idx) => {
               const isActive = option.value === value;
               return (
-                <li key={option.value}>
+                <motion.li
+                  key={option.value}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.28,
+                      delay: Math.min(idx * 0.03, 0.22),
+                      ease: [0.16, 1, 0.3, 1],
+                    },
+                  }}
+                >
                   <button
                     type="button"
                     role="option"
@@ -96,7 +108,7 @@ export function FlyoutDropdown<T extends string>({ value, options, onChange, ari
                     <span className="font-medium truncate flex-1">{option.label}</span>
                     {option.hint && <span className="text-[11px] text-neutral-500 dark:text-neutral-400">{option.hint}</span>}
                   </button>
-                </li>
+                </motion.li>
               );
             })}
           </motion.ul>
