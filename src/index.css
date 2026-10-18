@@ -7504,3 +7504,12 @@ html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="sha
   -webkit-backdrop-filter: blur(50px) !important;
   backdrop-filter: blur(50px) !important;
 }
+
+/* Subtle bottom edge matching the supplied search reference. */
+#topbar-search-box {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.42) !important;
+}
+
+html.light-mode #topbar-search-box {
+  border-bottom-color: rgba(0, 0, 0, 0.32) !important;
+}
