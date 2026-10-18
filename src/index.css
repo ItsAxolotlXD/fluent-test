@@ -638,19 +638,16 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   }
 }
 
-/* Splash Screen background matches Sidebar (#1b1f24 in Dark, #f3f3f3 in Light) */
+/* Splash screen gradient inspired by the supplied reference; logo and loader remain unchanged. */
 #vplay-splash-screen,
 html.dark #vplay-splash-screen,
 html:not(.light-mode) #vplay-splash-screen {
-  background-color: #1b1f24 !important;
-  background: #1b1f24 !important;
+  background-color: #382d32 !important;
+  background:
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
   color: #FFFFFF !important;
-}
-
-html.light-mode #vplay-splash-screen {
-  background-color: #f3f3f3 !important;
-  background: #f3f3f3 !important;
-  color: #111827 !important;
 }
 
 /* Flyout Sign In & Search Result UI: Slide Up Animation giống animation slide up của các trang tab */
@@ -7434,3 +7431,85 @@ html.light-mode #waves-mobile-sidebar .fluent-3d-icon img {
   opacity: 1 !important;
 }
 
+/* Dark mode uses a shared tint so the topbar and sidebar read as one continuous surface. */
+html:not(.light-mode):not(.super-dark) .main-tab-page {
+  background-color: #382d32 !important;
+  background:
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+}
+
+html:not(.light-mode):not(.super-dark) .main-tab-page > .tab-element-slide-up-container {
+  background: transparent !important;
+}
+
+html:not(.light-mode):not(.super-dark) #waves-desktop-sidebar,
+html:not(.light-mode):not(.super-dark) #waves-mobile-sidebar,
+html:not(.light-mode):not(.super-dark) #root header.sticky {
+  background-color: #26232d !important;
+  background:
+    linear-gradient(rgba(10, 11, 20, 0.48), rgba(10, 11, 20, 0.48)),
+    radial-gradient(ellipse at 51% 48%, rgba(112, 72, 39, 0.3) 0%, transparent 53%),
+    radial-gradient(ellipse at 100% 100%, rgba(94, 34, 71, 0.22) 0%, transparent 55%),
+    linear-gradient(115deg, #303248 0%, #3c302e 50%, #392832 100%) !important;
+}
+
+/* Light palette from the new reference: lavender, warm peach, and soft rose. */
+html.light-mode:not(.super-dark) #vplay-splash-screen,
+html.light-mode:not(.super-dark) .main-tab-page {
+  background-color: #f6e2eb !important;
+  background:
+    radial-gradient(ellipse at 50% 72%, rgba(255, 226, 207, 0.86) 0%, rgba(255, 226, 207, 0) 48%),
+    linear-gradient(112deg, #d9ddf8 0%, #e9e3f0 35%, #ffeadf 60%, #f8d7e5 100%) !important;
+  color: #24212b !important;
+}
+
+html.light-mode:not(.super-dark) .main-tab-page > .tab-element-slide-up-container {
+  background: transparent !important;
+}
+
+html.light-mode:not(.super-dark) #waves-desktop-sidebar,
+html.light-mode:not(.super-dark) #waves-mobile-sidebar,
+html.light-mode:not(.super-dark) #root header.sticky {
+  background-color: #f8eaf0 !important;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28)),
+    radial-gradient(ellipse at 50% 72%, rgba(255, 226, 207, 0.86) 0%, rgba(255, 226, 207, 0) 48%),
+    linear-gradient(112deg, #d9ddf8 0%, #e9e3f0 35%, #ffeadf 60%, #f8d7e5 100%) !important;
+}
+
+/* Anchor the shared shell gradients to the viewport so navigation panels match exactly. */
+html:not(.light-mode):not(.super-dark) #waves-desktop-sidebar,
+html:not(.light-mode):not(.super-dark) #waves-mobile-sidebar,
+html:not(.light-mode):not(.super-dark) #root header.sticky,
+html.light-mode:not(.super-dark) #waves-desktop-sidebar,
+html.light-mode:not(.super-dark) #waves-mobile-sidebar,
+html.light-mode:not(.super-dark) #root header.sticky {
+  background-attachment: fixed !important;
+}
+
+/* Shared frosted-white surface strength for search, channel cards, and settings options. */
+html:not(.light-mode) #topbar-search-box,
+html:not(.light-mode) [id^="recommended-channel-"],
+html:not(.light-mode) [id^="livetv-channel-card-"],
+html:not(.light-mode) [id^="home-channel-card-"],
+html:not(.light-mode) [id^="channel-card-"],
+html:not(.light-mode) [id^="test-channel-card-"],
+html:not(.light-mode) .channel-card,
+html:not(.light-mode) [class*="channel-card"],
+html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: blur(50px) !important;
+  backdrop-filter: blur(50px) !important;
+}
+
+/* Subtle bottom edge matching the supplied search reference. */
+#topbar-search-box {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.42) !important;
+}
+
+html.light-mode #topbar-search-box {
+  border-bottom-color: rgba(0, 0, 0, 0.32) !important;
+}
