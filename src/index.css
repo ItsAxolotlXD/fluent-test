@@ -63,10 +63,11 @@
   }
 
   :root {
-    --primary-red: #4cc2ff;
-    --solid-red: #4cc2ff;
-    --accent-red: #6bd0ff;
-    --dark-red: #3bb2ef;
+    --ui-accent: #ff82ff;
+    --primary-red: var(--ui-accent);
+    --solid-red: var(--ui-accent);
+    --accent-red: var(--ui-accent);
+    --dark-red: var(--ui-accent);
     --dark-bg: #0f0712;
     --sidebar-bg: #250F1A;
     --card-bg: #280e32;
@@ -74,21 +75,22 @@
     --spatial-glass-opacity: 0.20;
     --spatial-glass-bg: rgba(255, 255, 255, var(--spatial-glass-opacity, 0.20));
     --spatial-glass-blur: 4px;
-    --fluent-accent: #4cc2ff;
-    --fluent-accent-hover: #6bd0ff;
-    --fluent-accent-active: #3bb2ef;
+    --fluent-accent: var(--ui-accent);
+    --fluent-accent-hover: var(--ui-accent);
+    --fluent-accent-active: var(--ui-accent);
     --fluent-accent-text: #000000;
   }
 
   html.light-mode {
-    --primary-red: #005fb8;
-    --solid-red: #005fb8;
-    --accent-red: #0067c0;
-    --dark-red: #00458b;
-    --fluent-accent: #005fb8;
-    --fluent-accent-hover: #0067c0;
-    --fluent-accent-active: #0051a2;
-    --fluent-accent-text: #ffffff;
+    --ui-accent: #ff01ff;
+    --primary-red: var(--ui-accent);
+    --solid-red: var(--ui-accent);
+    --accent-red: var(--ui-accent);
+    --dark-red: var(--ui-accent);
+    --fluent-accent: var(--ui-accent);
+    --fluent-accent-hover: var(--ui-accent);
+    --fluent-accent-active: var(--ui-accent);
+    --fluent-accent-text: #000000;
   }
 
   html, body, *, *::before, *::after {
@@ -977,8 +979,8 @@ html.light-mode .fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-di
 
   /* WinUI 3 control tokens mirror the app primary/colored controls. */
   .winui3 {
-    --winui-primary: #4cc2ff;
-    --winui-primary-hover: #6bd0ff;
+    --winui-primary: var(--ui-accent);
+    --winui-primary-hover: var(--ui-accent);
     --winui-surface: #30353b;
     --winui-text: #ffffff;
     --winui-muted: rgb(255 255 255 / 0.55);
@@ -986,8 +988,8 @@ html.light-mode .fluent-modal-footer button:not(.fluent-btn-primary):not(#btn-di
 
 html.light-mode .winui3,
 .winui3-light {
-    --winui-primary: #0078d4;
-    --winui-primary-hover: #106ebe;
+    --winui-primary: var(--ui-accent);
+    --winui-primary-hover: var(--ui-accent);
     --winui-surface: #f7f9fb;
     --winui-text: #1f2937;
     --winui-muted: rgb(31 41 55 / 0.58);
@@ -998,7 +1000,7 @@ html.light-mode .winui3,
   .winui-checkbox,
   .winui3 input[type="checkbox"],
   .winui3 input[type="radio"] {
-    accent-color: #4cc2ff !important;
+    accent-color: var(--ui-accent) !important;
     cursor: pointer;
   }
 
@@ -1008,12 +1010,12 @@ html.light-mode .winui3,
   .winui3-light input[type="checkbox"],
   html.light-mode .winui3 input[type="radio"],
   .winui3-light input[type="radio"] {
-    accent-color: #0078d4 !important;
+    accent-color: var(--ui-accent) !important;
   }
 
   .winui-slider,
   .winui3 input[type="range"] {
-    accent-color: #4cc2ff !important;
+    accent-color: var(--ui-accent) !important;
     cursor: pointer;
   }
 
@@ -1021,7 +1023,7 @@ html.light-mode .winui3,
   .winui3-light .winui-slider,
   html.light-mode .winui3 input[type="range"],
   .winui3-light input[type="range"] {
-    accent-color: #0078d4 !important;
+    accent-color: var(--ui-accent) !important;
   }
 
   .winui-search-input {
@@ -1442,7 +1444,7 @@ html.light-mode #setting-theme-mode .grid button.bg-\[\#4cc2ff\],
 html.light-mode #setting-theme-mode .grid button[class*="bg-[#4cc2ff]"],
 html.light-mode [id^="settings-section-"] .grid.rounded-full button.bg-\[\#4cc2ff\],
 html.light-mode [id^="settings-section-"] .grid.rounded-full button[class*="bg-[#4cc2ff]"] {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   color: #FFFFFF !important;
   box-shadow: 0 2px 8px rgba(0, 95, 184, 0.35) !important;
 }
@@ -2166,7 +2168,7 @@ button:hover > .settings-icon-hoverable,
 #btn-top-settings-apply-checkbox {
   position: relative !important;
   overflow: hidden !important;
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   background-image: none !important;
   border: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
@@ -2193,7 +2195,7 @@ button:hover > .settings-icon-hoverable,
 }
 
 #btn-top-settings-apply-checkbox:hover {
-  background-color: #6bd0ff !important;
+  background-color: var(--ui-accent) !important;
   background-image: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
   transform: scale(1.05) !important;
@@ -2205,13 +2207,13 @@ button:hover > .settings-icon-hoverable,
 }
 
 #btn-top-settings-apply-checkbox:active {
-  background-color: #3bb2ef !important;
+  background-color: var(--ui-accent) !important;
   transform: scale(0.96) !important;
   transition: transform 0.1s ease-out !important;
 }
 
 html.light-mode #btn-top-settings-apply-checkbox {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   background-image: none !important;
   border: none !important;
   color: #FFFFFF !important;
@@ -2734,7 +2736,7 @@ button[class*="bg-[#4cc2ff]"],
 
 #btn-discord-join,
 #btn-home-join-discord {
-  background-color: #5865F2 !important;
+  background-color: var(--ui-accent) !important;
   border-bottom: none !important;
   box-shadow: 0 4px 14px rgba(88, 101, 242, 0.42) !important;
   color: #FFFFFF !important;
@@ -2742,7 +2744,7 @@ button[class*="bg-[#4cc2ff]"],
 
 #btn-discord-join:hover,
 #btn-home-join-discord:hover {
-  background-color: #4752C4 !important;
+  background-color: var(--ui-accent) !important;
   border-bottom: none !important;
   box-shadow: 0 6px 20px rgba(88, 101, 242, 0.55) !important;
   transform: scale(1.05) !important;
@@ -2762,7 +2764,7 @@ button[class*="bg-[#4cc2ff]"],
 button.bg-\[\#4cc2ff\],
 button[class*="bg-[#4cc2ff]"],
 .btn-fd932f {
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   border-bottom: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), 0 3px 12px rgba(76, 194, 255, 0.38) !important;
   color: #FFFFFF !important;
@@ -2795,7 +2797,7 @@ html.light-mode #btn-discord-close {
 button.bg-\[\#4cc2ff\]:hover,
 button[class*="bg-[#4cc2ff]"]:hover,
 .btn-fd932f:hover {
-  background-color: #6bd0ff !important;
+  background-color: var(--ui-accent) !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
   transform: scale(1.05) !important;
 }
@@ -2893,7 +2895,7 @@ button[role="switch"][aria-checked="false"]:hover,
 /* ON state (Dark Mode): Accent cyan-blue filled pill with NO outer border/outline */
 button[role="switch"][aria-checked="true"],
 .toggle-switch-btn[aria-checked="true"] {
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
@@ -3235,14 +3237,14 @@ html.light-mode .btn-fd932f {
 
 html.light-mode #btn-discord-join,
 html.light-mode #btn-home-join-discord {
-  background-color: #5865F2 !important;
+  background-color: var(--ui-accent) !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 3px 12px rgba(88, 101, 242, 0.35) !important;
   color: #FFFFFF !important;
 }
 
 html.light-mode #btn-discord-join:hover,
 html.light-mode #btn-home-join-discord:hover {
-  background-color: #4752C4 !important;
+  background-color: var(--ui-accent) !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.5), 0 5px 16px rgba(88, 101, 242, 0.5) !important;
 }
 
@@ -3261,7 +3263,7 @@ html.light-mode #btn-theme-dark.bg-[#4cc2ff],
 html.light-mode button.bg-\[\#4cc2ff\],
 html.light-mode button[class*="bg-[#4cc2ff]"],
 html.light-mode .btn-fd932f {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   background-image: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 2px 6px rgba(0, 95, 184, 0.30) !important;
   color: #FFFFFF !important;
@@ -3619,13 +3621,13 @@ html.light-mode #waves-mobile-sidebar .bg-\[\#E6005A\] {
 
 #waves-desktop-sidebar .bg-\[\#4cc2ff\],
 #waves-mobile-sidebar .bg-\[\#4cc2ff\] {
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   color: #000000 !important;
 }
 
 html.light-mode #waves-desktop-sidebar .bg-\[\#4cc2ff\],
 html.light-mode #waves-mobile-sidebar .bg-\[\#4cc2ff\] {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   color: #FFFFFF !important;
 }
 
@@ -4287,7 +4289,7 @@ html.light-mode .fluent-modal-footer {
 
 /* Fluent Primary Button (Accent Blue #4cc2ff - Windows 11) */
 .fluent-btn-primary {
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   color: #000000 !important;
   border: 1px solid rgba(0, 0, 0, 0.12) !important;
   border-bottom: none !important;
@@ -4318,12 +4320,12 @@ input[type="submit"] {
 }
 
 .fluent-btn-primary:hover {
-  background-color: #6bd0ff !important;
+  background-color: var(--ui-accent) !important;
   color: #000000 !important;
 }
 
 .fluent-btn-primary:active {
-  background-color: #3bb2ef !important;
+  background-color: var(--ui-accent) !important;
   color: #000000 !important;
   border-bottom: none !important;
 }
@@ -4337,7 +4339,7 @@ input[type="submit"] {
 
 html.light-mode .fluent-btn-primary:not(.bg-\[\#5865F2\]),
 html.light-mode button.fluent-btn-primary:not(.bg-\[\#5865F2\]) {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   color: #FFFFFF !important;
   border: 1px solid rgba(0, 0, 0, 0.14) !important;
   border-bottom: none !important;
@@ -4707,7 +4709,7 @@ html.light-mode #btn-changelogs-read,
 html.light-mode #btn-update-vplay,
 html.light-mode #btn-welcome-continue,
 html.light-mode .floaty-bar-pill-indicator {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   color: #FFFFFF !important;
 }
 
@@ -5194,7 +5196,7 @@ html.light-mode .settings-slider-track {
   width: 11px !important;
   height: 11px !important;
   border-radius: 9999px !important;
-  background-color: #4cc2ff !important;
+  background-color: var(--ui-accent) !important;
   transition: transform 0.12s ease-out !important;
 }
 
@@ -5209,7 +5211,7 @@ html.light-mode [id^="settings-slider-thumb-"] {
 html.light-mode #settings-slider-thumb::after,
 html.light-mode .settings-slider-thumb::after,
 html.light-mode [id^="settings-slider-thumb-"]::after {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
 }
 
 /* Slider Thumb Hover & Active: Clean smooth feedback */
@@ -5287,7 +5289,7 @@ html.light-mode .toggle-switch-btn[aria-checked="false"]:hover {
 /* Light Mode ON State: Accent blue filled pill with NO outer border/outline */
 html.light-mode button[role="switch"][aria-checked="true"],
 html.light-mode .toggle-switch-btn[aria-checked="true"] {
-  background-color: #005fb8 !important;
+  background-color: var(--ui-accent) !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
@@ -7580,4 +7582,100 @@ html.light-mode #topbar-search-box::before {
 #vplay-native-keyboard {
   position: fixed !important;
   z-index: 2147483647 !important;
+}
+
+/* Normalize blue UI accents to the requested theme accent. */
+:root {
+  --ui-accent: #ff82ff;
+}
+
+html.light-mode {
+  --ui-accent: #ff01ff;
+}
+
+:is([class*="bg-[#4cc2ff]"], [class*="bg-[#6bd0ff]"], [class*="bg-[#3bb2ef]"], [class*="bg-[#75d5ff]"], [class*="bg-[#005fb8]"], [class*="bg-[#0067c0]"], [class*="bg-[#00458b]"], [class*="bg-[#0051a2]"], [class*="bg-[#0078d4]"], [class*="bg-[#106ebe]"], [class*="bg-[#5865F2]"], [class*="bg-[#4752C4]"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-cyan-"], [class*="bg-indigo-"]) {
+  background-color: var(--ui-accent) !important;
+  background-image: none !important;
+}
+
+:is([class*="text-[#4cc2ff]"], [class*="text-[#6bd0ff]"], [class*="text-[#3bb2ef]"], [class*="text-[#75d5ff]"], [class*="text-[#005fb8]"], [class*="text-[#0067c0]"], [class*="text-[#00458b]"], [class*="text-[#0051a2]"], [class*="text-[#0078d4]"], [class*="text-[#106ebe]"], [class*="text-[#5865F2]"], [class*="text-[#4752C4]"], [class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"], [class*="text-indigo-"]) {
+  color: var(--ui-accent) !important;
+}
+
+:is([class*="border-[#4cc2ff]"], [class*="border-[#6bd0ff]"], [class*="border-[#3bb2ef]"], [class*="border-[#75d5ff]"], [class*="border-[#005fb8]"], [class*="border-[#0067c0]"], [class*="border-[#00458b]"], [class*="border-[#0051a2]"], [class*="border-[#0078d4]"], [class*="border-[#106ebe]"], [class*="border-[#5865F2]"], [class*="border-[#4752C4]"], [class*="border-blue-"], [class*="border-sky-"], [class*="border-cyan-"], [class*="border-indigo-"]) {
+  border-color: var(--ui-accent) !important;
+}
+
+:is([class*="outline-[#4cc2ff]"], [class*="outline-[#005fb8]"], [class*="outline-[#0078d4]"], [class*="outline-blue-"], [class*="outline-sky-"], [class*="outline-cyan-"]) {
+  outline-color: var(--ui-accent) !important;
+}
+
+:is([class*="ring-[#4cc2ff]"], [class*="ring-[#005fb8]"], [class*="ring-[#0078d4]"], [class*="ring-blue-"], [class*="ring-sky-"], [class*="ring-cyan-"]) {
+  --tw-ring-color: var(--ui-accent) !important;
+}
+
+:is([class*="accent-[#4cc2ff]"], [class*="accent-[#6bd0ff]"], [class*="accent-[#3bb2ef]"], [class*="accent-[#75d5ff]"], [class*="accent-[#005fb8]"], [class*="accent-[#0067c0]"], [class*="accent-[#00458b]"], [class*="accent-[#0051a2]"], [class*="accent-[#0078d4]"], [class*="accent-[#106ebe]"], [class*="accent-blue-"], [class*="accent-sky-"], [class*="accent-cyan-"], .winui-checkbox, .winui-slider, .winui3 input[type="checkbox"], .winui3 input[type="radio"], .winui3 input[type="range"]) {
+  accent-color: var(--ui-accent) !important;
+}
+
+:is([class*="fill-[#4cc2ff]"], [class*="fill-[#6bd0ff]"], [class*="fill-[#3bb2ef]"], [class*="fill-[#75d5ff]"], [class*="fill-[#005fb8]"], [class*="fill-[#0067c0]"], [class*="fill-[#00458b]"], [class*="fill-[#0051a2]"], [class*="fill-[#0078d4]"], [class*="fill-[#106ebe]"], [class*="fill-blue-"], [class*="fill-sky-"], [class*="fill-cyan-"]) {
+  fill: var(--ui-accent) !important;
+}
+
+:is([class*="stroke-[#4cc2ff]"], [class*="stroke-[#6bd0ff]"], [class*="stroke-[#3bb2ef]"], [class*="stroke-[#75d5ff]"], [class*="stroke-[#005fb8]"], [class*="stroke-[#0067c0]"], [class*="stroke-[#00458b]"], [class*="stroke-[#0051a2]"], [class*="stroke-[#0078d4]"], [class*="stroke-[#106ebe]"], [class*="stroke-blue-"], [class*="stroke-sky-"], [class*="stroke-cyan-"]) {
+  stroke: var(--ui-accent) !important;
+}
+
+#topbar-search-box::before,
+html.light-mode #topbar-search-box::before,
+.winui-search-input:focus-within::after {
+  background-color: var(--ui-accent) !important;
+}
+
+.winui-search-input:focus-within {
+  border-bottom-color: var(--ui-accent) !important;
+}
+
+#btn-top-settings-apply-checkbox,
+#btn-hero-watch-now,
+#btn-add-stream-submit,
+.btn-fd932f,
+.fluent-btn-primary {
+  background-color: var(--ui-accent) !important;
+}
+
+#btn-top-settings-apply-checkbox:hover,
+#btn-hero-watch-now:hover,
+#btn-add-stream-submit:hover,
+.btn-fd932f:hover,
+.fluent-btn-primary:hover {
+  background-color: var(--ui-accent) !important;
+}
+
+:is([class*="rgba(76,194,255"], [class*="rgba(76, 194, 255"], [class*="rgba(0,95,184"], [class*="rgba(0, 95, 184"], [class*="rgba(0,120,212"], [class*="rgba(0, 120, 212"]) {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ui-accent) 45%, transparent) !important;
+}
+
+:is([fill="#4cc2ff"], [fill="#6bd0ff"], [fill="#3bb2ef"], [fill="#75d5ff"], [fill="#005fb8"], [fill="#0067c0"], [fill="#00458b"], [fill="#0051a2"], [fill="#0078d4"], [fill="#106ebe"]) {
+  fill: var(--ui-accent) !important;
+}
+
+:is([stroke="#4cc2ff"], [stroke="#6bd0ff"], [stroke="#3bb2ef"], [stroke="#75d5ff"], [stroke="#005fb8"], [stroke="#0067c0"], [stroke="#00458b"], [stroke="#0051a2"], [stroke="#0078d4"], [stroke="#106ebe"]) {
+  stroke: var(--ui-accent) !important;
+}
+
+:is([style*="color: #4cc2ff"], [style*="color:#4cc2ff"], [style*="color: #005fb8"], [style*="color:#005fb8"], [style*="color: #0078d4"], [style*="color:#0078d4"], [style*="color: rgb(76, 194, 255)"], [style*="color: rgb(0, 95, 184)"], [style*="color: rgb(0, 120, 212)"]) {
+  color: var(--ui-accent) !important;
+}
+
+:is([style*="background-color: #4cc2ff"], [style*="background-color:#4cc2ff"], [style*="background-color: #005fb8"], [style*="background-color:#005fb8"], [style*="background-color: #0078d4"], [style*="background-color:#0078d4"], [style*="background-color: rgb(76, 194, 255)"], [style*="background-color: rgb(0, 95, 184)"], [style*="background-color: rgb(0, 120, 212)"]) {
+  background-color: var(--ui-accent) !important;
+  background-image: none !important;
+}
+
+html.light-mode .winui3,
+html.light-mode .winui3-light,
+.winui3-light {
+  --winui-primary: var(--ui-accent);
+  --winui-primary-hover: var(--ui-accent);
 }
