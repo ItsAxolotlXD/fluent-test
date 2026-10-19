@@ -1426,90 +1426,32 @@ export const Settings: React.FC<SettingsProps> = ({
               className="overflow-hidden"
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
-                {/* 1. Software info block */}
-                {matchesSearch(['Software Update', 'Software Build', 'phiên bản', '26.11']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="font-normal text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>Software Update</span>
-                      <span className="font-semibold text-[#9CA3AF]">26.11</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="font-normal text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>Software Build</span>
-                      <span className="font-semibold text-[#9CA3AF]">261016</span>
-                    </div>
-                    <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 flex items-center">
-                      <p className="text-sm font-normal tracking-tight text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
-                        Compatible with{' '}
-                        <span className="text-[#4cc2ff] font-semibold">
-                          Microsoft Fluent Design.
-                        </span>
-                      </p>
-                    </div>
+                {/* 1. Version information */}
+                {matchesSearch(['Update version', 'Build number', 'Branch', 'Insider Preview', '261019']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Update version</span><span className="font-semibold text-[#9CA3AF]">26.11</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">261019</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#4cc2ff]">Insider Preview</span></div>
                   </motion.div>
                 )}
 
-                {/* 2. Test Sparkle Option Card */}
-                {matchesSearch(['Test Sparkle', 'bản thử nghiệm', 'test build']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
+                {/* 2. Sparkle Insider Program */}
+                {matchesSearch(['Join Sparkle Insider Program', 'Functional purpose', 'Early Access', 'Feedback Collection', 'How are you doing']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-4 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div>
-                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm" style={{ fontWeight: 400 }}>
-                        Test Sparkle
-                      </div>
-                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                        Try our test builds of Sparkle with new, early unreleased features.
-                      </div>
+                      <h3 className="text-sm sm:text-base font-semibold text-[#111827] dark:text-white">Join Sparkle Insider Program</h3>
+                      <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-2 leading-relaxed">The Sparkle Insider Program is an open software testing program that lets users try out early, pre-release features and builds of Sparkle before they roll-out officially to the general public with Sparkle Insider Preview. Additionally, users who joined Sparkle Insider Program will have a door to access more random out of context Sparkle test builds with Sparkle Dev Insider Preview.</p>
                     </div>
-
-                    <a
-                      id="btn-test-vplay-switch"
-                      href="https://test-vplay.vercel.app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"
-                    >
-                      <span className="light-mode-white-label">Switch</span>
-                    </a>
+                    <div><h4 className="text-xs sm:text-sm font-semibold text-[#111827] dark:text-white">Functional purpose</h4><ul className="mt-2 space-y-1 text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] list-disc pl-5"><li>Early Access: Test early new Sparkle features, design changes, and performance updates months before official release.</li><li>Feedback Collection: Submit bug reports, suggestions, and votes to help us shape future updates.</li></ul></div>
+                    <div><h4 className="text-xs sm:text-sm font-semibold text-[#111827] dark:text-white">How are you doing?</h4><p className="mt-2 text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF]">Great, you have joined Sparkle Insider Program. Congratulations!</p></div>
                   </motion.div>
                 )}
 
-                {/* 3. Update Sparkle Option Card */}
-                {matchesSearch(['Update Sparkle', 'cập nhật', 'phiên bản mới']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
-                    <div>
-                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm" style={{ fontWeight: 400 }}>
-                        Update Sparkle
-                      </div>
-                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                        Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Sparkle.
-                      </div>
-                    </div>
-
-                    <button
-                      id="btn-update-vplay"
-                      type="button"
-                      onClick={onOpenUpdate}
-                      className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center border-none"
-                    >
-                      <span className="light-mode-white-label">Update</span>
-                    </button>
+                {/* 3. Developer preview */}
+                {matchesSearch(['Sparkle Dev Insider Preview', 'Test Sparkle', 'test build']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                    <div><div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm">Sparkle Dev Insider Preview</div><div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">Try experimental Sparkle builds with early, unreleased features.</div></div>
+                    <a id="btn-test-vplay-switch" href="https://test-vplay.vercel.app" target="_blank" rel="noopener noreferrer" className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"><span className="light-mode-white-label">Switch</span></a>
                   </motion.div>
                 )}
                   </div>

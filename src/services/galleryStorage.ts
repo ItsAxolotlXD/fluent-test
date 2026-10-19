@@ -814,7 +814,7 @@ class GalleryDatabase {
         tx.onerror = () => reject(tx.error);
       });
       localStorage.setItem('vone_gallery_initialized', 'true');
-      localStorage.setItem('vone_gallery_build_261016_init', 'true');
+      localStorage.setItem('vone_gallery_build_261019_init', 'true');
       this.notify();
     } catch (e) {
       console.error('Failed to seed defaults', e);
