@@ -130,8 +130,8 @@ export const Settings: React.FC<SettingsProps> = ({
     matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons']);
   const matchesInterface = 
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
-  const matchesAccessibility = 
-    matchesSearch(['Accessibility', 'trợ năng', 'hover to expand', 'page loading', 'tải trang', 'load pages sequentially', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'tổ hợp phím', 'phím tắt', 'keybinds']);
+  const matchesAccessibility = matchesSearch(['Accessibility', 'trợ năng', 'hover to expand']);
+  const matchesKeyboard = matchesSearch(['Keyboard and Mouse', 'Native keyboard', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'keybinds', 'phím tắt']);
   const matchesTools = false;
   const matchesVersion = 
     matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle']);
@@ -232,6 +232,7 @@ export const Settings: React.FC<SettingsProps> = ({
               className="overflow-hidden"
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
+                <div className="px-1 pt-1 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Native keyboard</div>
                 {/* 1. Native keyboard */}
                 {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
@@ -728,7 +729,7 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
 
         {/* 3. SECTION: ACCESSIBILITY */}
-        {matchesAccessibility && (
+        {matchesKeyboard && (
           <section id="settings-section-accessibility" className="order-4 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
@@ -743,9 +744,9 @@ export const Settings: React.FC<SettingsProps> = ({
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <img src="/icons/settings/accessibility.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
+                  <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tZDhYcOsxyui7l0TvqaoPI63JZnsSF.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
-                    Accessibility
+                    Keyboard and Mouse
                   </h2>
                 </div>
                 <ChevronDown 
@@ -805,7 +806,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Page loading */}
-                {matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
+                {false && matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -841,7 +842,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Load pages sequentially */}
-                {matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
+                {false && matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -984,8 +985,8 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* 7. Keyboard and Mouse category */}
-                {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'bàn phím']) && (
+                <div className="px-1 pt-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Keybinds</div>
+                {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'b��n phím']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1159,7 +1160,7 @@ export const Settings: React.FC<SettingsProps> = ({
         )}
 
         {/* Auto-hide Side View is an accessibility setting */}
-        {matchesAccessibility && (
+        {matchesInterface && (
           <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
             <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
             <button id="toggle-autohide-sidebar-accessibility" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
