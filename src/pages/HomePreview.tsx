@@ -89,10 +89,10 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
             <h2 id="recommendations-title">Recommended</h2>
           </div>
           <div className="flex items-center gap-1">
-            <button type="button" onClick={() => scrollRecommendations('previous')} className="rounded-full p-1 text-black/35 transition-colors hover:bg-black/10 hover:text-black dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Previous recommendations">
+            <button type="button" onClick={() => scrollRecommendations('previous')} className="rounded-full p-1 text-black transition-colors hover:bg-black/10 hover:text-black dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Previous recommendations">
               <ChevronLeft className="size-4" aria-hidden="true" />
             </button>
-            <button type="button" onClick={() => scrollRecommendations('next')} className="rounded-full p-1 text-black/55 transition-colors hover:bg-black/10 hover:text-black dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Next recommendations">
+            <button type="button" onClick={() => scrollRecommendations('next')} className="rounded-full p-1 text-black transition-colors hover:bg-black/10 hover:text-black dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Next recommendations">
               <ChevronRight className="size-4" aria-hidden="true" />
             </button>
           </div>
@@ -110,8 +110,8 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   setRecommendationTilt((items) => ({
                     ...items,
                     [item.id]: {
-                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -10,
-                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 12,
+                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -16,
+                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 18,
                     },
                   }));
                 }}
@@ -121,7 +121,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   transition: 'transform 180ms ease-out, box-shadow 180ms ease-out',
                   transformStyle: 'preserve-3d',
                 }}
-                className="group w-[calc((100vw-2.75rem)/2)] min-w-[178px] shrink-0 snap-start overflow-hidden rounded-[3px] sm:w-[220px] lg:w-[calc((100%_-_2.25rem)/5)] border border-black/[0.08] bg-white text-left shadow-[0_1px_5px_rgba(0,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168a9e] dark:border-white/[0.1] dark:bg-[#29292d]"
+                className="group w-[calc((100vw-2.75rem)/2)] min-w-[178px] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-[220px] lg:w-[calc((100%_-_2.25rem)/5)] border border-black/[0.08] bg-white text-left shadow-[0_1px_5px_rgba(0,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168a9e] dark:border-white/[0.1] dark:bg-[#29292d]"
               >
                 <div className="relative flex h-[92px] items-center justify-center overflow-hidden bg-[#f1f1f1] dark:bg-[#38383d]">
                   <img src={item.image} alt="" loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
