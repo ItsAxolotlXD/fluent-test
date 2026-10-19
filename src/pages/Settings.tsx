@@ -18,7 +18,7 @@ import { KeybindAction } from '../types';
 export type SettingsCategoryId = 
   | 'settings-section-experimental'
   | 'settings-section-interface'
-  | 'settings-section-accessibility'
+  | 'settings-section-keyboard'
   | 'settings-section-tools'
   | 'settings-section-version';
 
@@ -56,10 +56,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const [showApplyToast, setShowApplyToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Insider Flags collapsed by default as requested
-  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({
-    'settings-section-experimental': true,
-  });
+  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
   const [isLightModeUnlockOpen, setIsLightModeUnlockOpen] = useState(false);
   const [lightModeUnlockCode, setLightModeUnlockCode] = useState('');
@@ -122,36 +119,6 @@ export const Settings: React.FC<SettingsProps> = ({
     return () => window.removeEventListener('settings-applied-toast', handleAppliedEvent);
   }, []);
 
-  // Ordered categories: Insider experiments -> Appearance -> Accessibility -> Tools -> Updates
-  const navCategories = [
-    { id: 'settings-section-experimental', label: 'Insider experiments', iconSrc: '/icons/settings/insider.png' },
-    { id: 'settings-section-interface', label: 'Appearance', iconSrc: '/icons/settings/appearance.png' },
-    { id: 'settings-section-accessibility', label: 'Accessibility', iconSrc: '/icons/settings/accessibility.png' },
-    { id: 'settings-section-tools', label: 'Tools', iconSrc: '/icons/settings/tools.png' },
-    { id: 'settings-section-version', label: 'Updates', iconSrc: '/icons/settings/updates.png' },
-  ];
-
-  const [activeNavSection, setActiveNavSection] = useState<string>('settings-section-experimental');
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((e) => e.isIntersecting);
-        if (visible?.target?.id) {
-          setActiveNavSection(visible.target.id);
-        }
-      },
-      { rootMargin: '-15% 0px -65% 0px', threshold: 0.05 }
-    );
-
-    navCategories.forEach((cat) => {
-      const el = document.getElementById(cat.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
   // Search filter helper
   const query = searchQuery.trim().toLowerCase();
   const matchesSearch = (texts: (string | undefined)[]) => {
@@ -163,10 +130,9 @@ export const Settings: React.FC<SettingsProps> = ({
     matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons']);
   const matchesInterface = 
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
-  const matchesAccessibility = 
-    matchesSearch(['Accessibility', 'trợ năng', 'hover to expand', 'page loading', 'tải trang', 'load pages sequentially', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'tổ hợp phím', 'phím tắt', 'keybinds']);
-  const matchesTools = 
-    matchesSearch(['Tools', 'công cụ', 'tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3', 'tự động ẩn side view', 'auto hide', 'sparkle notes', 'ghi chú']);
+  const matchesAccessibility = matchesSearch(['Accessibility', 'trợ năng', 'hover to expand']);
+  const matchesKeyboard = matchesSearch(['Keyboard and Mouse', 'Native keyboard', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'keybinds', 'phím tắt']);
+  const matchesTools = false;
   const matchesVersion = 
     matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle']);
 
@@ -174,8 +140,8 @@ export const Settings: React.FC<SettingsProps> = ({
     !query || 
     matchesExperimental ||
     matchesInterface || 
-    matchesAccessibility || 
-    matchesTools || 
+    matchesKeyboard ||
+    matchesTools ||
     matchesVersion;
 
   // Global staggered element counter for cascading animation
@@ -203,44 +169,10 @@ export const Settings: React.FC<SettingsProps> = ({
         <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
           Customize your Sparkle experience your way
         </p>
+        <div className="mt-3 rounded-[6px] border border-amber-300/40 bg-amber-300/15 px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed text-amber-950 dark:text-amber-100">
+          Settings page is being experimented for a design overhaul, so some of the options might be missing at the moment. This will eventually b fixed in future builds don&apos;t worry.
+        </div>
       </motion.div>
-
-      {/* Quick Navigation Category Pills */}
-      {!query && (
-        <motion.nav 
-          variants={slideUpVariant}
-          initial="hidden"
-          animate="visible"
-          custom={elementIndex++}
-          className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 bg-transparent" 
-          aria-label="Settings Categories"
-        >
-          {navCategories.map((cat) => {
-            const isActive = activeNavSection === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => {
-                  setActiveNavSection(cat.id);
-                  const el = document.getElementById(cat.id);
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }}
-                className={`px-3 py-1.5 rounded-[6px] text-xs font-normal transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none border-none ${
-                  isActive
-                    ? 'bg-[#0078d4] text-white shadow-xs font-normal'
-                    : 'bg-black/5 dark:bg-[#2c3037] hover:bg-black/10 dark:hover:bg-[#363b43] text-[#4b5563] dark:text-[#d1d5db]'
-                }`}
-              >
-                <img src={cat.iconSrc} alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-4 h-4 object-contain shrink-0" />
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </motion.nav>
-      )}
 
       {/* No matching results fallback */}
       {!hasAnyMatch && (
@@ -261,10 +193,10 @@ export const Settings: React.FC<SettingsProps> = ({
       )}
 
       {/* Settings Sections Container */}
-      <div className="space-y-8 bg-transparent">
-        {/* 1. SECTION: INSIDER FLAGS (Collapsed by default) */}
+      <div className="flex flex-col gap-8 bg-transparent">
+        {/* 2. SECTION: INSIDER FLAGS */}
         {matchesExperimental && (
-          <section id="settings-section-experimental" className="space-y-3 bg-transparent">
+          <section id="settings-section-experimental" className="order-2 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -304,7 +236,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Native keyboard */}
-                {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
+                {false && matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -340,7 +272,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Immersive search experience */}
-                {matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
+                {false && matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -376,7 +308,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Fluent icons */}
-                {matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
+                {false && matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -399,9 +331,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Fluent icons</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-[6px] font-normal uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
-                            Mới
-                          </span>
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Beautifully crafted 3D icons in vibrant colors, inspired by Microsoft Fluent Design
@@ -426,7 +355,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* New Watch Tab */}
-                {matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
+                {false && matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -471,9 +400,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Dynamic sidebar icons</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-[6px] font-normal uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
-                            Sidebar
-                          </span>
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Kết hợp 2 dạng icon: Sign in, Settings, WinUI 3 dùng icon thường; Home, Update blogs, Watch, Gallery, Notes, Draws, VLC, Craftmine, Photopea, Discord dùng icon Fluent colored
@@ -503,7 +429,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 2. SECTION: INTERFACE */}
         {matchesInterface && (
-          <section id="settings-section-interface" className="space-y-3 bg-transparent">
+          <section id="settings-section-interface" className="order-3 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -594,7 +520,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Thanh điều hướng */}
-                {matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
+                {false && matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -729,7 +655,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 4. Vị trí thanh bên (nếu dùng Side View) */}
-                {draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
+                {false && draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -769,7 +695,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 5. Siêu chế độ tối */}
-                {matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
+                {false && matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -799,14 +725,21 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
+
+                {matchesInterface && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
+                    <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
+                    <button id="toggle-autohide-sidebar-appearance" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
+                  </motion.div>
+                )}
                   </div>
             </motion.div>
           </section>
         )}
 
-        {/* 3. SECTION: ACCESSIBILITY */}
-        {matchesAccessibility && (
-          <section id="settings-section-accessibility" className="space-y-3 bg-transparent">
+        {/* 3. SECTION: KEYBOARD AND MOUSE */}
+        {matchesKeyboard && (
+          <section id="settings-section-keyboard" className="order-4 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -816,18 +749,18 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <button
                 type="button"
-                onClick={() => toggleCategoryCollapse('settings-section-accessibility')}
+                onClick={() => toggleCategoryCollapse('settings-section-keyboard')}
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <img src="/icons/settings/accessibility.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
+                  <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tZDhYcOsxyui7l0TvqaoPI63JZnsSF.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
                   <h2 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white tracking-tight">
-                    Accessibility
+                    Keyboard and Mouse
                   </h2>
                 </div>
                 <ChevronDown 
                   className={`w-4 h-4 text-white transition-transform duration-200 ${
-                    isCategoryCollapsed('settings-section-accessibility') ? '-rotate-90' : 'rotate-0'
+                    isCategoryCollapsed('settings-section-keyboard') ? '-rotate-90' : 'rotate-0'
                   }`} 
                 />
               </button>
@@ -835,11 +768,11 @@ export const Settings: React.FC<SettingsProps> = ({
 
             {/* Individual Option Blocks */}
             <motion.div
-              key="content-settings-section-accessibility"
-              initial={isCategoryCollapsed('settings-section-accessibility') ? { height: 0, opacity: 0 } : false}
+              key="content-settings-section-keyboard"
+              initial={isCategoryCollapsed('settings-section-keyboard') ? { height: 0, opacity: 0 } : false}
               animate={{
-                height: isCategoryCollapsed('settings-section-accessibility') ? 0 : 'auto',
-                opacity: isCategoryCollapsed('settings-section-accessibility') ? 0 : 1,
+                height: isCategoryCollapsed('settings-section-keyboard') ? 0 : 'auto',
+                opacity: isCategoryCollapsed('settings-section-keyboard') ? 0 : 1,
               }}
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
@@ -882,7 +815,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Page loading */}
-                {matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
+                {false && matchesSearch(['Page loading', 'tải trang', 'vòng xoay']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -918,7 +851,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Load pages sequentially */}
-                {matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
+                {false && matchesSearch(['Load pages sequentially', 'tải tuần tự', 'cuộn trang']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1061,8 +994,8 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* 7. Keybinds Options Card */}
-                {matchesSearch(['Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt']) && (
+                <div className="px-1 pt-4 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Keybinds</div>
+                {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'b��n phím']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1071,8 +1004,9 @@ export const Settings: React.FC<SettingsProps> = ({
                     className="space-y-2 pt-2 bg-transparent"
                   >
                     <div className="flex items-center justify-between px-1 bg-transparent">
-                      <div className="font-normal text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider" style={{ fontWeight: 400 }}>
-                        Keybinds
+                      <div className="flex items-center gap-2 font-normal text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider" style={{ fontWeight: 400 }}>
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tZDhYcOsxyui7l0TvqaoPI63JZnsSF.png" alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
+                        <span>Keyboard and Mouse</span>
                       </div>
                       <button
                         type="button"
@@ -1234,8 +1168,8 @@ export const Settings: React.FC<SettingsProps> = ({
           </section>
         )}
 
-        {/* 4. SECTION: TOOLS */}
-        {matchesTools && (
+        {/* 4. SECTION: TOOLS (removed) */}
+        {false && matchesTools && (
           <section id="settings-section-tools" className="space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
@@ -1276,7 +1210,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
-                {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
+                {false && matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1320,7 +1254,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Tự động ẩn Side View */}
-                {matchesSearch(['Tự động ẩn Side View', 'auto hide', 'sidebar']) && (
+                {false && matchesSearch(['Tự động ẩn Side View', 'auto hide', 'sidebar']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1351,7 +1285,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Sparkle Notes */}
-                {matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
+                {false && matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1387,7 +1321,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 5. SECTION: UPDATES */}
         {matchesVersion && (
-          <section id="settings-section-version" className="space-y-3 bg-transparent">
+          <section id="settings-section-version" className="order-1 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -1426,90 +1360,32 @@ export const Settings: React.FC<SettingsProps> = ({
               className="overflow-hidden"
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
-                {/* 1. Software info block */}
-                {matchesSearch(['Software Update', 'Software Build', 'phiên bản', '26.11']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="font-normal text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>Software Update</span>
-                      <span className="font-semibold text-[#9CA3AF]">26.11</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className="font-normal text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>Software Build</span>
-                      <span className="font-semibold text-[#9CA3AF]">261016</span>
-                    </div>
-                    <div id="settings-compatible-spatial-glass" className="pt-2.5 mt-1 flex items-center">
-                      <p className="text-sm font-normal tracking-tight text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
-                        Compatible with{' '}
-                        <span className="text-[#4cc2ff] font-semibold">
-                          Microsoft Fluent Design.
-                        </span>
-                      </p>
-                    </div>
+                {/* 1. Version information */}
+                {matchesSearch(['Update version', 'Build number', 'Branch', 'Insider Preview', '261019']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Update version</span><span className="font-semibold text-[#9CA3AF]">26.11</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">261019</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#4cc2ff]">Insider Preview</span></div>
                   </motion.div>
                 )}
 
-                {/* 2. Test Sparkle Option Card */}
-                {matchesSearch(['Test Sparkle', 'bản thử nghiệm', 'test build']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
+                {/* 2. Sparkle Insider Program */}
+                {matchesSearch(['Join Sparkle Insider Program', 'Functional purpose', 'Early Access', 'Feedback Collection', 'How are you doing']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-4 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div>
-                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm" style={{ fontWeight: 400 }}>
-                        Test Sparkle
-                      </div>
-                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                        Try our test builds of Sparkle with new, early unreleased features.
-                      </div>
+                      <h3 className="text-sm sm:text-base font-semibold text-[#111827] dark:text-white">Join Sparkle Insider Program</h3>
+                      <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-2 leading-relaxed">The Sparkle Insider Program is an open software testing program that lets users try out early, pre-release features and builds of Sparkle before they roll-out officially to the general public with Sparkle Insider Preview. Additionally, users who joined Sparkle Insider Program will have a door to access more random out of context Sparkle test builds with Sparkle Dev Insider Preview.</p>
                     </div>
-
-                    <a
-                      id="btn-test-vplay-switch"
-                      href="https://test-vplay.vercel.app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"
-                    >
-                      <span className="light-mode-white-label">Switch</span>
-                    </a>
+                    <div><h4 className="text-xs sm:text-sm font-semibold text-[#111827] dark:text-white">Functional purpose</h4><ul className="mt-2 space-y-1 text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] list-disc pl-5"><li>Early Access: Test early new Sparkle features, design changes, and performance updates months before official release.</li><li>Feedback Collection: Submit bug reports, suggestions, and votes to help us shape future updates.</li></ul></div>
+                    <div><h4 className="text-xs sm:text-sm font-semibold text-[#111827] dark:text-white">How are you doing?</h4><p className="mt-2 text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF]">Great, you have joined Sparkle Insider Program. Congratulations!</p></div>
                   </motion.div>
                 )}
 
-                {/* 3. Update Sparkle Option Card */}
-                {matchesSearch(['Update Sparkle', 'cập nhật', 'phiên bản mới']) && (
-                  <motion.div 
-                    variants={slideUpVariant}
-                    initial="hidden"
-                    animate="visible"
-                    custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
-                  >
-                    <div>
-                      <div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm" style={{ fontWeight: 400 }}>
-                        Update Sparkle
-                      </div>
-                      <div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">
-                        Kiểm tra và cập nhật phiên bản mới nhất của nền tảng Sparkle.
-                      </div>
-                    </div>
-
-                    <button
-                      id="btn-update-vplay"
-                      type="button"
-                      onClick={onOpenUpdate}
-                      className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs cursor-default flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center border-none"
-                    >
-                      <span className="light-mode-white-label">Update</span>
-                    </button>
+                {/* 3. Developer preview */}
+                {matchesSearch(['Sparkle Dev Insider Preview', 'Test Sparkle', 'test build']) && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                    <div><div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm">Sparkle Dev Insider Preview</div><div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">Try experimental Sparkle builds with early, unreleased features.</div></div>
+                    <a id="btn-test-vplay-switch" href="https://test-vplay.vercel.app" target="_blank" rel="noopener noreferrer" className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"><span className="light-mode-white-label">Switch</span></a>
                   </motion.div>
                 )}
                   </div>

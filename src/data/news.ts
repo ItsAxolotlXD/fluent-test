@@ -4,7 +4,7 @@ export const NEWS_DATA: NewsArticle[] = [
   {
     id: 'news-sparkle-update-26-11',
     slug: 'sparkle-phat-hanh-ban-cap-nhat-26-11-fluent-design',
-    title: 'Sparkle phát hành bản cập nhật 26.11 (Build 261016) - Trải nghiệm Fluent Design đồng bộ & Dynamic Icons',
+    title: 'Sparkle phát hành bản cập nhật 26.11 (Build 261019) - Trải nghiệm Fluent Design đồng bộ & Dynamic Icons',
     subtitle: 'Nâng cấp toàn diện giao diện hội thoại Fluent, tối ưu hóa điều hướng tuần tự và ra mắt tính năng Dynamic Sidebar Icons',
     coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=85',
     category: 'Cập nhật hệ thống',
@@ -13,7 +13,7 @@ export const NEWS_DATA: NewsArticle[] = [
     author: {
       name: 'Sparkle Engineering Team',
       role: 'System Updates & Changelog',
-      avatar: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/spark-Kj8YQWc8TjouwICxNDbMK3n2GRfvAy.png'
+      avatar: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iTzEG0iuHLTKbWp5e2y55NABj3UWZr.png'
     },
     excerpt: 'Bản phát hành Sparkle v26.11 chính thức ra mắt mang đến tính năng Dynamic Sidebar Icons, sơ đồ cây thư mục trong Gallery, trải nghiệm thanh tìm kiếm toàn màn hình trên thiết bị di động, và hợp nhất các bản tin cập nhật vào Update blogs.',
     summary: {
@@ -30,7 +30,7 @@ export const NEWS_DATA: NewsArticle[] = [
     featured: true,
     tags: ['Updates', 'Changelog', 'Fluent Design', 'Dynamic Icons', 'Gallery Tree', 'Update Blogs', 'Version 26.11'],
     content: [
-      'Chúng tôi rất vui mừng giới thiệu bản phát hành Sparkle phiên bản 26.11 (Build 261016), một bước tiến quan trọng trong việc hoàn thiện ngôn ngữ thiết kế Fluent Design và nâng cao năng suất của người dùng trên toàn bộ nền tảng.',
+      'Chúng tôi rất vui mừng giới thiệu bản phát hành Sparkle phiên bản 26.11 (Build 261019), một bước tiến quan trọng trong việc hoàn thiện ngôn ngữ thiết kế Fluent Design và nâng cao năng suất của người dùng trên toàn bộ nền tảng.',
       '1. TÍNH NĂNG MỚI: DYNAMIC SIDEBAR ICONS',
       'Lắng nghe đóng góp từ cộng đồng người dùng, Sparkle giới thiệu tùy chọn "Dynamic sidebar icons" ngay trong menu chuột phải (context menu) của thanh bên. Khi kích hoạt chế độ này, hệ thống sẽ kết hợp thông minh giữa hai phong cách biểu tượng:',
       '• Biểu tượng tiêu chuẩn tinh gọn: Dành cho các chức năng quản trị và hệ thống như Sign in, Settings và WinUI 3 Gallery.',
@@ -64,7 +64,7 @@ export const NEWS_DATA: NewsArticle[] = [
       points: [
         'Giữ lại di sản: VTV vẫn duy trì chữ VTV và hệ màu đỏ – xanh lá – xanh dương, giúp khán giả nhận ra thương hiệu ngay lập tức.',
         'Hiện đại hóa hình ảnh: Loại bỏ cảm giác 3D, đổ bóng và những chi tiết cũ; chuyển sang thiết kế phẳng, sắc nét, linh hoạt và phù hợp với môi trường số, từ TV đến smartphone và mạng xã hội.',
-        'Gradient và cấu trúc mới: Những thay đổi về màu sắc, hình học và các dải tam giác tạo nên diện mạo hiện đại hơn nhưng vẫn giữ “DNA” VTV.',
+        'Gradient và cấu trúc mới: Những thay đổi về màu sắc, hình học và các dải tam giác tạo nên diện mạo hiện đại hơn nhưng vẫn giữ “DNA��� VTV.',
         'Triết lý “Chắt lọc và Kết nối giá trị”: VTV muốn chuyển từ vai trò đơn thuần “phát sóng thông tin” sang chắt lọc, kiểm chứng và kết nối những thông tin có giá trị giữa một thế giới đầy dữ liệu, tin giả và nội dung ngắn.',
         'Hình tượng tam giác: Các tam giác phát triển từ chữ V, tượng trưng cho quá trình thu nhận thông tin đa chiều rồi chắt lọc thành những giá trị tinh túy, đáng tin cậy.',
         'DNA thương hiệu mới: VTV kết hợp hai hình mẫu Sage (Nhà hiền triết) – uy tín, tri thức, đáng tin; và Everyman (Người bạn đồng hành) – gần gũi, thấu hiểu và dễ tiếp cận.',

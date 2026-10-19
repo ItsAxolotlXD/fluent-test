@@ -1401,7 +1401,7 @@ html.light-mode #settings-section-version .text-white {
   color: #000000 !important;
 }
 
-/* Switch, Read & Update Buttons always have white text in both light and dark modes */
+/* Switch action labels use black text in every theme. */
 #btn-test-vplay-switch,
 #btn-test-vplay-switch *,
 #btn-changelogs-read,
@@ -1414,7 +1414,13 @@ html.light-mode #btn-changelogs-read,
 html.light-mode #btn-changelogs-read *,
 html.light-mode #btn-update-vplay,
 html.light-mode #btn-update-vplay * {
-  color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+/* Keep the Insider Preview switch label black after theme and hover rules. */
+#btn-test-vplay-switch,
+#btn-test-vplay-switch * {
+  color: #000000 !important;
 }
 
 /* Settings Slider Track: dark in dark mode, light in light mode */
@@ -2911,7 +2917,7 @@ button[role="switch"][aria-checked="true"],
 
 button[role="switch"][aria-checked="true"]:hover,
 .toggle-switch-btn[aria-checked="true"]:hover {
-  background-color: #60cdff !important;
+  background-color: var(--ui-accent) !important;
   border: none !important;
   outline: none !important;
 }

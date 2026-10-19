@@ -66,7 +66,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm sm:text-base font-semibold text-black dark:text-white">
-                Sparkle 26.11 (Build 261016)
+                Sparkle 26.11 (Build 261019)
               </h2>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
                 Latest
