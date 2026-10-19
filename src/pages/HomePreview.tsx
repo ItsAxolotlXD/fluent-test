@@ -110,8 +110,8 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   setRecommendationTilt((items) => ({
                     ...items,
                     [item.id]: {
-                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -16,
-                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 18,
+                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -26,
+                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 28,
                     },
                   }));
                 }}
@@ -120,6 +120,8 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   transform: `rotateX(${recommendationTilt[item.id]?.x ?? 0}deg) rotateY(${recommendationTilt[item.id]?.y ?? 0}deg)`,
                   transition: 'transform 180ms ease-out, box-shadow 180ms ease-out',
                   transformStyle: 'preserve-3d',
+                  position: 'relative',
+                  zIndex: recommendationTilt[item.id]?.x || recommendationTilt[item.id]?.y ? 20 : 1,
                 }}
                 className="group w-[calc((100vw-2.75rem)/2)] min-w-[178px] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-[220px] lg:w-[calc((100%_-_2.25rem)/5)] border border-black/[0.08] bg-white text-left shadow-[0_1px_5px_rgba(0,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168a9e] dark:border-white/[0.1] dark:bg-[#29292d]"
               >
