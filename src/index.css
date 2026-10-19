@@ -7534,32 +7534,41 @@ html.light-mode #topbar-search-box:focus-within {
   box-shadow: none !important;
 }
 
-#topbar-search-box::after {
+#topbar-search-box::after,
+#topbar-search-box::before {
   content: "";
   position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 4px;
+  bottom: 0;
   height: 2px;
-  border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.45);
-  transition: background-color 180ms ease;
+  border-radius: 0 0 6px 6px;
   pointer-events: none;
 }
 
-#topbar-search-box.is-focused::after,
-#topbar-search-box.search-flyout-open::after,
-#topbar-search-box:focus-within::after {
+#topbar-search-box::after {
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+#topbar-search-box::before {
+  left: 50%;
+  width: 0;
+  transform: translateX(-50%);
   background-color: #4cc2ff;
+  transition: width 240ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+#topbar-search-box.is-focused::before,
+#topbar-search-box.search-flyout-open::before,
+#topbar-search-box:focus-within::before {
+  width: 100%;
 }
 
 html.light-mode #topbar-search-box::after {
   background-color: rgba(0, 0, 0, 0.32);
 }
 
-html.light-mode #topbar-search-box.is-focused::after,
-html.light-mode #topbar-search-box.search-flyout-open::after,
-html.light-mode #topbar-search-box:focus-within::after {
+html.light-mode #topbar-search-box::before {
   background-color: #0078d4;
 }
 
