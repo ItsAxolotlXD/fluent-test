@@ -7479,14 +7479,18 @@ html.light-mode:not(.super-dark) #root header.sticky {
     linear-gradient(112deg, #d9ddf8 0%, #e9e3f0 35%, #ffeadf 60%, #f8d7e5 100%) !important;
 }
 
-/* Anchor the shared shell gradients to the viewport so navigation panels match exactly. */
+/* Keep the app page gradient locked to the viewport while page content scrolls. */
+html:not(.light-mode):not(.super-dark) .main-tab-page,
 html:not(.light-mode):not(.super-dark) #waves-desktop-sidebar,
 html:not(.light-mode):not(.super-dark) #waves-mobile-sidebar,
 html:not(.light-mode):not(.super-dark) #root header.sticky,
+html.light-mode:not(.super-dark) .main-tab-page,
 html.light-mode:not(.super-dark) #waves-desktop-sidebar,
 html.light-mode:not(.super-dark) #waves-mobile-sidebar,
 html.light-mode:not(.super-dark) #root header.sticky {
   background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
 }
 
 /* Shared frosted-white surface strength for search, channel cards, and settings options. */
