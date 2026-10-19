@@ -169,6 +169,9 @@ export const Settings: React.FC<SettingsProps> = ({
         <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
           Customize your Sparkle experience your way
         </p>
+        <div className="mt-3 rounded-[6px] border border-amber-300/40 bg-amber-300/15 px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed text-amber-950 dark:text-amber-100">
+          Settings page is being experimented for a design overhaul, so some of the options might be missing at the moment. This will eventually b fixed in future builds don&apos;t worry.
+        </div>
       </motion.div>
 
       {/* No matching results fallback */}
@@ -191,9 +194,9 @@ export const Settings: React.FC<SettingsProps> = ({
 
       {/* Settings Sections Container */}
       <div className="flex flex-col gap-8 bg-transparent">
-        {/* 1. SECTION: INSIDER FLAGS (Collapsed by default) */}
+        {/* 2. SECTION: INSIDER FLAGS */}
         {matchesExperimental && (
-          <section id="settings-section-experimental" className="order-1 space-y-3 bg-transparent">
+          <section id="settings-section-experimental" className="order-2 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -232,7 +235,6 @@ export const Settings: React.FC<SettingsProps> = ({
               className="overflow-hidden"
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
-                <div className="px-1 pt-1 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Native keyboard</div>
                 {/* 1. Native keyboard */}
                 {false && matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
@@ -1319,7 +1321,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 5. SECTION: UPDATES */}
         {matchesVersion && (
-          <section id="settings-section-version" className="order-2 space-y-3 bg-transparent">
+          <section id="settings-section-version" className="order-1 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
