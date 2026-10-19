@@ -1566,10 +1566,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           <form onSubmit={handleSearchSubmit} className="flex-1 w-full min-w-0">
             <div
               id="topbar-search-box"
-              className={`group relative w-full h-9 sm:h-9 rounded-[100px] flex items-center px-3.5 gap-2 transition-all border ${
+              className={`group relative w-full h-9 sm:h-9 rounded-[100px] flex items-center px-3.5 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
-                  ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31] border-[#0078d4] dark:border-[#4cc2ff]'
-                  : 'bg-black/5 dark:bg-[#282c31] border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20'
+                  ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
+                  : 'bg-black/5 dark:bg-[#282c31]'
               }`}
             >
               <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
