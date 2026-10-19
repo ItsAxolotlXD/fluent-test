@@ -7572,6 +7572,11 @@ html.light-mode #topbar-search-box::before {
   background-color: #0078d4;
 }
 
+#topbar-search-box {
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+
 #vplay-native-keyboard {
   position: fixed !important;
   z-index: 2147483647 !important;
