@@ -127,7 +127,6 @@ export const Settings: React.FC<SettingsProps> = ({
     { id: 'settings-section-experimental', label: 'Insider experiments', iconSrc: '/icons/settings/insider.png' },
     { id: 'settings-section-interface', label: 'Appearance', iconSrc: '/icons/settings/appearance.png' },
     { id: 'settings-section-accessibility', label: 'Accessibility', iconSrc: '/icons/settings/accessibility.png' },
-    { id: 'settings-section-tools', label: 'Tools', iconSrc: '/icons/settings/tools.png' },
     { id: 'settings-section-version', label: 'Updates', iconSrc: '/icons/settings/updates.png' },
   ];
 
@@ -165,8 +164,7 @@ export const Settings: React.FC<SettingsProps> = ({
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
   const matchesAccessibility = 
     matchesSearch(['Accessibility', 'trợ năng', 'hover to expand', 'page loading', 'tải trang', 'load pages sequentially', 'bàn phím số', 'clipboard', 'âm bàn phím', 'keyboard sound', 'tổ hợp phím', 'phím tắt', 'keybinds']);
-  const matchesTools = 
-    matchesSearch(['Tools', 'công cụ', 'tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3', 'tự động ẩn side view', 'auto hide', 'sparkle notes', 'ghi chú']);
+  const matchesTools = false;
   const matchesVersion = 
     matchesSearch(['Updates', 'thông tin phiên bản', 'cập nhật', 'software update', 'build', 'test sparkle', 'update sparkle']);
 
@@ -340,7 +338,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Immersive search experience */}
-                {matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
+                {false && matchesSearch(['Immersive search experience', 'tìm kiếm', 'immersive']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -376,7 +374,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Fluent icons */}
-                {matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
+                {false && matchesSearch(['Fluent icons', '3d icons', 'biểu tượng 3d']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -399,9 +397,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Fluent icons</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-[6px] font-normal uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
-                            Mới
-                          </span>
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Beautifully crafted 3D icons in vibrant colors, inspired by Microsoft Fluent Design
@@ -426,7 +421,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* New Watch Tab */}
-                {matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
+                {false && matchesSearch(['New Watch Tab', 'watch', 'preview', 'tab xem']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -471,9 +466,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="min-w-0 flex-1">
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Dynamic sidebar icons</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded-[6px] font-normal uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
-                            Sidebar
-                          </span>
                         </div>
                         <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
                           Kết hợp 2 dạng icon: Sign in, Settings, WinUI 3 dùng icon thường; Home, Update blogs, Watch, Gallery, Notes, Draws, VLC, Craftmine, Photopea, Discord dùng icon Fluent colored
@@ -594,7 +586,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Thanh điều hướng */}
-                {matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
+                {false && matchesSearch(['Thanh điều hướng', 'side view', 'top view', 'tab view', 'navigation']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -729,7 +721,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 4. Vị trí thanh bên (nếu dùng Side View) */}
-                {draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
+                {false && draftSettings.navigationMode === 'sidebar' && matchesSearch(['Vị trí thanh bên', 'trái', 'phải', 'sidebar position']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -769,7 +761,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 5. Siêu chế độ tối */}
-                {matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
+                {false && matchesSearch(['Siêu chế độ tối', 'super dark', 'oled', 'pure black']) && (
                   <motion.div
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1234,8 +1226,16 @@ export const Settings: React.FC<SettingsProps> = ({
           </section>
         )}
 
-        {/* 4. SECTION: TOOLS */}
-        {matchesTools && (
+        {/* Auto-hide Side View is an accessibility setting */}
+        {matchesAccessibility && (
+          <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
+            <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
+            <button id="toggle-autohide-sidebar-accessibility" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
+          </motion.div>
+        )}
+
+        {/* 4. SECTION: TOOLS (removed) */}
+        {false && matchesTools && (
           <section id="settings-section-tools" className="space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
@@ -1276,7 +1276,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Tỉ lệ khung hình */}
-                {matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
+                {false && matchesSearch(['Tỉ lệ khung hình', 'aspect ratio', '16:9', '4:3']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1320,7 +1320,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 2. Tự động ẩn Side View */}
-                {matchesSearch(['Tự động ẩn Side View', 'auto hide', 'sidebar']) && (
+                {false && matchesSearch(['Tự động ẩn Side View', 'auto hide', 'sidebar']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1351,7 +1351,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {/* 3. Sparkle Notes */}
-                {matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
+                {false && matchesSearch(['Sparkle Notes', 'ghi chú', 'notes']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"

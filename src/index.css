@@ -2911,7 +2911,7 @@ button[role="switch"][aria-checked="true"],
 
 button[role="switch"][aria-checked="true"]:hover,
 .toggle-switch-btn[aria-checked="true"]:hover {
-  background-color: #60cdff !important;
+  background-color: var(--ui-accent) !important;
   border: none !important;
   outline: none !important;
 }
