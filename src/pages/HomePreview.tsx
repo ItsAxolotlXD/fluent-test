@@ -18,6 +18,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
   );
 
   const [recommendationSeed] = useState(() => Math.random());
+  const [recommendationTilt, setRecommendationTilt] = useState<Record<string, { x: number; y: number }>>({});
   const recommendationsRef = useRef<HTMLDivElement>(null);
   const scrollRecommendations = (direction: 'previous' | 'next') => {
     recommendationsRef.current?.scrollBy({ left: direction === 'next' ? 300 : -300, behavior: 'smooth' });
@@ -96,7 +97,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
             </button>
           </div>
         </div>
-        <div ref={recommendationsRef} className="flex snap-x gap-3 overflow-x-auto pt-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div ref={recommendationsRef} className="flex snap-x gap-3 overflow-x-auto pt-3 pb-1 [perspective:900px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {recommendations.map((item) => {
             const ItemIcon = item.icon;
             return (
@@ -104,6 +105,22 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                 key={item.id}
                 type="button"
                 onClick={() => item.channel ? openChannel(item.channel) : navigate(item.route)}
+                onMouseMove={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  setRecommendationTilt((items) => ({
+                    ...items,
+                    [item.id]: {
+                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -10,
+                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 12,
+                    },
+                  }));
+                }}
+                onMouseLeave={() => setRecommendationTilt((items) => ({ ...items, [item.id]: { x: 0, y: 0 } }))}
+                style={{
+                  transform: `rotateX(${recommendationTilt[item.id]?.x ?? 0}deg) rotateY(${recommendationTilt[item.id]?.y ?? 0}deg)`,
+                  transition: 'transform 180ms ease-out, box-shadow 180ms ease-out',
+                  transformStyle: 'preserve-3d',
+                }}
                 className="group w-[calc((100vw-2.75rem)/2)] min-w-[178px] shrink-0 snap-start overflow-hidden rounded-[3px] sm:w-[220px] lg:w-[calc((100%_-_2.25rem)/5)] border border-black/[0.08] bg-white text-left shadow-[0_1px_5px_rgba(0,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168a9e] dark:border-white/[0.1] dark:bg-[#29292d]"
               >
                 <div className="relative flex h-[92px] items-center justify-center overflow-hidden bg-[#f1f1f1] dark:bg-[#38383d]">
