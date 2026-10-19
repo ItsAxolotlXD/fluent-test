@@ -20,6 +20,7 @@ import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { Home } from './pages/Home';
+import { HomePreview } from './pages/HomePreview';
 import { LiveTV } from './pages/LiveTV';
 import { WatchPreview } from './pages/WatchPreview';
 import { TestChannels } from './pages/TestChannels';
@@ -493,6 +494,9 @@ export default function App() {
     }
 
     switch (currentRoute) {
+      case '/home-preview':
+        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
+
       case '/':
       case '/home':
         return (

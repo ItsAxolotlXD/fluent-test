@@ -1220,7 +1220,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 2. Update blogs */}
+          {/* 2. Home (preview) */}
+          <div className="shrink-0">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-home-preview' : 'sidebar-nav-home-preview'}
+              data-nav-active={currentRoute === '/home-preview' ? 'true' : undefined}
+              onClick={() => handleNavClick('/home-preview')}
+              title="Home (preview)"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                currentRoute === '/home-preview'
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              {useFluent3DForContent ? (
+                <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
+              ) : (
+                <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+              )}
+              <span className="truncate text-[13.5px]">Home (preview)</span>
+            </button>
+          </div>
+
+          {/* 3. Update blogs */}
           <div className="shrink-0">
             <button
               type="button"
@@ -1865,7 +1888,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 2. Update blogs Icon */}
+                {/* 2. Home (preview) Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-home-preview"
+                  data-nav-active={currentRoute === '/home-preview' ? 'true' : undefined}
+                  onClick={() => handleNavClick('/home-preview')}
+                  title="Home (preview)"
+                  aria-label="Home (preview)"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    currentRoute === '/home-preview'
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  {useFluent3DForContent ? (
+                    <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
+                  )}
+                </button>
+
+                {/* 3. Update blogs Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-articles"
