@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { ChevronDown, ChevronRight, Radio } from 'lucide-react';
-import { FluentHomeIcon } from '../components/FluentIcons';
+import { ChevronDown, Radio } from 'lucide-react';
+import { HeroCarousel } from '../components/HeroCarousel';
 import { Channel } from '../types';
 
 interface HomePreviewProps {
@@ -23,8 +23,10 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-1 py-2 sm:gap-6 sm:py-4">
-      <header className="flex flex-col gap-2">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 sm:gap-6 sm:py-4">
+      <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />
+
+      <header className="!bg-transparent flex flex-col gap-2 px-4 sm:px-6">
         <h1 className="text-xl font-semibold tracking-tight text-black dark:text-white sm:text-2xl">
           Welcome to the new experience!
         </h1>
@@ -33,66 +35,47 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
         </p>
       </header>
 
-      <section
-        aria-label="VTV channels"
-        className="overflow-hidden rounded-[7px] border border-[#3b3b3b] bg-[#101010] text-[#e7e7e7] shadow-lg"
-      >
-        <div className="flex h-10 items-center gap-2 border-b border-[#3b3b3b] bg-[#1b1b1b] px-3 text-[13px]">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 rounded px-1.5 py-1 text-left hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-            aria-label="Go to Home"
-          >
-            <FluentHomeIcon className="size-4 shrink-0" />
-            <span>Home</span>
-          </button>
-          <ChevronRight className="size-3.5 shrink-0 text-[#b9b9b9]" aria-hidden="true" />
-          <span className="text-[#f0f0f0]">Channels</span>
+      <section aria-label="VTV channels" className="px-4 text-black dark:text-[#e7e7e7] sm:px-6">
+        <div className="flex h-9 items-center gap-2 border-b border-black/10 px-1 text-[13px] font-medium text-black dark:border-white/10 dark:text-[#ededed]">
+          <ChevronDown className="size-3.5 text-black/60 dark:text-[#bdbdbd]" aria-hidden="true" />
+          <span>Quick access</span>
         </div>
 
-        <div className="px-2.5 pt-2.5 sm:px-4">
-          <div className="flex h-8 items-center gap-2 border-b border-white/10 px-1 text-[13px] font-medium text-[#ededed]">
-            <ChevronDown className="size-3.5 text-[#bdbdbd]" aria-hidden="true" />
-            <span>Quick access</span>
-          </div>
+        <div className="pt-1">
+          {vtvChannels.map((channel) => {
+            const channelLabel = channel.name.replace(/\s+HD$/i, '').trim();
 
-          <div className="pb-2 pt-1">
-            {vtvChannels.map((channel) => {
-              const channelLabel = channel.name.replace(/\s+HD$/i, '').trim();
+            return (
+              <button
+                key={channel.id}
+                type="button"
+                role="listitem"
+                onClick={() => openChannel(channel)}
+                aria-label={`Watch ${channelLabel}`}
+                className="group flex min-h-9 w-full items-center gap-2.5 rounded-[2px] px-1.5 text-left text-[13px] transition-colors hover:bg-black/10 focus-visible:bg-black/10 focus-visible:outline-none dark:hover:bg-white/15 dark:focus-visible:bg-white/15 sm:gap-3 sm:px-2"
+              >
+                <img
+                  src={channel.logo}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="size-[18px] shrink-0 object-contain"
+                />
+                <span className="min-w-0 flex-1 truncate text-black dark:text-[#e5e5e5]">{channelLabel}</span>
+                <span className="hidden max-w-[45%] truncate text-xs text-black/55 dark:text-[#a5a5a5] sm:block">
+                  {channel.currentProgram?.title || channel.category}
+                </span>
+                <span className="ml-1 flex shrink-0 items-center gap-1.5 text-[11px] text-black/60 dark:text-[#bdbdbd]">
+                  <Radio className="size-3.5 text-[#168a9e] dark:text-[#60c5d8]" aria-hidden="true" />
+                  <span>{channel.quality}</span>
+                </span>
+              </button>
+            );
+          })}
 
-              return (
-                <button
-                  key={channel.id}
-                  type="button"
-                  role="listitem"
-                  onClick={() => openChannel(channel)}
-                  aria-label={`Watch ${channelLabel}`}
-                  className="group flex min-h-9 w-full items-center gap-2.5 rounded-[2px] px-1.5 text-left text-[13px] transition-colors hover:bg-[#4a4a4a] focus-visible:bg-[#4a4a4a] focus-visible:outline-none sm:gap-3 sm:px-2"
-                >
-                  <img
-                    src={channel.logo}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="size-[18px] shrink-0 object-contain"
-                  />
-                  <span className="min-w-0 flex-1 truncate text-[#e5e5e5]">{channelLabel}</span>
-                  <span className="hidden max-w-[45%] truncate text-xs text-[#a5a5a5] sm:block">
-                    {channel.currentProgram?.title || channel.category}
-                  </span>
-                  <span className="ml-1 flex shrink-0 items-center gap-1.5 text-[11px] text-[#bdbdbd]">
-                    <Radio className="size-3.5 text-[#60c5d8]" aria-hidden="true" />
-                    <span>{channel.quality}</span>
-                  </span>
-                </button>
-              );
-            })}
-
-            {vtvChannels.length === 0 && (
-              <p className="px-2 py-4 text-sm text-[#bdbdbd]">No VTV channels are available yet.</p>
-            )}
-          </div>
+          {vtvChannels.length === 0 && (
+            <p className="px-2 py-4 text-sm text-black/60 dark:text-[#bdbdbd]">No VTV channels are available yet.</p>
+          )}
         </div>
       </section>
     </div>
