@@ -25,7 +25,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&display=swap');
 @layer base {
   html.light-mode .light-mode-white-label {
-    color: #ffffff !important;
+    color: #000000 !important;
   }
 
   html.light-mode .light-mode-black-label {
@@ -38,12 +38,14 @@
     mix-blend-mode: normal !important;
   }
 
-  html.light-mode .gallery-toolbar svg {
-    color: #111827 !important;
+  html.light-mode .gallery-toolbar svg,
+  html.light-mode .gallery-toolbar svg * {
+    color: #000000 !important;
+    stroke: #000000 !important;
   }
 
   html.light-mode .gallery-toolbar .gallery-import-icon {
-    color: #ffffff !important;
+    color: #000000 !important;
   }
 
   .gallery-toolbar svg {
@@ -7678,4 +7680,38 @@ html.light-mode .winui3-light,
 .winui3-light {
   --winui-primary: var(--ui-accent);
   --winui-primary-hover: var(--ui-accent);
+}
+
+html.light-mode .fluent-btn-primary,
+html.light-mode .fluent-btn-primary *,
+html.light-mode #btn-top-settings-apply-checkbox,
+html.light-mode #btn-top-settings-apply-checkbox *,
+html.light-mode #btn-hero-watch-now,
+html.light-mode #btn-hero-watch-now *,
+html.light-mode #btn-add-stream-submit,
+html.light-mode #btn-add-stream-submit *,
+html.light-mode .btn-fd932f,
+html.light-mode .btn-fd932f *,
+html.light-mode button[class*="bg-[#4cc2ff]"],
+html.light-mode button[class*="bg-[#4cc2ff]"] *,
+html.light-mode button[class*="bg-[#005fb8]"],
+html.light-mode button[class*="bg-[#005fb8]"] *,
+html.light-mode button[class*="bg-[#0078d4]"],
+html.light-mode button[class*="bg-[#0078d4]"] * {
+  color: #000000 !important;
+}
+
+html.light-mode .gallery-toolbar button,
+html.light-mode .gallery-toolbar button *,
+html.light-mode .gallery-toolbar button[title="Import photos, videos, or documents"],
+html.light-mode .gallery-toolbar button[title="Import photos, videos, or documents"] *,
+html.light-mode nav[aria-label="Folder Breadcrumb"] button,
+html.light-mode nav[aria-label="Folder Breadcrumb"] button *,
+html.light-mode nav[aria-label="Folder Breadcrumb"] svg {
+  color: #000000 !important;
+}
+
+html.light-mode .gallery-toolbar button[title="Delete selected"],
+html.light-mode .gallery-toolbar button[title="Delete selected"] * {
+  color: #ffffff !important;
 }
