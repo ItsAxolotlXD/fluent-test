@@ -749,10 +749,10 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                   type="button"
                   onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }}
                   onContextMenu={(event) => { event.preventDefault(); setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id }); }}
-                  onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -16, y: ((event.clientX - rect.left) / rect.width - 0.5) * 18 } })); }}
+                  onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -26, y: ((event.clientX - rect.left) / rect.width - 0.5) * 28 } })); }}
                   onMouseLeave={() => setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: 0, y: 0 } }))}
-                  style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`, transition: 'transform 180ms ease-out, box-shadow 180ms ease-out' }}
-                  className="group text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+                  style={{ rotateX: tilt.x, rotateY: tilt.y, zIndex: tilt.x || tilt.y ? 20 : 1, transformStyle: 'preserve-3d' }}
+                  className="group relative text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 hover:z-20 cursor-pointer"
                 >
                   <div className="h-44 p-5 bg-white relative overflow-hidden"><div className="absolute inset-5 rounded-xl border border-black/5" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} /><div className="absolute left-12 top-14 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]" style={{ backgroundColor: canvas.color }} /><div className="absolute right-14 bottom-12 h-2 w-20 rounded-full opacity-40 rotate-[12deg]" style={{ backgroundColor: canvas.color }} /></div>
                   <div className="p-4"><div className="font-semibold truncate">{canvas.title}</div><div className="text-xs text-black/45 dark:text-white/45 mt-1">Edited {canvas.updated}</div></div>

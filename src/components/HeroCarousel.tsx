@@ -10,9 +10,10 @@ interface HeroCarouselProps {
   navigate?: (route: string) => void;
   onSelectChannel?: (channel: Channel) => void;
   channels?: Channel[];
+  flipActiveSlide?: boolean;
 }
 
-export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
+export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = false }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { settings, draftSettings } = useSettings();
   const isLightMode = (draftSettings?.theme ?? settings.theme) === 'light';
@@ -212,8 +213,8 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
           if (isCenter) {
             transformStyle = {
               ...transformStyle,
-              transform: 'translate3d(0%, 0, 0px) rotateY(0deg) scale(1)',
-              zIndex: 30,
+              transform: `translate3d(0%, 0, ${flipActiveSlide ? 72 : 0}px) rotateY(0deg) scale(1)`,
+              zIndex: flipActiveSlide ? 100 : 30,
               opacity: 1,
               visibility: 'visible',
             };
@@ -260,6 +261,27 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
             };
           }
 
+          const slideContent = isLoadingBanner ? (
+            <div key="banner-loading" className={`w-full h-full flex items-center justify-center ${isLightMode ? 'bg-white' : 'bg-[#18181b]'}`}>
+              <SpinningRing size={42} strokeWidth={4.5} color={isLightMode ? '#ff01ff' : '#ff82ff'} />
+            </div>
+          ) : (
+            <div key="banner-loaded" className="slide-up-refresh w-full h-full relative">
+              <img
+                src={slide.backgroundImage || DEFAULT_BANNER_PLACEHOLDER}
+                alt={slide.title}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover object-center pointer-events-none select-none"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
+                    target.src = DEFAULT_BANNER_PLACEHOLDER;
+                  }
+                }}
+              />
+            </div>
+          );
+
           return (
             <div
               key={slide.id}
@@ -271,26 +293,20 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = () => {
                   : 'shadow-lg pointer-events-none'
               }`}
             >
-              {/* Ảnh nền banner - hiển thị loading ring trong 3 giây khi vừa load tab, sau đó refresh và slide up */}
-              {isLoadingBanner ? (
-                <div key="banner-loading" className="w-full h-full flex items-center justify-center bg-[#202020] dark:bg-[#18181b]">
-                  <SpinningRing size={42} strokeWidth={4.5} color="#4cc2ff" />
-                </div>
+              {/* Ảnh banner lật vào tâm trên trang Home preview. */}
+              {flipActiveSlide && isCenter ? (
+                <motion.div
+                  key={`flip-${currentIndex}`}
+                  initial={{ rotateY: 0, scale: 0.96 }}
+                  animate={{ rotateY: 360, scale: 1 }}
+                  transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ transformOrigin: 'center center', transformStyle: 'preserve-3d', backfaceVisibility: 'hidden', position: 'relative', zIndex: 101 }}
+                  className="h-full w-full"
+                >
+                  {slideContent}
+                </motion.div>
               ) : (
-                <div key="banner-loaded" className="slide-up-refresh w-full h-full relative">
-                  <img
-                    src={slide.backgroundImage || DEFAULT_BANNER_PLACEHOLDER}
-                    alt={slide.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover object-center pointer-events-none select-none"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
-                        target.src = DEFAULT_BANNER_PLACEHOLDER;
-                      }
-                    }}
-                  />
-                </div>
+                slideContent
               )}
 
               {/* Lớp phủ tinh tế khi slide ở 2 bên */}
