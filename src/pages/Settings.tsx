@@ -56,10 +56,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const [showApplyToast, setShowApplyToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Insider Flags collapsed by default as requested
-  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({
-    'settings-section-experimental': true,
-  });
+  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
   const [isLightModeUnlockOpen, setIsLightModeUnlockOpen] = useState(false);
   const [lightModeUnlockCode, setLightModeUnlockCode] = useState('');
@@ -122,35 +119,6 @@ export const Settings: React.FC<SettingsProps> = ({
     return () => window.removeEventListener('settings-applied-toast', handleAppliedEvent);
   }, []);
 
-  // Ordered categories: Insider experiments -> Appearance -> Accessibility -> Tools -> Updates
-  const navCategories = [
-    { id: 'settings-section-experimental', label: 'Insider experiments', iconSrc: '/icons/settings/insider.png' },
-    { id: 'settings-section-interface', label: 'Appearance', iconSrc: '/icons/settings/appearance.png' },
-    { id: 'settings-section-accessibility', label: 'Accessibility', iconSrc: '/icons/settings/accessibility.png' },
-    { id: 'settings-section-version', label: 'Updates', iconSrc: '/icons/settings/updates.png' },
-  ];
-
-  const [activeNavSection, setActiveNavSection] = useState<string>('settings-section-experimental');
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((e) => e.isIntersecting);
-        if (visible?.target?.id) {
-          setActiveNavSection(visible.target.id);
-        }
-      },
-      { rootMargin: '-15% 0px -65% 0px', threshold: 0.05 }
-    );
-
-    navCategories.forEach((cat) => {
-      const el = document.getElementById(cat.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
   // Search filter helper
   const query = searchQuery.trim().toLowerCase();
   const matchesSearch = (texts: (string | undefined)[]) => {
@@ -203,43 +171,6 @@ export const Settings: React.FC<SettingsProps> = ({
         </p>
       </motion.div>
 
-      {/* Quick Navigation Category Pills */}
-      {!query && (
-        <motion.nav 
-          variants={slideUpVariant}
-          initial="hidden"
-          animate="visible"
-          custom={elementIndex++}
-          className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 bg-transparent" 
-          aria-label="Settings Categories"
-        >
-          {navCategories.map((cat) => {
-            const isActive = activeNavSection === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => {
-                  setActiveNavSection(cat.id);
-                  const el = document.getElementById(cat.id);
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }}
-                className={`px-3 py-1.5 rounded-[6px] text-xs font-normal transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none border-none ${
-                  isActive
-                    ? 'bg-[#0078d4] text-white shadow-xs font-normal'
-                    : 'bg-black/5 dark:bg-[#2c3037] hover:bg-black/10 dark:hover:bg-[#363b43] text-[#4b5563] dark:text-[#d1d5db]'
-                }`}
-              >
-                <img src={cat.iconSrc} alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-4 h-4 object-contain shrink-0" />
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </motion.nav>
-      )}
-
       {/* No matching results fallback */}
       {!hasAnyMatch && (
         <motion.div 
@@ -259,10 +190,10 @@ export const Settings: React.FC<SettingsProps> = ({
       )}
 
       {/* Settings Sections Container */}
-      <div className="space-y-8 bg-transparent">
+      <div className="flex flex-col gap-8 bg-transparent">
         {/* 1. SECTION: INSIDER FLAGS (Collapsed by default) */}
         {matchesExperimental && (
-          <section id="settings-section-experimental" className="space-y-3 bg-transparent">
+          <section id="settings-section-experimental" className="order-1 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -495,7 +426,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 2. SECTION: INTERFACE */}
         {matchesInterface && (
-          <section id="settings-section-interface" className="space-y-3 bg-transparent">
+          <section id="settings-section-interface" className="order-3 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -798,7 +729,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 3. SECTION: ACCESSIBILITY */}
         {matchesAccessibility && (
-          <section id="settings-section-accessibility" className="space-y-3 bg-transparent">
+          <section id="settings-section-accessibility" className="order-4 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -1053,8 +984,8 @@ export const Settings: React.FC<SettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* 7. Keybinds Options Card */}
-                {matchesSearch(['Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt']) && (
+                {/* 7. Keyboard and Mouse category */}
+                {matchesSearch(['Keyboard and Mouse', 'Tổ hợp phím', 'keybinds', 'phím tắt', 'ctrl', 'alt', 'keyboard sound', 'bàn phím']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -1063,8 +994,9 @@ export const Settings: React.FC<SettingsProps> = ({
                     className="space-y-2 pt-2 bg-transparent"
                   >
                     <div className="flex items-center justify-between px-1 bg-transparent">
-                      <div className="font-normal text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider" style={{ fontWeight: 400 }}>
-                        Keybinds
+                      <div className="flex items-center gap-2 font-normal text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider" style={{ fontWeight: 400 }}>
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tZDhYcOsxyui7l0TvqaoPI63JZnsSF.png" alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
+                        <span>Keyboard and Mouse</span>
                       </div>
                       <button
                         type="button"
@@ -1387,7 +1319,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
         {/* 5. SECTION: UPDATES */}
         {matchesVersion && (
-          <section id="settings-section-version" className="space-y-3 bg-transparent">
+          <section id="settings-section-version" className="order-2 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
