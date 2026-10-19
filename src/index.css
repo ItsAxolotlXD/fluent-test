@@ -7537,12 +7537,11 @@ html.light-mode #topbar-search-box:focus-within {
 #topbar-search-box::after {
   content: "";
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
+  left: 6px;
+  right: 6px;
+  bottom: 4px;
   height: 2px;
   border-radius: 999px;
-  clip-path: inset(0 round 6px);
   background-color: rgba(255, 255, 255, 0.45);
   transition: background-color 180ms ease;
   pointer-events: none;
