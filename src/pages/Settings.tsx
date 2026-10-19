@@ -18,7 +18,7 @@ import { KeybindAction } from '../types';
 export type SettingsCategoryId = 
   | 'settings-section-experimental'
   | 'settings-section-interface'
-  | 'settings-section-accessibility'
+  | 'settings-section-keyboard'
   | 'settings-section-tools'
   | 'settings-section-version';
 
@@ -140,8 +140,8 @@ export const Settings: React.FC<SettingsProps> = ({
     !query || 
     matchesExperimental ||
     matchesInterface || 
-    matchesAccessibility || 
-    matchesTools || 
+    matchesKeyboard ||
+    matchesTools ||
     matchesVersion;
 
   // Global staggered element counter for cascading animation
@@ -234,7 +234,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 <div className="px-1 pt-1 text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#9CA3AF]">Native keyboard</div>
                 {/* 1. Native keyboard */}
-                {matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
+                {false && matchesSearch(['Native keyboard', 'bàn phím', 'cảm ứng']) && (
                   <motion.div 
                     variants={slideUpVariant}
                     initial="hidden"
@@ -723,14 +723,21 @@ export const Settings: React.FC<SettingsProps> = ({
                     </button>
                   </motion.div>
                 )}
+
+                {matchesInterface && (
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
+                    <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
+                    <button id="toggle-autohide-sidebar-appearance" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
+                  </motion.div>
+                )}
                   </div>
             </motion.div>
           </section>
         )}
 
-        {/* 3. SECTION: ACCESSIBILITY */}
+        {/* 3. SECTION: KEYBOARD AND MOUSE */}
         {matchesKeyboard && (
-          <section id="settings-section-accessibility" className="order-4 space-y-3 bg-transparent">
+          <section id="settings-section-keyboard" className="order-4 space-y-3 bg-transparent">
             {/* Category Header */}
             <motion.div
               variants={slideUpVariant}
@@ -740,7 +747,7 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <button
                 type="button"
-                onClick={() => toggleCategoryCollapse('settings-section-accessibility')}
+                onClick={() => toggleCategoryCollapse('settings-section-keyboard')}
                 className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
@@ -751,7 +758,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 </div>
                 <ChevronDown 
                   className={`w-4 h-4 text-white transition-transform duration-200 ${
-                    isCategoryCollapsed('settings-section-accessibility') ? '-rotate-90' : 'rotate-0'
+                    isCategoryCollapsed('settings-section-keyboard') ? '-rotate-90' : 'rotate-0'
                   }`} 
                 />
               </button>
@@ -759,11 +766,11 @@ export const Settings: React.FC<SettingsProps> = ({
 
             {/* Individual Option Blocks */}
             <motion.div
-              key="content-settings-section-accessibility"
-              initial={isCategoryCollapsed('settings-section-accessibility') ? { height: 0, opacity: 0 } : false}
+              key="content-settings-section-keyboard"
+              initial={isCategoryCollapsed('settings-section-keyboard') ? { height: 0, opacity: 0 } : false}
               animate={{
-                height: isCategoryCollapsed('settings-section-accessibility') ? 0 : 'auto',
-                opacity: isCategoryCollapsed('settings-section-accessibility') ? 0 : 1,
+                height: isCategoryCollapsed('settings-section-keyboard') ? 0 : 'auto',
+                opacity: isCategoryCollapsed('settings-section-keyboard') ? 0 : 1,
               }}
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
@@ -1157,14 +1164,6 @@ export const Settings: React.FC<SettingsProps> = ({
                   </div>
             </motion.div>
           </section>
-        )}
-
-        {/* Auto-hide Side View is an accessibility setting */}
-        {matchesInterface && (
-          <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
-            <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
-            <button id="toggle-autohide-sidebar-accessibility" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
-          </motion.div>
         )}
 
         {/* 4. SECTION: TOOLS (removed) */}
