@@ -23,7 +23,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 sm:gap-6 sm:py-4">
+    <div className="home-preview-page mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 selection:bg-[#ff01ff] selection:text-black dark:selection:bg-[#ff82ff] sm:gap-6 sm:py-4">
       <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />
 
       <header className="!bg-transparent flex flex-col gap-2 px-4 sm:px-6">
@@ -31,7 +31,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
           Welcome to the new experience!
         </h1>
         <p className="max-w-3xl text-sm leading-relaxed text-[#5b5b5b] dark:text-[#b8b8be]">
-          This will be the future of a new rejuvenated Home page in Sparkle. We gave your an opportunity to try it out early, although it is stil buggy and not looking fantastic.
+          This will be the future of a new rejuvenated Home page in Sparkle. We gave your an opportunity to try it out early, although it is stil buggy, unfinished product and not looking fantastic.
         </p>
       </header>
 

@@ -213,8 +213,8 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
           if (isCenter) {
             transformStyle = {
               ...transformStyle,
-              transform: 'translate3d(0%, 0, 0px) rotateY(0deg) scale(1)',
-              zIndex: 30,
+              transform: `translate3d(0%, 0, ${flipActiveSlide ? 72 : 0}px) rotateY(0deg) scale(1)`,
+              zIndex: flipActiveSlide ? 100 : 30,
               opacity: 1,
               visibility: 'visible',
             };
@@ -262,8 +262,8 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
           }
 
           const slideContent = isLoadingBanner ? (
-            <div key="banner-loading" className="w-full h-full flex items-center justify-center bg-[#202020] dark:bg-[#18181b]">
-              <SpinningRing size={42} strokeWidth={4.5} color="#4cc2ff" />
+            <div key="banner-loading" className={`w-full h-full flex items-center justify-center ${isLightMode ? 'bg-white' : 'bg-[#18181b]'}`}>
+              <SpinningRing size={42} strokeWidth={4.5} color={isLightMode ? '#ff01ff' : '#ff82ff'} />
             </div>
           ) : (
             <div key="banner-loaded" className="slide-up-refresh w-full h-full relative">
@@ -297,10 +297,10 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
               {flipActiveSlide && isCenter ? (
                 <motion.div
                   key={`flip-${currentIndex}`}
-                  initial={{ rotateY: 90, opacity: 0.35 }}
-                  animate={{ rotateY: 0, opacity: 1 }}
-                  transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ transformOrigin: 'center center', transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
+                  initial={{ rotateY: 0, scale: 0.96 }}
+                  animate={{ rotateY: 360, scale: 1 }}
+                  transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ transformOrigin: 'center center', transformStyle: 'preserve-3d', backfaceVisibility: 'hidden', position: 'relative', zIndex: 101 }}
                   className="h-full w-full"
                 >
                   {slideContent}
