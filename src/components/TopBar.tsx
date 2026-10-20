@@ -357,7 +357,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     const aspects: SearchAspectItem[] = [
       // Pages (Switch page)
       { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
-      { id: 'page-watch', title: 'Watch (preview)', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
+      { id: 'page-watch', title: 'Watch', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
       { id: 'page-news', title: 'Feed', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles feed update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
       { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
       { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
@@ -1540,10 +1540,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Watch (preview)"
+              title="Watch"
             >
               <Fluent3DWatchPreviewIcon className="w-4 h-4 shrink-0" />
-              <span>Watch (preview)</span>
+              <span>Watch</span>
 
               {currentRoute === '/live-tv' && (
                 <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
@@ -1635,7 +1635,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 }}
                 placeholder={(() => {
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
-                  if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch (preview)';
+                  if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';
                   if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
                   if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
                   if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
@@ -1690,7 +1690,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                       aria-label="Save changes"
                     >
                       {isSavingSettings ? (
-                        <SpinningRing size={16} strokeWidth={2.5} color={isLightMode ? '#0078d4' : '#4cc2ff'} />
+                        <SpinningRing size={16} strokeWidth={2.5} />
                       ) : (
                         <img
                           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"

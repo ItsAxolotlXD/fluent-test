@@ -121,7 +121,7 @@ export const NewsSummaryModal: React.FC<NewsSummaryModalProps> = ({
               {isLoading ? (
                 <div className="py-10 px-4 flex flex-col items-center justify-center text-center space-y-4 my-2">
                   <div className="flex items-center justify-center py-2">
-                    <SpinningRing size={52} strokeWidth={5} color="#4cc2ff" />
+                    <SpinningRing size={52} strokeWidth={5} />
                   </div>
 
                   <div className="space-y-1">

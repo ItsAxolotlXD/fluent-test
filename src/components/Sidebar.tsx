@@ -480,8 +480,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const list = [
       {
         id: 'live-tv',
-        label: 'Watch (preview)',
-        secondary: 'Watch (preview)',
+        label: 'Watch',
+        secondary: 'Watch',
         route: '/live-tv',
         icon: FluentWatchIcon,
         hasSubmenu: true,
@@ -1226,11 +1226,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               type="button"
               id={isMobile ? 'mobile-nav-home' : 'sidebar-nav-home'}
-              data-nav-active={currentRoute === '/' ? 'true' : undefined}
+              data-nav-active={(currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview') ? 'true' : undefined}
               onClick={() => handleNavClick('/')}
               title="Home"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                currentRoute === '/'
+                (currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview')
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
                   : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
               }`}
@@ -1244,30 +1244,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 2. Home (preview) */}
-          <div className="shrink-0">
-            <button
-              type="button"
-              id={isMobile ? 'mobile-nav-home-preview' : 'sidebar-nav-home-preview'}
-              data-nav-active={currentRoute === '/home-preview' ? 'true' : undefined}
-              onClick={() => handleNavClick('/home-preview')}
-              title="Home (preview)"
-              className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                currentRoute === '/home-preview'
-                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
-                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-              }`}
-            >
-              {useFluent3DForContent ? (
-                <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
-              ) : (
-                <FluentHomeIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-              )}
-              <span className="truncate text-[13.5px]">Home (preview)</span>
-            </button>
-          </div>
-
-          {/* 3. Feed */}
+          {/* 2. Feed */}
           <div className="shrink-0">
             <button
               type="button"
@@ -1298,14 +1275,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </h2>
           </div>
 
-          {/* 4. Watch (preview) */}
+          {/* 3. Watch */}
           <div className="w-full">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-live-tv' : 'sidebar-nav-live-tv'}
               data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
               onClick={() => handleNavClick('/live-tv')}
-              title="Watch (preview)"
+              title="Watch"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1318,7 +1295,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 ) : (
                   <FluentWatchIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
                 )}
-                <span className="truncate text-[13.5px]">Watch (preview)</span>
+                <span className="truncate text-[13.5px]">Watch</span>
               </div>
 
               {/* Submenu toggle */}
@@ -1742,7 +1719,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
             }`}
           >
-            <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" aria-hidden="true" />
+            <img
+              src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
+              alt=""
+              className="w-5 h-5 shrink-0 object-contain"
+              aria-hidden="true"
+            />
             <span className="truncate text-[13.5px]">WinUI 3</span>
           </button>
 
@@ -1901,13 +1883,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   type="button"
                   id="sidebar-collapsed-home"
-                  data-nav-active={currentRoute === '/' ? 'true' : undefined}
+                  data-nav-active={(currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview') ? 'true' : undefined}
                   onClick={() => handleNavClick('/')}
                   onMouseEnter={(e) => showTooltip('Home', e)}
                   onMouseLeave={hideTooltip}
                   title="Home"
+                  aria-label="Home"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    currentRoute === '/'
+                    (currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview')
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
                       : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
                   }`}
@@ -1919,30 +1902,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 2. Home (preview) Icon */}
-                <button
-                  type="button"
-                  id="sidebar-collapsed-home-preview"
-                  data-nav-active={currentRoute === '/home-preview' ? 'true' : undefined}
-                  onClick={() => handleNavClick('/home-preview')}
-                  onMouseEnter={(e) => showTooltip('Home (preview)', e)}
-                  onMouseLeave={hideTooltip}
-                  title="Home (preview)"
-                  aria-label="Home (preview)"
-                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                    currentRoute === '/home-preview'
-                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
-                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-                  }`}
-                >
-                  {useFluent3DForContent ? (
-                    <Fluent3DHomeIcon className="w-5 h-5 shrink-0" />
-                  ) : (
-                    <FluentHomeIcon className="w-5 h-5 text-black dark:text-white" />
-                  )}
-                </button>
-
-                {/* 3. Feed Icon */}
+                {/* 2. Feed Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-articles"
@@ -1967,15 +1927,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {/* Divider: Apps */}
                 <div className="w-6 h-[1px] bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
-                {/* 3. Watch (preview) Icon */}
+                {/* 3. Watch Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-watch"
                   data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/live-tv')}
-                  onMouseEnter={(e) => showTooltip('Watch (preview)', e)}
+                  onMouseEnter={(e) => showTooltip('Watch', e)}
                   onMouseLeave={hideTooltip}
-                  title="Watch (preview)"
+                  title="Watch"
+                  aria-label="Watch"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2160,7 +2121,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
                   }`}
                 >
-                  <PanelsTopLeft className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                  <img
+                    src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
+                    alt="WinUI 3"
+                    className="w-5 h-5 shrink-0 object-contain"
+                  />
                 </button>
 
                 {/* Sign In Collapsed Button placed directly above Settings */}

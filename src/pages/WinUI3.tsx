@@ -52,12 +52,17 @@ export const WinUI3: React.FC = () => {
   };
 
   return (
-    <div className={`winui3 ${isDarkMode ? '' : 'winui3-light'} min-h-full ${isDarkMode ? 'bg-[#282c31] text-white' : 'bg-[#f9f9f9] text-[#111827]'} px-4 py-6 sm:px-7 sm:py-8 lg:px-10 transition-colors duration-150`}>
+    <div className={`winui3 ${isDarkMode ? '' : 'winui3-light'} min-h-full ${isDarkMode ? 'text-white' : 'text-[#111827]'} px-4 py-6 sm:px-7 sm:py-8 lg:px-10 transition-colors duration-150`}>
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-6 border-b border-white/10 dark:border-white/10 pb-7 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className={`mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] ${isDarkMode ? 'text-[#4cc2ff]' : 'text-[#005fb8]'}`}>
-              <PanelTop className="size-4" /> Fluent design system
+            <div className={`mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] ${isDarkMode ? 'text-[#ff82ff]' : 'text-[#ff01ff]'}`}>
+              <img
+                src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
+                alt=""
+                className="size-4 object-contain inline-block"
+              />
+              <span>Fluent design system</span>
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">WinUI 3</h1>
             <p className={`mt-2 max-w-2xl text-sm leading-6 ${isDarkMode ? 'text-white/55' : 'text-black/60'}`}>A practical collection of familiar Windows controls, ready to use across Waves.</p>

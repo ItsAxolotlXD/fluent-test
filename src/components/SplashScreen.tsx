@@ -90,7 +90,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
         {/* Spinning ring and subtitle centered with generous spacing below logo */}
         <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
-          <SpinningRing size={34} strokeWidth={4} color={primaryButtonColor} />
+          <SpinningRing size={34} strokeWidth={4} />
           {subtitle && (
             <p className={`text-[12.5px] sm:text-[13.5px] ${isLightMode ? 'text-[#111827]/85' : 'text-[#FFFFFF]/90'} font-normal tracking-wide max-w-md`}>
               {subtitle}

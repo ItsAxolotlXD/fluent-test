@@ -16,9 +16,11 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
   size = 48,
   strokeWidth = 5,
   className = '',
-  color = '#4cc2ff',
+  color,
   ariaLabel = 'Đang tải...'
 }) => {
+  const isLightMode = typeof document !== 'undefined' && document.documentElement.classList.contains('light-mode');
+  const effectiveColor = color || (isLightMode ? '#ff01ff' : '#ff82ff');
   const radius = 18;
   const circumference = 2 * Math.PI * radius; // ~113.1
   // Arc length is approximately 25-30% of the circumference for standard Fluent ProgressRing
@@ -44,6 +46,7 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
           display: 'block'
         }}
         aria-hidden="true"
+        data-spinning-ring="true"
       >
         {/* Thick spinning arc without background */}
         <circle
@@ -51,13 +54,13 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
           cy="22"
           r={radius}
           fill="none"
-          stroke={color}
+          stroke={effectiveColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={strokeDasharray}
-          data-splash-ring={color === '#4cc2ff' ? 'true' : undefined}
+          data-spinning-ring="true"
           style={{
-            stroke: color,
+            stroke: effectiveColor,
             transformOrigin: '22px 22px'
           }}
         />

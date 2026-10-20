@@ -370,7 +370,7 @@ export const Settings: React.FC<SettingsProps> = ({
                         <span>New Watch Tab</span>
                         <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">New</span>
                       </div>
-                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Hiển thị tab Watch preview mới với giao diện xem nội dung.</div>
+                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Hiển thị tab Watch mới với giao diện xem nội dung.</div>
                     </div>
                     <button id="toggle-new-watch-tab" type="button" role="switch" aria-checked={draftSettings.newWatchTab} onClick={(e) => { e.stopPropagation(); updateDraft('newWatchTab', !draftSettings.newWatchTab); }} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
                   </motion.div>

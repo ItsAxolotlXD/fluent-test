@@ -73,7 +73,7 @@ export const Photopea: React.FC = () => {
       <div className="flex-1 relative w-full h-full bg-[#1e1e1e]">
         {isLoading && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f3f3f3] dark:bg-[#202020] text-[#111827] dark:text-white space-y-3">
-            <SpinningRing size={52} strokeWidth={5} color="#18a0fb" />
+            <SpinningRing size={52} strokeWidth={5} />
             <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
               Loading Photopea Editor...
             </p>

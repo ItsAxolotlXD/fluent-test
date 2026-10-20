@@ -101,9 +101,9 @@ export const Fluent3DWatchIcon: React.FC<Fluent3DIconProps> = ({ className = "w-
   <ImageIcon src="/icons/sidebar/watch.png" alt="Watch" className={className} style={style} />
 );
 
-// 4b. Watch (Preview)
+// 4b. Watch
 export const Fluent3DWatchPreviewIcon: React.FC<Fluent3DIconProps> = ({ className = "w-5 h-5", style }) => (
-  <ImageIcon src="/icons/sidebar/watch-preview.png" alt="Watch (Preview)" className={className} style={style} />
+  <ImageIcon src="/icons/sidebar/watch-preview.png" alt="Watch" className={className} style={style} />
 );
 
 // 5. Gallery - 3D Microsoft Photos / Gallery (scaled down like home, settings, watch)

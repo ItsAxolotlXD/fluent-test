@@ -147,7 +147,13 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
     }
 
     if (cleanRoute.startsWith('/winui-3')) {
-      return <PanelsTopLeft className={standardIconClass} />;
+      return (
+        <img
+          src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
+          alt="WinUI 3"
+          className={`${largeIconClass} object-contain`}
+        />
+      );
     }
 
     return useFluent3DForContent ? (

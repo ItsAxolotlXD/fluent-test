@@ -82,7 +82,7 @@ export const SequentialSection: React.FC<SequentialSectionProps> = ({
       className={`sequential-section-placeholder w-full flex flex-col items-center justify-center py-10 select-none ${className}`}
     >
       <div className="flex flex-col items-center justify-center gap-3">
-        <SpinningRing size={34} strokeWidth={3.8} color="#4cc2ff" />
+        <SpinningRing size={34} strokeWidth={3.8} />
         <span className="text-xs text-[#888888] dark:text-[#AAAAAA] font-normal tracking-wide">
           Đang tải thêm nội dung...
         </span>

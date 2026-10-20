@@ -294,7 +294,7 @@ export const EpgScheduleWidget: React.FC<EpgScheduleWidgetProps> = ({
       >
         {isLoading ? (
           <div className="h-64 flex flex-col items-center justify-center space-y-3">
-            <SpinningRing size={38} strokeWidth={3.5} color="#4cc2ff" />
+            <SpinningRing size={38} strokeWidth={3.5} />
             <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
               Đang tải lịch phát sóng...
             </p>

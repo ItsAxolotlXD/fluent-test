@@ -121,7 +121,7 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
           >
             <div className="w-full h-full flex items-center justify-center">
               {isLoading ? (
-                <SpinningRing size={22} strokeWidth={3} color="#4cc2ff" />
+                <SpinningRing size={22} strokeWidth={3} />
               ) : (
                 <img
                   src={ch.logo}

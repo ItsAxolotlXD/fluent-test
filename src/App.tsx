@@ -19,8 +19,8 @@ import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
-import { Home } from './pages/Home';
 import { HomePreview } from './pages/HomePreview';
+import { About } from './pages/About';
 import { LiveTV } from './pages/LiveTV';
 import { WatchPreview } from './pages/WatchPreview';
 import { TestChannels } from './pages/TestChannels';
@@ -494,21 +494,10 @@ export default function App() {
     }
 
     switch (currentRoute) {
-      case '/home-preview':
-        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
-
       case '/':
       case '/home':
-        return (
-          <Home
-            navigate={navigate}
-            onSelectChannel={setCurrentChannel}
-            channels={channels}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
-            onOpenSpotlight={() => setIsSpotlightOpen(true)}
-          />
-        );
+      case '/home-preview':
+        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
 
       case '/live-tv':
       case '/watch-preview':
@@ -571,15 +560,7 @@ export default function App() {
         );
 
       case '/about':
-        return (
-          <Home
-            navigate={navigate}
-            onSelectChannel={setCurrentChannel}
-            channels={channels}
-            searchQuery={currentTabSearchQuery}
-            onSearchChange={handleTabSearchChange}
-          />
-        );
+        return <About />;
 
       case '/auth':
         return <Auth navigate={navigate} />;

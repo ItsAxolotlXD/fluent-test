@@ -400,7 +400,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Buffering & Loading Spinner - Thick Spinning Ring in #4cc2ff */}
       {(isLoading || isBuffering) && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-10 pointer-events-none p-4">
-          <SpinningRing size={58} strokeWidth={5.5} color="#4cc2ff" />
+          <SpinningRing size={58} strokeWidth={5.5} />
         </div>
       )}
 

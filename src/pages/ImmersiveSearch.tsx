@@ -469,7 +469,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                       </div>
                       {isSearchingEpg && (
                         <span className="text-xs text-[#9CA3AF] flex items-center gap-1.5">
-                          <SpinningRing size={13} strokeWidth={2} color="#4cc2ff" />
+                          <SpinningRing size={13} strokeWidth={2} />
                           <span>Đang tra cứu epg.io.vn...</span>
                         </span>
                       )}
@@ -477,7 +477,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
 
                     {epgResults.length === 0 && isSearchingEpg ? (
                       <div className="py-8 flex flex-col items-center justify-center gap-2 bg-black/5 dark:bg-[#200d23]/40 rounded-2xl border border-black/10 dark:border-[#3b1540]/60">
-                        <SpinningRing size={26} strokeWidth={3} color="#4cc2ff" />
+                        <SpinningRing size={26} strokeWidth={3} />
                         <span className="text-xs text-[#9CA3AF]">Đang tìm chương trình trong lịch phát sóng...</span>
                       </div>
                     ) : (

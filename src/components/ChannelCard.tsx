@@ -43,7 +43,7 @@ export const ChannelCard: React.FC<ChannelCardProps> = ({
       <div className="relative h-32 bg-neutral-100 dark:bg-[#38383d] flex items-center justify-center p-4 overflow-hidden">
         {isLoading ? (
           <div key="channel-loading" className="flex items-center justify-center w-full h-full">
-            <SpinningRing size={36} strokeWidth={4} color="#4cc2ff" />
+            <SpinningRing size={36} strokeWidth={4} />
           </div>
         ) : (
           <div key="channel-loaded" className="slide-up-refresh w-full h-full relative flex items-center justify-center">
