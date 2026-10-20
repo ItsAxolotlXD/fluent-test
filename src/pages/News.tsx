@@ -5,6 +5,12 @@ import { TrendingUp, Lock, RefreshCw, CheckCircle2, Sparkles } from 'lucide-reac
 import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
+import { motion } from 'motion/react';
+
+const feedSlideUp = {
+  hidden: { opacity: 0, y: 22 },
+  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.42, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] } }),
+};
 
 interface NewsProps {
   navigate: (route: string) => void;
@@ -33,9 +39,9 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
   const featured = NEWS_DATA[0];
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-16">
+    <motion.div initial="hidden" animate="visible" className="space-y-6 sm:space-y-8 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10">
+      <motion.div variants={feedSlideUp} custom={0} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white tracking-tight">
             Feed
@@ -55,10 +61,10 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             <span>Check for updates</span>
           </button>
         )}
-      </div>
+      </motion.div>
 
       {/* Merged System Update Status Banner */}
-      <div className="p-4 sm:p-5 rounded-[12px] bg-white dark:bg-[#282c31] border border-black/10 dark:border-white/10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <motion.div variants={feedSlideUp} custom={1} className="p-4 sm:p-5 rounded-[12px] bg-white dark:bg-[#282c31] border border-black/10 dark:border-white/10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
             <CheckCircle2 className="w-5 h-5" />
@@ -88,11 +94,13 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
         >
           View changelog
         </button>
-      </div>
+      </motion.div>
 
       {/* Featured Compact Article Header Card */}
       {featured && selectedCategory === 'All' && (
-        <div
+        <motion.div
+          variants={feedSlideUp}
+          custom={2}
           id="featured-news-card"
           onClick={() => navigate(`/news/${featured.slug}`)}
           className="news-card-featured relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-white dark:bg-[#38383d] border-none hover:shadow-xl cursor-pointer group shadow-md transition-all"
@@ -157,11 +165,11 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Category Pills */}
-      <div id="news-category-tabs" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+      <motion.div variants={feedSlideUp} custom={3} id="news-category-tabs" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         {categories.map((cat, idx) => (
           <button
             key={cat}
@@ -177,7 +185,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             {cat}
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Articles Grid */}
       {filteredNews.length === 0 ? (
@@ -197,13 +205,15 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
         </div>
       ) : filteredNews.length <= 6 || !settings.loadPagesSequentially ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredNews.map((article) => (
-            <NewsCard
-              key={article.id}
+          {filteredNews.map((article, idx) => (
+              <motion.div key={article.id} variants={feedSlideUp} custom={4 + idx}>
+              <NewsCard
+                key={article.id}
               article={article}
               onClick={(a) => navigate(`/news/${a.slug}`)}
-            />
-          ))}
+              />
+              </motion.div>
+            ))}
         </div>
       ) : (
         <div className="space-y-6">
@@ -234,6 +244,6 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           </SequentialSection>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

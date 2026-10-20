@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
+
+const articleSlideUp = {
+  hidden: { opacity: 0, y: 22 },
+  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.42, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] } }),
+};
 import { NEWS_DATA } from '../data/news';
 import { NewsArticle } from '../types';
 import { 
@@ -53,7 +59,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
   };
 
   return (
-    <article className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
+    <motion.article initial="hidden" animate="visible" className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
       {/* When Locked: Hide the article header (titles, hero cover, actions) and only show password protection gate */}
       {isLocked ? (
         <div className="p-8 sm:p-12 rounded-[28px] bg-white dark:bg-[#1A1A1E] border border-amber-500/40 dark:border-amber-500/30 shadow-xl text-center space-y-6">
@@ -107,7 +113,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
       ) : (
         <>
           {/* Header metadata */}
-          <div className="flex items-center gap-1 text-xs text-black dark:text-[#8E8E93] font-medium">
+          <motion.div variants={articleSlideUp} custom={0} className="flex items-center gap-1 text-xs text-black dark:text-[#8E8E93] font-medium">
               <Calendar className="w-3.5 h-3.5" />
               {article.publishedAt}
 
@@ -121,12 +127,12 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 <span>Unlocked</span>
               </span>
             )}
-          </div>
+          </motion.div>
 
           {/* Main Title */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight">
+          <motion.h1 variants={articleSlideUp} custom={1} className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight">
             {article.title}
-          </h1>
+          </motion.h1>
 
           {/* Subtitle */}
           {article.subtitle && (
@@ -136,7 +142,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
           )}
 
           {/* Hero Cover Image */}
-          <div 
+          <motion.div variants={articleSlideUp} custom={2} 
             onClick={() => {
               setLightboxImage(article.coverImage);
               setLightboxZoom(1);
@@ -153,10 +159,10 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               <Maximize2 className="w-3.5 h-3.5" />
               <span>Full size preview</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Full Article Body Content */}
-          <div 
+          <motion.div variants={articleSlideUp} custom={3}
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.75 }}
             className="p-5 md:p-8 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs text-[#374151] dark:text-[#d1d5db] space-y-6"
           >
@@ -283,74 +289,9 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               })}
             </div>
 
-          </div>
+          </motion.div>
         </>
       )}
-
-      {/* Full Size Image Lightbox Modal */}
-      {lightboxImage && (
-        <div 
-          className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4 animate-in fade-in duration-200"
-          onClick={() => setLightboxImage(null)}
-        >
-          {/* Top Control Bar */}
-          <div 
-            className="absolute top-4 right-4 flex items-center gap-2 bg-[#2c2c2c] border border-white/20 rounded-[6px] px-3 py-1.5 shadow-2xl z-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setLightboxZoom((prev) => Math.min(3, prev + 0.25))}
-              className="p-1 rounded-[4px] hover:bg-white/10 text-white transition-colors cursor-default"
-              title="Zoom In"
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-            <span className="text-xs font-mono font-bold text-white/90 px-1">
-              {Math.round(lightboxZoom * 100)}%
-            </span>
-            <button
-              type="button"
-              onClick={() => setLightboxZoom((prev) => Math.max(0.5, prev - 0.25))}
-              className="p-1.5 rounded-full hover:bg-white/15 text-white transition-colors cursor-default"
-              title="Zoom Out"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setLightboxZoom(1)}
-              className="p-1.5 rounded-full hover:bg-white/15 text-white/80 hover:text-white transition-colors cursor-default"
-              title="Reset Zoom"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-            <div className="w-px h-4 bg-white/20 mx-1" />
-            <button
-              type="button"
-              onClick={() => setLightboxImage(null)}
-              className="p-1.5 rounded-full hover:bg-red-500/80 text-white transition-colors cursor-default"
-              title="Close (Esc)"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Image Container */}
-          <div 
-            className="max-w-[95vw] max-h-[88vh] overflow-auto flex items-center justify-center p-2 cursor-default"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={lightboxImage}
-              alt="Full size view"
-              referrerPolicy="no-referrer"
-              style={{ transform: `scale(${lightboxZoom})`, transformOrigin: 'center center' }}
-              className="max-w-full max-h-[85vh] object-contain transition-transform duration-200 shadow-2xl rounded-xl"
-            />
-          </div>
-        </div>
-      )}
-    </article>
+    </motion.article>
   );
 };
