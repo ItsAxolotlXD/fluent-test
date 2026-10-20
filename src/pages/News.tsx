@@ -38,7 +38,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white tracking-tight">
-            Update blogs
+            Feed
           </h1>
           <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-1.5 leading-relaxed max-w-4xl">
             Release notes, system updates, changelogs, broadcasting technology, and media culture.

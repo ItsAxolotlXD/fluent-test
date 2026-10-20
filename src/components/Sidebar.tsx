@@ -1065,7 +1065,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             y: 0,
             transition: { duration: 0.38, delay: 0.20, ease: [0.16, 1, 0.3, 1] },
           }}
-          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Ink Canvas..."
+          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Feed, Watch, Gallery, Notes, Ink Canvas..."
           onClick={() => {
             onToggleDynamicSidebarIcons();
             onClose();
@@ -1243,14 +1243,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 3. Update blogs */}
+          {/* 3. Feed */}
           <div className="shrink-0">
             <button
               type="button"
               id={isMobile ? 'mobile-nav-articles' : 'sidebar-nav-articles'}
               data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
               onClick={() => handleNavClick('/news')}
-              title="Update blogs"
+              title="Feed"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1262,7 +1262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ) : (
                 <FluentArticlesIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
               )}
-              <span className="truncate text-[13.5px]">Update blogs</span>
+              <span className="truncate text-[13.5px]">Feed</span>
             </button>
           </div>
 
@@ -1909,13 +1909,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 3. Update blogs Icon */}
+                {/* 3. Feed Icon */}
                 <button
                   type="button"
                   id="sidebar-collapsed-articles"
                   data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/news')}
-                  title="Update blogs"
+                  title="Feed"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'

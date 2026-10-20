@@ -324,7 +324,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       // Pages (Switch page)
       { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
       { id: 'page-watch', title: 'Watch (preview)', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
-      { id: 'page-news', title: 'Update blogs', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-news', title: 'Feed', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
       { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
       { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
       { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },
@@ -1515,7 +1515,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </button>
 
-            {/* Update blogs */}
+            {/* Feed */}
             <button
               id="btn-topbar-nav-news"
               type="button"
@@ -1525,10 +1525,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Update blogs"
+              title="Feed"
             >
               <FluentNewsIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
-              <span>Update blogs</span>
+              <span>Feed</span>
 
               {(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) && (
                 <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#4cc2ff] rounded-t-full pointer-events-none" />
@@ -1601,7 +1601,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 placeholder={(() => {
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                   if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch (preview)';
-                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
+                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Feed';
                   if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
                   if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
                   if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
