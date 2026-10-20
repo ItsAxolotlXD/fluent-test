@@ -34,7 +34,9 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
   // Distinct category list maintaining natural broadcast order
   const distinctCategories = useMemo(() => {
-    return Array.from(new Set(channels.map((c) => c.category)));
+    return Array.from(new Set(channels.map((c) => c.category))).filter(
+      (category) => String(category).trim().toLowerCase() !== 'lịch phát sóng'
+    );
   }, [channels]);
 
   const categoryTabs = useMemo(() => {
@@ -67,18 +69,6 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
   return (
     <div className="space-y-4 sm:space-y-8 pb-16">
-      {/* Top Banner / Channel Title */}
-      <div>
-        <div className="flex items-center gap-2">
-          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight flex items-center gap-2">
-            <span>{`${String(currentChannel.channelNumber || 1).padStart(3, '0')} | ${currentChannel.name}`}</span>
-          </h1>
-        </div>
-        <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-0.5 font-medium flex items-center gap-2">
-          <span>{currentChannel.category}</span>
-        </p>
-      </div>
-
       {/* Video Player Section (Clean full width without adjacent EPG panel) */}
       <div className="w-full">
         <VideoPlayer
@@ -105,24 +95,8 @@ export const LiveTV: React.FC<LiveTVProps> = ({
           </div>
 
           {/* Category Tabs Filter */}
-          <div id="livetv-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            {/* All button */}
-            <button
-              id="livetv-cat-btn-all"
-              data-active={selectedCategory === 'All'}
-              type="button"
-              onClick={() => setSelectedCategory('All')}
-              style={{ backgroundColor: 'transparent', backgroundImage: 'none', borderRadius: 0, boxShadow: 'none', borderBottom: '2px solid #4cc2ff' }}
-              className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
-                selectedCategory === 'All'
-                  ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
-                  : 'border-transparent text-[#6b7280] hover:text-[#111827] dark:text-[#9ca3af] dark:hover:text-white'
-              }`}
-            >
-              All
-            </button>
-
-            {/* Colored button with calendar icon placed right next to All button to open right sidebar */}
+          <div id="livetv-category-tabs" className="flex items-center gap-6 overflow-x-auto pb-1 no-scrollbar">
+            {/* Schedule button */}
             <button
               id="btn-livetv-open-epg-sidebar"
               data-active="false"
@@ -136,8 +110,25 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               <span>Lịch phát sóng</span>
             </button>
 
+            {/* All button */}
+            <button
+              id="livetv-cat-btn-all"
+              data-active={selectedCategory === 'All'}
+              type="button"
+              onClick={() => setSelectedCategory('All')}
+              style={{ backgroundColor: 'transparent', backgroundImage: 'none', borderRadius: 0, boxShadow: 'none', borderBottom: '2px solid transparent' }}
+              className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
+                selectedCategory === 'All'
+                  ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
+                  : 'border-transparent text-[#6b7280] hover:text-[#111827] dark:text-[#9ca3af] dark:hover:text-white'
+              }`}
+            >
+              All
+              {selectedCategory === 'All' && <motion.span layoutId="watch-tab-underline" className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-[#4cc2ff]" transition={{ type: 'spring', stiffness: 500, damping: 34 }} />}
+            </button>
+
             {/* Remaining Category Tabs */}
-            {categoryTabs.filter((cat) => cat !== 'All').map((cat, idx) => (
+            {categoryTabs.filter((cat) => cat !== 'All' && cat.trim().toLowerCase() !== 'lịch phát sóng').map((cat, idx) => (
               <button
                 key={cat}
                 id={`livetv-cat-btn-${idx + 1}`}
@@ -152,6 +143,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                 }`}
               >
                 {cat}
+                {selectedCategory === cat && <motion.span layoutId="watch-tab-underline" className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-[#4cc2ff]" transition={{ type: 'spring', stiffness: 500, damping: 34 }} />}
               </button>
             ))}
           </div>
