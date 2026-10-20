@@ -168,7 +168,6 @@ html.light-mode .winui3 {
   --winui-text: #1f1f1f;
   --winui-muted: #5f6368;
   --winui-control: rgba(0, 0, 0, 0.04);
-  background-color: var(--winui-surface-strong) !important;
   color: var(--winui-text) !important;
 }
 
@@ -756,6 +755,10 @@ html:not(.light-mode) #vplay-splash-screen {
   display: block;
 }
 
+circle[data-splash-ring="true"] {
+  stroke: var(--ui-accent) !important;
+}
+
 /* Light mode visual corrections */
 html.light-mode .sidebar-nav-item,
 html.light-mode .sidebar-nav-item svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
@@ -1038,7 +1041,6 @@ html.light-mode .winui3,
     --winui-surface: #f7f9fb;
     --winui-text: #1f2937;
     --winui-muted: rgb(31 41 55 / 0.58);
-    background: #f3f6f9 !important;
     color: var(--winui-text) !important;
   }
 
@@ -4681,32 +4683,32 @@ html.light-mode .text-\[\#a1a1aa\] {
 }
 
 /* 2. Mặc định toàn bộ Icon (SVG, Lucide, Path) ở Light Mode là MÀU ĐEN */
-html.light-mode svg:not(.fluent-3d-icon):not(.fluent-3d-icon *),
+html.light-mode svg:not(.fluent-3d-icon):not(.fluent-3d-icon *):not(:has(linearGradient)),
 html.light-mode .lucide,
 html.light-mode [data-lucide] {
   color: #000000 !important;
   stroke: #000000 !important;
 }
 
-html.light-mode svg path:not(.fluent-3d-icon *),
-html.light-mode svg circle:not([stroke="#005fb8"]):not([stroke="#4cc2ff"]):not(.fluent-3d-icon *),
-html.light-mode svg rect:not(.fluent-3d-icon *),
-html.light-mode svg line:not(.fluent-3d-icon *),
-html.light-mode svg polyline:not(.fluent-3d-icon *),
-html.light-mode svg polygon:not(.fluent-3d-icon *) {
+html.light-mode svg:not(:has(linearGradient)) path:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) circle:not([stroke="#005fb8"]):not([stroke="#4cc2ff"]):not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) rect:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) line:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) polyline:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) polygon:not(.fluent-3d-icon *) {
   stroke: #000000 !important;
 }
 
-html.light-mode svg.fill-current:not(.fluent-3d-icon *),
-html.light-mode svg [fill="currentColor"]:not(.fluent-3d-icon *),
-html.light-mode svg [fill="#FFFFFF"]:not(.fluent-3d-icon *),
-html.light-mode svg [fill="#fff"]:not(.fluent-3d-icon *),
-html.light-mode svg [fill="#4cc2ff"]:not(.fluent-3d-icon *),
-html.light-mode svg [fill="#4CC2FF"]:not(.fluent-3d-icon *),
-html.light-mode svg[fill="#FFFFFF"],
-html.light-mode svg[fill="#fff"],
-html.light-mode svg[fill="#4cc2ff"],
-html.light-mode svg[fill="#4CC2FF"] {
+html.light-mode svg:not(:has(linearGradient)).fill-current:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) [fill="currentColor"]:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) [fill="#FFFFFF"]:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) [fill="#fff"]:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) [fill="#4cc2ff"]:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) [fill="#4CC2FF"]:not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient))[fill="#FFFFFF"],
+html.light-mode svg:not(:has(linearGradient))[fill="#fff"],
+html.light-mode svg:not(:has(linearGradient))[fill="#4cc2ff"],
+html.light-mode svg:not(:has(linearGradient))[fill="#4CC2FF"] {
   fill: #000000 !important;
 }
 
@@ -4924,8 +4926,8 @@ html.light-mode [class*="border-b-[#4CC2FF]"] {
 }
 
 /* 5. Vòng xoay tiến trình Thick Spinning Ring thích ứng Light Mode (ngoại trừ splash screen khởi động) */
-html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4cc2ff"]:not([data-splash-ring="true"]),
-html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4CC2FF"]:not([data-splash-ring="true"]) {
+html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4cc2ff"]:not([data-splash-ring="true"]):not([data-spinning-ring="true"]),
+html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4CC2FF"]:not([data-splash-ring="true"]):not([data-spinning-ring="true"]) {
   stroke: #005fb8 !important;
 }
 
@@ -4937,7 +4939,7 @@ html.light-mode #vplay-splash-screen .fluent-spinning-ring circle,
 #vplay-splash-screen circle,
 circle[data-splash-ring="true"],
 svg circle[data-splash-ring="true"] {
-  stroke: #4cc2ff !important;
+  stroke: var(--ui-accent) !important;
 }
 
 /* Modal dialog close X buttons - strictly no background and no border */

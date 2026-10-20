@@ -36,6 +36,7 @@ export const WinUI3: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const primaryAccent = isDarkMode ? '#4cc2ff' : '#005fb8';
+  const progressAccent = isDarkMode ? '#ff82ff' : '#ff01ff';
 
   const copyToken = async () => {
     await navigator.clipboard?.writeText(`--winui-accent: ${primaryAccent}`);
@@ -272,15 +273,15 @@ export const WinUI3: React.FC = () => {
                   <h2 className="mt-1 text-xl font-bold">Spinning progress</h2>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isDarkMode ? 'bg-[#4cc2ff]/20 text-[#75d5ff] border border-[#4cc2ff]/30' : 'bg-[#005fb8]/15 text-[#005fb8] border border-[#005fb8]/25'}`}>
-                    <span className="size-2 rounded-full" style={{ backgroundColor: primaryAccent }} />
-                    {isDarkMode ? 'Dark #4cc2ff' : 'Light #005fb8'}
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isDarkMode ? 'bg-[#ff82ff]/20 text-[#ff82ff] border border-[#ff82ff]/30' : 'bg-[#ff01ff]/15 text-[#ff01ff] border border-[#ff01ff]/25'}`}>
+                    <span className="size-2 rounded-full" style={{ backgroundColor: progressAccent }} />
+                    {isDarkMode ? 'Dark #ff82ff' : 'Light #ff01ff'}
                   </span>
                   <span className={`rounded-full px-2 py-1 text-[10px] ${isDarkMode ? 'bg-white/10 text-white/45' : 'bg-black/10 text-black/60'}`}>ProgressRing</span>
                 </div>
               </div>
               <p className={`text-xs ${isDarkMode ? 'text-white/55' : 'text-black/60'} -mt-3 mb-5`}>
-                Displays indeterminate or determinate circular progress for ongoing operations, using the primary button accent ({isDarkMode ? '#4cc2ff' : '#005fb8'}).
+                Displays indeterminate or determinate circular progress for ongoing operations, using the progress accent ({progressAccent}).
               </p>
               
               <div className="grid gap-6 md:grid-cols-2 items-center">
@@ -290,7 +291,7 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-14 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={20} strokeWidth={3} color={primaryAccent} />
+                        <SpinningRing size={20} strokeWidth={3} color={progressAccent} />
                       ) : (
                         <div className={`w-5 h-5 rounded-full border-2 ${isDarkMode ? 'border-white/20' : 'border-black/20'} border-dashed`} />
                       )}
@@ -302,7 +303,7 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-14 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={36} strokeWidth={4} color={primaryAccent} />
+                        <SpinningRing size={36} strokeWidth={4} color={progressAccent} />
                       ) : (
                         <div className={`w-9 h-9 rounded-full border-2 ${isDarkMode ? 'border-white/20' : 'border-black/20'} border-dashed`} />
                       )}
@@ -314,7 +315,7 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-14 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={52} strokeWidth={5} color={primaryAccent} />
+                        <SpinningRing size={52} strokeWidth={5} color={progressAccent} />
                       ) : (
                         <div className={`w-13 h-13 rounded-full border-2 ${isDarkMode ? 'border-white/20' : 'border-black/20'} border-dashed`} />
                       )}
@@ -339,8 +340,9 @@ export const WinUI3: React.FC = () => {
                           cy="22"
                           r="18"
                           fill="none"
-                          stroke={primaryAccent}
+                          stroke={progressAccent}
                           strokeWidth="4"
+                          data-spinning-ring="true"
                           strokeLinecap="round"
                           strokeDasharray={`${(determinateProgress / 100) * (2 * Math.PI * 18)} ${(2 * Math.PI * 18)}`}
                           className="transition-all duration-200"

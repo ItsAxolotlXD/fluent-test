@@ -614,13 +614,7 @@ export default function App() {
         return <Photopea />;
 
       default:
-        return (
-          <Home
-            navigate={navigate}
-            onSelectChannel={setCurrentChannel}
-            channels={channels}
-          />
-        );
+        return <HomePreview channels={channels} onSelectChannel={setCurrentChannel} navigate={navigate} />;
     }
   };
 
