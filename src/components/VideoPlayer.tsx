@@ -55,6 +55,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const isFav = isChannelFavorite(channel.id);
 
   const { settings, updateSetting } = useSettings();
+  const isLightMode = settings.theme === 'light';
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '4:3'>(settings.streamAspectRatio || '16:9');
   const [aspectRatioToast, setAspectRatioToast] = useState<string | null>(null);
   const [captionsToast, setCaptionsToast] = useState<string | null>(null);
@@ -418,17 +419,26 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
       )}
 
-      {/* CHANNEL CONTROLS UI IN TAB WATCH (matching user provided screenshot) */}
+      {/* CHANNEL CONTROLS UI IN TAB WATCH (supports light mode & dark mode with 50% opacity, 20% blur) */}
       <div
         id="video-player-channel-controls"
-        className={`absolute bottom-0 left-0 right-0 z-20 px-3.5 sm:px-6 pt-3 pb-3 sm:pb-4.5 bg-[#141517]/95 sm:bg-[#141517]/90 backdrop-blur-md border-t border-white/10 select-none transition-opacity duration-300 ${
+        style={{
+          backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.50)' : 'rgba(20, 21, 23, 0.50)',
+          backdropFilter: 'blur(8px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(8px) saturate(140%)',
+        }}
+        className={`absolute bottom-0 left-0 right-0 z-20 px-3.5 sm:px-6 pt-3 pb-3 sm:pb-4.5 border-t ${
+          isLightMode ? 'border-black/10 text-black' : 'border-white/10 text-white'
+        } select-none transition-opacity duration-300 ${
           canShowControls ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none invisible'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Progress Timeline Row: [6:29] [=======●---------------] [1:36:21] */}
         <div className="flex items-center gap-2.5 sm:gap-3.5 w-full mb-2.5 sm:mb-3">
-          <span className="text-[11px] sm:text-xs font-medium font-mono text-white/90 select-none min-w-[34px] sm:min-w-[40px] text-left">
+          <span className={`text-[11px] sm:text-xs font-medium font-mono select-none min-w-[34px] sm:min-w-[40px] text-left ${
+            isLightMode ? 'text-black/90' : 'text-white/90'
+          }`}>
             {displayCurrent}
           </span>
 
@@ -437,7 +447,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="relative flex-1 h-3 flex items-center cursor-pointer group/scrubber"
           >
             {/* Background track */}
-            <div className="w-full h-1 sm:h-1.5 bg-white/30 rounded-full relative overflow-visible">
+            <div className={`w-full h-1 sm:h-1.5 rounded-full relative overflow-visible ${
+              isLightMode ? 'bg-black/20' : 'bg-white/30'
+            }`}>
               {/* Played Orange Progress */}
               <div
                 className="h-full bg-[#ff6b22] rounded-full transition-all duration-75 shadow-xs"
@@ -451,7 +463,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
           </div>
 
-          <span className="text-[11px] sm:text-xs font-medium font-mono text-white/90 select-none min-w-[36px] sm:min-w-[46px] text-right">
+          <span className={`text-[11px] sm:text-xs font-medium font-mono select-none min-w-[36px] sm:min-w-[46px] text-right ${
+            isLightMode ? 'text-black/90' : 'text-white/90'
+          }`}>
             {displayDuration}
           </span>
         </div>
@@ -460,10 +474,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Left: Title & Subtitle (matching "Symbols Of The Shadows / 2021") */}
           <div className="min-w-0 max-w-[120px] sm:max-w-[200px] md:max-w-xs flex-1">
-            <h4 className="text-xs sm:text-sm md:text-base font-semibold text-white truncate tracking-tight" title={channel.name}>
+            <h4 className={`text-xs sm:text-sm md:text-base font-semibold truncate tracking-tight ${
+              isLightMode ? 'text-[#111827]' : 'text-white'
+            }`} title={channel.name}>
               {channel.name}
             </h4>
-            <p className="text-[10px] sm:text-xs text-white/55 truncate font-normal mt-0.5">
+            <p className={`text-[10px] sm:text-xs truncate font-normal mt-0.5 ${
+              isLightMode ? 'text-[#6B7280]' : 'text-white/55'
+            }`}>
               {channel.channelNumber ? `Kênh ${channel.channelNumber} • ${channel.category}` : channel.category}
             </p>
           </div>
@@ -474,7 +492,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={onRandomChannel}
-              className="p-1 sm:p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/70 hover:text-black hover:bg-black/10' : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
               title="Phát ngẫu nhiên kênh khác"
             >
               <Shuffle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -484,7 +504,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={onPrevChannel}
-              className="p-1 sm:p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/60 hover:text-black hover:bg-black/10' : 'text-white/60 hover:text-white hover:bg-white/10'
+              }`}
               title="Kênh trước"
             >
               <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -495,7 +517,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-rewind-btn"
               type="button"
               onClick={handleRewind10}
-              className="p-1 sm:p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
               title="Lùi 10 giây"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -515,17 +539,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   togglePlay();
                   resetControlsTimeout();
                 }}
-                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#18181c] hover:bg-[#222329] flex items-center justify-center cursor-pointer transition-colors"
+                className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
+                  isLightMode ? 'bg-[#f4f4f5] hover:bg-[#e4e4e7]' : 'bg-[#18181c] hover:bg-[#222329]'
+                }`}
                 title={isPlaying ? 'Tạm dừng' : 'Phát'}
                 aria-label={isPlaying ? 'Tạm dừng' : 'Phát'}
               >
                 {isPlaying ? (
                   <div className="flex items-center gap-1 sm:gap-1.5">
-                    <div className="w-1 sm:w-1.5 h-3.5 sm:h-4.5 bg-white rounded-[2px]" />
-                    <div className="w-1 sm:w-1.5 h-3.5 sm:h-4.5 bg-white rounded-[2px]" />
+                    <div className={`w-1 sm:w-1.5 h-3.5 sm:h-4.5 rounded-[2px] ${isLightMode ? 'bg-black' : 'bg-white'}`} />
+                    <div className={`w-1 sm:w-1.5 h-3.5 sm:h-4.5 rounded-[2px] ${isLightMode ? 'bg-black' : 'bg-white'}`} />
                   </div>
                 ) : (
-                  <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-white text-white ml-0.5" />
+                  <Play className={`w-4 h-4 sm:w-5 sm:h-5 ml-0.5 ${isLightMode ? 'fill-black text-black' : 'fill-white text-white'}`} />
                 )}
               </button>
             </div>
@@ -535,7 +561,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-forward-btn"
               type="button"
               onClick={handleForward30}
-              className="p-1 sm:p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
               title="Tua tới 30 giây"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -549,7 +577,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={onNextChannel}
-              className="p-1 sm:p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/60 hover:text-black hover:bg-black/10' : 'text-white/60 hover:text-white hover:bg-white/10'
+              }`}
               title="Kênh tiếp theo"
             >
               <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -560,7 +590,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               type="button"
               onClick={handleToggleLoop}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
-                isLooping ? 'text-[#ff6b22] bg-[#ff6b22]/15' : 'text-white/70 hover:text-white hover:bg-white/10'
+                isLooping ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/70 hover:text-black hover:bg-black/10' : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
               title={isLooping ? 'Đang lặp lại' : 'Lặp lại (Loop)'}
             >
@@ -575,7 +605,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               type="button"
               onClick={handleToggleCaptions}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
-                isCaptionsOn ? 'text-[#ff6b22] bg-[#ff6b22]/15' : 'text-white/80 hover:text-white hover:bg-white/10'
+                isCaptionsOn ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
               title={isCaptionsOn ? 'Tắt phụ đề' : 'Bật phụ đề'}
             >
@@ -595,7 +625,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   toggleMute();
                   resetControlsTimeout();
                 }}
-                className="p-1 sm:p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                  isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
                 title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
               >
                 {isMuted || volume === 0 ? (
@@ -606,11 +638,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </button>
               <div
                 onClick={handleVolumeSliderClick}
-                className="w-10 sm:w-16 h-1 bg-white/30 hover:bg-white/50 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200"
+                className={`w-10 sm:w-16 h-1 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 ${
+                  isLightMode ? 'bg-black/20 hover:bg-black/40' : 'bg-white/30 hover:bg-white/50'
+                }`}
                 title={`Âm lượng: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
               >
                 <div
-                  className="h-full bg-white rounded-full transition-all duration-75"
+                  className={`h-full rounded-full transition-all duration-75 ${
+                    isLightMode ? 'bg-black' : 'bg-white'
+                  }`}
                   style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
                 />
               </div>
@@ -621,7 +657,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-fullscreen-btn"
               type="button"
               onClick={handleFullscreenToggle}
-              className="p-1 sm:p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
+                isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
               title={isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}
             >
               {isFullscreen ? (
@@ -636,7 +674,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-pip-btn"
               type="button"
               onClick={handlePiP}
-              className="p-1 sm:p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer hidden xs:flex"
+              className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer hidden xs:flex ${
+                isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
               title="Thu nhỏ Picture-in-Picture"
             >
               <PictureInPicture2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
@@ -652,7 +692,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   resetControlsTimeout();
                 }}
                 className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
-                  showMoreMenu ? 'text-[#ff6b22] bg-white/15' : 'text-white/80 hover:text-white hover:bg-white/10'
+                  showMoreMenu ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
                 title="Tùy chọn khác"
               >
@@ -661,7 +701,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
               {showMoreMenu && (
                 <div
-                  className="absolute right-0 bottom-full mb-2 w-48 rounded-xl bg-[#1e2024]/95 border border-white/10 shadow-2xl p-1.5 text-xs text-white z-30 backdrop-blur-md"
+                  style={{
+                    backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.70)' : 'rgba(20, 21, 23, 0.30)',
+                    backdropFilter: 'blur(10px) saturate(140%)',
+                    WebkitBackdropFilter: 'blur(10px) saturate(140%)',
+                  }}
+                  className={`absolute right-0 bottom-full mb-2 w-48 rounded-xl border ${
+                    isLightMode ? 'border-black/10 text-black shadow-xl' : 'border-white/10 text-white shadow-2xl'
+                  } p-1.5 text-xs z-30`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -669,7 +716,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       handleToggleAspectRatio();
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer ${
+                      isLightMode ? 'hover:bg-black/10' : 'hover:bg-white/10'
+                    }`}
                   >
                     <span>Tỉ lệ khung hình</span>
                     <span className="font-mono font-bold text-[#ff6b22]">{aspectRatio}</span>
@@ -679,20 +728,24 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       toggleFavoriteChannel(channel.id);
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer ${
+                      isLightMode ? 'hover:bg-black/10' : 'hover:bg-white/10'
+                    }`}
                   >
                     <span>Yêu thích kênh</span>
-                    <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : 'text-white/70'}`} />
+                    <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : isLightMode ? 'text-black/70' : 'text-white/70'}`} />
                   </button>
                   <button
                     onClick={() => {
                       retry();
                       setShowMoreMenu(false);
                     }}
-                    className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer ${
+                      isLightMode ? 'hover:bg-black/10' : 'hover:bg-white/10'
+                    }`}
                   >
                     <span>Tải lại luồng</span>
-                    <RotateCcw className="w-3.5 h-3.5 text-white/70" />
+                    <RotateCcw className={`w-3.5 h-3.5 ${isLightMode ? 'text-black/70' : 'text-white/70'}`} />
                   </button>
                   {onOpenCustomStreamModal && (
                     <button
@@ -700,10 +753,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                         onOpenCustomStreamModal();
                         setShowMoreMenu(false);
                       }}
-                      className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer ${
+                        isLightMode ? 'hover:bg-black/10' : 'hover:bg-white/10'
+                      }`}
                     >
                       <span>Dán URL M3U8</span>
-                      <Sparkles className="w-3.5 h-3.5 text-white/70" />
+                      <Sparkles className={`w-3.5 h-3.5 ${isLightMode ? 'text-black/70' : 'text-white/70'}`} />
                     </button>
                   )}
                 </div>

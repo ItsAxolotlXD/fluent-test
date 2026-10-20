@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { NEWS_DATA } from '../data/news';
-import { NewsArticle } from '../types';
 import { NewsCard } from '../components/NewsCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { 
@@ -22,8 +22,20 @@ interface ArticleProps {
   fontSize?: number;
 }
 
+const slideUpProps = (index: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.38,
+      delay: Math.min(index * 0.04, 0.8),
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+});
+
 export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 }) => {
-  const [copied, setCopied] = useState(false);
   const [inputPassword, setInputPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -38,9 +50,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
   });
 
   const article = NEWS_DATA.find((a) => a.slug === slug) || NEWS_DATA[0];
-
   const isLocked = article.isLocked && !unlockedArticles[article.slug];
-
   const relatedArticles = NEWS_DATA.filter((a) => a.id !== article.id).slice(0, 2);
 
   const handleUnlock = (e: React.FormEvent) => {
@@ -57,11 +67,16 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
     }
   };
 
+  let elementIndex = 0;
+
   return (
-    <article className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
-      {/* When Locked: Hide the article header (titles, hero cover, actions) and only show password protection gate */}
+    <article id="article-page" className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20 bg-transparent">
+      {/* When Locked: Hide the article header and show passcode protection */}
       {isLocked ? (
-        <div className="p-8 sm:p-12 rounded-[28px] bg-white dark:bg-[#1A1A1E] border border-amber-500/40 dark:border-amber-500/30 shadow-xl text-center space-y-6">
+        <motion.div 
+          {...slideUpProps(elementIndex++)}
+          className="p-8 sm:p-12 rounded-[28px] bg-transparent border border-amber-500/40 dark:border-amber-500/30 text-center space-y-6"
+        >
           <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 mx-auto shadow-inner">
             <Lock className="w-8 h-8" />
           </div>
@@ -108,11 +123,11 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               <span>Unlock Article</span>
             </button>
           </form>
-        </div>
+        </motion.div>
       ) : (
         <>
-          {/* Header metadata */}
-          <div className="flex items-center gap-3">
+          {/* 1. Header metadata */}
+          <motion.div {...slideUpProps(elementIndex++)} className="flex items-center gap-3">
             <span className="text-xs text-black dark:text-[#8E8E93] flex items-center gap-1 font-medium">
               <Calendar className="w-3.5 h-3.5" />
               {article.publishedAt}
@@ -123,27 +138,34 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 <span>Unlocked</span>
               </span>
             )}
-          </div>
+          </motion.div>
 
-          {/* Main Title */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight">
+          {/* 2. Main Title */}
+          <motion.h1 
+            {...slideUpProps(elementIndex++)}
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight"
+          >
             {article.title.replace(/^#\s*/, '')}
-          </h1>
+          </motion.h1>
 
-          {/* Subtitle */}
+          {/* 3. Subtitle (if available) */}
           {article.subtitle && (
-            <p className="text-base sm:text-lg md:text-xl font-bold text-[#E50914] dark:text-[#FF4D8B]">
+            <motion.p 
+              {...slideUpProps(elementIndex++)}
+              className="text-base sm:text-lg md:text-xl font-bold text-[#E50914] dark:text-[#FF4D8B]"
+            >
               {article.subtitle}
-            </p>
+            </motion.p>
           )}
 
-          {/* Hero Cover Image */}
-          <div 
+          {/* 4. Hero Cover Image */}
+          <motion.div 
+            {...slideUpProps(elementIndex++)}
             onClick={() => {
               setLightboxImage(article.coverImage);
               setLightboxZoom(1);
             }}
-            className="group relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-black/5 dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35] aspect-video sm:aspect-[21/9] shadow-md cursor-default"
+            className="group relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-transparent border border-[#E5E7EB] dark:border-[#2D2D35] aspect-video sm:aspect-[21/9] shadow-md cursor-default"
             title="Click to view full size"
           >
             <img
@@ -155,23 +177,26 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               <Maximize2 className="w-3.5 h-3.5" />
               <span>Full size preview</span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Full Article Body Content */}
+          {/* 5. Full Article Body Content without separate card background - uses main tab page background */}
           <div 
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.75 }}
-            className="p-5 md:p-8 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs text-[#374151] dark:text-[#d1d5db] space-y-6"
+            className="bg-transparent border-none shadow-none text-[#374151] dark:text-[#d1d5db] space-y-6 pt-2"
           >
-            {/* Article Body Paragraphs */}
+            {/* Article Body Paragraphs with staggered entrance */}
             <div className="space-y-5">
               {article.content.map((paragraph, idx) => {
+                const currentPIndex = elementIndex++;
+
                 // Image element (no caption/description) - Displayed Full Size
                 if (paragraph.startsWith('<image>')) {
                   const imgUrl = paragraph.replace('<image>', '').trim();
                   return (
-                    <figure 
+                    <motion.figure 
                       key={idx} 
-                      className="my-6 rounded-[8px] overflow-hidden border border-[#e5e5e5] dark:border-[#383838] bg-neutral-100 dark:bg-[#38383d] shadow-xs group relative cursor-default"
+                      {...slideUpProps(currentPIndex)}
+                      className="my-6 rounded-[8px] overflow-hidden border border-[#e5e5e5] dark:border-[#383838] bg-transparent shadow-xs group relative cursor-default"
                       onClick={() => {
                         setLightboxImage(imgUrl);
                         setLightboxZoom(1);
@@ -189,7 +214,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                         <ZoomIn className="w-3.5 h-3.5 text-[#4cc2ff]" />
                         <span>Full size</span>
                       </div>
-                    </figure>
+                    </motion.figure>
                   );
                 }
 
@@ -197,12 +222,13 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 if (paragraph.startsWith('> ')) {
                   const quoteText = paragraph.replace(/^>\s*/, '');
                   return (
-                    <blockquote
+                    <motion.blockquote
                       key={idx}
+                      {...slideUpProps(currentPIndex)}
                       className="my-5 p-4 sm:p-5 rounded-xl bg-black/5 dark:bg-white/[0.06] border-l-4 border-[#ff2df7] dark:border-[#d946ef] text-sm sm:text-base italic leading-relaxed text-[#1f2937] dark:text-[#E5E7EB]"
                     >
                       {quoteText}
-                    </blockquote>
+                    </motion.blockquote>
                   );
                 }
 
@@ -219,35 +245,38 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 if (isMarkdownHeading || isRomanSection || isMajorHeading) {
                   const headingText = paragraph.replace(/^#+\s*/, '');
                   return (
-                    <h2 
+                    <motion.h2 
                       key={idx}
+                      {...slideUpProps(currentPIndex)}
                       className="text-lg sm:text-xl md:text-2xl font-bold text-[#111827] dark:text-white pt-8 pb-3 border-b border-[#E5E7EB] dark:border-[#2D2D35] flex items-center gap-3 tracking-tight"
                     >
                       <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
                       <span>{headingText}</span>
-                    </h2>
+                    </motion.h2>
                   );
                 }
 
                 // Quotes (e.g. "Waves - Nhịp sóng lưu dấu thời đại")
                 if (paragraph.startsWith('"Waves -')) {
                   return (
-                    <div 
+                    <motion.div 
                       key={idx}
+                      {...slideUpProps(currentPIndex)}
                       className="my-6 p-6 rounded-2xl bg-[#E50914]/5 dark:bg-[#E50914]/10 border-l-4 border-[#E50914] text-center sm:text-left"
                     >
                       <p className="text-base sm:text-lg font-bold text-[#E50914] dark:text-[#FF4D8B] italic whitespace-pre-line">
                         {paragraph}
                       </p>
-                    </div>
+                    </motion.div>
                   );
                 }
 
                 // Congratulations message highlight
                 if (paragraph.startsWith('Chúc mừng hành trình mới')) {
                   return (
-                    <div 
+                    <motion.div 
                       key={idx}
+                      {...slideUpProps(currentPIndex)}
                       className="my-8 p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-[#E50914]/15 via-[#E50914]/5 to-transparent border-l-4 border-[#E50914] flex items-center gap-4 shadow-sm"
                     >
                       <div className="w-12 h-12 rounded-2xl bg-[#E50914]/20 flex items-center justify-center shrink-0">
@@ -261,14 +290,14 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                           07.09.1970 - 07.09.2026 • 56th Anniversary of Vietnam Television
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 }
 
                 return (
-                  <p key={idx} className="whitespace-pre-line leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
+                  <motion.p key={idx} {...slideUpProps(currentPIndex)} className="whitespace-pre-line leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
                     {paragraph}
-                  </p>
+                  </motion.p>
                 );
               })}
             </div>
@@ -276,20 +305,21 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
         </>
       )}
 
-      {/* Related News */}
+      {/* 6. Related News */}
       {relatedArticles.length > 0 && (
         <div className="space-y-4 pt-6">
-          <h3 className="text-xl font-bold font-square text-[#111827] dark:text-white flex items-center gap-2.5">
+          <motion.h3 {...slideUpProps(elementIndex++)} className="text-xl font-bold font-square text-[#111827] dark:text-white flex items-center gap-2.5">
             <CategoryIcon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
             <span>Related Articles</span>
-          </h3>
+          </motion.h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {relatedArticles.map((rel) => (
-              <NewsCard
-                key={rel.id}
-                article={rel}
-                onClick={(a) => navigate(`/news/${a.slug}`)}
-              />
+            {relatedArticles.map((rel, relIdx) => (
+              <motion.div key={rel.id} {...slideUpProps(elementIndex + relIdx)}>
+                <NewsCard
+                  article={rel}
+                  onClick={(a) => navigate(`/news/${a.slug}`)}
+                />
+              </motion.div>
             ))}
           </div>
         </div>

@@ -120,51 +120,105 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
       {/* Channel List Section */}
       <div className="space-y-6 pt-2">
-        {/* Category Tabs Filter (Title header removed as requested) */}
-        <div className="flex flex-col gap-3 sm:gap-3.5">
-          <div id="livetv-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-            {/* All button */}
+        {/* Category Underline Tabs Filter (matching Fluent underline tab style with #4cc2ff accent) */}
+        <div className="flex flex-col gap-2">
+          <div
+            id="livetv-category-tabs"
+            className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-0.5 no-scrollbar border-b border-black/10 dark:border-white/10"
+          >
+            {/* All tab */}
             <button
               id="livetv-cat-btn-all"
               type="button"
               onClick={() => setSelectedCategory('All')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
+              className={`relative px-3.5 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm whitespace-nowrap cursor-pointer select-none transition-colors flex flex-col items-center justify-center !bg-transparent !border-0 !shadow-none hover:!bg-transparent active:!bg-transparent focus:!bg-transparent ${
                 selectedCategory === 'All'
-                  ? 'bg-[#E50914] text-white shadow-sm'
-                  : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
+                  ? 'text-black dark:text-white font-bold'
+                  : 'text-[#6B7280] hover:text-black dark:text-[#9CA3AF] dark:hover:text-white font-medium'
               }`}
             >
-              All
-            </button>
-
-            {/* Colored button with calendar icon placed right next to All button to open right sidebar */}
-            <button
-              id="btn-livetv-open-epg-sidebar"
-              type="button"
-              onClick={() => setIsEpgSidebarOpen(true)}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-[#0078d4] via-[#0284c7] to-[#4cc2ff] hover:from-[#006cbd] hover:to-[#38bdf8] active:scale-95 text-white shadow-sm hover:shadow border border-white/25"
-              title="Xem lịch phát sóng các kênh (EPG)"
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Lịch phát sóng</span>
+              <span className="relative z-10 !bg-transparent">All</span>
+              {selectedCategory === 'All' && (
+                <motion.div
+                  layoutId="watch-category-active-underline"
+                  className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff] shadow-[0_0_8px_rgba(76,194,255,0.7)]"
+                  initial={false}
+                  animate={{
+                    scaleX: [1, 1.38, 0.94, 1],
+                  }}
+                  transition={{
+                    layout: {
+                      type: 'spring',
+                      stiffness: 350,
+                      damping: 26,
+                      mass: 0.65,
+                    },
+                    scaleX: {
+                      duration: 0.36,
+                      times: [0, 0.45, 0.8, 1],
+                      ease: [0.25, 1, 0.5, 1],
+                    },
+                  }}
+                />
+              )}
             </button>
 
             {/* Remaining Category Tabs */}
-            {categoryTabs.filter((cat) => cat !== 'All').map((cat, idx) => (
+            {categoryTabs.filter((cat) => cat !== 'All').map((cat, idx) => {
+              const isActive = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  id={`livetv-cat-btn-${idx + 1}`}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`relative px-3.5 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm whitespace-nowrap cursor-pointer select-none transition-colors flex flex-col items-center justify-center !bg-transparent !border-0 !shadow-none hover:!bg-transparent active:!bg-transparent focus:!bg-transparent ${
+                    isActive
+                      ? 'text-black dark:text-white font-bold'
+                      : 'text-[#6B7280] hover:text-black dark:text-[#9CA3AF] dark:hover:text-white font-medium'
+                  }`}
+                >
+                  <span className="relative z-10 !bg-transparent">{cat}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="watch-category-active-underline"
+                      className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff] shadow-[0_0_8px_rgba(76,194,255,0.7)]"
+                      initial={false}
+                      animate={{
+                        scaleX: [1, 1.38, 0.94, 1],
+                      }}
+                      transition={{
+                        layout: {
+                          type: 'spring',
+                          stiffness: 350,
+                          damping: 26,
+                          mass: 0.65,
+                        },
+                        scaleX: {
+                          duration: 0.36,
+                          times: [0, 0.45, 0.8, 1],
+                          ease: [0.25, 1, 0.5, 1],
+                        },
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+
+            {/* Right side: Button to open EPG schedule sidebar */}
+            <div className="ml-auto pl-2 shrink-0 flex items-center">
               <button
-                key={cat}
-                id={`livetv-cat-btn-${idx + 1}`}
+                id="btn-livetv-open-epg-sidebar"
                 type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
-                  selectedCategory === cat
-                    ? 'bg-[#E50914] text-white shadow-sm'
-                    : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
-                }`}
+                onClick={() => setIsEpgSidebarOpen(true)}
+                className="mb-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none flex items-center gap-1.5 bg-gradient-to-r from-[#0078d4] via-[#0284c7] to-[#4cc2ff] hover:from-[#006cbd] hover:to-[#38bdf8] active:scale-95 text-white shadow-xs hover:shadow border border-white/20"
+                title="Xem lịch phát sóng các kênh (EPG)"
               >
-                {cat}
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Lịch phát sóng</span>
               </button>
-            ))}
+            </div>
           </div>
         </div>
 

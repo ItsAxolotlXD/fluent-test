@@ -324,7 +324,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       // Pages (Switch page)
       { id: 'page-home', title: 'Home', subtitle: 'Switch page', keywords: 'trang chủ home overview', type: 'page', onSelect: () => navigate('/') },
       { id: 'page-watch', title: 'Watch (preview)', subtitle: 'Switch page', keywords: 'live tv xem truyền hình trực tuyến watch', type: 'page', onSelect: () => navigate('/live-tv') },
-      { id: 'page-news', title: 'Update blogs', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
+      { id: 'page-news', title: 'Feed', subtitle: 'Switch page', keywords: 'tin tức bài viết news articles feed update blogs changelog cập nhật', type: 'page', onSelect: () => navigate('/news') },
       { id: 'page-channels', title: 'Channels', subtitle: 'Switch page', keywords: 'danh sách kênh channels channel directory', type: 'page', onSelect: () => navigate('/channels') },
       { id: 'page-favs', title: 'Favorites', subtitle: 'Switch page', keywords: 'kênh yêu thích favorites favs', type: 'page', onSelect: () => navigate('/favorites') },
       { id: 'page-craftmine', title: 'Craftmine', subtitle: 'Switch page', keywords: 'minecraft preview web game', type: 'page', onSelect: () => navigate('/craftmine') },

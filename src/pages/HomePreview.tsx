@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, Image as ImageIcon, Music2, Radio, Sparkles } from 'lucide-react';
 import { HeroCarousel } from '../components/HeroCarousel';
 import { Channel } from '../types';
@@ -8,6 +9,19 @@ interface HomePreviewProps {
   onSelectChannel: (channel: Channel) => void;
   navigate: (route: string, state?: any) => void;
 }
+
+const slideUpProps = (index: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.38,
+      delay: Math.min(index * 0.04, 0.8),
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+});
 
 export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChannel, navigate }) => {
   const vtvChannels = useMemo(
@@ -78,12 +92,18 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
     navigate(`/live-tv?channel=${channel.slug}`);
   };
 
+  let elementIndex = 0;
+
   return (
     <div className="home-preview-page mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 selection:bg-[#ff01ff] selection:text-black dark:selection:bg-[#ff82ff] sm:gap-6 sm:py-4">
-      <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />
+      {/* 1. Hero Carousel */}
+      <motion.div {...slideUpProps(elementIndex++)}>
+        <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />
+      </motion.div>
 
+      {/* 2. Recommendations Section */}
       <section aria-labelledby="recommendations-title" className="px-4 text-black dark:text-[#e7e7e7] sm:px-6">
-        <div className="flex h-9 items-center justify-between border-b border-black/10 px-1 dark:border-white/10">
+        <motion.div {...slideUpProps(elementIndex++)} className="flex h-9 items-center justify-between border-b border-black/10 px-1 dark:border-white/10">
           <div className="flex items-center gap-2 text-[13px] font-medium">
             <ChevronDown className="size-3.5 text-black/60 dark:text-[#bdbdbd]" aria-hidden="true" />
             <h2 id="recommendations-title">Recommended</h2>
@@ -96,13 +116,16 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
               <ChevronRight className="size-4" aria-hidden="true" />
             </button>
           </div>
-        </div>
+        </motion.div>
+
         <div ref={recommendationsRef} className="flex snap-x gap-3 overflow-x-auto pt-3 pb-1 [perspective:900px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {recommendations.map((item) => {
+          {recommendations.map((item, recIdx) => {
             const ItemIcon = item.icon;
+            const currentItemIdx = elementIndex++;
             return (
-              <button
+              <motion.button
                 key={item.id}
+                {...slideUpProps(currentItemIdx)}
                 type="button"
                 onClick={() => item.channel ? openChannel(item.channel) : navigate(item.route)}
                 onMouseMove={(event) => {
@@ -136,34 +159,38 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   <span className="truncate text-[12px] font-medium text-black dark:text-[#f1f1f1]">{item.title}</span>
                   <span className="truncate text-[11px] text-black/50 dark:text-[#a9a9ae]">{item.detail}</span>
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
       </section>
 
-      <header className="!bg-transparent flex flex-col gap-2 px-4 sm:px-6">
+      {/* 3. Welcome Header */}
+      <motion.header {...slideUpProps(elementIndex++)} className="!bg-transparent flex flex-col gap-2 px-4 sm:px-6">
         <h1 className="text-xl font-semibold tracking-tight text-black dark:text-white sm:text-2xl">
           Welcome to the new experience!
         </h1>
         <p className="max-w-3xl text-sm leading-relaxed text-[#5b5b5b] dark:text-[#b8b8be]">
           This will be the future of a new rejuvenated Home page in Sparkle. We gave your an opportunity to try it out early, although it is stil buggy, unfinished product and not looking fantastic.
         </p>
-      </header>
+      </motion.header>
 
+      {/* 4. Quick Access / VTV Channels Section */}
       <section aria-label="VTV channels" className="px-4 text-black dark:text-[#e7e7e7] sm:px-6">
-        <div className="flex h-9 items-center gap-2 border-b border-black/10 px-1 text-[13px] font-medium text-black dark:border-white/10 dark:text-[#ededed]">
+        <motion.div {...slideUpProps(elementIndex++)} className="flex h-9 items-center gap-2 border-b border-black/10 px-1 text-[13px] font-medium text-black dark:border-white/10 dark:text-[#ededed]">
           <ChevronDown className="size-3.5 text-black/60 dark:text-[#bdbdbd]" aria-hidden="true" />
           <span>Quick access</span>
-        </div>
+        </motion.div>
 
         <div className="pt-1">
-          {vtvChannels.map((channel) => {
+          {vtvChannels.map((channel, chIdx) => {
             const channelLabel = channel.name.replace(/\s+HD$/i, '').trim();
+            const currentChIdx = elementIndex++;
 
             return (
-              <button
+              <motion.button
                 key={channel.id}
+                {...slideUpProps(currentChIdx)}
                 type="button"
                 role="listitem"
                 onClick={() => openChannel(channel)}
@@ -185,7 +212,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   <Radio className="size-3.5 text-[#168a9e] dark:text-[#60c5d8]" aria-hidden="true" />
                   <span>{channel.quality}</span>
                 </span>
-              </button>
+              </motion.button>
             );
           })}
 

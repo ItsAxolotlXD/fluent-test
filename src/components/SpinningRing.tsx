@@ -55,7 +55,9 @@ export const SpinningRing: React.FC<SpinningRingProps> = ({
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={strokeDasharray}
+          data-splash-ring={color === '#4cc2ff' ? 'true' : undefined}
           style={{
+            stroke: color,
             transformOrigin: '22px 22px'
           }}
         />

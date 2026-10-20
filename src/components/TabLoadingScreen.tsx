@@ -32,7 +32,7 @@ interface TabLoadingScreenProps {
 }
 
 const largeIconClass =
-  'w-16 h-16 sm:w-20 sm:h-20 drop-shadow-md [&_img]:!w-14 [&_img]:!h-14 [&_svg]:!w-14 [&_svg]:!h-14';
+  'w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 drop-shadow-2xl flex items-center justify-center [&_img]:!w-20 [&_img]:!h-20 sm:[&_img]:!w-28 sm:[&_img]:!h-28 md:[&_img]:!w-32 md:[&_img]:!h-32 [&_img]:!object-contain [&_svg]:!w-20 [&_svg]:!h-20 sm:[&_svg]:!w-28 sm:[&_svg]:!h-28 md:[&_svg]:!w-32 md:[&_svg]:!h-32';
 const standardIconClass = `${largeIconClass} text-[#0078d4] dark:text-[#4cc2ff]`;
 
 export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({

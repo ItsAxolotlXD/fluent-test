@@ -493,12 +493,49 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   transform: none !important;
 }
 
-/* Settings page uses its own Framer Motion staggered engine for every option and header */
+/* Settings, Feed, Home Preview, and Article pages use their own Framer Motion staggered engine for every element */
 #settings-page,
 #settings-page *,
 .settings-page-wrapper,
-.settings-page-wrapper * {
+.settings-page-wrapper *,
+#feed-page,
+#feed-page *,
+.home-preview-page,
+.home-preview-page *,
+#article-page,
+#article-page * {
   animation: none !important;
+}
+
+/* Tooltips: opacity 50%, blur 30%, no outline border, increased height, pure fade animation */
+.fluent-tooltip,
+[role="tooltip"],
+.tooltip,
+.app-tooltip {
+  background-color: rgba(24, 24, 28, 0.50) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  border: none !important;
+  outline: none !important;
+  color: #ffffff !important;
+  min-height: 30px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18) !important;
+  transition: opacity 0.18s ease-out !important;
+  transform: none !important;
+}
+
+html.light-mode .fluent-tooltip,
+html.light-mode [role="tooltip"],
+html.light-mode .tooltip,
+html.light-mode .app-tooltip {
+  background-color: rgba(255, 255, 255, 0.50) !important;
+  border: none !important;
+  outline: none !important;
+  color: #000000 !important;
 }
 
 /* Tab Elements Slide Up sequentially across all other pages */
@@ -2010,7 +2047,6 @@ html.light-mode #immersive-search-page .text-\[\#E0D8E2\] {
 #slider-next-btn,
 #btn-welcome-close-icon,
 #btn-under-construction-close-icon,
-#livetv-category-tabs button,
 #news-category-tabs button,
 #channels-category-tabs button,
 #btn-theme-light,
@@ -2049,7 +2085,6 @@ html.light-mode #immersive-search-page .text-\[\#E0D8E2\] {
   transform: scale(1.085) !important;
 }
 
-#livetv-category-tabs button:hover,
 #news-category-tabs button:hover,
 #channels-category-tabs button:hover {
   border: none !important;
@@ -3180,7 +3215,6 @@ html.light-mode #slider-prev-btn,
 html.light-mode #slider-next-btn,
 html.light-mode #btn-welcome-close-icon,
 html.light-mode #btn-under-construction-close-icon,
-html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]),
 html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]),
 html.light-mode #btn-theme-light:not(.bg-\[\#4cc2ff\]),
 html.light-mode #btn-theme-dark:not(.bg-\[\#4cc2ff\]),
@@ -3209,7 +3243,6 @@ html.light-mode #slider-prev-btn:hover,
 html.light-mode #slider-next-btn:hover,
 html.light-mode #btn-welcome-close-icon:hover,
 html.light-mode #btn-under-construction-close-icon:hover,
-html.light-mode #livetv-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]):hover,
 html.light-mode #news-category-tabs button:not(.bg-\[\#E50914\]):not(.bg-\[\#4cc2ff\]):hover,
 html.light-mode #btn-theme-light:not(.bg-\[\#4cc2ff\]):hover,
 html.light-mode #btn-theme-dark:not(.bg-\[\#4cc2ff\]):hover,
@@ -3236,7 +3269,6 @@ html.light-mode #btn-discord-close,
 html.light-mode #btn-devmode-close,
 html.light-mode #btn-hero-watch-now,
 html.light-mode #btn-add-stream-submit,
-html.light-mode #livetv-category-tabs button.bg-[#4cc2ff],
 html.light-mode #news-category-tabs button.bg-[#4cc2ff],
 html.light-mode #btn-theme-light.bg-[#4cc2ff],
 html.light-mode #btn-theme-dark.bg-[#4cc2ff],
@@ -3270,7 +3302,6 @@ html.light-mode #btn-discord-close,
 html.light-mode #btn-devmode-close,
 html.light-mode #btn-hero-watch-now,
 html.light-mode #btn-add-stream-submit,
-html.light-mode #livetv-category-tabs button.bg-[#4cc2ff],
 html.light-mode #news-category-tabs button.bg-[#4cc2ff],
 html.light-mode #btn-theme-light.bg-[#4cc2ff],
 html.light-mode #btn-theme-dark.bg-[#4cc2ff],
@@ -3291,7 +3322,6 @@ html.light-mode #btn-discord-close:hover,
 html.light-mode #btn-devmode-close:hover,
 html.light-mode #btn-hero-watch-now:hover,
 html.light-mode #btn-add-stream-submit:hover,
-html.light-mode #livetv-category-tabs button.bg-[#4cc2ff]:hover,
 html.light-mode #news-category-tabs button.bg-[#4cc2ff]:hover,
 html.light-mode #btn-theme-light.bg-[#4cc2ff]:hover,
 html.light-mode #btn-theme-dark.bg-[#4cc2ff]:hover,
@@ -3306,7 +3336,6 @@ html.light-mode .btn-fd932f:hover {
 }
 
 /* Category Tabs (Red / E50914 variant in light mode) */
-html.light-mode #livetv-category-tabs button.bg-[#E50914],
 html.light-mode #news-category-tabs button.bg-[#E50914] {
   border: 1px solid transparent !important;
   background-image: 
@@ -4894,10 +4923,21 @@ html.light-mode [class*="border-b-[#4CC2FF]"] {
   border-bottom-color: #005fb8 !important;
 }
 
-/* 5. Vòng xoay tiến trình Thick Spinning Ring thích ứng Light Mode */
-html.light-mode svg circle[stroke="#4cc2ff"],
-html.light-mode svg circle[stroke="#4CC2FF"] {
+/* 5. Vòng xoay tiến trình Thick Spinning Ring thích ứng Light Mode (ngoại trừ splash screen khởi động) */
+html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4cc2ff"]:not([data-splash-ring="true"]),
+html.light-mode:not(#vplay-splash-screen) svg:not(#vplay-splash-screen svg) circle[stroke="#4CC2FF"]:not([data-splash-ring="true"]) {
   stroke: #005fb8 !important;
+}
+
+/* Đồng bộ màu spinning ring splash screen khởi động ở light mode giống dark mode (#4cc2ff) */
+#vplay-splash-screen .fluent-spinning-ring circle,
+#vplay-splash-screen svg circle,
+html.light-mode #vplay-splash-screen svg circle,
+html.light-mode #vplay-splash-screen .fluent-spinning-ring circle,
+#vplay-splash-screen circle,
+circle[data-splash-ring="true"],
+svg circle[data-splash-ring="true"] {
+  stroke: #4cc2ff !important;
 }
 
 /* Modal dialog close X buttons - strictly no background and no border */
@@ -6605,10 +6645,8 @@ html:not(.no-spatial-glass) #vplay-tools-dropdown-card {
 }
 
 /* 3. Category & Navigation Tabs */
-html:not(.no-spatial-glass) #livetv-category-tabs button:not(.bg-white):not([data-active="true"]):not(.text-black),
 html:not(.no-spatial-glass) #news-category-tabs button:not(.bg-white):not([data-active="true"]):not(.text-black),
 html:not(.no-spatial-glass) #test-category-tabs button:not(.bg-white):not([data-active="true"]):not(.text-black),
-html:not(.no-spatial-glass) [id^="livetv-cat-btn-"]:not(.bg-white):not(.text-black),
 html:not(.no-spatial-glass) [id^="news-cat-btn-"]:not(.bg-white):not(.text-black),
 html:not(.no-spatial-glass) [id^="test-cat-btn-"]:not(.bg-white):not(.text-black),
 html:not(.no-spatial-glass) .category-tab-btn:not(.is-active) {
@@ -6617,10 +6655,8 @@ html:not(.no-spatial-glass) .category-tab-btn:not(.is-active) {
   -webkit-backdrop-filter: none !important;
 }
 
-html:not(.no-spatial-glass) #livetv-category-tabs button,
 html:not(.no-spatial-glass) #news-category-tabs button,
 html:not(.no-spatial-glass) #test-category-tabs button,
-html:not(.no-spatial-glass) [id^="livetv-cat-btn-"],
 html:not(.no-spatial-glass) [id^="news-cat-btn-"],
 html:not(.no-spatial-glass) [id^="test-cat-btn-"],
 html:not(.no-spatial-glass) .category-tab-btn {
@@ -7727,3 +7763,38 @@ html.light-mode .gallery-toolbar button[title="Delete selected"],
 html.light-mode .gallery-toolbar button[title="Delete selected"] * {
   color: #ffffff !important;
 }
+
+/* Underline category tabs: strictly NO background on buttons, text, or pseudo-elements in any theme */
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar),
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar):hover,
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar):active,
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar):focus,
+[id^="livetv-cat-btn-"],
+[id^="livetv-cat-btn-"]:hover,
+[id^="livetv-cat-btn-"]:active,
+[id^="livetv-cat-btn-"]:focus,
+html.light-mode #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar),
+html.light-mode #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar):hover,
+html.light-mode #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar):active,
+html.light-mode [id^="livetv-cat-btn-"],
+html.light-mode [id^="livetv-cat-btn-"]:hover,
+html:not(.no-spatial-glass) #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar),
+html:not(.no-spatial-glass) [id^="livetv-cat-btn-"],
+html.no-spatial-glass #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar),
+html.no-shiny-outline #livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar)::before,
+#livetv-category-tabs button:not(#btn-livetv-open-epg-sidebar)::after,
+[id^="livetv-cat-btn-"]::before,
+[id^="livetv-cat-btn-"]::after {
+  display: none !important;
+  content: none !important;
+}
+

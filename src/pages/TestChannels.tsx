@@ -169,7 +169,7 @@ export const TestChannels: React.FC<TestChannelsProps> = ({
           </div>
 
           {/* Category Tabs Filter */}
-          <div id="livetv-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <div id="testchannels-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
             {categoryTabs.map((cat, idx) => (
               <button
                 key={cat}
