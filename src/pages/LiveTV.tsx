@@ -109,12 +109,13 @@ export const LiveTV: React.FC<LiveTVProps> = ({
             {/* All button */}
             <button
               id="livetv-cat-btn-all"
+              data-active={selectedCategory === 'All'}
               type="button"
               onClick={() => setSelectedCategory('All')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
+              className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
                 selectedCategory === 'All'
-                  ? 'bg-[#E50914] text-white shadow-sm'
-                  : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
+                  ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
+                  : 'border-transparent text-[#6b7280] hover:text-[#111827] dark:text-[#9ca3af] dark:hover:text-white'
               }`}
             >
               All
@@ -137,12 +138,13 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               <button
                 key={cat}
                 id={`livetv-cat-btn-${idx + 1}`}
+                data-active={selectedCategory === cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
+                className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
                   selectedCategory === cat
-                    ? 'bg-[#E50914] text-white shadow-sm'
-                    : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
+                    ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
+                    : 'border-transparent text-[#6b7280] hover:text-[#111827] dark:text-[#9ca3af] dark:hover:text-white'
                 }`}
               >
                 {cat}

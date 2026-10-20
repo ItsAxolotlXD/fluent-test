@@ -3075,18 +3075,29 @@ html.light-mode [id^="news-cat-btn-"]:active {
   will-change: auto !important;
 }
 
-/* Sidebar Navigation Tabs & Channel Items - Pure static layout, ABSOLUTELY NO scale/zoom/bounce on hover or unhover */
-#waves-desktop-sidebar .sidebar-nav-item,
-#waves-mobile-sidebar .sidebar-nav-item,
-.sidebar-nav-item,
-[id^="sidebar-nav-"]:not(.signin-toggle-btn),
-[id^="mobile-nav-"]:not(.signin-toggle-btn),
-[id^="nav-item-"],
-[id^="mobile-nav-item-"] {
-  transform: none !important;
-  scale: 1 !important;
-  will-change: auto !important;
+/* Watch category tabs use the simple underlined navigation treatment. */
+#livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar) {
+  background: transparent !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-top-color: transparent !important;
+  box-shadow: none !important;
 }
+
+#livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar)[data-active="true"] {
+  border-bottom-color: #4cc2ff !important;
+}
+
+html.light-mode #livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar) {
+  color: #6b7280 !important;
+}
+
+html.light-mode #livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar)[data-active="true"] {
+  color: #111827 !important;
+}
+
 
 /* Allow smooth slide-up transforms & crisp acrylic blur on sign-in flyout */
 .signin-flyout-panel {
