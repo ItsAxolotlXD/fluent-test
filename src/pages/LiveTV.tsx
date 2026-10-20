@@ -112,6 +112,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               data-active={selectedCategory === 'All'}
               type="button"
               onClick={() => setSelectedCategory('All')}
+              style={{ backgroundColor: 'transparent', backgroundImage: 'none', borderRadius: 0, boxShadow: 'none', borderBottom: '2px solid #4cc2ff' }}
               className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
                 selectedCategory === 'All'
                   ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
@@ -124,9 +125,11 @@ export const LiveTV: React.FC<LiveTVProps> = ({
             {/* Colored button with calendar icon placed right next to All button to open right sidebar */}
             <button
               id="btn-livetv-open-epg-sidebar"
+              data-active="false"
               type="button"
               onClick={() => setIsEpgSidebarOpen(true)}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-[#0078d4] via-[#0284c7] to-[#4cc2ff] hover:from-[#006cbd] hover:to-[#38bdf8] active:scale-95 text-white shadow-sm hover:shadow border border-white/25"
+              style={{ backgroundColor: 'transparent', backgroundImage: 'none', borderRadius: 0, boxShadow: 'none', borderBottom: '2px solid transparent' }}
+              className="relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 border-transparent text-black dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white flex items-center gap-1.5 shrink-0"
               title="Xem lịch phát sóng các kênh (EPG)"
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -141,10 +144,11 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                 data-active={selectedCategory === cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
+              style={{ backgroundColor: 'transparent', backgroundImage: 'none', borderRadius: 0, boxShadow: 'none', borderBottom: selectedCategory === cat ? '2px solid #4cc2ff' : '2px solid transparent' }}
+              className={`relative px-0.5 py-2 text-sm font-normal whitespace-nowrap transition-colors cursor-pointer select-none border-b-2 ${
                   selectedCategory === cat
-                    ? 'border-[#4cc2ff] text-[#111827] dark:text-white'
-                    : 'border-transparent text-[#6b7280] hover:text-[#111827] dark:text-[#9ca3af] dark:hover:text-white'
+                    ? 'border-[#4cc2ff] text-black dark:text-white'
+                    : 'border-transparent text-black hover:text-[#111827] dark:text-white dark:hover:text-white'
                 }`}
               >
                 {cat}

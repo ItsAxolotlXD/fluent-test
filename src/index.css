@@ -3076,28 +3076,48 @@ html.light-mode [id^="news-cat-btn-"]:active {
 }
 
 /* Watch category tabs use the simple underlined navigation treatment. */
-#livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar) {
+#livetv-category-tabs > button {
   background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
   border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
   border-left-color: transparent !important;
   border-right-color: transparent !important;
   border-top-color: transparent !important;
   box-shadow: none !important;
 }
 
-#livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar)[data-active="true"] {
+#livetv-category-tabs > button[data-active="true"] {
+  border-bottom: 2px solid #4cc2ff !important;
   border-bottom-color: #4cc2ff !important;
 }
 
-html.light-mode #livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar) {
+html.light-mode #livetv-category-tabs > button {
   color: #6b7280 !important;
 }
 
-html.light-mode #livetv-category-tabs > button:not(#btn-livetv-open-epg-sidebar)[data-active="true"] {
+html.light-mode #livetv-category-tabs > button[data-active="true"] {
   color: #111827 !important;
 }
 
+
+/* Keep Watch tabs flat and underline-only above the global glass treatment. */
+html:not(.no-spatial-glass) #livetv-category-tabs > button,
+html.no-spatial-glass #livetv-category-tabs > button {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  box-shadow: none !important;
+}
+
+html:not(.no-spatial-glass) #livetv-category-tabs > button[data-active="true"],
+html.no-spatial-glass #livetv-category-tabs > button[data-active="true"] {
+  border-bottom: 2px solid #4cc2ff !important;
+}
 
 /* Allow smooth slide-up transforms & crisp acrylic blur on sign-in flyout */
 .signin-flyout-panel {
@@ -4030,27 +4050,17 @@ html.light-mode #btn-hero-watch-now svg {
   fill: #FFFFFF !important;
 }
 
-/* Recommended Channel Cards, Live TV Cards & Channel Grid Cards in Light Mode:
-   User requirement: "khi ở light mode thì các ô kênh ko có viền"
-   Strictly no border, no outline, no pseudo-element border */
-html.light-mode [id^="recommended-channel-"],
-html.light-mode [id^="livetv-channel-card-"]:not(.is-selected),
-html.light-mode [id^="home-channel-card-"],
-html.light-mode [id^="channel-card-"]:not(.is-selected),
-html.light-mode [id^="test-channel-card-"]:not(.is-selected),
-html.light-mode .channel-card,
-html.light-mode [class*="channel-card"] {
-  box-sizing: border-box !important;
-  border: none !important;
-  border-width: 0 !important;
-  outline: none !important;
+/* Final Watch tab override: prevent the global spatial-glass pill treatment. */
+#livetv-category-tabs > button,
+#livetv-category-tabs > button:hover,
+#livetv-category-tabs > button:active,
+#livetv-category-tabs > button:focus {
+  background-color: transparent !important;
   background-image: none !important;
-  background-color: #FFFFFF !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-  color: #374151 !important;
-  transform: none !important;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
+
 
 html.light-mode [id^="recommended-channel-"]::after,
 html.light-mode [id^="livetv-channel-card-"]::after,
