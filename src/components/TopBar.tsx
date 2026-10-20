@@ -1467,7 +1467,8 @@ export const TopBar: React.FC<TopBarProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={onOpenMobileMenu}
             className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer shrink-0"
-            aria-label="Open navigation menu"
+            title="Collapse or expand"
+            aria-label="Collapse or expand"
           >
             <Menu className="w-5 h-5 transition-transform text-black dark:text-white" />
           </motion.button>
@@ -1640,30 +1641,36 @@ export const TopBar: React.FC<TopBarProps> = ({
 
                 {/* Save button without background (pure icon button) inside search box */}
                 {(currentRoute === '/settings' || currentRoute.startsWith('/settings') || currentRoute.includes('settings') || (typeof window !== 'undefined' && window.location.pathname.includes('settings'))) && (
-                  <button
-                    type="button"
-                    id="btn-topbar-settings-save"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handleSaveSettings();
-                    }}
-                    disabled={isSavingSettings}
-                    title={hasChanges ? "Save settings" : "Settings saved"}
-                    className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
-                    aria-label="Save settings"
-                  >
-                    {isSavingSettings ? (
-                      <SpinningRing size={16} strokeWidth={2.5} color={isLightMode ? '#0078d4' : '#4cc2ff'} />
-                    ) : (
-                      <img
-                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"
-                        alt=""
-                        className="topbar-settings-save-icon w-[18px] h-[18px] shrink-0 object-contain pointer-events-none"
-                        aria-hidden="true"
-                      />
-                    )}
-                  </button>
+                  <div className="relative group/savetooltip flex items-center">
+                    <button
+                      type="button"
+                      id="btn-topbar-settings-save"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleSaveSettings();
+                      }}
+                      disabled={isSavingSettings}
+                      title="Save changes"
+                      className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
+                      aria-label="Save changes"
+                    >
+                      {isSavingSettings ? (
+                        <SpinningRing size={16} strokeWidth={2.5} color={isLightMode ? '#0078d4' : '#4cc2ff'} />
+                      ) : (
+                        <img
+                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"
+                          alt=""
+                          className="topbar-settings-save-icon w-[18px] h-[18px] shrink-0 object-contain pointer-events-none"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </button>
+                    {/* Hover Tooltip: Save changes */}
+                    <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-[6px] bg-[#1f1f1f] dark:bg-[#2d2d2d] text-white text-[11px] font-medium shadow-xl border border-black/10 dark:border-white/15 opacity-0 group-hover/savetooltip:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50">
+                      Save changes
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

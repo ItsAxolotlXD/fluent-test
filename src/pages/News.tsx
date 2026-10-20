@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NEWS_DATA } from '../data/news';
 import { NewsCard } from '../components/NewsCard';
-import { TrendingUp, Lock, RefreshCw, CheckCircle2, Sparkles } from 'lucide-react';
+import { TrendingUp, Lock, CheckCircle2, Sparkles } from 'lucide-react';
 import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
@@ -17,7 +17,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
   const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const distinctCats = Array.from(new Set(NEWS_DATA.map((a) => a.category)));
+  const distinctCats = Array.from(new Set(NEWS_DATA.map((a) => a.category).filter(Boolean)));
   const categories = ['All', ...distinctCats];
 
   const query = (searchQuery || '').trim().toLowerCase();
@@ -35,7 +35,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
   return (
     <div className="space-y-6 sm:space-y-8 pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10 dark:border-white/10">
+      <div className="pb-4 border-b border-black/10 dark:border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white tracking-tight">
             Update blogs
@@ -44,17 +44,6 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             Release notes, system updates, changelogs, broadcasting technology, and media culture.
           </p>
         </div>
-
-        {onOpenUpdate && (
-          <button
-            type="button"
-            onClick={onOpenUpdate}
-            className="fluent-btn-primary px-4 h-8.5 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors shrink-0"
-          >
-            <RefreshCw className="w-3.5 h-3.5 stroke-[2]" />
-            <span>Check for updates</span>
-          </button>
-        )}
       </div>
 
       {/* Merged System Update Status Banner */}
@@ -73,7 +62,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
               </span>
             </div>
             <p className="text-xs text-black/70 dark:text-[#AAAAAA] mt-0.5">
-              Microsoft Fluent Design • Dynamic Sidebar Icons • Collapsible Folder Tree
+              Brand Identity • Home Preview • Project Orbit • Settings Cleanup
             </p>
           </div>
         </div>
@@ -81,7 +70,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
         <button
           type="button"
           onClick={() => {
-            const updateArt = NEWS_DATA.find((a) => a.id === 'news-sparkle-update-26-11');
+            const updateArt = NEWS_DATA[0];
             if (updateArt) navigate(`/news/${updateArt.slug}`);
           }}
           className="px-3.5 h-8 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs font-medium text-black dark:text-white transition-colors cursor-pointer shrink-0"
@@ -104,7 +93,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
                 src={featured.coverImage || DEFAULT_BANNER_PLACEHOLDER}
                 alt={featured.title}
                 referrerPolicy="no-referrer"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
@@ -132,15 +121,17 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             <div className="md:col-span-6 lg:col-span-7 p-5 sm:p-6 md:p-7 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#E50914]">
-                    {featured.category}
-                  </span>
+                  {featured.category ? (
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#E50914]">
+                      {featured.category}
+                    </span>
+                  ) : <span />}
                   <span className="text-xs text-[#6B7280] dark:text-[#9CA3AF] font-medium">
                     {featured.publishedAt}
                   </span>
                 </div>
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white mt-2 group-hover:text-[#E50914] transition-colors leading-snug">
-                  {featured.title}
+                  {featured.title.replace(/^#\s*/, '')}
                 </h2>
                 <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-2 leading-relaxed line-clamp-2">
                   {featured.excerpt}
@@ -161,23 +152,25 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
       )}
 
       {/* Category Pills */}
-      <div id="news-category-tabs" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-        {categories.map((cat, idx) => (
-          <button
-            key={cat}
-            id={`news-cat-btn-${idx}`}
-            type="button"
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
-              selectedCategory === cat
-                ? 'bg-[#E50914] text-white shadow-sm'
-                : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      {categories.length > 1 && (
+        <div id="news-category-tabs" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {categories.map((cat, idx) => (
+            <button
+              key={cat}
+              id={`news-cat-btn-${idx}`}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
+                selectedCategory === cat
+                  ? 'bg-[#E50914] text-white shadow-sm'
+                  : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Articles Grid */}
       {filteredNews.length === 0 ? (

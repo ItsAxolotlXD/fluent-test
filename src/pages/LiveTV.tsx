@@ -65,6 +65,31 @@ export const LiveTV: React.FC<LiveTVProps> = ({
       .filter((group) => group.channels.length > 0);
   }, [distinctCategories, filteredChannels]);
 
+  // Navigation helpers for channel controls
+  const handleNextChannel = () => {
+    const currentIndex = channels.findIndex((c) => c.id === currentChannel.id);
+    if (currentIndex !== -1) {
+      const nextIndex = (currentIndex + 1) % channels.length;
+      onSelectChannel(channels[nextIndex]);
+    }
+  };
+
+  const handlePrevChannel = () => {
+    const currentIndex = channels.findIndex((c) => c.id === currentChannel.id);
+    if (currentIndex !== -1) {
+      const prevIndex = (currentIndex - 1 + channels.length) % channels.length;
+      onSelectChannel(channels[prevIndex]);
+    }
+  };
+
+  const handleRandomChannel = () => {
+    const pool = channels.filter((c) => c.id !== currentChannel.id);
+    if (pool.length > 0) {
+      const rand = pool[Math.floor(Math.random() * pool.length)];
+      onSelectChannel(rand);
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-8 pb-16">
       {/* Top Banner / Channel Title */}
@@ -86,25 +111,17 @@ export const LiveTV: React.FC<LiveTVProps> = ({
           onOpenCustomStreamModal={onOpenCustomStreamModal}
           isTheaterMode={isTheaterMode}
           onToggleTheaterMode={() => setIsTheaterMode(!isTheaterMode)}
+          onNextChannel={handleNextChannel}
+          onPrevChannel={handlePrevChannel}
+          onRandomChannel={handleRandomChannel}
         />
       </div>
 
 
       {/* Channel List Section */}
       <div className="space-y-6 pt-2">
-        {/* Section Header & Filters */}
+        {/* Category Tabs Filter (Title header removed as requested) */}
         <div className="flex flex-col gap-3 sm:gap-3.5">
-          <div className="flex items-center gap-2.5">
-            <CategoryIcon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
-            <h2 className="text-lg sm:text-xl font-bold font-square text-black dark:text-white">
-              Channels
-            </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F1F3F5] dark:bg-[#26262C] text-black dark:text-[#9CA3AF] border border-[#E5E7EB] dark:border-[#383842]">
-              {filteredChannels.length} channels
-            </span>
-          </div>
-
-          {/* Category Tabs Filter */}
           <div id="livetv-category-tabs" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
             {/* All button */}
             <button
@@ -191,8 +208,10 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                           key={ch.id}
                           id={`livetv-channel-card-${ch.id}`}
                           onClick={() => onSelectChannel(ch)}
-                          className={`fluent-reveal-item channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#38383d] ${
-                            isSelected ? 'is-selected' : ''
+                          className={`fluent-reveal-item onair-card channel-card group relative w-full aspect-[136/78] rounded-[6px] sm:rounded-[8px] transition-colors cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-white dark:bg-[#38383d] border shadow-xs ${
+                            isSelected
+                              ? 'border-[#4cc2ff] ring-1 ring-[#4cc2ff]'
+                              : 'border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248]'
                           }`}
                           title={ch.name}
                         >

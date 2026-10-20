@@ -3,14 +3,8 @@ import { NEWS_DATA } from '../data/news';
 import { NewsArticle } from '../types';
 import { NewsCard } from '../components/NewsCard';
 import { CategoryIcon } from '../components/CategoryIcon';
-import { useFavorites } from '../hooks/useFavorites';
 import { 
-  ArrowLeft, 
   Calendar, 
-  Bookmark, 
-  Share2, 
-  CheckCircle2, 
-  Tag, 
   Lock, 
   Unlock, 
   ShieldAlert,
@@ -45,9 +39,6 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
 
   const article = NEWS_DATA.find((a) => a.slug === slug) || NEWS_DATA[0];
 
-  const { isNewsBookmarked, toggleBookmarkNews } = useFavorites();
-  const bookmarked = isNewsBookmarked(article.slug);
-
   const isLocked = article.isLocked && !unlockedArticles[article.slug];
 
   const relatedArticles = NEWS_DATA.filter((a) => a.id !== article.id).slice(0, 2);
@@ -66,25 +57,8 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
     }
   };
 
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
     <article className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/news')}
-        className="flex items-center gap-2 text-xs font-bold text-black dark:text-[#A1A1AA] hover:text-black dark:hover:text-white transition-colors cursor-default"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to News Feed</span>
-      </button>
-
       {/* When Locked: Hide the article header (titles, hero cover, actions) and only show password protection gate */}
       {isLocked ? (
         <div className="p-8 sm:p-12 rounded-[28px] bg-white dark:bg-[#1A1A1E] border border-amber-500/40 dark:border-amber-500/30 shadow-xl text-center space-y-6">
@@ -137,11 +111,8 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
         </div>
       ) : (
         <>
-          {/* Header metadata pill */}
+          {/* Header metadata */}
           <div className="flex items-center gap-3">
-            <span className="px-3.5 py-1 rounded-full bg-[#E50914]/10 dark:bg-[#FF2020]/20 text-[#E50914] dark:text-[#FF4D4D] border border-[#E50914]/30 dark:border-[#FF2020]/40 text-xs font-bold uppercase tracking-wider">
-              {article.category}
-            </span>
             <span className="text-xs text-black dark:text-[#8E8E93] flex items-center gap-1 font-medium">
               <Calendar className="w-3.5 h-3.5" />
               {article.publishedAt}
@@ -156,7 +127,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
 
           {/* Main Title */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white tracking-tight leading-tight">
-            {article.title}
+            {article.title.replace(/^#\s*/, '')}
           </h1>
 
           {/* Subtitle */}
@@ -165,29 +136,6 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
               {article.subtitle}
             </p>
           )}
-
-          {/* Action Bar (Share & Bookmark) */}
-          <div className="flex items-center justify-end gap-2 p-3 sm:p-4 rounded-[20px] bg-white dark:bg-[#38383d] border border-[#E5E7EB] dark:border-[#2D2D35] shadow-xs">
-            <button
-              onClick={() => toggleBookmarkNews(article.slug)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-bold transition-all cursor-default ${
-                bookmarked
-                  ? 'bg-[#E50914] border-[#E50914] text-white shadow-xs'
-                  : 'bg-[#F3F4F6] dark:bg-[#27121d] border-[#E5E7EB] dark:border-white/10 text-[#4B5563] dark:text-[#D1D5DB] hover:text-[#111827] dark:hover:text-white'
-              }`}
-            >
-              <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-              <span>{bookmarked ? 'Saved' : 'Save'}</span>
-            </button>
-
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#F3F4F6] dark:bg-[#27121d] hover:bg-[#E5E7EB] dark:hover:bg-[#331726] border border-[#E5E7EB] dark:border-white/10 text-xs font-semibold text-[#4B5563] dark:text-[#D1D5DB] hover:text-[#111827] dark:hover:text-white transition-colors cursor-default"
-            >
-              {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Link Copied' : 'Share'}</span>
-            </button>
-          </div>
 
           {/* Hero Cover Image */}
           <div 
@@ -214,14 +162,6 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.75 }}
             className="p-5 md:p-8 rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] shadow-xs text-[#374151] dark:text-[#d1d5db] space-y-6"
           >
-            {/* Excerpt Lead */}
-            <p 
-              style={{ fontSize: `${fontSize * 1.125}px` }}
-              className="font-medium text-[#111827] dark:text-white leading-relaxed border-l-3 border-[#4cc2ff] pl-3 italic bg-black/5 dark:bg-white/5 py-2 rounded-r-[4px]"
-            >
-              {article.excerpt}
-            </p>
-
             {/* Article Body Paragraphs */}
             <div className="space-y-5">
               {article.content.map((paragraph, idx) => {
@@ -253,7 +193,21 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   );
                 }
 
-                // Section headings (e.g. I. MỘT HÀNH TRÌNH..., II. NHỮNG CÁI TÊN...)
+                // Blockquote (> ...)
+                if (paragraph.startsWith('> ')) {
+                  const quoteText = paragraph.replace(/^>\s*/, '');
+                  return (
+                    <blockquote
+                      key={idx}
+                      className="my-5 p-4 sm:p-5 rounded-xl bg-black/5 dark:bg-white/[0.06] border-l-4 border-[#ff2df7] dark:border-[#d946ef] text-sm sm:text-base italic leading-relaxed text-[#1f2937] dark:text-[#E5E7EB]"
+                    >
+                      {quoteText}
+                    </blockquote>
+                  );
+                }
+
+                // Section headings (e.g. # ..., ## ..., I. MỘT HÀNH TRÌNH..., II. NHỮNG CÁI TÊN...)
+                const isMarkdownHeading = /^#+\s/.test(paragraph);
                 const isRomanSection = /^[I|V|X]+\.\s/.test(paragraph);
                 const isMajorHeading = [
                   'TƯỞNG NHƯ KHÔNG ĐỔI, NHƯNG ĐÃ ĐỔI THAY RẤT NHIỀU',
@@ -262,14 +216,15 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   'BẢN LĨNH CỦA MỘT ĐỊNH CHẾ TRUYỀN THÔNG QUỐC GIA'
                 ].includes(paragraph);
 
-                if (isRomanSection || isMajorHeading) {
+                if (isMarkdownHeading || isRomanSection || isMajorHeading) {
+                  const headingText = paragraph.replace(/^#+\s*/, '');
                   return (
                     <h2 
                       key={idx}
                       className="text-lg sm:text-xl md:text-2xl font-bold text-[#111827] dark:text-white pt-8 pb-3 border-b border-[#E5E7EB] dark:border-[#2D2D35] flex items-center gap-3 tracking-tight"
                     >
-                      <span className="w-2.5 h-6 bg-gradient-to-b from-[#E50914] to-[#B80710] rounded-full inline-block shrink-0 shadow-sm" />
-                      <span>{paragraph}</span>
+                      <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+                      <span>{headingText}</span>
                     </h2>
                   );
                 }
@@ -317,39 +272,28 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 );
               })}
             </div>
-
-            {/* Tags */}
-            <div className="pt-6 border-t border-[#E5E7EB] dark:border-[#2A2A30] flex flex-wrap items-center gap-2">
-              <Tag className="w-4 h-4 text-[#E50914]" />
-              {article.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 rounded-full bg-[#F3F4F6] dark:bg-[#24242A] text-xs text-[#4B5563] dark:text-[#A1A1AA] border border-[#E5E7EB] dark:border-[#34343E]"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
           </div>
         </>
       )}
 
       {/* Related News */}
-      <div className="space-y-4 pt-6">
-        <h3 className="text-xl font-bold font-square text-[#111827] dark:text-white flex items-center gap-2.5">
-          <CategoryIcon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
-          <span>Related Articles</span>
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {relatedArticles.map((rel) => (
-            <NewsCard
-              key={rel.id}
-              article={rel}
-              onClick={(a) => navigate(`/news/${a.slug}`)}
-            />
-          ))}
+      {relatedArticles.length > 0 && (
+        <div className="space-y-4 pt-6">
+          <h3 className="text-xl font-bold font-square text-[#111827] dark:text-white flex items-center gap-2.5">
+            <CategoryIcon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
+            <span>Related Articles</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {relatedArticles.map((rel) => (
+              <NewsCard
+                key={rel.id}
+                article={rel}
+                onClick={(a) => navigate(`/news/${a.slug}`)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Full Size Image Lightbox Modal */}
       {lightboxImage && (

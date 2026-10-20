@@ -16,7 +16,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
       aria-hidden="true"
     >
       <defs>
-        {/* Dark mode: Gradient xanh dương - xanh lá */}
+        {/* Dark mode: Gradient magenta - purple */}
         <linearGradient
           id="vplay-cat-inverted-triangle-grad"
           x1="0%"
@@ -24,12 +24,12 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
           x2="100%"
           y2="100%"
         >
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="50%" stopColor="#2dd4bf" />
-          <stop offset="100%" stopColor="#10b981" />
+          <stop offset="0%" stopColor="#ff2df7" />
+          <stop offset="50%" stopColor="#d946ef" />
+          <stop offset="100%" stopColor="#8b5cf6" />
         </linearGradient>
 
-        {/* Light mode: Gradient xanh dương - xanh lá */}
+        {/* Light mode: Gradient magenta - purple */}
         <linearGradient
           id="vplay-cat-inverted-triangle-grad-light"
           x1="0%"
@@ -37,9 +37,9 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
           x2="100%"
           y2="100%"
         >
-          <stop offset="0%" stopColor="#0078d4" />
-          <stop offset="50%" stopColor="#059669" />
-          <stop offset="100%" stopColor="#107c41" />
+          <stop offset="0%" stopColor="#d946ef" />
+          <stop offset="50%" stopColor="#a855f7" />
+          <stop offset="100%" stopColor="#7c3aed" />
         </linearGradient>
       </defs>
       {/* Tam giác ngược: ở Light mode là gradient xanh dương đậm giống spinning ring #005fb8, ở Dark mode là gradient xanh dương nhạt */}

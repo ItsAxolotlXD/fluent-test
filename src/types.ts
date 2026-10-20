@@ -63,7 +63,7 @@ export interface NewsArticle {
   title: string;
   subtitle: string;
   coverImage: string;
-  category: 'Thời sự truyền hình' | 'Công nghệ phát sóng' | 'Hậu trường & Kỹ thuật' | 'Đồ hoạ & Nhận diện' | 'Tư liệu & Lịch sử' | 'Cộng đồng & Kỷ niệm' | 'Cập nhật hệ thống';
+  category: 'Thời sự truyền hình' | 'Công nghệ phát sóng' | 'Hậu trường & Kỹ thuật' | 'Đồ hoạ & Nhận diện' | 'Tư liệu & Lịch sử' | 'Cộng đồng & Kỷ niệm' | 'Cập nhật hệ thống' | 'Insider Preview' | 'System Updates' | '' | string;
   publishedAt: string;
   readingTime: string;
   author: {

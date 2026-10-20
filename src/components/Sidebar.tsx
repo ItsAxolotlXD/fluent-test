@@ -261,6 +261,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isGalleryTreeExpanded, setIsGalleryTreeExpanded] = useState<boolean>(false);
   const [expandedSidebarFolderIds, setExpandedSidebarFolderIds] = useState<Set<string>>(new Set());
   const [selectedSidebarFolderId, setSelectedSidebarFolderId] = useState<string | null>(null);
+  const [collapsedTooltip, setCollapsedTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
+
+  const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCollapsedTooltip({
+      label,
+      top: rect.top + rect.height / 2,
+      left: rect.right + 10,
+    });
+  };
+
+  const hideTooltip = () => {
+    setCollapsedTooltip(null);
+  };
+
+  useEffect(() => {
+    setCollapsedTooltip(null);
+  }, [currentRoute, isCollapsed]);
 
   useEffect(() => {
     let mounted = true;
@@ -1150,8 +1168,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             id={isMobile ? 'btn-mobile-sidebar-back' : 'btn-desktop-sidebar-back'}
             onClick={handleGoBack}
-            title="Quay lại (Back)"
-            aria-label="Quay lại"
+            title="Go back"
+            aria-label="Go back"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
             <ArrowLeft className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white stroke-black dark:stroke-white" />
@@ -1162,7 +1180,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             id={isMobile ? 'btn-mobile-sidebar-toggle' : 'btn-desktop-sidebar-toggle'}
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
-            title={isMobile ? 'Close menu' : 'Collapse menu'}
+            title="Collapse or expand"
+            aria-label="Collapse or expand"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
             {isMobile ? <X className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" /> : <Menu className="w-4.5 h-4.5 stroke-[1.75] text-black dark:text-white" />}
@@ -1838,9 +1857,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="btn-sidebar-collapsed-back"
                   type="button"
                   onClick={handleGoBack} 
+                  onMouseEnter={(e) => showTooltip('Go back', e)}
+                  onMouseLeave={hideTooltip}
                   className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                  title="Quay lại (Back)"
-                  aria-label="Quay lại"
+                  title="Go back"
+                  aria-label="Go back"
                 >
                   <ArrowLeft className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
                 </button>
@@ -1850,8 +1871,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="btn-sidebar-expand-toggle"
                   type="button"
                   onClick={onToggleCollapse} 
+                  onMouseEnter={(e) => showTooltip('Collapse or expand', e)}
+                  onMouseLeave={hideTooltip}
                   className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                  title="Expand menu"
+                  title="Collapse or expand"
+                  aria-label="Collapse or expand"
                 >
                   <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
                 </button>
@@ -1874,6 +1898,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-home"
                   data-nav-active={currentRoute === '/' ? 'true' : undefined}
                   onClick={() => handleNavClick('/')}
+                  onMouseEnter={(e) => showTooltip('Home', e)}
+                  onMouseLeave={hideTooltip}
                   title="Home"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/'
@@ -1894,6 +1920,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-home-preview"
                   data-nav-active={currentRoute === '/home-preview' ? 'true' : undefined}
                   onClick={() => handleNavClick('/home-preview')}
+                  onMouseEnter={(e) => showTooltip('Home (preview)', e)}
+                  onMouseLeave={hideTooltip}
                   title="Home (preview)"
                   aria-label="Home (preview)"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
@@ -1915,6 +1943,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-articles"
                   data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/news')}
+                  onMouseEnter={(e) => showTooltip('Update blogs', e)}
+                  onMouseLeave={hideTooltip}
                   title="Update blogs"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
@@ -1938,6 +1968,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-watch"
                   data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/live-tv')}
+                  onMouseEnter={(e) => showTooltip('Watch (preview)', e)}
+                  onMouseLeave={hideTooltip}
                   title="Watch (preview)"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
@@ -1958,6 +1990,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-gallery"
                   data-nav-active={(currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/gallery')}
+                  onMouseEnter={(e) => showTooltip('Gallery', e)}
+                  onMouseLeave={hideTooltip}
                   title="Gallery"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
@@ -1978,6 +2012,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-draws"
                   data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/draws')}
+                  onMouseEnter={(e) => showTooltip('Ink Canvas', e)}
+                  onMouseLeave={hideTooltip}
                   title="Ink Canvas"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
@@ -1998,6 +2034,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-notes"
                   data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
                   onClick={() => handleNavClick('/notes')}
+                  onMouseEnter={(e) => showTooltip('Notes', e)}
+                  onMouseLeave={hideTooltip}
                   title="Notes"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
@@ -2018,6 +2056,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-screenbug"
                   data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
                   onClick={() => handleNavClick('/screenbug')}
+                  onMouseEnter={(e) => showTooltip('Screenbug', e)}
+                  onMouseLeave={hideTooltip}
                   title="Screenbug"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
@@ -2041,6 +2081,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-craftmine"
                   data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
                   onClick={() => handleNavClick('/craftmine')}
+                  onMouseEnter={(e) => showTooltip('Craftmine', e)}
+                  onMouseLeave={hideTooltip}
                   title="Craftmine"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/craftmine'
@@ -2061,6 +2103,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-photopea"
                   data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
                   onClick={() => handleNavClick('/photopea')}
+                  onMouseEnter={(e) => showTooltip('Photopea', e)}
+                  onMouseLeave={hideTooltip}
                   title="Photopea"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/photopea'
@@ -2080,6 +2124,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   id="sidebar-collapsed-discord"
                   onClick={() => window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer')}
+                  onMouseEnter={(e) => showTooltip('Discord', e)}
+                  onMouseLeave={hideTooltip}
                   title="Discord"
                   className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
                 >
@@ -2100,6 +2146,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="button"
                   id="sidebar-collapsed-winui-3"
                   onClick={() => handleNavClick('/winui-3')}
+                  onMouseEnter={(e) => showTooltip('WinUI 3', e)}
+                  onMouseLeave={hideTooltip}
                   title="WinUI 3"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/winui-3'
@@ -2116,6 +2164,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     type="button"
                     id="sidebar-collapsed-signin"
                     onClick={toggleSignInFlyout}
+                    onMouseEnter={(e) => showTooltip('Sign in', e)}
+                    onMouseLeave={hideTooltip}
                     title="Sign in"
                     className={`sidebar-nav-item signin-toggle-btn w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                       isSignInFlyoutOpen
@@ -2141,6 +2191,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   id="sidebar-collapsed-settings"
                   data-nav-active={isCurrentActive('/settings') ? 'true' : undefined}
                   onClick={() => handleNavClick('/settings')}
+                  onMouseEnter={(e) => showTooltip('Settings', e)}
+                  onMouseLeave={hideTooltip}
                   title="Settings"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     isCurrentActive('/settings')
@@ -2241,6 +2293,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Tooltip for Collapsed Sidebar Items */}
+      {isCollapsed && collapsedTooltip && typeof document !== 'undefined' && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: `${collapsedTooltip.top}px`,
+            left: `${collapsedTooltip.left}px`,
+            transform: 'translateY(-50%)',
+          }}
+          className="z-[99999] px-2.5 py-1 rounded-[6px] bg-[#202020] dark:bg-[#2d2d2d] text-white text-xs font-medium shadow-2xl border border-black/10 dark:border-white/15 pointer-events-none whitespace-nowrap animate-in fade-in duration-100 select-none"
+        >
+          {collapsedTooltip.label}
+        </div>,
+        document.body
+      )}
     </>
   );
 };

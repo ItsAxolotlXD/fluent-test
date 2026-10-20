@@ -69,7 +69,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, onClick }) => {
       <div className="p-4 pt-3 flex-1 flex flex-col justify-between">
         <div>
           <h3 className="text-[14.5px] font-semibold text-[#111827] dark:text-white group-hover:text-[#4cc2ff] dark:group-hover:text-[#4cc2ff] transition-colors leading-snug line-clamp-2">
-            {article.title}
+            {article.title.replace(/^#\s*/, '')}
           </h3>
           <p className="text-xs text-[#4b5563] dark:text-[#9ca3af] line-clamp-2 mt-1.5 leading-relaxed font-normal">
             {article.excerpt}
