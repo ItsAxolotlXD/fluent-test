@@ -9,7 +9,7 @@ import { motion } from 'motion/react';
 
 const feedSlideUp = {
   hidden: { opacity: 0, y: 22 },
-  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.42, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.52, delay: Math.min(index * 0.046, 1.1), ease: [0.16, 1, 0.3, 1] } }),
 };
 
 interface NewsProps {
@@ -21,19 +21,13 @@ interface NewsProps {
 
 export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChange, onOpenUpdate }) => {
   const { settings } = useSettings();
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-
-  const distinctCats = Array.from(new Set(NEWS_DATA.map((a) => a.category)));
-  const categories = ['All', ...distinctCats];
-
   const query = (searchQuery || '').trim().toLowerCase();
   const filteredNews = NEWS_DATA.filter((article) => {
-    const matchesCat = selectedCategory === 'All' || article.category === selectedCategory;
     const matchesSearch = !query ||
       article.title.toLowerCase().includes(query) ||
       article.excerpt.toLowerCase().includes(query) ||
       article.category.toLowerCase().includes(query);
-    return matchesCat && matchesSearch;
+    return matchesSearch;
   });
 
   const featured = NEWS_DATA[0];
@@ -97,7 +91,7 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
       </motion.div>
 
       {/* Featured Compact Article Header Card */}
-      {featured && selectedCategory === 'All' && (
+      {featured && (
         <motion.div
           variants={feedSlideUp}
           custom={2}
@@ -167,25 +161,6 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           </div>
         </motion.div>
       )}
-
-      {/* Category Pills */}
-      <motion.div variants={feedSlideUp} custom={3} id="news-category-tabs" className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-        {categories.map((cat, idx) => (
-          <button
-            key={cat}
-            id={`news-cat-btn-${idx}`}
-            type="button"
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
-              selectedCategory === cat
-                ? 'bg-[#E50914] text-white shadow-sm'
-                : 'bg-[#F1F3F5] hover:bg-[#E5E7EB] text-[#4B5563] hover:text-[#111827] dark:bg-[#27121d] dark:hover:bg-[#331726] dark:text-[#A1A1AA] dark:hover:text-white border border-[#E5E7EB] dark:border-white/10'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </motion.div>
 
       {/* Articles Grid */}
       {filteredNews.length === 0 ? (

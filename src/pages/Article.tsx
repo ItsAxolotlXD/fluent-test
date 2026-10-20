@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 
 const articleSlideUp = {
   hidden: { opacity: 0, y: 22 },
-  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.42, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.52, delay: Math.min(index * 0.046, 1.1), ease: [0.16, 1, 0.3, 1] } }),
 };
 import { NEWS_DATA } from '../data/news';
 import { NewsArticle } from '../types';
