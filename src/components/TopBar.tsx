@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Menu, 
   History, 
@@ -153,6 +154,39 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [showAllResults, setShowAllResults] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryMediaItem[]>([]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [resultTitleTooltip, setResultTitleTooltip] = useState<{
+    text: string;
+    top: number;
+    left: number;
+    placement: 'top' | 'bottom';
+  } | null>(null);
+
+  const handleResultMouseEnter = (title: string, e: React.MouseEvent<HTMLElement>) => {
+    const currentTarget = e.currentTarget;
+    const titleSpan = currentTarget.querySelector<HTMLElement>('.search-result-title');
+    if (titleSpan && titleSpan.scrollWidth > titleSpan.clientWidth) {
+      const rect = titleSpan.getBoundingClientRect();
+      const isNearTop = rect.top < 45;
+      setResultTitleTooltip({
+        text: title,
+        top: isNearTop ? rect.bottom + 6 : rect.top - 6,
+        left: Math.max(16, Math.min(window.innerWidth - 16, rect.left + rect.width / 2)),
+        placement: isNearTop ? 'bottom' : 'top',
+      });
+      return;
+    }
+    setResultTitleTooltip(null);
+  };
+
+  const handleResultMouseLeave = () => {
+    setResultTitleTooltip(null);
+  };
+
+  useEffect(() => {
+    if (!isSearchFlyoutOpen) {
+      setResultTitleTooltip(null);
+    }
+  }, [isSearchFlyoutOpen]);
 
   // Synchronize searchQuery with current tab's search query
   useEffect(() => {
@@ -1743,6 +1777,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                           }
                     }
                     onClick={() => !isClearingHistory && handleSelectSearchResult(item)}
+                    onMouseEnter={(e) => handleResultMouseEnter(item.title, e)}
+                    onMouseLeave={handleResultMouseLeave}
+                    title={item.title}
                     className="w-full min-h-[50px] px-2.5 py-1.5 rounded-[8px] flex items-center gap-3 text-left text-[#111827] dark:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.08] active:bg-black/[0.1] dark:active:bg-white/[0.12] transition-none cursor-pointer group select-none"
                   >
                     {renderItemIcon(item)}
@@ -1750,7 +1787,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="text-[13.5px] font-medium text-[#111827] dark:text-white/95 truncate leading-snug">
+                          <span className="search-result-title text-[13.5px] font-medium text-[#111827] dark:text-white/95 truncate leading-snug">
                             {item.title}
                           </span>
                           {item.type === 'history' && item.timestamp && (
@@ -2002,6 +2039,34 @@ export const TopBar: React.FC<TopBarProps> = ({
         )}
 
       </div>
+
+      {/* Floating Tooltip for truncated search result titles */}
+      {resultTitleTooltip && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          <motion.div
+            key="search-result-tooltip"
+            initial={{ opacity: 0, y: resultTitleTooltip.placement === 'bottom' ? -4 : 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              top: `${resultTitleTooltip.top}px`,
+              left: `${resultTitleTooltip.left}px`,
+              transform: resultTitleTooltip.placement === 'bottom' ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
+              backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(24, 24, 28, 0.95)',
+              backdropFilter: 'blur(16px) saturate(140%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              zIndex: 2147483647,
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+            }}
+            className="px-3 py-1.5 min-h-[28px] max-w-[360px] flex items-center rounded-[6px] text-[#111827] dark:text-white text-xs font-medium border border-black/10 dark:border-white/15 pointer-events-none select-none break-words"
+          >
+            {resultTitleTooltip.text}
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
     </header>
   );
 };

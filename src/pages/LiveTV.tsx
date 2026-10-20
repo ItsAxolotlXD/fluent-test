@@ -92,19 +92,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
 
   return (
     <div className="space-y-4 sm:space-y-8 pb-16">
-      {/* Top Banner / Channel Title */}
-      <div>
-        <div className="flex items-center gap-2">
-          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight flex items-center gap-2">
-            <span>{`${String(currentChannel.channelNumber || 1).padStart(3, '0')} | ${currentChannel.name}`}</span>
-          </h1>
-        </div>
-        <p className="text-xs sm:text-sm text-black dark:text-[#9CA3AF] mt-0.5 font-medium flex items-center gap-2">
-          <span>{currentChannel.category}</span>
-        </p>
-      </div>
-
-      {/* Video Player Section (Clean full width without adjacent EPG panel) */}
+      {/* Video Player Section */}
       <div className="w-full">
         <VideoPlayer
           channel={currentChannel}
@@ -114,6 +102,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
           onNextChannel={handleNextChannel}
           onPrevChannel={handlePrevChannel}
           onRandomChannel={handleRandomChannel}
+          onOpenEpg={() => setIsEpgSidebarOpen((prev) => !prev)}
         />
       </div>
 
@@ -141,7 +130,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               {selectedCategory === 'All' && (
                 <motion.div
                   layoutId="watch-category-active-underline"
-                  className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff] shadow-[0_0_8px_rgba(76,194,255,0.7)]"
+                  className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff]"
                   initial={false}
                   animate={{
                     scaleX: [1, 1.38, 0.94, 1],
@@ -182,7 +171,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                   {isActive && (
                     <motion.div
                       layoutId="watch-category-active-underline"
-                      className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff] shadow-[0_0_8px_rgba(76,194,255,0.7)]"
+                      className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff]"
                       initial={false}
                       animate={{
                         scaleX: [1, 1.38, 0.94, 1],

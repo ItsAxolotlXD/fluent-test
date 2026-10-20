@@ -15,7 +15,8 @@ import {
   SkipBack,
   SkipForward,
   Repeat,
-  MoreHorizontal
+  MoreHorizontal,
+  Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Channel } from '../types';
@@ -23,6 +24,7 @@ import { useHLS } from '../hooks/useHLS';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
 import { SpinningRing } from './SpinningRing';
+import { EpgScheduleWidget } from './EpgScheduleWidget';
 
 interface VideoPlayerProps {
   channel: Channel;
@@ -34,6 +36,7 @@ interface VideoPlayerProps {
   onNextChannel?: () => void;
   onPrevChannel?: () => void;
   onRandomChannel?: () => void;
+  onOpenEpg?: () => void;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -44,7 +47,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onClose,
   onNextChannel,
   onPrevChannel,
-  onRandomChannel
+  onRandomChannel,
+  onOpenEpg
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -62,6 +66,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isCaptionsOn, setIsCaptionsOn] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showEpgOverlay, setShowEpgOverlay] = useState(false);
+
+  const handleOpenEpgSchedule = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isFullscreen) {
+      setShowEpgOverlay((prev) => !prev);
+    } else if (onOpenEpg) {
+      onOpenEpg();
+    } else {
+      setShowEpgOverlay((prev) => !prev);
+    }
+  };
 
   useEffect(() => {
     if (settings.streamAspectRatio) {
@@ -488,16 +504,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
           {/* Center: Playback Controls with signature Orange-Magenta-Purple Ring */}
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
-            {/* Shuffle */}
+            {/* Lịch phát sóng (EPG) */}
             <button
+              id="video-player-epg-btn"
               type="button"
-              onClick={onRandomChannel}
+              onClick={handleOpenEpgSchedule}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
-                isLightMode ? 'text-black/70 hover:text-black hover:bg-black/10' : 'text-white/70 hover:text-white hover:bg-white/10'
+                showEpgOverlay
+                  ? 'text-[#4cc2ff] bg-[#4cc2ff]/20'
+                  : isLightMode
+                    ? 'text-black/70 hover:text-black hover:bg-black/10'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
-              title="Phát ngẫu nhiên kênh khác"
+              title="Lịch phát sóng (EPG)"
+              aria-label="Lịch phát sóng"
             >
-              <Shuffle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
 
             {/* Previous */}
@@ -767,6 +789,36 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* In-Player / Fullscreen EPG Schedule Drawer */}
+      <AnimatePresence>
+        {showEpgOverlay && (
+          <div className="absolute inset-0 z-40 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setShowEpgOverlay(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 26, stiffness: 260 }}
+              className="absolute top-0 right-0 h-full w-full sm:w-[460px] md:w-[480px] max-w-[95vw] bg-[#1a1d22] text-white shadow-2xl border-l border-white/10 flex flex-col z-50 overflow-hidden"
+            >
+              <EpgScheduleWidget
+                currentChannel={channel}
+                isSidebarMode={true}
+                onClose={() => setShowEpgOverlay(false)}
+                className="h-full"
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -265,10 +265,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const isRightSidebar = settings.sidebarPosition === 'right';
     setCollapsedTooltip({
       label,
       top: rect.top + rect.height / 2,
-      left: rect.right + 10,
+      left: isRightSidebar ? rect.left - 10 : rect.right + 10,
     });
   };
 
@@ -1168,6 +1169,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             id={isMobile ? 'btn-mobile-sidebar-back' : 'btn-desktop-sidebar-back'}
             onClick={handleGoBack}
+            onMouseEnter={(e) => showTooltip('Go back', e)}
+            onMouseLeave={hideTooltip}
             title="Go back"
             aria-label="Go back"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
@@ -1180,6 +1183,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             id={isMobile ? 'btn-mobile-sidebar-toggle' : 'btn-desktop-sidebar-toggle'}
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
+            onMouseEnter={(e) => showTooltip('Collapse or expand', e)}
+            onMouseLeave={hideTooltip}
             title="Collapse or expand"
             aria-label="Collapse or expand"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
@@ -2294,8 +2299,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Floating Tooltip for Collapsed Sidebar Items (50% opacity, 30% blur, pure fade animation, no outline, increased height) */}
-      {isCollapsed && typeof document !== 'undefined' && createPortal(
+      {/* Floating Tooltip for Sidebar Items (works in both collapsed & expanded states) */}
+      {typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
           {collapsedTooltip && (
             <motion.div
@@ -2308,7 +2313,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 position: 'fixed',
                 top: `${collapsedTooltip.top}px`,
                 left: `${collapsedTooltip.left}px`,
-                transform: 'translateY(-50%)',
+                transform: settings.sidebarPosition === 'right' ? 'translate(-100%, -50%)' : 'translateY(-50%)',
                 backgroundColor: settings.theme === 'light' ? 'rgba(255, 255, 255, 0.50)' : 'rgba(24, 24, 28, 0.50)',
                 backdropFilter: 'blur(16px) saturate(140%)',
                 WebkitBackdropFilter: 'blur(16px) saturate(140%)',

@@ -18,6 +18,23 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [logoError, setLogoError] = useState(false);
+  const [isLightMode, setIsLightMode] = useState<boolean>(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.classList.contains('light-mode');
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const checkTheme = () => {
+      setIsLightMode(document.documentElement.classList.contains('light-mode'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,14 +59,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
   if (!isVisible) return null;
 
+  // In WinUI 3 tab, primary button color is:
+  // - Dark mode: #4cc2ff
+  // - Light mode: #005fb8
+  const primaryButtonColor = isLightMode ? '#005fb8' : '#4cc2ff';
+
   return (
     <div
       id="vplay-splash-screen"
-      className="fixed inset-0 z-[99999] bg-[#1b1f24] dark:bg-[#1b1f24] text-white dark:text-white flex flex-col items-center justify-center select-none transition-colors duration-200"
+      className={`fixed inset-0 z-[99999] ${
+        isLightMode ? 'bg-[#f9f9f9] text-[#111827]' : 'bg-[#1b1f24] text-white'
+      } flex flex-col items-center justify-center select-none transition-colors duration-200`}
     >
       {/* Splash content: logo, spinning ring and subtitle all centered together with enlarged gap */}
       <div className="flex flex-col items-center justify-center gap-12 sm:gap-16 text-center px-6 max-w-md w-full">
-        {/* Logo web in the center */}
+        {/* Logo in the center */}
         <div className="flex items-center justify-center">
           {!logoError ? (
             <img
@@ -60,15 +84,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               onError={() => setLogoError(true)}
             />
           ) : (
-            <span className="text-[#4cc2ff] font-black text-5xl sm:text-6xl tracking-tighter">V</span>
+            <span className={`${isLightMode ? 'text-[#005fb8]' : 'text-[#4cc2ff]'} font-black text-5xl sm:text-6xl tracking-tighter`}>V</span>
           )}
         </div>
 
         {/* Spinning ring and subtitle centered with generous spacing below logo */}
         <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
-          <SpinningRing size={34} strokeWidth={4} color="#4cc2ff" />
+          <SpinningRing size={34} strokeWidth={4} color={primaryButtonColor} />
           {subtitle && (
-            <p className="text-[12.5px] sm:text-[13.5px] text-[#FFFFFF]/90 dark:text-[#FFFFFF]/90 font-normal tracking-wide max-w-md">
+            <p className={`text-[12.5px] sm:text-[13.5px] ${isLightMode ? 'text-[#111827]/85' : 'text-[#FFFFFF]/90'} font-normal tracking-wide max-w-md`}>
               {subtitle}
             </p>
           )}
