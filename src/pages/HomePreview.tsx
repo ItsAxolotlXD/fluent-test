@@ -35,6 +35,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
   const isMobile = useIsMobile();
   const { notes, setActiveNoteId } = useNotes();
   const [selectedRecommendationId, setSelectedRecommendationId] = useState<string | null>(null);
+  const [selectedQuickAccessId, setSelectedQuickAccessId] = useState<string | null>(null);
 
   const vtvChannels = useMemo(
     () => channels
@@ -51,6 +52,9 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
     const handleOutsideClick = (e: MouseEvent) => {
       if (recommendationsRef.current && !recommendationsRef.current.contains(e.target as Node)) {
         setSelectedRecommendationId(null);
+      }
+      if (quickAccessRef.current && !quickAccessRef.current.contains(e.target as Node)) {
+        setSelectedQuickAccessId(null);
       }
     };
     document.addEventListener('pointerdown', handleOutsideClick);
@@ -203,6 +207,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                   if (!isMobile) {
                     e.stopPropagation();
                     setSelectedRecommendationId(item.id);
+                    setSelectedQuickAccessId(null);
                   } else {
                     handleOpenItem(item);
                   }
@@ -344,37 +349,61 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
           {vtvChannels.map((channel) => {
             const channelLabel = channel.name.replace(/\s+HD$/i, '').trim();
             const currentChIdx = elementIndex++;
+            const isSelected = selectedQuickAccessId === channel.id;
 
             return (
               <motion.button
                 key={channel.id}
+                id={`quick-access-card-${channel.id}`}
+                data-quick-access-card="true"
+                data-selected={isSelected ? 'true' : 'false'}
+                aria-selected={isSelected}
                 {...slideUpProps(currentChIdx)}
                 type="button"
-                onClick={() => openChannel(channel)}
+                onClick={(e) => {
+                  if (!isMobile) {
+                    e.stopPropagation();
+                    setSelectedQuickAccessId(channel.id);
+                    setSelectedRecommendationId(null);
+                  } else {
+                    openChannel(channel);
+                  }
+                }}
+                onDoubleClick={(e) => {
+                  if (!isMobile) {
+                    e.stopPropagation();
+                    openChannel(channel);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    openChannel(channel);
+                  } else if (e.key === ' ') {
+                    e.preventDefault();
+                    if (!isMobile) {
+                      setSelectedQuickAccessId(channel.id);
+                      setSelectedRecommendationId(null);
+                    } else {
+                      openChannel(channel);
+                    }
+                  }
+                }}
                 aria-label={`Watch ${channelLabel}`}
-                className="group flex w-[175px] sm:w-[205px] min-w-[160px] shrink-0 snap-start items-center gap-3 rounded-xl border border-black/[0.08] bg-white p-2.5 text-left shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md hover:bg-black/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168a9e] dark:border-white/[0.08] dark:bg-[#2c3037] dark:hover:bg-[#363b43]"
+                className={`group flex size-[88px] sm:size-[100px] shrink-0 snap-start items-center justify-center rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-white dark:bg-[#2c3037] hover:bg-black/[0.02] dark:hover:bg-[#363b43] ${
+                  isSelected
+                    ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                    : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+                }`}
               >
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] p-1.5 dark:bg-black/30">
+                <div className="flex size-full items-center justify-center p-3 sm:p-3.5 select-none">
                   <img
                     src={channel.logo}
-                    alt=""
+                    alt={channelLabel}
                     loading="lazy"
                     decoding="async"
-                    className="size-full object-contain filter drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
+                    className="max-h-full max-w-full object-contain filter drop-shadow-xs transition-transform duration-200 group-hover:scale-110"
                   />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-[13px] font-semibold text-black dark:text-[#f1f1f1]">
-                      {channelLabel}
-                    </span>
-                    <span className="shrink-0 rounded-[3px] bg-[#168a9e]/15 px-1 py-0.2 text-[10px] font-bold text-[#168a9e] dark:bg-[#60c5d8]/20 dark:text-[#80d8e7]">
-                      {channel.quality || 'HD'}
-                    </span>
-                  </div>
-                  <span className="mt-0.5 block truncate text-[11px] text-black/55 dark:text-[#a5a5a5]">
-                    {channel.currentProgram?.title || channel.category || 'Live TV'}
-                  </span>
                 </div>
               </motion.button>
             );
