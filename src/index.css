@@ -311,7 +311,7 @@ html.dark #featured-news-card,
 html.dark .onair-card,
 html.dark .setting-card,
 html.dark .settings-fluent-group,
-html.dark [id^="recommended-channel-"],
+html.dark [id^="recommended-channel-"]:not(.is-selected),
 html.dark [id^="livetv-channel-card-"]:not(.is-selected),
 html.dark [id^="home-channel-card-"],
 html.dark [id^="channel-card-"]:not(.is-selected),
@@ -344,7 +344,7 @@ html:not(.light-mode) #featured-news-card,
 html:not(.light-mode) .onair-card,
 html:not(.light-mode) .setting-card,
 html:not(.light-mode) .settings-fluent-group,
-html:not(.light-mode) [id^="recommended-channel-"],
+html:not(.light-mode) [id^="recommended-channel-"]:not(.is-selected),
 html:not(.light-mode) [id^="livetv-channel-card-"]:not(.is-selected),
 html:not(.light-mode) [id^="home-channel-card-"],
 html:not(.light-mode) [id^="channel-card-"]:not(.is-selected),
@@ -379,7 +379,7 @@ html.dark .news-card-featured:hover,
 html.dark #featured-news-card:hover,
 html.dark .onair-card:hover,
 html.dark .setting-card:hover,
-html.dark [id^="recommended-channel-"]:hover,
+html.dark [id^="recommended-channel-"]:not(.is-selected):hover,
 html.dark [id^="livetv-channel-card-"]:not(.is-selected):hover,
 html.dark [id^="home-channel-card-"]:hover,
 html.dark [id^="channel-card-"]:not(.is-selected):hover,
@@ -392,7 +392,7 @@ html:not(.light-mode) .news-card-featured:hover,
 html:not(.light-mode) #featured-news-card:hover,
 html:not(.light-mode) .onair-card:hover,
 html:not(.light-mode) .setting-card:hover,
-html:not(.light-mode) [id^="recommended-channel-"]:hover,
+html:not(.light-mode) [id^="recommended-channel-"]:not(.is-selected):hover,
 html:not(.light-mode) [id^="livetv-channel-card-"]:not(.is-selected):hover,
 html:not(.light-mode) [id^="home-channel-card-"]:hover,
 html:not(.light-mode) [id^="channel-card-"]:not(.is-selected):hover,
@@ -2613,7 +2613,7 @@ button[role="switch"],
   box-sizing: border-box !important;
 }
 
-[id^="recommended-channel-"],
+[id^="recommended-channel-"]:not(.is-selected),
 [id^="livetv-channel-card-"]:not(.is-selected),
 [id^="home-channel-card-"],
 [id^="channel-card-"]:not(.is-selected),
@@ -2703,7 +2703,7 @@ button[role="switch"]::after,
   opacity: 0 !important;
 }
 
-[id^="recommended-channel-"]:active,
+[id^="recommended-channel-"]:not(.is-selected):active,
 [id^="livetv-channel-card-"]:not(.is-selected):active,
 [id^="home-channel-card-"]:active,
 [id^="channel-card-"]:not(.is-selected):active,
@@ -2754,6 +2754,29 @@ img[src*="imgur.com"],
   box-shadow: none !important;
   transform: none !important;
   transition: none !important;
+}
+
+/* Selected Recommended Cards in Dark Mode - clean magenta border (3.2px, slightly thicker but not too thick), no glow, preserve settings block background */
+[id^="recommended-channel-"].is-selected,
+[id^="recommended-card-"].is-selected,
+[data-recommended-card].is-selected {
+  box-sizing: border-box !important;
+  border: 3.2px solid #ff82ff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Recommended Cards matching Settings block background (#2c3037) & hover (#363b43) */
+[id^="recommended-channel-"]:not(.is-selected),
+[id^="recommended-card-"]:not(.is-selected),
+[data-recommended-card]:not(.is-selected) {
+  background-color: #2c3037 !important;
+}
+
+[id^="recommended-channel-"]:not(.is-selected):hover,
+[id^="recommended-card-"]:not(.is-selected):hover,
+[data-recommended-card]:not(.is-selected):hover {
+  background-color: #363b43 !important;
 }
 
 /* Buttons with Channel Card Spatial Glass Border (Discord, Read, Switch, Close, Watch Now, Tabs) */
@@ -4053,7 +4076,7 @@ html.light-mode #btn-hero-watch-now svg {
 /* Recommended Channel Cards, Live TV Cards & Channel Grid Cards in Light Mode:
    User requirement: "khi ở light mode thì các ô kênh ko có viền"
    Strictly no border, no outline, no pseudo-element border */
-html.light-mode [id^="recommended-channel-"],
+html.light-mode [id^="recommended-channel-"]:not(.is-selected),
 html.light-mode [id^="livetv-channel-card-"]:not(.is-selected),
 html.light-mode [id^="home-channel-card-"],
 html.light-mode [id^="channel-card-"]:not(.is-selected),
@@ -4085,7 +4108,7 @@ html.light-mode [class*="channel-card"]::after {
   box-shadow: none !important;
 }
 
-html.light-mode [id^="recommended-channel-"]:hover,
+html.light-mode [id^="recommended-channel-"]:not(.is-selected):hover,
 html.light-mode [id^="livetv-channel-card-"]:not(.is-selected):hover,
 html.light-mode [id^="home-channel-card-"]:hover,
 html.light-mode [id^="channel-card-"]:not(.is-selected):hover,
@@ -4170,6 +4193,29 @@ html.light-mode [id^="test-channel-card-"].is-selected {
   background-color: #FFF0F5 !important;
   box-shadow: none !important;
   transform: none !important;
+}
+
+/* Selected Recommended Cards in Light Mode - clean magenta border (3.2px, slightly thicker but not too thick), no glow, preserve settings block background */
+html.light-mode [id^="recommended-channel-"].is-selected,
+html.light-mode [id^="recommended-card-"].is-selected,
+html.light-mode [data-recommended-card].is-selected {
+  box-sizing: border-box !important;
+  border: 3.2px solid #d91a9c !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Recommended Cards matching Settings block background (#FFFFFF) & hover (#F9FAFB) in light mode */
+html.light-mode [id^="recommended-channel-"]:not(.is-selected),
+html.light-mode [id^="recommended-card-"]:not(.is-selected),
+html.light-mode [data-recommended-card]:not(.is-selected) {
+  background-color: #FFFFFF !important;
+}
+
+html.light-mode [id^="recommended-channel-"]:not(.is-selected):hover,
+html.light-mode [id^="recommended-card-"]:not(.is-selected):hover,
+html.light-mode [data-recommended-card]:not(.is-selected):hover {
+  background-color: #F9FAFB !important;
 }
 
 /* Spotlight Compact Popover in Light Mode */

@@ -64,6 +64,17 @@ export const Settings: React.FC<SettingsProps> = ({
   const [editingKeybindId, setEditingKeybindId] = useState<KeybindAction | null>(null);
   const [keybindError, setKeybindError] = useState<{ id: KeybindAction; message: string } | null>(null);
 
+  useEffect(() => {
+    if (!isLightModeUnlockOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsLightModeUnlockOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightModeUnlockOpen]);
+
   const toggleCategoryCollapse = (catId: string) => {
     setCollapsedCategories((prev) => ({
       ...prev,
@@ -1397,32 +1408,62 @@ export const Settings: React.FC<SettingsProps> = ({
       {/* Temporary light mode maintenance lock */}
       <AnimatePresence>
         {isLightModeUnlockOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none">
+          <motion.div
+            key="light-mode-lock-container"
+            id="light-mode-lock-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
+          >
             <motion.div
+              key="light-mode-lock-backdrop"
+              id="light-mode-lock-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              transition={{ duration: 0.14, ease: [0.4, 0, 0.2, 1] }}
               onClick={() => setIsLightModeUnlockOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
+              key="light-mode-lock-dialog"
+              id="light-mode-lock-dialog"
               role="dialog"
               aria-modal="true"
               aria-labelledby="light-mode-lock-title"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 0, scale: 0.68 }}
               animate={{ 
                 opacity: 1, 
+                scale: 1,
                 transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
+                  duration: 0.16,
+                  ease: [0.4, 0, 0.2, 1], // ease in / ease out
+                  opacity: {
+                    duration: 0.12,
+                    ease: [0, 0, 0.2, 1], // visible right away so zoom-in from far away is clearly seen
+                  },
+                  scale: {
+                    duration: 0.16,
+                    ease: [0.4, 0, 0.2, 1],
+                  }
                 }
               }}
               exit={{ 
                 opacity: 0, 
+                scale: 0.68,
                 transition: {
-                  duration: 0.18,
-                  ease: [0.16, 1, 0.3, 1]
+                  duration: 0.15,
+                  ease: [0.4, 0, 0.2, 1], // ease in / ease out
+                  opacity: {
+                    duration: 0.14,
+                    ease: [0.5, 0, 1, 1], // delays fade so zoom out is clearly visible
+                  },
+                  scale: {
+                    duration: 0.15,
+                    ease: [0.4, 0, 0.2, 1],
+                  }
                 }
               }}
               className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[6px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] text-[#111827] dark:text-[#F3F4F6] border-none"
@@ -1486,7 +1527,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

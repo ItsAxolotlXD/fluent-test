@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Channel } from '../types';
 import { CategoryIcon } from './CategoryIcon';
 import { SpinningRing } from './SpinningRing';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface OnAirSliderProps {
   channels: Channel[];
@@ -18,6 +19,18 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  const isMobile = useIsMobile();
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (scrollContainerRef.current && !scrollContainerRef.current.contains(e.target as Node)) {
+        setSelectedChannelId(null);
+      }
+    };
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, []);
 
   // 3-second loading state on tab load before displaying channel logos
   const [isLoading, setIsLoading] = useState(true);
@@ -97,28 +110,56 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
         ref={scrollContainerRef}
         className="flex gap-2.5 sm:gap-3 overflow-x-auto pb-3 pt-1 no-scrollbar scroll-smooth reveal-group"
       >
-        {channels.map((ch, idx) => (
-          <div
-            key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
-            id={`recommended-channel-${ch.id}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              onSelectChannel(ch);
-              navigate(`/live-tv?channel=${ch.slug}`);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                onSelectChannel(ch);
-                navigate(`/live-tv?channel=${ch.slug}`);
-              }
-            }}
-            className={`fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248] transition-colors shadow-xs ${
-              !isLoading ? 'slide-up-refresh' : ''
-            }`}
-            title={ch.name}
-            aria-label={ch.name}
-          >
+        {channels.map((ch, idx) => {
+          const isSelected = selectedChannelId === ch.id;
+          return (
+            <div
+              key={`${ch.id}-${isLoading ? 'loading' : 'loaded'}`}
+              id={`recommended-channel-${ch.id}`}
+              data-recommended-card="true"
+              data-selected={isSelected ? 'true' : 'false'}
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                if (!isMobile) {
+                  e.stopPropagation();
+                  setSelectedChannelId(ch.id);
+                } else {
+                  onSelectChannel(ch);
+                  navigate(`/live-tv?channel=${ch.slug}`);
+                }
+              }}
+              onDoubleClick={(e) => {
+                if (!isMobile) {
+                  e.stopPropagation();
+                  onSelectChannel(ch);
+                  navigate(`/live-tv?channel=${ch.slug}`);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  onSelectChannel(ch);
+                  navigate(`/live-tv?channel=${ch.slug}`);
+                } else if (e.key === ' ') {
+                  e.preventDefault();
+                  if (!isMobile) {
+                    setSelectedChannelId(ch.id);
+                  } else {
+                    onSelectChannel(ch);
+                    navigate(`/live-tv?channel=${ch.slug}`);
+                  }
+                }
+              }}
+              className={`fluent-reveal-item onair-card banner-card channel-card min-w-[84px] sm:min-w-[96px] md:min-w-[108px] h-[46px] sm:h-[50px] md:h-[54px] shrink-0 rounded-[6px] sm:rounded-[8px] p-2 flex items-center justify-center cursor-default group select-none transition-all shadow-xs bg-white dark:bg-[#2c3037] hover:bg-black/[0.02] dark:hover:bg-[#363b43] ${
+                isSelected
+                  ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                  : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+              } ${!isLoading ? 'slide-up-refresh' : ''}`}
+              title={!isMobile ? `${ch.name} — Nhấp để chọn, nhấp đúp để mở` : ch.name}
+              aria-label={ch.name}
+              aria-selected={isSelected}
+            >
             <div className="w-full h-full flex items-center justify-center">
               {isLoading ? (
                 <SpinningRing size={22} strokeWidth={3} />
@@ -139,7 +180,8 @@ export const OnAirSlider: React.FC<OnAirSliderProps> = ({
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
