@@ -5579,23 +5579,45 @@ input[type="range"] {
   animation: modalZoomOut 0.26s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-/* Custom Scrollbar for dark theme */
+/* Hide default browser window scrollbar on root elements to allow the in-app scroller bar to take over */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Custom In-App Fluent Scrollbar for internal scroll containers */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(20, 20, 22, 0.6);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(230, 0, 90, 0.35);
+  background: rgba(140, 140, 140, 0.35);
   border-radius: 9999px;
+  border: 1px solid transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(230, 0, 90, 0.65);
+  background: rgba(140, 140, 140, 0.65);
+}
+
+html.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+html.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.50);
 }
 
 /* Text Gradients */

@@ -171,6 +171,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
             <img
               src={article.coverImage}
               alt={article.title}
+              referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-300"
             />
             <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-[4px] bg-black/75 text-white text-[11px] font-normal flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">

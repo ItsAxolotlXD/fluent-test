@@ -19,6 +19,7 @@ import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
+import { AppScrollbar } from './components/AppScrollbar';
 import { HomePreview } from './pages/HomePreview';
 import { About } from './pages/About';
 import { LiveTV } from './pages/LiveTV';
@@ -270,6 +271,25 @@ export default function App() {
   useEffect(() => {
     setIsInkCanvasChromeVisible(false);
   }, [isInkCanvasEditor, currentRoute]);
+
+  // Gallery Fullscreen Viewer: auto-hide Sidebar & TopBar when viewing photos/videos/files
+  const [isGalleryViewerOpen, setIsGalleryViewerOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGalleryLightbox = (e: any) => {
+      setIsGalleryViewerOpen(Boolean(e.detail?.isOpen));
+    };
+    window.addEventListener('vplay:gallery:lightbox_toggle', handleGalleryLightbox);
+    return () => {
+      window.removeEventListener('vplay:gallery:lightbox_toggle', handleGalleryLightbox);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentRoute !== '/gallery') {
+      setIsGalleryViewerOpen(false);
+    }
+  }, [currentRoute]);
 
   const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
@@ -638,7 +658,7 @@ export default function App() {
       {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && (
+      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
           currentRoute={currentRoute}
           navigate={navigate}
@@ -674,7 +694,7 @@ export default function App() {
 
       {/* Main App Container */}
       <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-300 ease-in-out bg-[#f3f3f3] dark:bg-[#1b1f24] ${
-        isInkCanvasEditor
+        isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
           : settings.navigationMode === 'topbar'
           ? 'md:pl-0 md:pr-0 pb-10'
@@ -688,8 +708,8 @@ export default function App() {
                 ? 'md:pl-[48px]'
                 : 'md:pl-[260px]'
       }`}>
-        {/* TopBar Header - hidden on an Ink Canvas sheet until the top edge is hovered */}
-        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && <TopBar
+        {/* TopBar Header - hidden on an Ink Canvas sheet until the top edge is hovered or when Gallery media viewer is open */}
+        {(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && <TopBar
           currentRoute={currentRoute}
           navigate={navigate}
           tabSearchQuery={currentTabSearchQuery}
@@ -754,7 +774,7 @@ export default function App() {
       </div>
 
       {/* Floaty bar navigation (Tab View) */}
-      {settings.navigationMode === 'floaty' && (
+      {settings.navigationMode === 'floaty' && !isGalleryViewerOpen && (
         <BottomDock
           currentRoute={currentRoute}
           navigate={navigate}
@@ -854,7 +874,14 @@ export default function App() {
       />
 
       {/* Floating Movable Sticky Note Widget */}
-      <StickyNoteWidget onNavigateNotes={() => navigate('/notes')} />
+      {!isGalleryViewerOpen && <StickyNoteWidget onNavigateNotes={() => navigate('/notes')} />}
+
+      {/* Windows 11 Fluent In-App Custom Scroller Bar */}
+      <AppScrollbar
+        currentRoute={currentRoute}
+        isGalleryViewerOpen={isGalleryViewerOpen}
+        isTopBarVisible={(!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen}
+      />
 
       {/* App Native Virtual Keyboard for Touch Devices */}
       <NativeKeyboard />

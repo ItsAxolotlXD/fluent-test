@@ -78,6 +78,46 @@ export const Home: React.FC<HomeProps> = ({
     );
   }, [channels, query]);
 
+  // Dynamic greeting based on time of day:
+  // 5 AM - 12 PM: Good morning
+  // 12 PM - 6 PM: Good afternoon
+  // 6 PM - 5 AM: Good evening
+  // month day day, year (e.g: October 16, 2016)
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const { greetingText, formattedDate } = useMemo(() => {
+    const hour = currentDate.getHours();
+    let timeGreeting = 'morning';
+    if (hour >= 5 && hour < 12) {
+      timeGreeting = 'morning';
+    } else if (hour >= 12 && hour < 18) {
+      timeGreeting = 'afternoon';
+    } else {
+      timeGreeting = 'evening';
+    }
+
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const month = monthNames[currentDate.getMonth()];
+    const day = currentDate.getDate();
+    const year = currentDate.getFullYear();
+    const formatted = `${month} ${day}, ${year}`;
+
+    return {
+      greetingText: `Good ${timeGreeting}`,
+      formattedDate: formatted,
+    };
+  }, [currentDate]);
+
   return (
     <div className="space-y-4 sm:space-y-6 pb-16">
       {/* 1. 3D Coverflow Hero Banner (Section 0 - loads first) */}
@@ -88,6 +128,13 @@ export const Home: React.FC<HomeProps> = ({
           channels={visibleChannels}
         />
       </SequentialSection>
+
+      {/* Centered Greeting directly below banner cards: Good ... - <month day day, year> */}
+      <div className="flex items-center justify-center text-center py-1 sm:py-2 px-4 select-none">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-black dark:text-white">
+          {greetingText} - {formattedDate}
+        </h2>
+      </div>
 
       <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto space-y-8 sm:space-y-10">
         {/* 2. Đề xuất cho bạn (Section 1) */}

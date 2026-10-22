@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Clock, Sparkles, Upload } from 'lucide-react';
 import { HeroCarousel } from '../components/HeroCarousel';
 import { Channel } from '../types';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useNotes } from '../context/NotesContext';
+import { NEWS_DATA } from '../data/news';
+import { galleryDB } from '../services/galleryStorage';
 
 interface HomePreviewProps {
   channels: Channel[];
@@ -25,17 +27,11 @@ const slideUpProps = (index: number) => ({
   },
 });
 
-const NOTEPAD_ICON_URL =
-  'https://upload.wikimedia.org/wikipedia/commons/c/c9/Windows_Notepad_icon.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
-
-const AUDIO_ICON_URL =
-  'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/2a6d0f51-0cb3-4260-beb2-04239bc8845d/deqmc77-33847091-bb12-4bf3-9621-98ea50575f22.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8yYTZkMGY1MS0wY2IzLTQyNjAtYmViMi0wNDIzOWJjODg0NWQvZGVxbWM3Ny0zMzg0NzA5MS1iYjEyLTRiZjMtOTYyMS05OGVhNTA1NzVmMjIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.sJexrRdxkJgqB0XbzOaAoLy31sx5fFLNB_eD3tB3opM';
-
 export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChannel, navigate }) => {
   const isMobile = useIsMobile();
   const { notes, setActiveNoteId } = useNotes();
-  const [selectedRecommendationId, setSelectedRecommendationId] = useState<string | null>(null);
   const [selectedQuickAccessId, setSelectedQuickAccessId] = useState<string | null>(null);
+  const [selectedRecommendedId, setSelectedRecommendedId] = useState<string | null>(null);
 
   const vtvChannels = useMemo(
     () => channels
@@ -44,123 +40,471 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
     [channels]
   );
 
-  const [recommendationTilt, setRecommendationTilt] = useState<Record<string, { x: number; y: number }>>({});
-  const recommendationsRef = useRef<HTMLDivElement>(null);
   const quickAccessRef = useRef<HTMLDivElement>(null);
+  const recommendedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (recommendationsRef.current && !recommendationsRef.current.contains(e.target as Node)) {
-        setSelectedRecommendationId(null);
-      }
       if (quickAccessRef.current && !quickAccessRef.current.contains(e.target as Node)) {
         setSelectedQuickAccessId(null);
+      }
+      if (recommendedRef.current && !recommendedRef.current.contains(e.target as Node)) {
+        setSelectedRecommendedId(null);
       }
     };
     document.addEventListener('pointerdown', handleOutsideClick);
     return () => document.removeEventListener('pointerdown', handleOutsideClick);
   }, []);
 
-  const scrollRecommendations = (direction: 'previous' | 'next') => {
-    recommendationsRef.current?.scrollBy({ left: direction === 'next' ? 300 : -300, behavior: 'smooth' });
+  const handleRecCardClick = (
+    e: React.MouseEvent,
+    id: string,
+    action: () => void
+  ) => {
+    setSelectedQuickAccessId(null);
+    if (!isMobile) {
+      e.stopPropagation();
+      setSelectedRecommendedId(id);
+    } else {
+      action();
+    }
+  };
+
+  const handleRecCardDoubleClick = (
+    e: React.MouseEvent,
+    action: () => void
+  ) => {
+    if (!isMobile) {
+      e.stopPropagation();
+      action();
+    }
+  };
+
+  const handleRecCardKeyDown = (
+    e: React.KeyboardEvent,
+    id: string,
+    action: () => void
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      action();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      if (!isMobile) {
+        setSelectedRecommendedId(id);
+      } else {
+        action();
+      }
+    }
   };
 
   const scrollQuickAccess = (direction: 'previous' | 'next') => {
     quickAccessRef.current?.scrollBy({ left: direction === 'next' ? 300 : -300, behavior: 'smooth' });
   };
 
-  // Randomized recommendations on web refresh / mount
-  const recommendations = useMemo(() => {
-    // 1. User notes mapped into recommended items with Notepad icon
-    const noteItems = (notes || []).map((note) => {
-      const dateStr = note.updatedAt || note.createdAt
-        ? new Date(note.updatedAt || note.createdAt).toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' })
-        : 'Gần đây';
-      return {
-        id: `note-${note.id}`,
-        type: 'note' as const,
-        title: note.title || 'Ghi chú',
-        detail: `Tệp ghi chú · Cập nhật ${dateStr}`,
-        image: NOTEPAD_ICON_URL,
-        route: '/notes',
-        noteId: note.id,
-      };
-    });
-
-    // 2. Channel candidates (tab Watch) with reduced logo size
-    const channelItems = [...channels].map((channel) => ({
-      id: `channel-${channel.id}`,
-      type: channel.category === 'Kênh phát thanh' ? ('audio' as const) : ('channel' as const),
-      title: channel.name,
-      detail: `${channel.category === 'Kênh phát thanh' ? 'Tệp phát thanh' : 'Kênh truyền hình'} · ${channel.quality || 'HD'}`,
-      image: channel.category === 'Kênh phát thanh' ? AUDIO_ICON_URL : (channel.logo || channel.bannerImage),
-      route: `/live-tv?channel=${channel.slug}`,
-      channel,
-    }));
-
-    // 3. Featured static exploration items
-    const featuredItems = [
-      {
-        id: 'radio-room',
-        type: 'audio' as const,
-        title: 'Phòng nghe Radio & Audio',
-        detail: 'Tệp âm thanh · VOV & Trực tuyến',
-        image: AUDIO_ICON_URL,
-        route: '/live-tv',
-      },
-      {
-        id: 'gallery-broadcast',
-        type: 'media' as const,
-        title: 'Kho tư liệu truyền hình',
-        detail: 'Bộ sưu tập · Thư viện phát sóng',
-        image: '/banners/thoi_su_19h_hd.webp',
-        route: '/gallery',
-      },
-      {
-        id: 'gallery-vietnam-today',
-        type: 'media' as const,
-        title: 'Việt Nam Hôm Nay',
-        detail: 'Tin tức & Hình ảnh đặc sắc',
-        image: '/banners/vietnam_today.jpg',
-        route: '/gallery',
-      },
-      {
-        id: 'sparkle-project-notes',
-        type: 'note' as const,
-        title: 'Tài liệu kiến trúc Sparkle',
-        detail: 'Tệp ghi chú · Bản thảo hệ thống',
-        image: NOTEPAD_ICON_URL,
-        route: '/notes',
-      },
-    ];
-
-    // Shuffle and pick a fresh random subset on each page load
-    const shuffledNotes = [...noteItems].sort(() => Math.random() - 0.5);
-    const shuffledChannels = [...channelItems].sort(() => Math.random() - 0.5);
-    const shuffledFeatured = [...featuredItems].sort(() => Math.random() - 0.5);
-
-    const pickedNotes = shuffledNotes.slice(0, Math.min(2, shuffledNotes.length));
-    const pickedChannels = shuffledChannels.slice(0, 3);
-    const pickedFeatured = shuffledFeatured.slice(0, 2);
-
-    const pool = [...pickedNotes, ...pickedChannels, ...pickedFeatured];
-    // Final random shuffle of the entire recommended cards list
-    return pool.sort(() => Math.random() - 0.5);
-  }, [channels, notes]);
-
   const openChannel = (channel: Channel) => {
     onSelectChannel(channel);
     navigate(`/live-tv?channel=${channel.slug}`);
   };
 
-  const handleOpenItem = (item: (typeof recommendations)[number]) => {
-    if (item.noteId) {
-      setActiveNoteId(item.noteId);
-      navigate(item.route);
-    } else if (item.channel) {
-      openChannel(item.channel);
+  // Block 1: 3 random TV channels refreshed when web is reloaded / mounted
+  const randomChannels = useMemo(() => {
+    const valid = channels.filter((c) => Boolean(c.logo && c.name));
+    const shuffled = [...valid].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [channels]);
+
+  const ch0 = randomChannels[0] || channels[0];
+  const ch1 = randomChannels[1] || channels[1] || channels[0];
+  const ch2 = randomChannels[2] || channels[2] || channels[0];
+
+  const NOTE_ICON_URL =
+    'https://upload.wikimedia.org/wikipedia/commons/c/c9/Windows_Notepad_icon.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
+  const MUSIC_ICON_URL =
+    'https://static.wikia.nocookie.net/logopedia/images/2/2b/Music_win-11.png/revision/latest?cb=20211007190213';
+  const WORD_ICON_URL =
+    'https://upload.wikimedia.org/wikipedia/commons/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg';
+  const EXCEL_ICON_URL =
+    'https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg';
+  const PPT_ICON_URL =
+    'https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg';
+  const PDF_ICON_URL =
+    'https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg';
+
+  const importFileInputRef = useRef<HTMLInputElement>(null);
+  const [deviceFiles, setDeviceFiles] = useState<any[]>([]);
+  const [importedCustomFile, setImportedCustomFile] = useState<any | null>(null);
+
+  // Load files imported from device (from galleryDB, local VLC playlist, and localStorage)
+  useEffect(() => {
+    let isMounted = true;
+    const loadDeviceFiles = async () => {
+      try {
+        const allGallery = await galleryDB.getAll();
+        const uploadedItems = allGallery.filter(
+          (it) => it.source === 'upload' || it.id.startsWith('upload-') || it.type === 'document' || it.type === 'audio'
+        );
+
+        let vlcLocals: any[] = [];
+        try {
+          const rawVlc = localStorage.getItem('vone_vlc_playlist');
+          if (rawVlc) {
+            const parsed = JSON.parse(rawVlc);
+            if (Array.isArray(parsed)) {
+              vlcLocals = parsed.filter((it: any) => it.id?.startsWith('local-'));
+            }
+          }
+        } catch {}
+
+        const parsedDeviceFiles: any[] = [];
+
+        for (const item of uploadedItems) {
+          const lower = (item.title || '').toLowerCase();
+          let ext = 'docx';
+          if (lower.endsWith('.xlsx') || lower.endsWith('.xls')) ext = 'xlsx';
+          else if (lower.endsWith('.pptx') || lower.endsWith('.ppt')) ext = 'pptx';
+          else if (lower.endsWith('.pdf')) ext = 'pdf';
+          else if (item.type === 'audio' || /\.(mp3|wav|ogg|aac|m4a|flac)$/i.test(lower)) ext = 'mp3';
+          else if (item.type === 'image' || /\.(png|jpe?g|webp|gif|svg)$/i.test(lower)) ext = 'png';
+          else if (lower.endsWith('.txt')) ext = 'txt';
+
+          const sizeStr = item.size ? `${(item.size / 1024 / 1024).toFixed(1)} MB` : 'Tệp từ thiết bị';
+          parsedDeviceFiles.push({
+            id: `dev-${item.id}`,
+            name: item.title,
+            subtitle: `Đã nhập từ thiết bị · ${sizeStr}`,
+            ext,
+            iconColor: ext === 'mp3' ? '#8764b8' : ext === 'xlsx' ? '#107c41' : ext === 'pptx' ? '#d83b01' : '#0078d4',
+            badge: item.title.replace(/\.[^/.]+$/, '').slice(0, 24),
+            route: item.type === 'audio' ? '/vlc' : '/gallery',
+            isDeviceImport: true,
+          });
+        }
+
+        for (const it of vlcLocals) {
+          parsedDeviceFiles.push({
+            id: `vlc-${it.id}`,
+            name: `${it.title}.mp3`,
+            subtitle: 'Âm thanh từ thiết bị · Media Player',
+            ext: 'mp3',
+            iconColor: '#8764b8',
+            badge: it.title.slice(0, 24),
+            route: '/vlc',
+            isDeviceImport: true,
+          });
+        }
+
+        if (isMounted) {
+          setDeviceFiles(parsedDeviceFiles);
+        }
+      } catch (err) {
+        console.warn('Could not load device files:', err);
+      }
+    };
+
+    loadDeviceFiles();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleImportDeviceFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileName = file.name;
+    const lower = fileName.toLowerCase();
+    let ext = 'docx';
+    let type: 'document' | 'audio' | 'image' | 'video' = 'document';
+    let route = '/notes';
+
+    if (lower.endsWith('.xlsx') || lower.endsWith('.xls')) {
+      ext = 'xlsx';
+      type = 'document';
+      route = '/gallery';
+    } else if (lower.endsWith('.pptx') || lower.endsWith('.ppt')) {
+      ext = 'pptx';
+      type = 'document';
+      route = '/gallery';
+    } else if (lower.endsWith('.pdf')) {
+      ext = 'pdf';
+      type = 'document';
+      route = '/gallery';
+    } else if (/\.(mp3|wav|ogg|aac|m4a|flac)$/i.test(lower) || file.type.startsWith('audio/')) {
+      ext = 'mp3';
+      type = 'audio';
+      route = '/vlc';
+    } else if (/\.(png|jpe?g|webp|gif|svg)$/i.test(lower) || file.type.startsWith('image/')) {
+      ext = 'png';
+      type = 'image';
+      route = '/gallery';
+    } else if (/\.(mp4|webm|mkv|mov)$/i.test(lower) || file.type.startsWith('video/')) {
+      ext = 'mp4';
+      type = 'video';
+      route = '/vlc';
+    } else if (lower.endsWith('.txt')) {
+      ext = 'txt';
+      type = 'document';
+      route = '/notes';
+    }
+
+    const url = URL.createObjectURL(file);
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+    const newFileItem = {
+      id: `dev-import-${Date.now()}`,
+      name: fileName,
+      subtitle: `Tệp từ thiết bị · ${sizeMb} MB`,
+      ext,
+      iconColor: ext === 'mp3' ? '#8764b8' : ext === 'xlsx' ? '#107c41' : ext === 'pptx' ? '#d83b01' : '#0078d4',
+      badge: fileName.replace(/\.[^/.]+$/, '').slice(0, 24),
+      route,
+      isDeviceImport: true,
+    };
+
+    try {
+      await galleryDB.add({
+        id: `upload-${Date.now()}`,
+        title: fileName,
+        type,
+        url,
+        blobData: file,
+        mimeType: file.type || 'application/octet-stream',
+        size: file.size,
+        dateAdded: new Date().toISOString(),
+        year: new Date().getFullYear(),
+        aspectRatio: 1,
+        source: 'upload',
+        description: `Imported from device (${sizeMb} MB)`,
+      });
+    } catch {}
+
+    setDeviceFiles((prev) => [newFileItem, ...prev]);
+    setImportedCustomFile(newFileItem);
+    if (e.target) e.target.value = '';
+  };
+
+  // Block 3: 1 random file (Office / Media / Document / Imported from Device) refreshed on web reload
+  const randomFile = useMemo(() => {
+    if (importedCustomFile) return importedCustomFile;
+
+    const basePool = [
+      {
+        id: 'file-doc-1',
+        name: 'Tài liệu kiến trúc Sparkle.docx',
+        subtitle: 'Microsoft Word · Đã sửa đổi 10m trước',
+        ext: 'docx' as const,
+        iconColor: '#0078d4',
+        badge: 'Tài liệu kiến trúc Sparkle',
+        route: '/notes',
+      },
+      {
+        id: 'file-sheet-2',
+        name: 'Kế hoạch phát sóng VTV 2026.xlsx',
+        subtitle: 'Microsoft Excel · Bảng tính đã lưu',
+        ext: 'xlsx' as const,
+        iconColor: '#107c41',
+        badge: 'Kế hoạch phát sóng 2026',
+        route: '/notes',
+      },
+      {
+        id: 'file-pres-3',
+        name: 'Sparkle Vision 26.11.pptx',
+        subtitle: 'PowerPoint · Bản trình chiếu',
+        ext: 'pptx' as const,
+        iconColor: '#d83b01',
+        badge: 'Sparkle Vision 26.11',
+        route: '/notes',
+      },
+      {
+        id: 'file-audio-4',
+        name: 'Ghi âm phát thanh VOV FM91.mp3',
+        subtitle: 'Tệp âm thanh · 14.8 MB',
+        ext: 'mp3' as const,
+        iconColor: '#8764b8',
+        badge: 'VOV Giao thông FM91',
+        route: '/vlc',
+      },
+      {
+        id: 'file-img-5',
+        name: 'Tư liệu đồ họa truyền hình.png',
+        subtitle: 'Tệp hình ảnh · Bộ sưu tập',
+        ext: 'png' as const,
+        iconColor: '#f59e0b',
+        badge: 'Đồ họa truyền hình Sparkle',
+        route: '/gallery',
+      },
+    ];
+
+    const pool = deviceFiles.length > 0 ? [...deviceFiles, ...basePool] : basePool;
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    return shuffled[0];
+  }, [deviceFiles, importedCustomFile]);
+
+  // Block 4: 1 random note file from Notes app (refreshed on web reload)
+  const randomNote = useMemo(() => {
+    if (!notes || notes.length === 0) return null;
+    const shuffled = [...notes].sort(() => Math.random() - 0.5);
+    return shuffled[0];
+  }, [notes]);
+
+  const stripHtml = (html: string) => {
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  };
+
+  const formatNoteDate = (timestamp?: number) => {
+    if (!timestamp) return 'Gần đây';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    if (isToday) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const mins = date.getMinutes().toString().padStart(2, '0');
+      return `Hôm nay lúc ${hours}:${mins}`;
+    }
+    return `${date.getDate()} thg ${date.getMonth() + 1}`;
+  };
+
+  const renderFileIcon = (ext: string, isPreview: boolean = false) => {
+    const iconClass = isPreview
+      ? 'size-10 sm:size-11 object-contain filter drop-shadow-sm'
+      : 'size-4 sm:size-4.5 object-contain filter drop-shadow-xs';
+
+    switch (ext.toLowerCase()) {
+      case 'docx':
+      case 'doc':
+        return (
+          <img
+            src={WORD_ICON_URL}
+            alt="Word"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'xlsx':
+      case 'xls':
+        return (
+          <img
+            src={EXCEL_ICON_URL}
+            alt="Excel"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'pptx':
+      case 'ppt':
+        return (
+          <img
+            src={PPT_ICON_URL}
+            alt="PowerPoint"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'pdf':
+        return (
+          <img
+            src={PDF_ICON_URL}
+            alt="PDF"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'mp3':
+      case 'wav':
+      case 'audio':
+      case 'music':
+      case 'flac':
+      case 'm4a':
+      case 'ogg':
+        return (
+          <img
+            src={MUSIC_ICON_URL}
+            alt="Music"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'image':
+        return (
+          <img
+            src={NOTE_ICON_URL}
+            alt="Image"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+      case 'txt':
+      case 'note':
+      default:
+        return (
+          <img
+            src={NOTE_ICON_URL}
+            alt="Note"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            className={iconClass}
+          />
+        );
+    }
+  };
+
+  // Dynamic greeting based on time of day:
+  // 5 AM - 12 PM: Good morning
+  // 12 PM - 6 PM: Good afternoon
+  // 6 PM - 5 AM: Good evening
+  // month day day, year (e.g: October 16, 2016)
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const { greetingText, formattedDate } = useMemo(() => {
+    const hour = currentDate.getHours();
+    let timeGreeting = 'morning';
+    if (hour >= 5 && hour < 12) {
+      timeGreeting = 'morning';
+    } else if (hour >= 12 && hour < 18) {
+      timeGreeting = 'afternoon';
     } else {
-      navigate(item.route);
+      timeGreeting = 'evening';
+    }
+
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const month = monthNames[currentDate.getMonth()];
+    const day = currentDate.getDate();
+    const year = currentDate.getFullYear();
+    const formatted = `${month} ${day}, ${year}`;
+
+    return {
+      greetingText: `Good ${timeGreeting}`,
+      formattedDate: formatted,
+    };
+  }, [currentDate]);
+
+  const openChannelBySlugOrId = (slugOrId: string) => {
+    const found = channels.find(
+      (c) => c.slug.toLowerCase().includes(slugOrId.toLowerCase()) || c.id.toLowerCase().includes(slugOrId.toLowerCase())
+    );
+    if (found) {
+      openChannel(found);
+    } else {
+      navigate('/live-tv');
     }
   };
 
@@ -173,147 +517,346 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
         <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />
       </motion.div>
 
-      {/* 2. Recommendations Section */}
+      {/* Centered Greeting directly below banner cards: Good ... - <month day day, year> */}
+      <motion.div
+        {...slideUpProps(elementIndex++)}
+        className="flex items-center justify-center text-center py-1 sm:py-2 px-4 select-none"
+      >
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-black dark:text-white">
+          {greetingText} - {formattedDate}
+        </h2>
+      </motion.div>
+
+      {/* 2. Recommendations Section - Fluent Snapshots Layout */}
       <section aria-labelledby="recommendations-title" className="px-4 text-black dark:text-[#e7e7e7] sm:px-6">
-        <motion.div {...slideUpProps(elementIndex++)} className="flex h-9 items-center justify-between border-b border-black/10 px-1 dark:border-white/10">
+        <motion.div {...slideUpProps(elementIndex++)} className="flex h-9 items-center justify-between border-b border-black/10 px-1 dark:border-white/10 mb-4">
           <div className="flex items-center gap-2 text-[13px] font-medium">
             <ChevronDown className="size-3.5 text-black/60 dark:text-[#bdbdbd]" aria-hidden="true" />
             <h2 id="recommendations-title">Recommended</h2>
           </div>
-          <div className="flex items-center gap-1">
-            <button type="button" onClick={() => scrollRecommendations('previous')} className="rounded-full p-1 text-black transition-colors hover:bg-black/10 hover:text-black dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Previous recommendations">
-              <ChevronLeft className="size-4" aria-hidden="true" />
-            </button>
-            <button type="button" onClick={() => scrollRecommendations('next')} className="rounded-full p-1 text-black transition-colors hover:bg-black/10 hover:text-black dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Next recommendations">
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
-          </div>
         </motion.div>
 
-        <div ref={recommendationsRef} className="flex snap-x gap-3 overflow-x-auto pt-3 pb-1 [perspective:900px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {recommendations.map((item, recIdx) => {
-            const currentItemIdx = elementIndex++;
-            const isSelected = selectedRecommendationId === item.id;
-            return (
-              <motion.button
-                key={item.id}
-                id={`recommended-card-${item.id}`}
-                data-recommended-card="true"
-                data-selected={isSelected ? 'true' : 'false'}
-                aria-selected={isSelected}
-                {...slideUpProps(currentItemIdx)}
-                type="button"
-                onClick={(e) => {
-                  if (!isMobile) {
-                    e.stopPropagation();
-                    setSelectedRecommendationId(item.id);
-                    setSelectedQuickAccessId(null);
-                  } else {
-                    handleOpenItem(item);
-                  }
-                }}
-                onDoubleClick={(e) => {
-                  if (!isMobile) {
-                    e.stopPropagation();
-                    handleOpenItem(item);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleOpenItem(item);
-                  } else if (e.key === ' ') {
-                    e.preventDefault();
-                    if (!isMobile) {
-                      setSelectedRecommendationId(item.id);
-                    } else {
-                      handleOpenItem(item);
-                    }
-                  }
-                }}
-                onMouseMove={(event) => {
-                  const rect = event.currentTarget.getBoundingClientRect();
-                  setRecommendationTilt((items) => ({
-                    ...items,
-                    [item.id]: {
-                      x: ((event.clientY - rect.top) / rect.height - 0.5) * -26,
-                      y: ((event.clientX - rect.left) / rect.width - 0.5) * 28,
-                    },
-                  }));
-                }}
-                onMouseLeave={() => setRecommendationTilt((items) => ({ ...items, [item.id]: { x: 0, y: 0 } }))}
-                style={{
-                  transform: `rotateX(${recommendationTilt[item.id]?.x ?? 0}deg) rotateY(${recommendationTilt[item.id]?.y ?? 0}deg)`,
-                  transition: 'transform 180ms ease-out, box-shadow 180ms ease-out',
-                  transformStyle: 'preserve-3d',
-                  position: 'relative',
-                  zIndex: isSelected ? 30 : (recommendationTilt[item.id]?.x || recommendationTilt[item.id]?.y ? 20 : 1),
-                }}
-                className={`group w-[calc((100vw-2.75rem)/2)] min-w-[178px] shrink-0 snap-start overflow-hidden rounded-2xl sm:w-[220px] lg:w-[calc((100%_-_2.25rem)/5)] text-left shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-white dark:bg-[#2c3037] hover:bg-black/[0.02] dark:hover:bg-[#363b43] ${
-                  isSelected
+        {/* Snapshots Grid Layout */}
+        <div ref={recommendedRef} className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-stretch">
+          {/* Block 1: Recent activities (3 random TV channels, refreshed on web reload) */}
+          <motion.div
+            {...slideUpProps(elementIndex++)}
+            className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-colors"
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between mb-3.5">
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-black dark:text-white">Recent activities</h3>
+                <p className="text-xs sm:text-sm text-black/60 dark:text-[#9e9ea6]">Pick up where you left off</p>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-black/50 dark:text-[#888892] mt-0.5">
+                <Clock className="size-3.5" />
+                <span>Just now</span>
+              </div>
+            </div>
+
+            {/* Main Featured Snapshot (Random Channel 0) */}
+            <div
+              role="button"
+              tabIndex={0}
+              id={`rec-card-ch-${ch0.id}`}
+              data-selected={selectedRecommendedId === `rec-ch-${ch0.id}`}
+              aria-selected={selectedRecommendedId === `rec-ch-${ch0.id}`}
+              onClick={(e) => handleRecCardClick(e, `rec-ch-${ch0.id}`, () => openChannel(ch0))}
+              onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch0))}
+              onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch0.id}`, () => openChannel(ch0))}
+              className={`relative flex-1 min-h-[220px] sm:min-h-[250px] md:min-h-[280px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+                selectedRecommendedId === `rec-ch-${ch0.id}`
+                  ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                  : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+              }`}
+            >
+              <div className="relative size-full flex items-center justify-center p-6 sm:p-8 select-none">
+                {/* Channel Logo (Reduced size, transparent background) */}
+                <img
+                  src={ch0.logo}
+                  alt={ch0.name}
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-[90px] sm:max-h-[110px] max-w-[70%] sm:max-w-[65%] object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Sub-snapshots Row (Random Channel 1 & Random Channel 2) */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
+              {/* Channel 1 */}
+              <div
+                role="button"
+                tabIndex={0}
+                id={`rec-card-ch-${ch1.id}`}
+                data-selected={selectedRecommendedId === `rec-ch-${ch1.id}`}
+                aria-selected={selectedRecommendedId === `rec-ch-${ch1.id}`}
+                onClick={(e) => handleRecCardClick(e, `rec-ch-${ch1.id}`, () => openChannel(ch1))}
+                onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch1))}
+                onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch1.id}`, () => openChannel(ch1))}
+                className={`relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+                  selectedRecommendedId === `rec-ch-${ch1.id}`
                     ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
                     : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
                 }`}
-                title={!isMobile ? `${item.title} — Nhấp để chọn, nhấp đúp để mở` : item.title}
               >
-                <div className="relative flex h-[92px] items-center justify-center overflow-hidden bg-black/[0.03] dark:bg-black/30 p-3">
-                  {item.type === 'note' ? (
-                    <img
-                      src={NOTEPAD_ICON_URL}
-                      alt="Notepad"
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      decoding="async"
-                      className="size-12 object-contain drop-shadow transition-transform duration-300 group-hover:scale-110"
-                    />
-                  ) : item.type === 'audio' ? (
-                    <img
-                      src={AUDIO_ICON_URL}
-                      alt="Audio"
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      decoding="async"
-                      className="size-12 object-contain drop-shadow transition-transform duration-300 group-hover:scale-110"
-                    />
-                  ) : item.type === 'channel' || item.channel ? (
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      decoding="async"
-                      className="max-h-10 max-w-[55%] w-auto object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-110"
-                    />
-                  ) : (
-                    <img
-                      src={item.image}
-                      alt=""
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      decoding="async"
-                      className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    />
-                  )}
+                <div className="relative size-full flex items-center justify-center p-2.5 sm:p-3 select-none">
+                  <img
+                    src={ch1.logo}
+                    alt={ch1.name}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-[38px] sm:max-h-[44px] max-w-[70%] object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
-                <div className="flex min-h-[62px] flex-col gap-0.5 px-2.5 py-2">
-                  <span className="truncate text-[12px] font-medium text-black dark:text-[#f1f1f1]">{item.title}</span>
-                  <span className="truncate text-[11px] text-black/50 dark:text-[#a9a9ae]">{item.detail}</span>
+              </div>
+
+              {/* Channel 2 */}
+              <div
+                role="button"
+                tabIndex={0}
+                id={`rec-card-ch-${ch2.id}`}
+                data-selected={selectedRecommendedId === `rec-ch-${ch2.id}`}
+                aria-selected={selectedRecommendedId === `rec-ch-${ch2.id}`}
+                onClick={(e) => handleRecCardClick(e, `rec-ch-${ch2.id}`, () => openChannel(ch2))}
+                onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch2))}
+                onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch2.id}`, () => openChannel(ch2))}
+                className={`relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+                  selectedRecommendedId === `rec-ch-${ch2.id}`
+                    ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                    : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+                }`}
+              >
+                <div className="relative size-full flex items-center justify-center p-2.5 sm:p-3 select-none">
+                  <img
+                    src={ch2.logo}
+                    alt={ch2.name}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-[38px] sm:max-h-[44px] max-w-[70%] object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
-              </motion.button>
-            );
-          })}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Block: Block 2 (Latest Sparkle Updates) + Blocks 3 & 4 (2 random files) */}
+          <motion.div
+            {...slideUpProps(elementIndex++)}
+            className="flex flex-col gap-4 lg:gap-5 justify-between"
+          >
+            {/* Block 2: Latest Sparkle Updates */}
+            <div className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-colors">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-base sm:text-lg font-semibold text-black dark:text-white">Latest Sparkle Updates</h3>
+                  <p className="text-xs sm:text-sm text-black/60 dark:text-[#9e9ea6]">
+                    {NEWS_DATA[0]?.publishedAt ? `${NEWS_DATA[0].publishedAt} · ${NEWS_DATA[0].readingTime}` : "Insider Preview, changelogs & new features"}
+                  </p>
+                </div>
+                {/* Sparkle icon - reduced size */}
+                <div className="size-5 shrink-0 mt-0.5 text-[#ff82ff] flex items-center justify-center">
+                  <Sparkles className="size-4 sm:size-4.5" />
+                </div>
+              </div>
+
+              {/* Updates Snapshot */}
+              <div
+                role="button"
+                tabIndex={0}
+                id="rec-card-news"
+                data-selected={selectedRecommendedId === 'rec-news'}
+                aria-selected={selectedRecommendedId === 'rec-news'}
+                onClick={(e) => handleRecCardClick(e, 'rec-news', () => navigate('/news'))}
+                onDoubleClick={(e) => handleRecCardDoubleClick(e, () => navigate('/news'))}
+                onKeyDown={(e) => handleRecCardKeyDown(e, 'rec-news', () => navigate('/news'))}
+                className={`relative h-[155px] sm:h-[180px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-[#181518] ${
+                  selectedRecommendedId === 'rec-news'
+                    ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                    : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+                }`}
+              >
+                <div className="relative size-full flex items-center justify-center select-none">
+                  <img
+                    src={NEWS_DATA[0]?.coverImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=85'}
+                    alt="Latest Sparkle Updates"
+                    referrerPolicy="no-referrer"
+                    className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Blocks 3 & 4: 2 Random Files (refreshed on web reload) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {/* Block 3: Random Document File / Imported from Device */}
+              {randomFile && (
+                <div
+                  onDoubleClick={(e) => handleRecCardDoubleClick(e, () => navigate(randomFile.route))}
+                  className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-3.5 sm:p-4.5 flex flex-col justify-between shadow-xs transition-colors"
+                >
+                  <input
+                    type="file"
+                    ref={importFileInputRef}
+                    onChange={handleImportDeviceFile}
+                    className="hidden"
+                  />
+                  <div className="flex items-start justify-between mb-2.5">
+                    <div className="min-w-0 pr-2">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-sm sm:text-base font-semibold text-black dark:text-white truncate">
+                          {randomFile.name}
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            importFileInputRef.current?.click();
+                          }}
+                          className="shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-black/[0.05] dark:bg-white/[0.08] text-black/70 dark:text-white/70 hover:bg-black/10 dark:hover:bg-white/15 transition-colors"
+                        >
+                          <Upload className="size-2.5" />
+                          <span>Nhập</span>
+                        </button>
+                      </div>
+                      <p className="text-xs text-black/60 dark:text-[#9e9ea6] truncate">
+                        {randomFile.subtitle}
+                      </p>
+                    </div>
+                    {/* File icon - reduced size */}
+                    <div className="shrink-0 mt-0.5">
+                      {renderFileIcon(randomFile.ext)}
+                    </div>
+                  </div>
+
+                  {/* Snapshot Thumbnail */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    id="rec-card-file"
+                    data-selected={selectedRecommendedId === 'rec-file'}
+                    aria-selected={selectedRecommendedId === 'rec-file'}
+                    onClick={(e) => handleRecCardClick(e, 'rec-file', () => navigate(randomFile.route))}
+                    onDoubleClick={(e) => handleRecCardDoubleClick(e, () => navigate(randomFile.route))}
+                    onKeyDown={(e) => handleRecCardKeyDown(e, 'rec-file', () => navigate(randomFile.route))}
+                    className={`relative h-[88px] sm:h-[98px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-neutral-100 dark:bg-[#16181d] p-3 select-none flex items-center justify-center ${
+                      selectedRecommendedId === 'rec-file'
+                        ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                        : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5 z-10 w-full px-2">
+                      <div className="shrink-0 flex items-center justify-center bg-transparent">
+                        {renderFileIcon(randomFile.ext, true)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[12px] font-semibold text-black dark:text-[#f3f4f6] truncate">
+                          {randomFile.name}
+                        </div>
+                        <div className="text-[10px] text-black/50 dark:text-[#888892] truncate">
+                          {randomFile.subtitle}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Block 4: 1 Random Note File from Notes App */}
+              {randomNote && (
+                <div
+                  onDoubleClick={(e) =>
+                    handleRecCardDoubleClick(e, () => {
+                      setActiveNoteId(randomNote.id);
+                      navigate('/notes');
+                    })
+                  }
+                  className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-3.5 sm:p-4.5 flex flex-col justify-between shadow-xs transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-2.5">
+                    <div className="min-w-0 pr-2">
+                      <h4 className="text-sm sm:text-base font-semibold text-black dark:text-white truncate">
+                        {randomNote.title || 'Ghi chú'}.txt
+                      </h4>
+                      <p className="text-xs text-black/60 dark:text-[#9e9ea6] truncate">
+                        Tệp ghi chú · {formatNoteDate(randomNote.updatedAt || randomNote.createdAt)}
+                      </p>
+                    </div>
+                    {/* Notepad file icon - reduced size with official Windows Notepad icon */}
+                    <div className="shrink-0 mt-0.5 size-4 sm:size-4.5 flex items-center justify-center">
+                      <img
+                        src={NOTE_ICON_URL}
+                        alt="Notepad"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        className="size-full object-contain filter drop-shadow-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Snapshot Thumbnail */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    id="rec-card-note"
+                    data-selected={selectedRecommendedId === 'rec-note'}
+                    aria-selected={selectedRecommendedId === 'rec-note'}
+                    onClick={(e) =>
+                      handleRecCardClick(e, 'rec-note', () => {
+                        setActiveNoteId(randomNote.id);
+                        navigate('/notes');
+                      })
+                    }
+                    onDoubleClick={(e) =>
+                      handleRecCardDoubleClick(e, () => {
+                        setActiveNoteId(randomNote.id);
+                        navigate('/notes');
+                      })
+                    }
+                    onKeyDown={(e) =>
+                      handleRecCardKeyDown(e, 'rec-note', () => {
+                        setActiveNoteId(randomNote.id);
+                        navigate('/notes');
+                      })
+                    }
+                    className={`relative h-[88px] sm:h-[98px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-neutral-100 dark:bg-[#16181d] p-3 select-none flex items-center justify-center ${
+                      selectedRecommendedId === 'rec-note'
+                        ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
+                        : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5 z-10 w-full px-2">
+                      <div className="shrink-0 flex items-center justify-center bg-transparent">
+                        <img
+                          src={NOTE_ICON_URL}
+                          alt="Notepad"
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                          className="size-10 sm:size-11 object-contain filter drop-shadow-sm"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[12px] font-semibold text-black dark:text-[#f3f4f6] truncate">
+                          {randomNote.title || 'Ghi chú mới'}
+                        </div>
+                        <div className="text-[10px] text-black/50 dark:text-[#888892] truncate">
+                          {stripHtml(randomNote.content).slice(0, 42) || 'Ghi chú văn bản Sparkle Notes'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
       </section>
-
-      {/* 3. Welcome Header */}
-      <motion.header {...slideUpProps(elementIndex++)} className="!bg-transparent flex flex-col gap-2 px-4 sm:px-6">
-        <h1 className="text-xl font-semibold tracking-tight text-black dark:text-white sm:text-2xl">
-          Welcome to the new experience!
-        </h1>
-        <p className="max-w-3xl text-sm leading-relaxed text-[#5b5b5b] dark:text-[#b8b8be]">
-          This will be the future of a new rejuvenated Home page in Sparkle. We gave your an opportunity to try it out early, although it is stil buggy, unfinished product and not looking fantastic.
-        </p>
-      </motion.header>
 
       {/* 4. Quick Access / VTV Channels Section (Horizontal Tiles) */}
       <section aria-label="Quick access" className="px-4 text-black dark:text-[#e7e7e7] sm:px-6">
@@ -361,10 +904,10 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                 {...slideUpProps(currentChIdx)}
                 type="button"
                 onClick={(e) => {
+                  setSelectedRecommendedId(null);
                   if (!isMobile) {
                     e.stopPropagation();
                     setSelectedQuickAccessId(channel.id);
-                    setSelectedRecommendationId(null);
                   } else {
                     openChannel(channel);
                   }
@@ -383,7 +926,6 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                     e.preventDefault();
                     if (!isMobile) {
                       setSelectedQuickAccessId(channel.id);
-                      setSelectedRecommendationId(null);
                     } else {
                       openChannel(channel);
                     }

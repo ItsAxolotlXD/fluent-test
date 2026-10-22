@@ -57,8 +57,78 @@ export interface VlcPlaylistItem {
   aspectRatio?: string;
 }
 
-// Built-in high quality sample media collection for VLC
+// Built-in high quality sample media collection for Screenbox / VLC
 const VLC_DEMO_ITEMS: VlcPlaylistItem[] = [
+  {
+    id: 'vlc-sample-track-1',
+    title: 'Track 1: NIVIRO - You [NCS Release]',
+    artist: 'NIVIRO',
+    url: 'https://www.youtube.com/watch?v=2Nv5juZKhKo&pp=ygUKbml2aXJvIHlvdQ%3D%3D',
+    embedUrl: 'https://www.youtube.com/embed/2Nv5juZKhKo?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 198,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-2',
+    title: 'Track 2: NIVIRO - You',
+    artist: 'NIVIRO',
+    url: 'https://www.youtube.com/watch?v=2Nv5juZKhKo&pp=ygUKbml2aXJvIHlvdQ%3D%3D',
+    embedUrl: 'https://www.youtube.com/embed/2Nv5juZKhKo?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 198,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-3',
+    title: 'Track 3: Cartoon - On & On (feat. Daniel Levi) [NCS Release]',
+    artist: 'Cartoon',
+    url: 'https://www.youtube.com/watch?v=K4DyBUG242c&pp=ygUDbmNz',
+    embedUrl: 'https://www.youtube.com/embed/K4DyBUG242c?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 208,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-4',
+    title: 'Track 4: Alan Walker - Fade [NCS Release]',
+    artist: 'Alan Walker',
+    url: 'https://www.youtube.com/watch?v=J2X5mJ3HDYE&pp=ygUDbmNz',
+    embedUrl: 'https://www.youtube.com/embed/J2X5mJ3HDYE?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 264,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-5',
+    title: 'Track 5: DEAF KEV - Invincible [NCS Release]',
+    artist: 'DEAF KEV',
+    url: 'https://www.youtube.com/watch?v=pZzSq8WfsKo&pp=ygUDbmNz',
+    embedUrl: 'https://www.youtube.com/embed/pZzSq8WfsKo?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 273,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-6',
+    title: 'Track 6: Janji - Heroes Tonight (feat. Johnning) [NCS Release]',
+    artist: 'Janji',
+    url: 'https://www.youtube.com/watch?v=K8DUjObr_tU&pp=ygUDbmNz',
+    embedUrl: 'https://www.youtube.com/embed/K8DUjObr_tU?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 208,
+    format: 'YouTube Web Stream'
+  },
+  {
+    id: 'vlc-sample-track-7',
+    title: 'Track 7: Elektronomia - Sky High [NCS Release]',
+    artist: 'Elektronomia',
+    url: 'https://www.youtube.com/watch?v=yJg-Y5byMMw&pp=ygUDbmNz',
+    embedUrl: 'https://www.youtube.com/embed/yJg-Y5byMMw?autoplay=1&enablejsapi=1',
+    type: 'embed',
+    duration: 237,
+    format: 'YouTube Web Stream'
+  },
   {
     id: 'vlc-demo-1',
     title: 'Big Buck Bunny (1080p HD)',
@@ -92,7 +162,7 @@ const VLC_DEMO_ITEMS: VlcPlaylistItem[] = [
   {
     id: 'vlc-demo-4',
     title: 'Lofi Chill Hip Hop Odyssey',
-    artist: 'Screenbug Audio Streams',
+    artist: 'Screenbox Audio Streams',
     url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3',
     type: 'audio',
     duration: 147,
@@ -295,7 +365,7 @@ interface VLCProps {
 export const VLC: React.FC<VLCProps> = ({ navigate }) => {
   // Playlist State
   const [playlist, setPlaylist] = useState<VlcPlaylistItem[]>(() => {
-    const saved = localStorage.getItem('vone_vlc_playlist');
+    const saved = localStorage.getItem('vone_screenbox_playlist_v5');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -400,7 +470,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
   // Save playlist to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('vone_vlc_playlist', JSON.stringify(playlist));
+      localStorage.setItem('vone_screenbox_playlist_v5', JSON.stringify(playlist));
     } catch (e) {
       // ignore
     }
@@ -1157,7 +1227,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       setActiveMenu(null);
                       setPlaylist(VLC_DEMO_ITEMS);
                       setCurrentIndex(0);
-                      showToast('Loaded Screenbug demo playlist');
+                      showToast('Loaded Screenbox demo playlist');
                     }}
                     className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
@@ -2292,6 +2362,46 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                       className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-sky-600 dark:text-sky-400 text-[11px] font-medium transition-colors cursor-pointer"
                     >
                       ⚡ Shazam
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.youtube.com/watch?v=2Nv5juZKhKo&pp=ygUKbml2aXJvIHlvdQ%3D%3D');
+                        setOpenUrlTitleInput('Track 1: NIVIRO - You [NCS Release]');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#0078d4] dark:text-[#4cc2ff] text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ▶ Track 1 (NIVIRO)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.youtube.com/watch?v=K4DyBUG242c&pp=ygUDbmNz');
+                        setOpenUrlTitleInput('Track 3: Cartoon - On & On (feat. Daniel Levi)');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#0078d4] dark:text-[#4cc2ff] text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ▶ Track 3 (Cartoon)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.youtube.com/watch?v=J2X5mJ3HDYE&pp=ygUDbmNz');
+                        setOpenUrlTitleInput('Track 4: Alan Walker - Fade [NCS Release]');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#0078d4] dark:text-[#4cc2ff] text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ▶ Track 4 (Alan Walker)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenUrlInput('https://www.youtube.com/watch?v=yJg-Y5byMMw&pp=ygUDbmNz');
+                        setOpenUrlTitleInput('Track 7: Elektronomia - Sky High [NCS Release]');
+                      }}
+                      className="px-2 py-1 rounded-[5px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-[#0078d4] dark:text-[#4cc2ff] text-[11px] font-medium transition-colors cursor-pointer"
+                    >
+                      ▶ Track 7 (Elektronomia)
                     </button>
                     <button
                       type="button"

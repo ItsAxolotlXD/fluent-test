@@ -56,6 +56,35 @@ import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDrop
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
 
+export const NOTE_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Windows_Notepad_icon.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
+export const MUSIC_ICON_URL = 'https://static.wikia.nocookie.net/logopedia/images/2/2b/Music_win-11.png/revision/latest?cb=20211007190213';
+export const WORD_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg';
+export const EXCEL_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg';
+export const PPT_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg';
+export const PDF_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg';
+
+const getGalleryFileIconSrc = (item: GalleryMediaItem) => {
+  const title = (item.title || '').toLowerCase();
+  const mime = (item.mimeType || '').toLowerCase();
+
+  if (item.type === 'audio' || title.endsWith('.mp3') || title.endsWith('.wav') || title.endsWith('.flac') || title.endsWith('.m4a') || title.endsWith('.ogg') || mime.includes('audio')) {
+    return { src: MUSIC_ICON_URL, alt: 'Music' };
+  }
+  if (title.endsWith('.docx') || title.endsWith('.doc') || mime.includes('word')) {
+    return { src: WORD_ICON_URL, alt: 'Word' };
+  }
+  if (title.endsWith('.xlsx') || title.endsWith('.xls') || mime.includes('spreadsheet') || mime.includes('excel')) {
+    return { src: EXCEL_ICON_URL, alt: 'Excel' };
+  }
+  if (title.endsWith('.pptx') || title.endsWith('.ppt') || mime.includes('presentation') || mime.includes('powerpoint')) {
+    return { src: PPT_ICON_URL, alt: 'PowerPoint' };
+  }
+  if (title.endsWith('.pdf') || mime.includes('pdf')) {
+    return { src: PDF_ICON_URL, alt: 'PDF' };
+  }
+  return { src: NOTE_ICON_URL, alt: 'Note' };
+};
+
 const LONG_PRESS_MS = 500;
 
 interface GalleryProps {
@@ -174,6 +203,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       window.removeEventListener('vplay:gallery:item_selected', handleItemSelect);
     };
   }, [items]);
+
+  // Notify App when viewing a photo/video/file in Lightbox (to hide Sidebar and TopBar)
+  useEffect(() => {
+    const isOpen = Boolean(selectedItem);
+    window.dispatchEvent(new CustomEvent('vplay:gallery:lightbox_toggle', { detail: { isOpen } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('vplay:gallery:lightbox_toggle', { detail: { isOpen: false } }));
+    };
+  }, [selectedItem]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -1131,7 +1169,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden relative" ref={galleryContainerRef}>
         {/* Gallery Content View */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar" ref={galleryScrollRef}>
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 no-scrollbar" ref={galleryScrollRef} data-gallery-scroll="true">
           {/* Folder breadcrumb navigation */}
           {currentFolder && !isSearching && (
             <nav aria-label="Folder Breadcrumb" className="flex items-center gap-2 mb-5 max-w-[1800px] mx-auto text-sm bg-black/[0.02] dark:bg-white/[0.03] p-2 rounded-lg border border-black/5 dark:border-white/5">
@@ -1439,21 +1477,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                                           : 'border-black/10 dark:border-white/10'
                                       }`}
                                     >
-                                      {/* Icon on left */}
-                                      <div
-                                        className="w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-xs"
-                                        style={{
-                                          backgroundColor: item.type === 'audio' ? '#0078d420' : (docInfo?.color ? `${docInfo.color}25` : '#4cc2ff20'),
-                                          color: item.type === 'audio' ? '#0078d4' : (docInfo?.color || '#4cc2ff'),
-                                        }}
-                                      >
-                                        {item.type === 'audio' ? (
-                                          <Music className="w-5 h-5 text-[#0078d4] dark:text-[#4cc2ff]" />
-                                        ) : docInfo ? (
-                                          <docInfo.icon className="w-5 h-5" />
-                                        ) : (
-                                          <FileText className="w-5 h-5" />
-                                        )}
+                                      {/* Icon on left - no background, matching recommended section */}
+                                      <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-transparent">
+                                        <img
+                                          src={getGalleryFileIconSrc(item).src}
+                                          alt={getGalleryFileIconSrc(item).alt}
+                                          referrerPolicy="no-referrer"
+                                          loading="lazy"
+                                          className="w-8 h-8 object-contain filter drop-shadow-xs"
+                                        />
                                       </div>
 
                                       {/* Title & Metadata in center */}
@@ -1896,7 +1928,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#16181d]/95 backdrop-blur-3xl flex flex-col justify-between select-none"
+            className="fixed inset-0 z-[100] bg-[#16181d]/95 backdrop-blur-3xl flex flex-col justify-between select-none"
             onClick={() => setSelectedItem(null)}
           >
             {/* Top Windows 11 Title & Command Bar */}
@@ -1910,7 +1942,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                   {selectedItem.type === 'video' ? (
                     <Film className="w-4 h-4 text-[#4cc2ff]" />
                   ) : selectedItem.type === 'audio' ? (
-                    <Music className="w-4 h-4 text-[#4cc2ff]" />
+                    <img src={MUSIC_ICON_URL} alt="Music" referrerPolicy="no-referrer" className="w-5 h-5 object-contain" />
+                  ) : selectedItem.type === 'document' ? (
+                    <img src={getGalleryFileIconSrc(selectedItem).src} alt="Document" referrerPolicy="no-referrer" className="w-5 h-5 object-contain" />
                   ) : (
                     <ImageIcon className="w-4 h-4 text-[#4cc2ff]" />
                   )}
@@ -2080,8 +2114,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                   />
                 ) : selectedItem.type === 'audio' ? (
                   <div className="w-full max-w-md p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center shadow-2xl">
-                    <div className="w-24 h-24 rounded-full bg-[#4cc2ff]/20 text-[#4cc2ff] flex items-center justify-center mb-4">
-                      <Music className="w-12 h-12" />
+                    <div className="w-24 h-24 flex items-center justify-center mb-4 bg-transparent">
+                      <img
+                        src={MUSIC_ICON_URL}
+                        alt="Music"
+                        referrerPolicy="no-referrer"
+                        className="w-20 h-20 object-contain filter drop-shadow-md"
+                      />
                     </div>
                     <h4 className="text-lg font-bold text-white mb-1">{selectedItem.title}</h4>
                     <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Audio track'}</p>
@@ -2108,14 +2147,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                     </div>
                   ) : (
                     <div className="w-full max-w-md p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center text-center shadow-2xl">
-                      <div 
-                        className="w-16 h-16 rounded-xl flex items-center justify-center mb-4 text-white shadow-xl"
-                        style={{ backgroundColor: getDocumentDetails(selectedItem).color }}
-                      >
-                        {(() => {
-                          const Details = getDocumentDetails(selectedItem);
-                          return <Details.icon className="w-8 h-8" />;
-                        })()}
+                      <div className="w-20 h-20 flex items-center justify-center mb-4 bg-transparent">
+                        <img
+                          src={getGalleryFileIconSrc(selectedItem).src}
+                          alt={getGalleryFileIconSrc(selectedItem).alt}
+                          referrerPolicy="no-referrer"
+                          className="w-16 h-16 object-contain filter drop-shadow-md"
+                        />
                       </div>
                       <h4 className="text-lg font-bold text-white mb-2">{selectedItem.title}</h4>
                       <p className="text-xs text-neutral-400 mb-6">{selectedItem.description || 'Stored Office document'}</p>

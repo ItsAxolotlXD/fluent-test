@@ -6,7 +6,7 @@ export const NEWS_DATA: NewsArticle[] = [
     slug: 'announcing-sparkle-26-11-insider-preview-build-261019',
     title: '# Announcing Sparkle 26.11 Insider Preview - Build 261019',
     subtitle: '',
-    coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=85',
+    coverImage: 'https://static.wikia.nocookie.net/ep-deo/images/2/2b/Banner_update_1.png/revision/latest/scale-to-width-down/1000?cb=20261022065926',
     category: '',
     publishedAt: '20 Tháng 10, 2026',
     readingTime: '3 phút đọc',
