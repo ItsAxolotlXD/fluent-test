@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
 import { MousePointer2, Star, Share2, Save } from 'lucide-react';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../FlyoutDropdown';
@@ -84,7 +85,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
     };
   }, [onClose]);
 
-  const renderEntry = (entry: MenuEntry, index: number) => {
+  const renderEntry = (entry: MenuEntry, delay: number) => {
     const Icon = entry.icon;
     return (
       <motion.button
@@ -97,18 +98,18 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
           y: 0,
           transition: {
             duration: 0.38,
-            delay: Math.min(index * 0.035, 0.28),
+            delay,
             ease: [0.16, 1, 0.3, 1],
           },
         }}
         onClick={() => onAction(entry.action)}
         className={`w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] ${
-          entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : ''
+          entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-[#111827] dark:text-white'
         }`}
       >
         <Icon
           className={`w-4 h-4 shrink-0 ${
-            entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-neutral-600 dark:text-neutral-300'
+            entry.danger ? 'text-black dark:text-[#ff99a4]' : 'text-black dark:text-neutral-300'
           }`}
         />
         <span className="truncate">{entry.label}</span>
@@ -116,7 +117,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
     );
   };
 
-  return (
+  return createPortal(
     <motion.div
       ref={menuRef}
       role="menu"
@@ -126,21 +127,22 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
       exit={{ opacity: 0, y: 14 }}
       transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
       onContextMenu={(e) => e.preventDefault()}
-      className={`fixed z-[60] w-[232px] ${flyoutPanelClassName}`}
+      className={`fixed z-[2147483647] w-[232px] ${flyoutPanelClassName} fluent-context-menu`}
       style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
     >
-      {primary.map((entry, idx) => renderEntry(entry, idx))}
+      {primary.map((entry, idx) => renderEntry(entry, idx * 0.04))}
       <motion.div
         role="separator"
         initial={{ opacity: 0, scaleX: 0.8 }}
         animate={{
           opacity: 1,
           scaleX: 1,
-          transition: { duration: 0.38, delay: primary.length * 0.035, ease: [0.16, 1, 0.3, 1] },
+          transition: { duration: 0.38, delay: 0.23, ease: [0.16, 1, 0.3, 1] },
         }}
         className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1 origin-left"
       />
-      {secondary.map((entry, idx) => renderEntry(entry, primary.length + 1 + idx))}
-    </motion.div>
+      {secondary.map((entry, idx) => renderEntry(entry, 0.26 + idx * 0.04))}
+    </motion.div>,
+    document.body
   );
 };

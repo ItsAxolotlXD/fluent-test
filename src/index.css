@@ -38,6 +38,33 @@
     mix-blend-mode: normal !important;
   }
 
+  /* Context menu icons in light mode: pure black overlay color (except keyboard) */
+  html.light-mode .fluent-context-menu svg,
+  html.light-mode [role="menu"]:not(#native-keyboard-lang-menu):not(.native-keyboard-lang-menu):not(.native-keyboard-menu) svg {
+    color: #000000 !important;
+    stroke: #000000 !important;
+  }
+
+  html.light-mode .fluent-context-menu svg *,
+  html.light-mode [role="menu"]:not(#native-keyboard-lang-menu):not(.native-keyboard-lang-menu):not(.native-keyboard-menu) svg * {
+    color: #000000 !important;
+  }
+
+  html.light-mode .fluent-context-menu svg [stroke],
+  html.light-mode [role="menu"]:not(#native-keyboard-lang-menu):not(.native-keyboard-menu):not(.native-keyboard-menu) svg [stroke] {
+    stroke: #000000 !important;
+  }
+
+  html.light-mode .fluent-context-menu svg [fill="currentColor"],
+  html.light-mode [role="menu"]:not(#native-keyboard-lang-menu):not(.native-keyboard-menu):not(.native-keyboard-menu) svg [fill="currentColor"] {
+    fill: #000000 !important;
+  }
+
+  html.light-mode .fluent-context-menu img,
+  html.light-mode [role="menu"]:not(#native-keyboard-lang-menu):not(.native-keyboard-menu):not(.native-keyboard-menu) img {
+    filter: brightness(0) !important;
+  }
+
   html.light-mode .gallery-toolbar svg,
   html.light-mode .gallery-toolbar svg * {
     color: #000000 !important;
@@ -2583,7 +2610,6 @@ button[role="switch"],
 #btn-floaty-search-trigger,
 .floaty-bar__surface,
 #vplay-tools-dropdown-card,
-#native-keyboard-lang-menu,
 #welcome-modal-dialog,
 #discord-welcome-dialog,
 #under-construction-modal-dialog,
@@ -2686,7 +2712,6 @@ button[role="switch"]::after,
 #btn-floaty-search-trigger::after,
 .floaty-bar__surface::after,
 #vplay-tools-dropdown-card::after,
-#native-keyboard-lang-menu::after,
 #welcome-modal-dialog::after,
 #discord-welcome-dialog::after,
 #under-construction-modal-dialog::after,
@@ -4194,7 +4219,6 @@ html.light-mode [id^="news-card-"]::after,
 html.light-mode .news-card-featured::after,
 html.light-mode #featured-news-card::after,
 html.light-mode #vplay-tools-dropdown-card::after,
-html.light-mode #native-keyboard-lang-menu::after,
 html.light-mode #welcome-modal-dialog::after,
 html.light-mode #discord-welcome-dialog::after,
 html.light-mode #under-construction-modal-dialog::after,
@@ -4217,8 +4241,7 @@ html.light-mode .news-card:hover::after,
 html.light-mode [id^="news-card-"]:hover::after,
 html.light-mode .news-card-featured:hover::after,
 html.light-mode #featured-news-card:hover::after,
-html.light-mode #vplay-tools-dropdown-card:hover::after,
-html.light-mode #native-keyboard-lang-menu:hover::after {
+html.light-mode #vplay-tools-dropdown-card:hover::after {
   border-color: rgba(0, 0, 0, 0.10) !important;
   border-top: 1px solid rgba(71, 85, 105, 0.48) !important;
   border-bottom: 1px solid rgba(71, 85, 105, 0.48) !important;
@@ -5856,31 +5879,7 @@ html:not(.light-mode) #vplay-tools-dropdown-card svg.fill-current {
   fill: #FFFFFF !important;
 }
 
-/* ==========================================================================
-   Native Keyboard - Language Flyout (20% White Opacity + Backdrop Blur)
-   & No Scale on Hover + Default Cursor
-   ========================================================================== */
-#native-keyboard-lang-menu {
-  position: absolute !important;
-  box-sizing: border-box !important;
-  border-radius: 28px !important;
-  background-color: rgba(255, 255, 255, 0.20) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.20) !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  color: #000000 !important;
-  cursor: default !important;
-}
 
-#native-keyboard-lang-menu,
-#native-keyboard-lang-menu * {
-  cursor: default !important;
-}
-
-#native-keyboard-lang-menu button:not(.bg-\[\#E6005A\]):hover {
-  background-color: rgba(255, 255, 255, 0.25) !important;
-}
 
 /* Native Keyboard: Strict No Zoom/Scale on Hover & Default Cursor across all keys */
 #vplay-native-keyboard,

@@ -961,7 +961,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         exit={{ opacity: 0, y: 14 }}
         transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
         onContextMenu={(e) => e.preventDefault()}
-        className={`fixed z-[2147483647] w-[232px] ${flyoutPanelClassName}`}
+        className={`fixed z-[2147483647] w-[232px] ${flyoutPanelClassName} fluent-context-menu`}
         style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
       >
         <motion.button
@@ -979,7 +979,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <RefreshCw className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <RefreshCw className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate">Refresh</span>
         </motion.button>
 
@@ -998,7 +998,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <ArrowLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <ArrowLeft className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate">Go back</span>
         </motion.button>
 
@@ -1017,7 +1017,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <PanelLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <PanelLeft className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate">{isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}</span>
         </motion.button>
 
@@ -1036,10 +1036,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <PanelsTopLeft className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <PanelsTopLeft className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate flex-1">Hover to expand</span>
           {hoverToExpand && (
-            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+            <Check className="w-4 h-4 shrink-0 text-black dark:text-[#4cc2ff]" />
           )}
         </motion.button>
 
@@ -1070,10 +1070,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <Palette className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <Palette className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate flex-1">Fluent design icons</span>
           {fluentIcons && (
-            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+            <Check className="w-4 h-4 shrink-0 text-black dark:text-[#4cc2ff]" />
           )}
         </motion.button>
 
@@ -1093,10 +1093,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <Sparkles className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <Sparkles className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate flex-1">Dynamic sidebar icons</span>
           {dynamicSidebarIcons && (
-            <Check className="w-4 h-4 shrink-0 text-[#0078d4] dark:text-[#4cc2ff]" />
+            <Check className="w-4 h-4 shrink-0 text-black dark:text-[#4cc2ff]" />
           )}
         </motion.button>
 
@@ -1115,7 +1115,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12]"
         >
-          <Settings2 className="w-4 h-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
+          <Settings2 className="w-4 h-4 shrink-0 text-black dark:text-neutral-300" />
           <span className="truncate">Interface settings</span>
         </motion.button>
       </motion.div>,

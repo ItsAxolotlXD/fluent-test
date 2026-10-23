@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Delete } from 'lucide-react';
+import { motion } from 'motion/react';
 import { EMOJI_CATEGORIES } from '../data/emojiCategories';
 import { keyboardSound } from '../utils/keyboardSound';
 
@@ -24,6 +25,15 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
   const isProgrammaticScrollRef = useRef<boolean>(false);
   const backspaceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const backspaceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // In-app custom Fluent horizontal scroller state
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [thumbWidth, setThumbWidth] = useState(60);
+  const [isDragging, setIsDragging] = useState(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollLeftRef = useRef(0);
 
   // Play click sound with throttling
   const playSound = useCallback((type: 'char' | 'space' | 'delete' | 'action' | 'modifier' = 'char') => {
@@ -67,6 +77,50 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
     clearBackspaceTimers();
   };
 
+  // Custom scroller drag and track handlers
+  const handleThumbPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    dragStartScrollLeftRef.current = scrollContainerRef.current?.scrollLeft || 0;
+    try {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const handleThumbPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollContainerRef.current || !trackRef.current) return;
+    const deltaX = e.clientX - dragStartXRef.current;
+    const trackW = trackRef.current.clientWidth;
+    const usable = Math.max(1, trackW - thumbWidth);
+    const container = scrollContainerRef.current;
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    const scrollDelta = (deltaX / usable) * maxScroll;
+    container.scrollLeft = Math.max(0, Math.min(maxScroll, dragStartScrollLeftRef.current + scrollDelta));
+  };
+
+  const handleThumbPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+    }
+  };
+
+  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!trackRef.current || !scrollContainerRef.current) return;
+    const rect = trackRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const trackW = rect.width;
+    const usable = Math.max(1, trackW - thumbWidth);
+    const targetProgress = Math.max(0, Math.min(1, (clickX - thumbWidth / 2) / usable));
+    const container = scrollContainerRef.current;
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    container.scrollTo({ left: targetProgress * maxScroll, behavior: 'smooth' });
+  };
+
   // Scroll to selected category horizontally
   const handleSelectCategory = (catId: string) => {
     setActiveCategoryId(catId);
@@ -85,11 +139,26 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
     }
   };
 
-  // Detect active category while scrolling horizontally
+  // Detect active category while scrolling horizontally and update scroller
   const handleScroll = () => {
-    if (isProgrammaticScrollRef.current || !scrollContainerRef.current) return;
+    if (!scrollContainerRef.current) return;
     const container = scrollContainerRef.current;
     const scrollLeft = container.scrollLeft;
+
+    // Update in-app horizontal scroller progress
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const canScroll = maxScroll > 8;
+    setIsScrollable(canScroll);
+    if (canScroll) {
+      setScrollProgress(Math.min(1, Math.max(0, scrollLeft / maxScroll)));
+      if (trackRef.current) {
+        const trackW = trackRef.current.clientWidth;
+        const calcW = Math.max(48, Math.min(trackW - 24, (container.clientWidth / container.scrollWidth) * trackW));
+        setThumbWidth(calcW);
+      }
+    }
+
+    if (isProgrammaticScrollRef.current) return;
 
     let closestCatId = EMOJI_CATEGORIES[0].id;
     let minDistance = Infinity;
@@ -145,14 +214,35 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
       ]
     : EMOJI_CATEGORIES;
 
+  // Measure initial scrollable metrics
+  useEffect(() => {
+    const update = () => {
+      if (!scrollContainerRef.current) return;
+      const container = scrollContainerRef.current;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      setIsScrollable(maxScroll > 8);
+      if (trackRef.current && container.scrollWidth > 0) {
+        const trackW = trackRef.current.clientWidth;
+        const calcW = Math.max(48, Math.min(trackW - 24, (container.clientWidth / container.scrollWidth) * trackW));
+        setThumbWidth(calcW);
+      }
+    };
+    const t = setTimeout(update, 60);
+    return () => clearTimeout(t);
+  }, [filteredCategories]);
+
+  const trackWidth = trackRef.current?.clientWidth || 300;
+  const usableTrack = Math.max(0, trackWidth - thumbWidth);
+  const thumbLeft = scrollProgress * usableTrack;
+
   return (
     <div className="flex-1 flex flex-col justify-between h-full min-h-0 select-none overflow-hidden pb-0.5">
-      {/* Main Emoji Board - 3 Rows Horizontal Scrolling with NO Background on individual Emojis */}
+      {/* Main Emoji Board - 3 Rows Horizontal Scrolling with in-app scroller and NO browser scrollbar */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
         onWheel={handleWheel}
-        className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden scroll-smooth flex flex-row gap-6 py-1.5 px-3 select-none scrollbar-thin cursor-grab active:cursor-grabbing"
+        className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden scroll-smooth flex flex-row gap-6 py-1.5 px-3 select-none no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing"
       >
         {filteredCategories.map((category) => (
           <div
@@ -194,10 +284,38 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
         ))}
       </div>
 
+      {/* In-App Custom Horizontal Scroller (matching AppScrollbar design) */}
+      {isScrollable && (
+        <div
+          ref={trackRef}
+          onClick={handleTrackClick}
+          className="relative w-[85%] max-w-[420px] mx-auto h-1.5 hover:h-2.5 my-0.5 rounded-full cursor-pointer bg-black/10 dark:bg-white/10 transition-all select-none"
+        >
+          <div
+            role="scrollbar"
+            aria-orientation="horizontal"
+            aria-valuenow={Math.round(scrollProgress * 100)}
+            onPointerDown={handleThumbPointerDown}
+            onPointerMove={handleThumbPointerMove}
+            onPointerUp={handleThumbPointerUp}
+            onPointerCancel={handleThumbPointerUp}
+            style={{
+              left: `${thumbLeft}px`,
+              width: `${thumbWidth}px`,
+            }}
+            className={`absolute top-0 bottom-0 rounded-full cursor-grab active:cursor-grabbing transition-colors shadow-xs ${
+              isDragging
+                ? 'bg-[#ff01ff]'
+                : 'bg-neutral-600/70 hover:bg-neutral-800'
+            }`}
+          />
+        </div>
+      )}
+
       {/* BOTTOM: Category Emoji Tabs (Bên dưới) & Action Controls */}
       <div className="flex flex-col gap-1 pt-1 px-1 border-t border-black/10 shrink-0">
-        {/* Category Emoji Bar placed below the emoji grid */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-0.5 w-full">
+        {/* Category Emoji Bar placed below the emoji grid with Underline style matching Watch tab */}
+        <div className="relative flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-0.5 w-full border-b border-black/10">
           {EMOJI_CATEGORIES.map((cat) => {
             const isActive = activeCategoryId === cat.id && !searchQuery.trim();
             return (
@@ -207,18 +325,41 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
                 onMouseDown={(e) => e.preventDefault()}
                 onPointerDown={() => playSound('modifier')}
                 onClick={() => handleSelectCategory(cat.id)}
-                className={`h-7 px-2.5 rounded-full flex items-center gap-1.5 transition-all shrink-0 cursor-default ${
+                className={`relative px-3 py-1.5 flex items-center gap-1.5 transition-colors shrink-0 cursor-default !bg-transparent !border-0 !shadow-none hover:!bg-transparent ${
                   isActive
-                    ? 'bg-black/20 text-black shadow-xs font-semibold'
-                    : 'hover:bg-black/10 text-black/75'
+                    ? 'text-black font-bold'
+                    : 'text-black/60 hover:text-black font-medium'
                 }`}
                 title={cat.name}
               >
                 <span className="text-base leading-none select-none">{cat.icon}</span>
                 {isActive && (
-                  <span className="text-[11px] font-semibold text-black whitespace-nowrap">
+                  <span className="text-[11px] font-bold text-black whitespace-nowrap">
                     {cat.name}
                   </span>
+                )}
+                {isActive && (
+                  <motion.div
+                    layoutId="emoji-category-active-underline"
+                    className="absolute -bottom-[1px] left-1.5 right-1.5 h-[3px] rounded-full bg-[#ff01ff]"
+                    initial={false}
+                    animate={{
+                      scaleX: [1, 1.38, 0.94, 1],
+                    }}
+                    transition={{
+                      layout: {
+                        type: 'spring',
+                        stiffness: 350,
+                        damping: 26,
+                        mass: 0.65,
+                      },
+                      scaleX: {
+                        duration: 0.36,
+                        times: [0, 0.45, 0.8, 1],
+                        ease: [0.25, 1, 0.5, 1],
+                      },
+                    }}
+                  />
                 )}
               </button>
             );
@@ -233,7 +374,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
               onMouseDown={(e) => e.preventDefault()}
               onPointerDown={() => playSound('modifier')}
               onClick={onSwitchToABC}
-              className="h-8 px-4 rounded-xl bg-white/50 hover:bg-white/70 active:bg-white/80 text-xs font-bold text-black border border-white/30 shadow-xs transition-colors cursor-default"
+              className="h-8 px-4 rounded-xl bg-white/65 hover:bg-white/75 active:bg-white/85 text-xs font-bold text-black border border-white/40 shadow-xs transition-colors cursor-default"
             >
               ABC
             </button>
@@ -244,7 +385,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
                 playSound('space');
                 onInsertEmoji(' ');
               }}
-              className="h-8 px-4 sm:px-6 rounded-xl bg-white/40 hover:bg-white/60 active:bg-white/70 text-xs font-medium text-black border border-white/25 shadow-xs transition-colors cursor-default"
+              className="h-8 px-4 sm:px-6 rounded-xl bg-white/60 hover:bg-white/70 active:bg-white/80 text-xs font-medium text-black border border-white/35 shadow-xs transition-colors cursor-default"
             >
               dấu cách
             </button>
@@ -261,7 +402,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
               onPointerUp={handleDeleteUp}
               onPointerLeave={handleDeleteUp}
               onPointerCancel={handleDeleteUp}
-              className="h-8 w-11 rounded-xl bg-white/45 hover:bg-white/65 active:bg-white/80 flex items-center justify-center text-black border border-white/30 shadow-xs transition-colors cursor-default"
+              className="h-8 w-11 rounded-xl bg-white/60 hover:bg-white/70 active:bg-white/80 flex items-center justify-center text-black border border-white/35 shadow-xs transition-colors cursor-default"
               title="Xóa ký tự"
               aria-label="Xóa ký tự"
             >
@@ -272,7 +413,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
               onMouseDown={(e) => e.preventDefault()}
               onPointerDown={() => playSound('action')}
               onClick={onCloseKeyboard}
-              className="h-8 px-4 rounded-xl bg-[#007AFF] hover:bg-[#006FDF] active:bg-[#005EC4] text-xs font-semibold text-white shadow-xs transition-colors cursor-default"
+              className="h-8 px-4 rounded-xl bg-[#ff01ff] hover:bg-[#ff33ff] active:bg-[#e600e6] text-xs font-semibold text-white shadow-xs transition-colors cursor-default"
             >
               Xong
             </button>

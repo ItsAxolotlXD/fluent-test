@@ -1,5 +1,3 @@
-// Vietnamese Typing Engine (Telex & VNI)
-
 export type VietnameseInputMethod = 'en' | 'vi-telex' | 'vi-vni';
 
 // Vowel transformations
