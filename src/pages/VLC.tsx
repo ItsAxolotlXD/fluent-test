@@ -25,9 +25,7 @@ import {
   Shuffle,
   Info,
   RotateCcw,
-  Upload,
   Download,
-  Trash2,
   HelpCircle,
   Check,
   ChevronDown,
@@ -41,7 +39,7 @@ import {
   Music,
   Link2
 } from 'lucide-react';
-import { FluentScreenbugIcon, FluentVlcIcon } from '../components/FluentIcons';
+import { FluentScreenbugIcon, FluentVlcIcon, FluentArrowUploadIcon, FluentDeleteIcon } from '../components/FluentIcons';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
 
 export interface VlcPlaylistItem {
@@ -1902,7 +1900,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                     className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors"
                     title="Add file"
                   >
-                    <Upload className="w-3.5 h-3.5" />
+                    <FluentArrowUploadIcon className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
@@ -1910,7 +1908,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                     className="p-1 rounded-[4px] hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-rose-500 transition-colors"
                     title="Clear playlist"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <FluentDeleteIcon className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
@@ -1983,7 +1981,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                             }`}
                             title="Remove"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <FluentDeleteIcon className="w-3 h-3" />
                           </button>
                         </div>
                       </div>

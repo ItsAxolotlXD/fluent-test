@@ -39,6 +39,7 @@ import { Gallery } from './pages/Gallery';
 import { Draws } from './pages/Draws';
 import { VLC } from './pages/VLC';
 import { Auth } from './pages/Auth';
+import { Feedback } from './pages/Feedback';
 import { WinUI3 } from './pages/WinUI3';
 import { CHANNELS_DATA } from './data/channels';
 import { NEWS_DATA } from './data/news';
@@ -584,6 +585,9 @@ export default function App() {
 
       case '/auth':
         return <Auth navigate={navigate} />;
+
+      case '/feedback':
+        return <Feedback navigate={navigate} />;
 
       case '/winui-3':
         return <WinUI3 />;

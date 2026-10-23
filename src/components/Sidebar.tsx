@@ -49,7 +49,9 @@ import {
   FluentInkCanvasIcon,
   FluentScreenbugIcon,
   FluentVlcIcon,
-  FluentPhotopeaIcon
+  FluentPhotopeaIcon,
+  FluentPersonFeedbackIcon,
+  FluentArrowUploadIcon
 } from './FluentIcons';
 import {
   Fluent3DHomeIcon,
@@ -562,12 +564,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           type="button"
           onClick={() => {
             setIsToolsFlyoutOpen(false);
-            onOpenDiscord();
+            handleNavClick('/feedback');
           }}
           className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <MessageSquarePlus className="w-4 h-4 text-[#111827] dark:text-white stroke-[1.75]" />
+            <FluentPersonFeedbackIcon className="w-4 h-4 text-[#111827] dark:text-white shrink-0" />
             <span>Send feedback</span>
           </div>
         </button>
@@ -614,7 +616,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
         >
           <div className="flex items-center gap-2.5">
-            <UploadCloud className="w-4 h-4 text-neutral-500 dark:text-neutral-300 stroke-[1.75]" />
+            <FluentArrowUploadIcon className="w-4 h-4 text-neutral-500 dark:text-neutral-300 shrink-0" />
             <span>Import playlist</span>
           </div>
         </button>
@@ -1728,37 +1730,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="truncate text-[13.5px]">WinUI 3</span>
           </button>
 
-          {/* Sign In item placed directly ABOVE Settings tab - icon thường khi dynamic */}
-          <div className="relative">
-            <button
-              type="button"
-              id={isMobile ? 'mobile-nav-signin' : 'sidebar-nav-signin'}
-              onClick={toggleSignInFlyout}
-              title="Sign in"
-              className={`sidebar-nav-item signin-toggle-btn w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
-                isSignInFlyoutOpen
-                  ? 'bg-black/10 dark:bg-white/[0.12] text-black dark:text-white font-medium shadow-xs'
-                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
-              }`}
-            >
-              <div className="flex items-center gap-3.5 truncate">
-                {useFluent3DForSystem ? (
-                  <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
-                ) : (
-                  <FluentUserIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
-                )}
-                <span className="truncate text-[13.5px]">
-                  {signedInAccount ? signedInAccount : 'Sign in'}
-                </span>
-              </div>
-              <ChevronRight className={`w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 transition-transform ${isSignInFlyoutOpen ? 'rotate-90' : ''}`} />
-            </button>
-
-            {/* Render Flyout Menu for Sign in */}
-            <AnimatePresence>
-              {isSignInFlyoutOpen && renderSignInFlyout(false)}
-            </AnimatePresence>
-          </div>
+          {/* Feedback tab placed directly ABOVE Settings tab */}
+          <button
+            type="button"
+            id={isMobile ? 'mobile-nav-feedback' : 'sidebar-nav-feedback'}
+            data-nav-active={isCurrentActive('/feedback') ? 'true' : undefined}
+            onClick={() => handleNavClick('/feedback')}
+            title="Feedback"
+            className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+              isCurrentActive('/feedback')
+                ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+            }`}
+          >
+            {isCurrentActive('/feedback') && (
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+              />
+            )}
+            <FluentPersonFeedbackIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+            <span className="truncate text-[13.5px]">Feedback</span>
+          </button>
 
           {/* Bottom Settings Tab Item - icon thường khi dynamic */}
           <button
@@ -2128,32 +2121,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   />
                 </button>
 
-                {/* Sign In Collapsed Button placed directly above Settings */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    id="sidebar-collapsed-signin"
-                    onClick={toggleSignInFlyout}
-                    onMouseEnter={(e) => showTooltip('Sign in', e)}
-                    onMouseLeave={hideTooltip}
-                    title="Sign in"
-                    className={`sidebar-nav-item signin-toggle-btn w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
-                      isSignInFlyoutOpen
-                        ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
-                        : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
-                    }`}
-                  >
-                    {useFluent3DForSystem ? (
-                      <Fluent3DUserIcon className="w-5 h-5 shrink-0" />
-                    ) : (
-                      <FluentUserIcon className="w-5 h-5 text-[#111827] dark:text-white" />
-                    )}
-                  </button>
-
-                  <AnimatePresence>
-                    {isSignInFlyoutOpen && renderSignInFlyout(true)}
-                  </AnimatePresence>
-                </div>
+                {/* Feedback Collapsed Button placed directly above Settings */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-feedback"
+                  data-nav-active={isCurrentActive('/feedback') ? 'true' : undefined}
+                  onClick={() => handleNavClick('/feedback')}
+                  onMouseEnter={(e) => showTooltip('Feedback', e)}
+                  onMouseLeave={hideTooltip}
+                  title="Feedback"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    isCurrentActive('/feedback')
+                      ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
+                      : 'text-[#4b5563] dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-[#111827] dark:hover:text-white'
+                  }`}
+                >
+                  {isCurrentActive('/feedback') && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] bg-[#4cc2ff] rounded-full z-30 pointer-events-none"
+                    />
+                  )}
+                  <FluentPersonFeedbackIcon className="w-5 h-5 text-[#111827] dark:text-white shrink-0" />
+                </button>
 
                 {/* Bottom Settings Icon */}
                 <button

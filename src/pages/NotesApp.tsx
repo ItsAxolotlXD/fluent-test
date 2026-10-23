@@ -10,7 +10,6 @@ import {
   ListOrdered, 
   Quote, 
   Download, 
-  Trash2, 
   ArrowLeft, 
   AlignLeft, 
   AlignCenter, 
@@ -38,7 +37,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';
-import { FluentNotesIcon, FluentGalleryIcon } from '../components/FluentIcons';
+import { FluentNotesIcon, FluentGalleryIcon, FluentDeleteIcon, FluentFolderAddIcon } from '../components/FluentIcons';
 import { exportDocx, exportWritePdf, createDocxBlob } from '../utils/officeExport';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { useNotes, STICKY_COLORS, NoteItem } from '../context/NotesContext';
@@ -771,7 +770,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                               className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-white/10 transition-opacity"
                               title="Xóa ghi chú"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <FluentDeleteIcon className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -845,7 +844,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                               className="opacity-0 group-hover:opacity-100 p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-white/10 transition-opacity"
                               title="Xóa ghi chú"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <FluentDeleteIcon className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -1066,7 +1065,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               className="p-1.5 rounded-[8px] bg-white/10 hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
               title="Xóa ghi chú hiện tại"
             >
-              <Trash2 className="w-4 h-4" />
+              <FluentDeleteIcon className="w-4 h-4" />
             </button>
           </div>
         </div>

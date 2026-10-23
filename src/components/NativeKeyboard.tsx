@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Delete, Smile, ArrowBigUp, X, Check, Globe, Keyboard, ClipboardList, Copy, Trash2, Search } from 'lucide-react';
+import { Delete, Smile, ArrowBigUp, X, Check, Globe, Keyboard, ClipboardList, Copy, Search } from 'lucide-react';
+import { FluentDeleteIcon } from './FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNativeKeyboard } from '../context/NativeKeyboardContext';
 import { useSettings } from '../hooks/useSettings';
@@ -482,7 +483,7 @@ export const NativeKeyboard: React.FC = () => {
                     className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/10 hover:bg-red-500/20 active:bg-red-500/30 text-red-700 text-[11px] font-medium transition-colors cursor-default"
                     title="Xóa tất cả lịch sử sao chép"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <FluentDeleteIcon className="w-3.5 h-3.5" />
                     <span className="hidden xs:inline">Xóa tất cả</span>
                   </button>
                 )}
@@ -542,7 +543,7 @@ export const NativeKeyboard: React.FC = () => {
                       className="p-1.5 rounded-lg text-black/40 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0 cursor-default"
                       title="Xóa mục này"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <FluentDeleteIcon className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))

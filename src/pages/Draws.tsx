@@ -18,7 +18,6 @@ import {
   ArrowRight, 
   Undo2, 
   Redo2, 
-  Trash2, 
   Save, 
   ChevronDown, 
   Download, 
@@ -33,6 +32,7 @@ import {
 } from 'lucide-react';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { CanvasContextMenu, type CanvasContextAction } from '../components/CanvasContextMenu';
+import { FluentDeleteIcon } from '../components/FluentIcons';
 
 interface DrawsProps {
   navigate: (route: string) => void;
@@ -833,7 +833,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               title="Clear Canvas"
               className="p-1.5 rounded-[5px] text-[#4b5563] dark:text-neutral-300 hover:text-rose-500 hover:bg-rose-500/10 active:scale-95 cursor-pointer transition-all"
             >
-              <Trash2 className="w-4 h-4" />
+              <FluentDeleteIcon className="w-4 h-4 text-current" />
             </button>
           </div>
 

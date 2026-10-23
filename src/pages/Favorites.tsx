@@ -5,7 +5,8 @@ import { NewsCard } from '../components/NewsCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { NEWS_DATA } from '../data/news';
 import { useFavorites } from '../hooks/useFavorites';
-import { Heart, Bookmark, Tv, Newspaper, Trash2, ArrowRight } from 'lucide-react';
+import { Heart, Bookmark, Tv, Newspaper, ArrowRight } from 'lucide-react';
+import { FluentDeleteIcon } from '../components/FluentIcons';
 
 interface FavoritesProps {
   channels: Channel[];
@@ -69,7 +70,7 @@ export const Favorites: React.FC<FavoritesProps> = ({
             }}
             className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#F3F4F6] hover:bg-red-50 text-[#6B7280] hover:text-red-600 border border-[#E5E7EB] dark:bg-[#27121d] dark:hover:bg-[#FF2020]/20 dark:text-[#A1A1AA] dark:hover:text-[#FF4D4D] dark:border-white/10 text-xs font-semibold transition-colors shrink-0 cursor-pointer"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <FluentDeleteIcon className="w-3.5 h-3.5" />
             <span>Clear All</span>
           </button>
         )}

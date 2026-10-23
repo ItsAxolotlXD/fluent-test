@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Play, Upload, Radio, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
+import { X, Play, Radio, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
+import { FluentArrowUploadIcon } from './FluentIcons';
 import { parseM3UPlaylist, SAMPLE_M3U_TEMPLATE } from '../utils/m3uParser';
 import { Channel } from '../types';
 import { useSettings } from '../hooks/useSettings';
@@ -295,7 +296,7 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
                   onClick={handleImportM3U}
                   className="fluent-btn-primary px-4 h-8 rounded-[5px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.1)] transition-colors border border-black/20 flex items-center justify-center cursor-pointer gap-1.5 text-[12.5px]"
                 >
-                  <Upload className="w-3 h-3" />
+                  <FluentArrowUploadIcon className="w-3.5 h-3.5" />
                   <span className="font-semibold">Import Playlist</span>
                 </button>
               )}

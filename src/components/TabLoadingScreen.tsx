@@ -13,6 +13,7 @@ import {
   FluentCraftmineIcon,
   FluentPhotopeaIcon,
   FluentSettingsIcon,
+  FluentPersonFeedbackIcon,
 } from './FluentIcons';
 import {
   Fluent3DHomeIcon,
@@ -140,6 +141,10 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
           <path d="M8 26C8 21.5 11.5 19 16 19C20.5 19 24 21.5 24 26H8Z" fill="#0078d4" />
         </svg>
       );
+    }
+
+    if (cleanRoute.startsWith('/feedback')) {
+      return <FluentPersonFeedbackIcon className={standardIconClass} />;
     }
 
     if (cleanRoute.startsWith('/test')) {

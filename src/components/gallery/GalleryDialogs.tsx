@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Folder, FolderPlus, Home, Check } from 'lucide-react';
+import { Folder, Home, Check } from 'lucide-react';
+import { FluentFolderAddIcon } from '../FluentIcons';
 import type { GalleryFolder } from '../../services/galleryStorage';
 
 const DialogShell: React.FC<{ title: string; onClose: () => void; children: React.ReactNode }> = ({ title, onClose, children }) => {
@@ -175,7 +176,7 @@ export const MoveToFolderDialog: React.FC<MoveDialogProps> = ({ isOpen, folders,
         </ul>
         <div className={`${footerClass} justify-between`}>
           <button type="button" onClick={onCreateFolder} className={`${secondaryBtn} flex items-center gap-1.5`}>
-            <FolderPlus className="w-4 h-4" />
+            <FluentFolderAddIcon className="w-4 h-4" />
             New folder
           </button>
           <button type="button" onClick={onClose} className={secondaryBtn}>

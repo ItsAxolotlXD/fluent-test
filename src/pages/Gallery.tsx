@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  UploadCloud, 
-  Trash2, 
   Heart, 
   Download, 
   X, 
@@ -22,13 +20,10 @@ import {
   Presentation,
   FileCode,
   Folder,
-  FolderPlus,
-  FolderInput,
   ChevronRight,
   ChevronLeft,
   ArrowLeft,
   ArrowRight,
-  PenLine,
   ZoomIn,
   ZoomOut,
   Info,
@@ -51,8 +46,15 @@ import {
 import { GalleryContextMenu, type GalleryContextAction } from '../components/gallery/GalleryContextMenu';
 import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryDialogs';
 import { useSettings } from '../hooks/useSettings';
-import { FluentNotesIcon } from '../components/FluentIcons';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
+import { 
+  FluentNotesIcon,
+  FluentDeleteIcon,
+  FluentFolderAddIcon,
+  FluentRenameIcon,
+  FluentFolderArrowLeftIcon,
+  FluentArrowUploadIcon
+} from '../components/FluentIcons';
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
 
@@ -989,7 +991,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             title="New folder"
             aria-label="New folder"
           >
-            <FolderPlus className="w-3.5 h-3.5 text-white" />
+            <FluentFolderAddIcon className="w-4 h-4 text-white" />
           </button>
 
           {/* 5. Welcome Screen / Highlights Button */}
@@ -1063,7 +1065,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 disabled:opacity-40 text-xs font-medium text-white flex items-center gap-1.5 transition-all cursor-pointer border-0"
                 title="Move into folder"
               >
-                <FolderInput className="w-3.5 h-3.5 text-white" />
+                <FluentFolderArrowLeftIcon className="w-4 h-4 text-white" />
                 <span className="hidden md:inline text-white">Move</span>
               </button>
 
@@ -1075,7 +1077,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 className="px-2.5 py-1 rounded-[6px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border-0"
                 title="Delete selected"
               >
-                <Trash2 className="w-3.5 h-3.5 text-white" />
+                <FluentDeleteIcon className="w-4 h-4 text-white" />
                 <span className="text-white">Delete</span>
               </button>
 
@@ -1148,7 +1150,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs border-0 transition-all"
                 title="Import photos, videos, or documents"
               >
-                <UploadCloud className="gallery-import-icon w-3.5 h-3.5 text-white" />
+                <FluentArrowUploadIcon className="gallery-import-icon w-3.5 h-3.5 text-white" />
                 <span className="light-mode-white-label">Import</span>
               </button>
             </>
@@ -1197,18 +1199,18 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 <button
                   type="button"
                   onClick={() => setRenameTarget({ kind: 'folder', id: currentFolder.id, name: currentFolder.name })}
-                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors border border-black/5 dark:border-white/5"
+                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors border border-black/5 dark:border-white/5 text-[#111827] dark:text-white"
                 >
-                  <PenLine className="w-3 h-3" />
-                  Rename
+                  <FluentRenameIcon className="w-3.5 h-3.5 text-current" />
+                  <span>Rename</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteFolder(currentFolder)}
-                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors border border-rose-500/20"
+                  className="h-7 px-2.5 rounded-[6px] text-xs font-medium flex items-center gap-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors border border-rose-500/20"
                 >
-                  <Trash2 className="w-3 h-3" />
-                  Delete folder
+                  <FluentDeleteIcon className="w-3.5 h-3.5 text-current" />
+                  <span>Delete folder</span>
                 </button>
               </div>
             </nav>
@@ -1356,7 +1358,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                   onClick={() => fileInputRef.current?.click()}
                   className="px-4 py-2 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  <UploadCloud className="w-3.5 h-3.5" />
+                  <FluentArrowUploadIcon className="w-3.5 h-3.5" />
                   <span>Upload into this folder</span>
                 </button>
               </div>
@@ -1672,7 +1674,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                                           className="p-1 rounded-full bg-black/50 hover:bg-rose-600 text-white/80 hover:text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
                                           title="Delete item"
                                         >
-                                          <Trash2 className="w-3.5 h-3.5" />
+                                          <FluentDeleteIcon className="w-3.5 h-3.5" />
                                         </button>
                                       )}
                                     </div>
@@ -2059,7 +2061,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                   className="p-2 rounded-md text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
                   title="Delete"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <FluentDeleteIcon className="w-4 h-4 text-current" />
                 </button>
 
                 {/* Close */}

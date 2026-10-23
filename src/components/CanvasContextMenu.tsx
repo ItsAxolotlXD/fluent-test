@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Download, Image as GalleryIcon, PenLine, Trash2, type LucideIcon } from 'lucide-react';
+import { Download, Image as GalleryIcon } from 'lucide-react';
 import { flyoutPanelClassName, flyoutPanelStyle } from './FlyoutDropdown';
+import { FluentRenameIcon, FluentDeleteIcon } from './FluentIcons';
 
 export type CanvasContextAction = 'export' | 'gallery' | 'rename' | 'delete';
 
@@ -12,11 +13,11 @@ interface CanvasContextMenuProps {
   onClose: () => void;
 }
 
-const entries: Array<{ action: CanvasContextAction; label: string; icon: LucideIcon; danger?: boolean }> = [
+const entries: Array<{ action: CanvasContextAction; label: string; icon: React.ComponentType<{ className?: string }>; danger?: boolean }> = [
   { action: 'export', label: 'Export canvas', icon: Download },
   { action: 'gallery', label: 'Save to Gallery', icon: GalleryIcon },
-  { action: 'rename', label: 'Rename', icon: PenLine },
-  { action: 'delete', label: 'Delete', icon: Trash2, danger: true },
+  { action: 'rename', label: 'Rename', icon: FluentRenameIcon },
+  { action: 'delete', label: 'Delete', icon: FluentDeleteIcon, danger: true },
 ];
 
 export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({ x, y, onAction, onClose }) => {

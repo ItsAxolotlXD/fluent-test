@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { MousePointer2, Star, PenLine, Share2, Copy, FolderInput, Save, Trash2, type LucideIcon } from 'lucide-react';
+import { MousePointer2, Star, Share2, Copy, Save } from 'lucide-react';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../FlyoutDropdown';
+import { FluentRenameIcon, FluentFolderArrowLeftIcon, FluentDeleteIcon } from '../FluentIcons';
 
 export type GalleryContextAction = 'open' | 'favorite' | 'rename' | 'share' | 'duplicate' | 'move' | 'save' | 'delete';
 
@@ -16,7 +17,7 @@ interface GalleryContextMenuProps {
 interface MenuEntry {
   action: GalleryContextAction;
   label: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ className?: string }>;
   danger?: boolean;
 }
 
@@ -29,14 +30,14 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
   const primary: MenuEntry[] = [
     { action: 'open', label: 'Open', icon: MousePointer2 },
     { action: 'favorite', label: isFavorite ? 'Remove from favorites' : 'Add to favorites', icon: Star },
-    { action: 'rename', label: 'Rename', icon: PenLine },
+    { action: 'rename', label: 'Rename', icon: FluentRenameIcon },
     { action: 'share', label: 'Share', icon: Share2 },
     { action: 'duplicate', label: 'Duplicate', icon: Copy },
-    { action: 'move', label: 'Move into a folder', icon: FolderInput },
+    { action: 'move', label: 'Move into a folder', icon: FluentFolderArrowLeftIcon },
   ];
   const secondary: MenuEntry[] = [
     { action: 'save', label: 'Save to device', icon: Save },
-    { action: 'delete', label: 'Delete', icon: Trash2, danger: true },
+    { action: 'delete', label: 'Delete', icon: FluentDeleteIcon, danger: true },
   ];
 
   useLayoutEffect(() => {

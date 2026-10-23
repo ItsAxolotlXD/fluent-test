@@ -18,7 +18,7 @@ import {
   Wrench,
   FileText
 } from 'lucide-react';
-import { FluentNotesIcon, FluentSearchIcon, FluentGalleryIcon, FluentInkCanvasIcon, FluentScreenbugIcon, FluentVlcIcon, FluentPhotopeaIcon } from './FluentIcons';
+import { FluentNotesIcon, FluentSearchIcon, FluentGalleryIcon, FluentInkCanvasIcon, FluentScreenbugIcon, FluentVlcIcon, FluentPhotopeaIcon, FluentArrowUploadIcon } from './FluentIcons';
 import { Channel, NewsArticle } from '../types';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -376,7 +376,7 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                   {...revealProps}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <UploadCloud className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
+                    <FluentArrowUploadIcon className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
                     <span className="truncate">Import Playlist</span>
                   </div>
                   <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-500">.m3u</span>
@@ -636,7 +636,7 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                   {...revealProps}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <UploadCloud className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
+                    <FluentArrowUploadIcon className="w-4 h-4 text-[#555555] dark:text-[#cccccc] shrink-0" />
                     <span className="truncate">Import Playlist (.m3u)</span>
                   </div>
                   <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-500">Import</span>

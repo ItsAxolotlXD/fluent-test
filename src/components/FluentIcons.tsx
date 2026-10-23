@@ -20,6 +20,12 @@ export const FLUENT_ICON_URLS = {
   settings: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Settings/SVG/ic_fluent_settings_48_regular.svg',
   user: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person/SVG/ic_fluent_person_48_regular.svg',
   personDelete: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Person%20Delete/SVG/ic_fluent_person_delete_24_regular.svg',
+  personFeedback: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Person%20Feedback/SVG/ic_fluent_person_feedback_48_regular.svg?raw=true',
+  delete: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Delete/SVG/ic_fluent_delete_48_regular.svg?raw=true',
+  folderAdd: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Folder%20Add/SVG/ic_fluent_folder_add_48_regular.svg?raw=true',
+  rename: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Rename%20A/SVG/ic_fluent_rename_a_28_regular.svg?raw=true',
+  folderArrowLeft: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Folder%20Arrow%20Left/SVG/ic_fluent_folder_arrow_left_48_regular.svg?raw=true',
+  arrowUpload: 'https://github.com/microsoft/fluentui-system-icons/raw/main/assets/Arrow%20Upload/SVG/ic_fluent_arrow_upload_32_regular.svg?raw=true',
   search: SEARCH_SPARKLE_REMOTE_URL,
   gallery: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Image%20Multiple/SVG/ic_fluent_image_multiple_24_regular.svg',
   draws: 'https://raw.githubusercontent.com/microsoft/fluentui-system-icons/refs/heads/main/assets/Draw%20Shape/SVG/ic_fluent_draw_shape_24_regular.svg'
@@ -185,6 +191,43 @@ export const FluentPhotopeaIcon: React.FC<{ className?: string; style?: React.CS
     <circle cx="12" cy="9.75" r="1" fill="currentColor" />
   </svg>
 );
+
+export const FluentPersonFeedbackIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M30.27 25C30.03 25 29.78 24.96 29.54 24.88C28.6 24.57 28 23.73 28 22.75V19.94C25.74 19.58 24 17.61 24 15.25V8.75C24 6.13 26.13 4 28.75 4H40.25C42.87 4 45 6.13 45 8.75V15.25C45 17.87 42.87 20 40.25 20H35.13L32.05 24.1C31.61 24.68 30.96 25 30.27 25ZM28.75 6.5C27.51 6.5 26.5 7.51 26.5 8.75V15.25C26.5 16.49 27.51 17.5 28.75 17.5H30.5V22L33.88 17.5H40.26C41.5 17.5 42.51 16.49 42.51 15.25V8.75C42.51 7.51 41.5 6.5 40.26 6.5H28.75ZM16 27.5C11.86 27.5 8.5 24.14 8.5 20C8.5 15.86 11.86 12.5 16 12.5C20.14 12.5 23.5 15.86 23.5 20C23.5 24.14 20.14 27.5 16 27.5ZM16 15C13.24 15 11 17.24 11 20C11 22.76 13.24 25 16 25C18.76 25 21 22.76 21 20C21 17.24 18.76 15 16 15ZM3 34.79C3 34.88 3.15 44 16 44C28.85 44 29 34.88 29 34.79V33.75C29 31.68 27.32 30 25.25 30H6.75C4.68 30 3 31.68 3 33.75V34.79ZM5.5 33.75C5.5 33.06 6.06 32.5 6.75 32.5H25.25C25.94 32.5 26.5 33.06 26.5 33.75V34.78C26.5 35.05 26.28 41.5 16 41.5C5.72 41.5 5.5 35.05 5.5 34.79V33.75Z" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentDeleteIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M20 10.5V11H28V10.5C28 8.29086 26.2091 6.5 24 6.5C21.7909 6.5 20 8.29086 20 10.5ZM17.5 11V10.5C17.5 6.91015 20.4101 4 24 4C27.5899 4 30.5 6.91015 30.5 10.5V11H41.75C42.4404 11 43 11.5596 43 12.25C43 12.9404 42.4404 13.5 41.75 13.5H38.8325L36.8329 37.3556C36.518 41.1117 33.3775 44 29.6082 44H18.3923C14.623 44 11.4825 41.1118 11.1676 37.3557L9.16749 13.5H6.25C5.55964 13.5 5 12.9404 5 12.25C5 11.5596 5.55964 11 6.25 11H17.5ZM13.6589 37.1469C13.8652 39.6077 15.9228 41.5 18.3923 41.5H29.6082C32.0777 41.5 34.1353 39.6077 34.3416 37.1468L36.3238 13.5H11.6763L13.6589 37.1469ZM21.5 20.25C21.5 19.5596 20.9404 19 20.25 19C19.5596 19 19 19.5596 19 20.25V34.75C19 35.4404 19.5596 36 20.25 36C20.9404 36 21.5 35.4404 21.5 34.75V20.25ZM27.75 19C28.4404 19 29 19.5596 29 20.25V34.75C29 35.4404 28.4404 36 27.75 36C27.0596 36 26.5 35.4404 26.5 34.75V20.25C26.5 19.5596 27.0596 19 27.75 19Z" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentFolderAddIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M6.5 12.25V16H16.7145C17.046 16 17.3639 15.8683 17.5983 15.6339L20.9822 12.25L17.5983 8.86612C17.3639 8.6317 17.046 8.5 16.7145 8.5H10.25C8.17893 8.5 6.5 10.1789 6.5 12.25ZM4 12.25C4 8.79822 6.79822 6 10.25 6H16.7145C17.709 6 18.6629 6.39509 19.3661 7.09835L23.2678 11H37.75C41.2018 11 44 13.7982 44 17.25V24.6191C43.2476 23.8971 42.4086 23.2647 41.5 22.7392V17.25C41.5 15.1789 39.8211 13.5 37.75 13.5H23.2678L19.3661 17.4017C18.6629 18.1049 17.709 18.5 16.7145 18.5H6.5V34.75C6.5 36.8211 8.17893 38.5 10.25 38.5H22.7999C23.1255 39.3823 23.544 40.2196 24.0436 41H10.25C6.79822 41 4 38.2018 4 34.75V12.25ZM46 34C46 40.0751 41.0751 45 35 45C28.9249 45 24 40.0751 24 34C24 27.9249 28.9249 23 35 23C41.0751 23 46 27.9249 46 34ZM36 27C36 26.4477 35.5523 26 35 26C34.4477 26 34 26.4477 34 27V33H28C27.4477 33 27 33.4477 27 34C27 34.5523 27.4477 35 28 35H34V41C34 41.5523 34.4477 42 35 42C35.5523 42 36 41.5523 36 41V35H42C42.5523 35 43 34.5523 43 34C43 33.4477 42.5523 33 42 33H36V27Z" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentRenameIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M20.25 2C20.6642 2 21 2.33579 21 2.75C21 3.16421 20.6642 3.5 20.25 3.5H18.498V24.5H20.25C20.6642 24.5 21 24.8358 21 25.25C21 25.6642 20.6642 26 20.25 26H15.25C14.8358 26 14.5 25.6642 14.5 25.25C14.5 24.8358 14.8358 24.5 15.25 24.5H16.998V3.5H15.25C14.8358 3.5 14.5 3.16421 14.5 2.75C14.5 2.33579 14.8358 2 15.25 2H20.25ZM15.998 6.5H5.75391C4.51127 6.5 3.50391 7.50736 3.50391 8.75V19.25C3.50391 20.4926 4.51127 21.5 5.75391 21.5H15.998V23H5.75391C3.68284 23 2.00391 21.3211 2.00391 19.25V8.75C2.00391 6.67893 3.68284 5 5.75391 5H15.998V6.5ZM22.251 5C24.3218 5.00025 26.001 6.67908 26.001 8.75V19.25C26.001 21.3209 24.3218 22.9998 22.251 23H19.498V21.5H22.251C23.4934 21.4998 24.501 20.4925 24.501 19.25V8.75C24.501 7.50751 23.4934 6.50025 22.251 6.5H19.498V5H22.251ZM10 8C10.2901 8 10.5538 8.16744 10.6777 8.42969L14.9277 17.4297C15.1046 17.8042 14.9447 18.2508 14.5703 18.4277C14.1958 18.6046 13.7492 18.4447 13.5723 18.0703L12.3584 15.5H7.6416L6.42773 18.0703C6.25079 18.4447 5.80417 18.6046 5.42969 18.4277C5.05529 18.2508 4.89543 17.8042 5.07227 17.4297L9.32227 8.42969L9.375 8.33594C9.51254 8.12824 9.74618 8 10 8ZM8.34961 14H11.6504L10 10.5049L8.34961 14Z" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentFolderArrowLeftIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M6.5 12.25V16H16.7145C17.046 16 17.3639 15.8683 17.5983 15.6339L20.9822 12.25L17.5983 8.86612C17.3639 8.6317 17.046 8.5 16.7145 8.5H10.25C8.17893 8.5 6.5 10.1789 6.5 12.25ZM4 12.25C4 8.79822 6.79822 6 10.25 6H16.7145C17.709 6 18.6629 6.39509 19.3661 7.09835L23.2678 11H37.75C41.2018 11 44 13.7982 44 17.25V24.6191C43.2476 23.8971 42.4086 23.2647 41.5 22.7392V17.25C41.5 15.1789 39.8211 13.5 37.75 13.5H23.2678L19.3661 17.4017C18.6629 18.1049 17.709 18.5 16.7145 18.5H6.5V34.75C6.5 36.8211 8.17893 38.5 10.25 38.5H22.7999C23.1255 39.3823 23.544 40.2196 24.0436 41H10.25C6.79822 41 4 38.2018 4 34.75V12.25ZM35 45C28.9249 45 24 40.0751 24 34C24 27.9249 28.9249 23 35 23C41.0751 23 46 27.9249 46 34C46 40.0751 41.0751 45 35 45ZM43 34C43 33.4477 42.5523 33 42 33H30.4142L33.7071 29.7071C34.0976 29.3166 34.0976 28.6834 33.7071 28.2929C33.3166 27.9024 32.6834 27.9024 32.2929 28.2929L27.2929 33.2929C26.9024 33.6834 26.9024 34.3166 27.2929 34.7071L32.2929 39.7071C32.6834 40.0976 33.3166 40.0976 33.7071 39.7071C34.0976 39.3166 34.0976 38.6834 33.7071 38.2929L30.4142 35H42C42.5523 35 43 34.5523 43 34Z" fill="currentColor"/>
+  </svg>
+);
+
+export const FluentArrowUploadIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = 'w-5 h-5', style }) => (
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
+    <path d="M7 2C6.44772 2 6 2.44772 6 3C6 3.55228 6.44772 4 7 4H25C25.5523 4 26 3.55228 26 3C26 2.44772 25.5523 2 25 2H7ZM16.7071 6.29289C16.3166 5.90237 15.6834 5.90237 15.2929 6.29289L8.29289 13.2929C7.90237 13.6834 7.90237 14.3166 8.29289 14.7071C8.68342 15.0976 9.31658 15.0976 9.70711 14.7071L15 9.41421V29C15 29.5523 15.4477 30 16 30C16.5523 30 17 29.5523 17 29V9.41421L22.2929 14.7071C22.6834 15.0976 23.3166 15.0976 23.7071 14.7071C24.0976 14.3166 24.0976 13.6834 23.7071 13.2929L16.7071 6.29289Z" fill="currentColor"/>
+  </svg>
+);
+
 
 
 
