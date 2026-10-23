@@ -1475,30 +1475,32 @@ export const Settings: React.FC<SettingsProps> = ({
                 <p className="text-[13.5px] sm:text-[14px] text-[#4b5563] dark:text-[#a1a1aa] leading-relaxed mt-2.5">
                   Chế độ ban ngày tạm thời bị khóa để bảo trì. Nếu bạn là nhà phát triển thử nghiệm tính năng này, hãy nhập mã bảo vệ gồm 6 chữ số.
                 </p>
-                <input
-                  autoFocus
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={lightModeUnlockCode}
-                  onChange={(event) => {
-                    setLightModeUnlockCode(event.target.value.replace(/\D/g, '').slice(0, 6));
-                    setLightModeUnlockError('');
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      if (lightModeUnlockCode === '366761') {
-                        updateDraft('theme', 'light');
-                        updateDraft('spatialGlassOpacity', 43);
-                        setIsLightModeUnlockOpen(false);
-                      } else {
-                        setLightModeUnlockError('Mã bảo vệ không chính xác.');
+                <div className="fluent-input-box relative mt-4 w-full h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                  <input
+                    autoFocus
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={lightModeUnlockCode}
+                    onChange={(event) => {
+                      setLightModeUnlockCode(event.target.value.replace(/\D/g, '').slice(0, 6));
+                      setLightModeUnlockError('');
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        if (lightModeUnlockCode === '366761') {
+                          updateDraft('theme', 'light');
+                          updateDraft('spatialGlassOpacity', 43);
+                          setIsLightModeUnlockOpen(false);
+                        } else {
+                          setLightModeUnlockError('Mã bảo vệ không chính xác.');
+                        }
                       }
-                    }
-                  }}
-                  placeholder="Nhập mã 6 chữ số"
-                  aria-label="Mã bảo vệ"
-                  className="mt-4 w-full h-9 rounded-[6px] bg-black/5 dark:bg-[#2c3037] px-3 text-sm text-[#111827] dark:text-white placeholder:text-[#71717a] dark:placeholder:text-[#8e8e8e] outline-none transition-colors border-none"
-                />
+                    }}
+                    placeholder="Nhập mã 6 chữ số"
+                    aria-label="Mã bảo vệ"
+                    className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                  />
+                </div>
                 {lightModeUnlockError && <p className="mt-2 text-xs text-red-500">{lightModeUnlockError}</p>}
               </div>
               <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />

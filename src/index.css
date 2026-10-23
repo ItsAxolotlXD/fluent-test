@@ -523,8 +523,7 @@ html.light-mode [class*="FluentCraftmineIcon"] * {
   padding-left: 12px !important;
   padding-right: 12px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18) !important;
-  transition: opacity 0.18s ease-out !important;
-  transform: none !important;
+  transition: opacity 0.15s ease-out !important;
 }
 
 html.light-mode .fluent-tooltip,
@@ -3840,31 +3839,60 @@ html.light-mode main .text-\[\#E0E0E6\] {
   color: #000000 !important;
 }
 
-/* Form controls in light mode */
-html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input),
-html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input),
-html.light-mode input[type="url"]:not(#floating-search-input),
-html.light-mode input[type="password"],
-html.light-mode textarea,
+/* Form controls synchronized with TopBar search style */
+html.light-mode input[type="text"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode textarea:not(.fluent-search-box textarea):not(.fluent-input-box textarea),
 html.light-mode select {
-  background-color: #FFFFFF !important;
-  border-color: #D1D5DB !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.32) !important;
+  border-radius: 6px !important;
   color: #111827 !important;
 }
 
-/* TopBar search in Sparkle must NEVER have a white background */
+html.light-mode input[type="text"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode textarea:focus:not(.fluent-search-box textarea):not(.fluent-input-box textarea) {
+  background-color: #ffffff !important;
+  border-bottom: 2px solid var(--ui-accent, #0078d4) !important;
+  outline: none !important;
+}
+
+/* TopBar search & Fluent input boxes inner inputs */
 #topbar-search-box input,
+.fluent-search-box input,
+.fluent-input-box input,
+.fluent-search-box textarea,
+.fluent-input-box textarea,
 html.light-mode #topbar-search-box input,
-html:not(.light-mode) #topbar-search-box input {
+html.light-mode .fluent-search-box input,
+html.light-mode .fluent-input-box input,
+html.light-mode .fluent-search-box textarea,
+html.light-mode .fluent-input-box textarea,
+html:not(.light-mode) #topbar-search-box input,
+html:not(.light-mode) .fluent-search-box input,
+html:not(.light-mode) .fluent-input-box input,
+html:not(.light-mode) .fluent-search-box textarea,
+html:not(.light-mode) .fluent-input-box textarea {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
   border-width: 0 !important;
+  border-bottom: none !important;
   box-shadow: none !important;
 }
 
-html.light-mode #topbar-search-box {
+html.light-mode #topbar-search-box,
+html.light-mode .fluent-search-box,
+html.light-mode .fluent-input-box {
   background-color: rgba(0, 0, 0, 0.05) !important;
   border: none !important;
   border-width: 0 !important;
@@ -3902,20 +3930,28 @@ html.dark .topbar-search-results-dropdown {
   border-color: rgba(255, 255, 255, 0.10) !important;
   color: #ffffff !important;
 }
-/* TopBar Search Box: border-radius 6px */
-html.light-mode #topbar-search-box {
+/* TopBar Search Box & Fluent Input Boxes: border-radius 6px */
+html.light-mode #topbar-search-box,
+html.light-mode .fluent-search-box,
+html.light-mode .fluent-input-box {
   background-color: rgba(0, 0, 0, 0.05) !important;
   border-radius: 6px !important;
   box-shadow: none !important;
 }
 html.light-mode #topbar-search-box:focus-within,
-html.light-mode #topbar-search-box.search-flyout-open {
+html.light-mode #topbar-search-box.search-flyout-open,
+html.light-mode .fluent-search-box:focus-within,
+html.light-mode .fluent-input-box:focus-within {
   background-color: #ffffff !important;
   color: #000000 !important;
   border-radius: 6px !important;
 }
 html:not(.light-mode) #topbar-search-box,
-html.dark #topbar-search-box {
+html.dark #topbar-search-box,
+html:not(.light-mode) .fluent-search-box,
+html.dark .fluent-search-box,
+html:not(.light-mode) .fluent-input-box,
+html.dark .fluent-input-box {
   background-color: #282c31 !important;
   border-radius: 6px !important;
   box-shadow: none !important;
@@ -3923,7 +3959,11 @@ html.dark #topbar-search-box {
 html:not(.light-mode) #topbar-search-box:focus-within,
 html.dark #topbar-search-box:focus-within,
 html:not(.light-mode) #topbar-search-box.search-flyout-open,
-html.dark #topbar-search-box.search-flyout-open {
+html.dark #topbar-search-box.search-flyout-open,
+html:not(.light-mode) .fluent-search-box:focus-within,
+html.dark .fluent-search-box:focus-within,
+html:not(.light-mode) .fluent-input-box:focus-within,
+html.dark .fluent-input-box:focus-within {
   background-color: #282c31 !important;
   color: #ffffff !important;
   border-radius: 6px !important;
@@ -6678,7 +6718,10 @@ html.light-mode #spotlight-search-container:focus-within {
 #settings-section-experimental,
 #settings-section-keybinds,
 #settings-section-other,
-section[id^="settings-section-"] {
+section[id^="settings-section-"],
+.winui3-page-wrapper section,
+.feedback-page-wrapper section,
+section[id^="section-"] {
   background: transparent !important;
   background-color: transparent !important;
   border: none !important;
@@ -7624,7 +7667,11 @@ html:not(.light-mode) [id^="channel-card-"],
 html:not(.light-mode) [id^="test-channel-card-"],
 html:not(.light-mode) .channel-card,
 html:not(.light-mode) [class*="channel-card"],
-html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"] {
+html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"],
+html:not(.light-mode) .winui3-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"],
+html:not(.light-mode) .feedback-page-wrapper [class*="bg-[#2c3037]"][class*="shadow-xs"],
+html:not(.light-mode) #winui3-page [class*="bg-[#2c3037]"][class*="shadow-xs"],
+html:not(.light-mode) #feedback-page [class*="bg-[#2c3037]"][class*="shadow-xs"] {
   background-color: rgba(255, 255, 255, 0.1) !important;
   background-image: none !important;
   -webkit-backdrop-filter: blur(50px) !important;
@@ -7632,11 +7679,15 @@ html:not(.light-mode) .settings-page-wrapper [class*="bg-[#2c3037]"][class*="sha
 }
 
 /* Subtle bottom edge matching the supplied search reference. */
-#topbar-search-box {
+#topbar-search-box,
+.fluent-search-box,
+.fluent-input-box {
   border-bottom: 1px solid rgba(255, 255, 255, 0.42) !important;
 }
 
-html.light-mode #topbar-search-box {
+html.light-mode #topbar-search-box,
+html.light-mode .fluent-search-box,
+html.light-mode .fluent-input-box {
   border-bottom-color: rgba(0, 0, 0, 0.32) !important;
 }
 
@@ -7649,7 +7700,11 @@ html.dark #topbar-search-box.search-flyout-open,
 html.dark #topbar-search-box:focus-within,
 html.light-mode #topbar-search-box.is-focused,
 html.light-mode #topbar-search-box.search-flyout-open,
-html.light-mode #topbar-search-box:focus-within {
+html.light-mode #topbar-search-box:focus-within,
+.fluent-search-box,
+.fluent-search-box:focus-within,
+.fluent-input-box,
+.fluent-input-box:focus-within {
   border: none !important;
   outline: none !important;
   outline-offset: 0 !important;
@@ -7657,7 +7712,11 @@ html.light-mode #topbar-search-box:focus-within {
 }
 
 #topbar-search-box::after,
-#topbar-search-box::before {
+#topbar-search-box::before,
+.fluent-search-box::after,
+.fluent-search-box::before,
+.fluent-input-box::after,
+.fluent-input-box::before {
   content: "";
   position: absolute;
   bottom: 0;
@@ -7666,13 +7725,17 @@ html.light-mode #topbar-search-box:focus-within {
   pointer-events: none;
 }
 
-#topbar-search-box::after {
+#topbar-search-box::after,
+.fluent-search-box::after,
+.fluent-input-box::after {
   left: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.45);
 }
 
-#topbar-search-box::before {
+#topbar-search-box::before,
+.fluent-search-box::before,
+.fluent-input-box::before {
   left: 50%;
   width: 0;
   transform: translateX(-50%);
@@ -7682,21 +7745,78 @@ html.light-mode #topbar-search-box:focus-within {
 
 #topbar-search-box.is-focused::before,
 #topbar-search-box.search-flyout-open::before,
-#topbar-search-box:focus-within::before {
+#topbar-search-box:focus-within::before,
+.fluent-search-box:focus-within::before,
+.fluent-input-box:focus-within::before {
   width: 100%;
 }
 
-html.light-mode #topbar-search-box::after {
+html.light-mode #topbar-search-box::after,
+html.light-mode .fluent-search-box::after,
+html.light-mode .fluent-input-box::after {
   background-color: rgba(0, 0, 0, 0.32);
 }
 
-html.light-mode #topbar-search-box::before {
+html.light-mode #topbar-search-box::before,
+html.light-mode .fluent-search-box::before,
+html.light-mode .fluent-input-box::before {
   background-color: #0078d4;
 }
 
-#topbar-search-box {
+#topbar-search-box,
+.fluent-search-box,
+.fluent-input-box {
   border-radius: 6px !important;
   overflow: hidden;
+}
+
+/* Standalone input elements across the app synchronized with TopBar search style */
+input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
+  background-color: #282c31 !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.45) !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, border-bottom-color 0.2s ease !important;
+}
+
+input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
+  background-color: #282c31 !important;
+  border-bottom: 2px solid var(--ui-accent, #4cc2ff) !important;
+  outline: none !important;
+}
+
+html.light-mode input[type="text"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.32) !important;
+  border-radius: 6px !important;
+  color: #111827 !important;
+  outline: none !important;
+}
+
+html.light-mode input[type="text"]:focus:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(#floating-search-input),
+html.light-mode input[type="email"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
+html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
+  background-color: #ffffff !important;
+  border-bottom: 2px solid var(--ui-accent, #0078d4) !important;
+  outline: none !important;
 }
 
 #vplay-native-keyboard {
@@ -7748,6 +7868,10 @@ html.light-mode {
 
 #topbar-search-box::before,
 html.light-mode #topbar-search-box::before,
+.fluent-search-box::before,
+html.light-mode .fluent-search-box::before,
+.fluent-input-box::before,
+html.light-mode .fluent-input-box::before,
 .winui-search-input:focus-within::after {
   background-color: var(--ui-accent) !important;
 }

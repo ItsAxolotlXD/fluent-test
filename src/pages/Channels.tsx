@@ -4,6 +4,7 @@ import { ChannelCard } from '../components/ChannelCard';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { DiscontinuedBanner } from '../components/DiscontinuedBanner';
 import { Tag, Radio, Filter, Tv, CheckCircle2, Sparkles, Satellite, X } from 'lucide-react';
+import { FluentSearchIcon } from '../components/FluentIcons';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
 
@@ -91,17 +92,18 @@ export const Channels: React.FC<ChannelsProps> = ({
           ))}
         </div>
 
-        {/* Search matching Find and search Sparkle */}
+        {/* Search matching TopBar search box */}
         <div
           id="channels-search-box"
-          className="group relative w-full md:w-80 h-[35px] sm:h-[37px] bg-black/5 dark:bg-[#282c31] border-0 flex items-center px-3 gap-2 transition-all rounded-[6px] focus-within:ring-2 focus-within:ring-[#005fb8] dark:focus-within:ring-[#4cc2ff]"
+          className="fluent-search-box group relative w-full md:w-80 h-9 bg-black/5 dark:bg-[#282c31] border-none flex items-center px-3.5 gap-2 transition-all rounded-[6px]"
         >
+          <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search in Channels"
-            className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6 no-fluent-line"
+            className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1 pr-6"
           />
           {searchQuery && (
             <button

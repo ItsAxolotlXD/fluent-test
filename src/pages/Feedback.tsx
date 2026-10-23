@@ -90,6 +90,7 @@ export const Feedback: React.FC<FeedbackProps> = () => {
 
   return (
     <motion.div
+      id="feedback-page"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -187,15 +188,17 @@ export const Feedback: React.FC<FeedbackProps> = () => {
                       <label className="block text-xs font-semibold text-[#111827] dark:text-white mb-1.5">
                         Tiêu đề <span className="text-rose-500">*</span>
                       </label>
-                      <input
-                        required
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Ví dụ: Thêm kênh VTV Cần Thơ, Lỗi phát lại video..."
-                        maxLength={120}
-                        className="w-full h-9 px-3.5 rounded-[6px] bg-black/5 dark:bg-black/30 text-xs sm:text-sm text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none transition-colors border-none"
-                      />
+                      <div className="fluent-input-box relative w-full h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                        <input
+                          required
+                          type="text"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
+                          placeholder="Ví dụ: Thêm kênh VTV Cần Thơ, Lỗi phát lại video..."
+                          maxLength={120}
+                          className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                        />
+                      </div>
                     </div>
 
                     {/* Feedback Description */}
@@ -203,14 +206,16 @@ export const Feedback: React.FC<FeedbackProps> = () => {
                       <label className="block text-xs font-semibold text-[#111827] dark:text-white mb-1.5">
                         Chi tiết phản hồi <span className="text-rose-500">*</span>
                       </label>
-                      <textarea
-                        required
-                        rows={4}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Mô tả chi tiết những gì bạn gặp phải, hoặc đề xuất cách cải thiện tính năng..."
-                        className="w-full p-3 rounded-[6px] bg-black/5 dark:bg-black/30 text-xs sm:text-sm text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none transition-colors border-none resize-y"
-                      />
+                      <div className="fluent-input-box relative w-full bg-black/5 dark:bg-[#282c31] rounded-[6px] p-2.5 transition-colors border-none">
+                        <textarea
+                          required
+                          rows={4}
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Mô tả chi tiết những gì bạn gặp phải, hoặc đề xuất cách cải thiện tính năng..."
+                          className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none resize-y"
+                        />
+                      </div>
                     </div>
 
                     {/* Rating Satisfaction */}
@@ -244,13 +249,15 @@ export const Feedback: React.FC<FeedbackProps> = () => {
                       <label className="block text-xs font-semibold text-[#111827] dark:text-white mb-1.5">
                         Email liên hệ <span className="text-[11px] font-normal text-[#6B7280] dark:text-[#9CA3AF]">(Tùy chọn)</span>
                       </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="email@example.com (để nhận thông báo cập nhật)"
-                        className="w-full h-9 px-3.5 rounded-[6px] bg-black/5 dark:bg-black/30 text-xs sm:text-sm text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none transition-colors border-none"
-                      />
+                      <div className="fluent-input-box relative w-full h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="email@example.com (để nhận thông báo cập nhật)"
+                          className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                        />
+                      </div>
                     </div>
 
                     <div className="pt-2 flex items-center justify-end gap-3">

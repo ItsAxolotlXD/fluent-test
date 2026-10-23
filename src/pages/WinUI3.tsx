@@ -145,6 +145,7 @@ export const WinUI3: React.FC = () => {
 
   return (
     <motion.div
+      id="winui3-page"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -422,10 +423,13 @@ export const WinUI3: React.FC = () => {
                   Ô nhập văn bản tên người dùng hiển thị
                 </div>
               </div>
-              <input
-                placeholder="Enter a name"
-                className="w-full sm:w-64 h-9 px-3.5 rounded-[6px] bg-black/5 dark:bg-black/30 text-xs sm:text-sm text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none transition-colors border-none"
-              />
+              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                <input
+                  type="text"
+                  placeholder="Enter a name"
+                  className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                />
+              </div>
             </div>
 
             <div className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
@@ -437,11 +441,13 @@ export const WinUI3: React.FC = () => {
                   Ô nhập địa chỉ thư điện tử xác thực
                 </div>
               </div>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full sm:w-64 h-9 px-3.5 rounded-[6px] bg-black/5 dark:bg-black/30 text-xs sm:text-sm text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none transition-colors border-none"
-              />
+              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -644,20 +650,21 @@ export const WinUI3: React.FC = () => {
               <div className="flex flex-col gap-3">
                 {/* Search Bar + Size Picker */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                  <div className="relative flex-1 max-w-md h-9 bg-black/5 dark:bg-black/30 flex items-center px-3 rounded-[6px] transition-colors border-none">
-                    <Search className={`w-3.5 h-3.5 mr-2 shrink-0 ${isDarkMode ? 'text-white/40' : 'text-black/45'}`} />
+                  <div className="fluent-search-box group relative flex-1 max-w-md h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                    <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none mr-2" />
                     <input
                       type="text"
                       value={iconSearchTerm}
                       onChange={(e) => setIconSearchTerm(e.target.value)}
                       placeholder="Tìm biểu tượng (copy, home, settings...)..."
-                      className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#8e8e8e] outline-none border-none py-1"
+                      className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
                     />
                     {iconSearchTerm && (
                       <button
                         type="button"
                         onClick={() => setIconSearchTerm('')}
-                        className="text-[#6B7280] dark:text-[#9CA3AF] hover:text-white cursor-pointer ml-1 border-none"
+                        className="text-[#71717a] dark:text-white hover:text-black dark:hover:text-white cursor-pointer ml-1 p-0.5 border-none"
+                        title="Clear search"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>

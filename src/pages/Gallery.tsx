@@ -2349,10 +2349,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
           {galleryTooltip && (
             <motion.div
               key="gallery-toolbar-tooltip"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.16, ease: 'easeOut' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.05, ease: 'easeOut' }}
               style={{
                 position: 'fixed',
                 top: `${galleryTooltip.top}px`,
