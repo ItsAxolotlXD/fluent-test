@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Heart, 
@@ -53,7 +54,8 @@ import {
   FluentFolderAddIcon,
   FluentRenameIcon,
   FluentFolderArrowLeftIcon,
-  FluentArrowUploadIcon
+  FluentArrowUploadIcon,
+  FluentCopyIcon
 } from '../components/FluentIcons';
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
@@ -126,6 +128,25 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
   // Folders & context menu
   const [folders, setFolders] = useState<GalleryFolder[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+
+  const [galleryTooltip, setGalleryTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
+
+  const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setGalleryTooltip({
+      label,
+      top: rect.bottom + 8,
+      left: rect.left + rect.width / 2,
+    });
+  };
+
+  const hideTooltip = () => {
+    setGalleryTooltip(null);
+  };
+
+  useEffect(() => {
+    hideTooltip();
+  }, [activeFilter, isSelectMode, currentFolderId]);
   const [contextMenu, setContextMenu] = useState<{ item: GalleryMediaItem; x: number; y: number } | null>(null);
   const [renameTarget, setRenameTarget] = useState<{ kind: 'item' | 'folder'; id: string; name: string } | null>(null);
   const [moveTargetIds, setMoveTargetIds] = useState<string[] | null>(null);
@@ -817,13 +838,14 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 setIsFilterDropdownOpen((prev) => !prev);
                 setIsSortDropdownOpen(false);
               }}
+              onMouseEnter={(e) => showTooltip(`Bộ lọc (${activeFilter})`, e)}
+              onMouseLeave={hideTooltip}
               className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer relative active:scale-95 bg-transparent border-0 shadow-none text-white ${
                 isFilterDropdownOpen || activeFilter !== 'all'
                   ? 'bg-black/10 dark:bg-white/15'
                   : 'hover:bg-black/10 dark:hover:bg-white/10'
               }`}
-              title={`Filter: ${activeFilter}`}
-              aria-label="Filter"
+              aria-label={`Filter: ${activeFilter}`}
             >
               <Filter className="w-3.5 h-3.5 text-white" />
               {activeFilter !== 'all' && (
@@ -905,12 +927,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 setIsSortDropdownOpen((prev) => !prev);
                 setIsFilterDropdownOpen(false);
               }}
+              onMouseEnter={(e) => showTooltip('Sắp xếp (Sort)', e)}
+              onMouseLeave={hideTooltip}
               className={`w-8 h-8 rounded-[6px] flex items-center justify-center transition-all cursor-pointer active:scale-95 bg-transparent border-0 shadow-none text-white ${
                 isSortDropdownOpen
                   ? 'bg-black/10 dark:bg-white/15'
                   : 'hover:bg-black/10 dark:hover:bg-white/10'
               }`}
-              title="Sort"
               aria-label="Sort"
             >
               <ArrowUpDown className="w-3.5 h-3.5 text-white" />
@@ -976,8 +999,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
           <button
             type="button"
             onClick={handleRestoreSamples}
+            onMouseEnter={(e) => showTooltip('Tải dữ liệu mẫu (Demo)', e)}
+            onMouseLeave={hideTooltip}
             className="w-8 h-8 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 text-white border-0 shadow-none transition-all cursor-pointer flex items-center justify-center active:scale-95"
-            title="Load demo samples (Demo mode)"
             aria-label="Load demo samples"
           >
             <RotateCw className="w-3.5 h-3.5 text-white" />
@@ -987,8 +1011,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
           <button
             type="button"
             onClick={() => setIsNewFolderOpen(true)}
+            onMouseEnter={(e) => showTooltip('Tạo thư mục mới (New folder)', e)}
+            onMouseLeave={hideTooltip}
             className="w-8 h-8 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-white border-0 shadow-none transition-all cursor-pointer flex items-center justify-center"
-            title="New folder"
             aria-label="New folder"
           >
             <FluentFolderAddIcon className="w-4 h-4 text-white" />
@@ -998,8 +1023,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
           <button
             type="button"
             onClick={() => setIsWelcomeScreenOpen(true)}
+            onMouseEnter={(e) => showTooltip('Khám phá điểm nổi bật (Highlights)', e)}
+            onMouseLeave={hideTooltip}
             className="h-8 px-2.5 rounded-[6px] bg-transparent hover:bg-black/10 dark:hover:bg-white/10 active:scale-95 text-white border-0 shadow-none transition-all cursor-pointer flex items-center gap-1.5"
-            title="Explore highlights from your photo collection"
             aria-label="Welcome screen"
           >
             <Sparkles className="gallery-toolbar-icon w-3.5 h-3.5 text-[#4cc2ff]" />
@@ -1017,8 +1043,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 <button
                   type="button"
                   onClick={() => setActiveFilter('all')}
+                  onMouseEnter={(e) => showTooltip('Bỏ lọc', e)}
+                  onMouseLeave={hideTooltip}
                   className="hover:text-rose-400 cursor-pointer ml-0.5 text-white"
-                  title="Clear filter"
+                  aria-label="Clear filter"
                 >
                   <X className="w-3 h-3 text-white" />
                 </button>
@@ -1040,6 +1068,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <button
                 type="button"
                 onClick={handleSelectAll}
+                onMouseEnter={(e) => showTooltip(selectedIds.size === filteredItems.length && filteredItems.length > 0 ? 'Bỏ chọn tất cả' : 'Chọn tất cả', e)}
+                onMouseLeave={hideTooltip}
                 className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 text-xs text-white font-medium transition-colors cursor-pointer border-0"
               >
                 {selectedIds.size === filteredItems.length && filteredItems.length > 0 ? 'Deselect All' : 'Select All'}
@@ -1049,11 +1079,13 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <button
                 type="button"
                 onClick={handleDuplicateSelected}
+                onMouseEnter={(e) => showTooltip('Nhân bản (Duplicate)', e)}
+                onMouseLeave={hideTooltip}
                 disabled={selectedIds.size === 0}
                 className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 disabled:opacity-40 text-white text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer border-0"
-                title="Duplicate selected"
+                aria-label="Duplicate selected"
               >
-                <Copy className="w-3.5 h-3.5 text-white" />
+                <FluentCopyIcon className="w-4 h-4 text-white" />
                 <span className="hidden md:inline text-white">Duplicate</span>
               </button>
 
@@ -1061,9 +1093,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <button
                 type="button"
                 onClick={() => setMoveTargetIds(Array.from(selectedIds))}
+                onMouseEnter={(e) => showTooltip('Di chuyển vào thư mục (Move)', e)}
+                onMouseLeave={hideTooltip}
                 disabled={selectedIds.size === 0}
                 className="px-2.5 py-1 rounded-[6px] bg-black/10 dark:bg-white/15 hover:bg-black/15 dark:hover:bg-white/20 disabled:opacity-40 text-xs font-medium text-white flex items-center gap-1.5 transition-all cursor-pointer border-0"
-                title="Move into folder"
+                aria-label="Move into folder"
               >
                 <FluentFolderArrowLeftIcon className="w-4 h-4 text-white" />
                 <span className="hidden md:inline text-white">Move</span>
@@ -1073,9 +1107,11 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <button
                 type="button"
                 onClick={handleDeleteSelected}
+                onMouseEnter={(e) => showTooltip('Xóa các mục đã chọn (Delete)', e)}
+                onMouseLeave={hideTooltip}
                 disabled={selectedIds.size === 0}
                 className="px-2.5 py-1 rounded-[6px] bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border-0"
-                title="Delete selected"
+                aria-label="Delete selected"
               >
                 <FluentDeleteIcon className="w-4 h-4 text-white" />
                 <span className="text-white">Delete</span>
@@ -1088,6 +1124,8 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                   setIsSelectMode(false);
                   setSelectedIds(new Set());
                 }}
+                onMouseEnter={(e) => showTooltip('Hoàn tất chọn (Done)', e)}
+                onMouseLeave={hideTooltip}
                 className="px-2 py-1 rounded-[6px] text-xs text-white hover:text-white/80 cursor-pointer ml-1 border-0"
               >
                 Done
@@ -1101,30 +1139,36 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 <button
                   type="button"
                   onClick={() => setGridDensity('small')}
+                  onMouseEnter={(e) => showTooltip('Lưới nhỏ (1+)', e)}
+                  onMouseLeave={hideTooltip}
                   className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
                     gridDensity === 'small' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Small grid tiles (1+)"
+                  aria-label="Small grid tiles (1+)"
                 >
                   <span className="text-[11px] tracking-tight text-white">1+</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGridDensity('medium')}
+                  onMouseEnter={(e) => showTooltip('Lưới vừa (2+)', e)}
+                  onMouseLeave={hideTooltip}
                   className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
                     gridDensity === 'medium' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Medium grid tiles (2+)"
+                  aria-label="Medium grid tiles (2+)"
                 >
                   <span className="text-[11px] tracking-tight text-white">2+</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setGridDensity('large')}
+                  onMouseEnter={(e) => showTooltip('Lưới lớn (3+)', e)}
+                  onMouseLeave={hideTooltip}
                   className={`h-7 px-2 rounded-[4px] cursor-pointer transition-colors border-0 flex items-center justify-center text-white ${
                     gridDensity === 'large' ? 'bg-white/20 shadow-xs font-bold' : 'text-white/80 hover:text-white font-medium'
                   }`}
-                  title="Large grid tiles (3+)"
+                  aria-label="Large grid tiles (3+)"
                 >
                   <span className="text-[11px] tracking-tight text-white">3+</span>
                 </button>
@@ -1135,8 +1179,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                 <button
                   type="button"
                   onClick={() => setIsSelectMode(true)}
+                  onMouseEnter={(e) => showTooltip('Chọn nhiều tệp (Select)', e)}
+                  onMouseLeave={hideTooltip}
                   className="px-3 h-8 rounded-[6px] bg-black/10 dark:bg-white/10 hover:bg-black/15 dark:hover:bg-white/15 active:scale-95 text-xs font-semibold text-white border-0 transition-all cursor-pointer flex items-center gap-1.5"
-                  title="Select multiple files"
+                  aria-label="Select multiple files"
                 >
                   <CheckSquare className="w-3.5 h-3.5 text-white" />
                   <span className="text-white">Select</span>
@@ -1147,8 +1193,10 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
+                onMouseEnter={(e) => showTooltip('Nhập ảnh, video hoặc tài liệu (Import)', e)}
+                onMouseLeave={hideTooltip}
                 className="px-3.5 h-8 rounded-[6px] bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] active:scale-95 text-white dark:text-black text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs border-0 transition-all"
-                title="Import photos, videos, or documents"
+                aria-label="Import photos, videos, or documents"
               >
                 <FluentArrowUploadIcon className="gallery-import-icon w-3.5 h-3.5 text-white" />
                 <span className="light-mode-white-label">Import</span>
@@ -2294,6 +2342,34 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Tooltip for Gallery Toolbar (matching sidebar tooltip styling) */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {galleryTooltip && (
+            <motion.div
+              key="gallery-toolbar-tooltip"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+              style={{
+                position: 'fixed',
+                top: `${galleryTooltip.top}px`,
+                left: `${galleryTooltip.left}px`,
+                transform: 'translate(-50%, 0)',
+                backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.50)' : 'rgba(24, 24, 28, 0.50)',
+                backdropFilter: 'blur(16px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              }}
+              className="z-[99999] px-3 py-1.5 min-h-[30px] flex items-center rounded-[6px] text-[#111827] dark:text-white text-xs font-medium shadow-[0_4px_20px_rgba(0,0,0,0.18)] border-0 outline-none pointer-events-none whitespace-nowrap select-none"
+            >
+              {galleryTooltip.label}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

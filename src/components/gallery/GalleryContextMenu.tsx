@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { MousePointer2, Star, Share2, Copy, Save } from 'lucide-react';
+import { MousePointer2, Star, Share2, Save } from 'lucide-react';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../FlyoutDropdown';
-import { FluentRenameIcon, FluentFolderArrowLeftIcon, FluentDeleteIcon } from '../FluentIcons';
+import { FluentRenameIcon, FluentFolderArrowLeftIcon, FluentDeleteIcon, FluentCopyIcon } from '../FluentIcons';
 
 export type GalleryContextAction = 'open' | 'favorite' | 'rename' | 'share' | 'duplicate' | 'move' | 'save' | 'delete';
 
@@ -32,7 +32,7 @@ export const GalleryContextMenu: React.FC<GalleryContextMenuProps> = ({ x, y, is
     { action: 'favorite', label: isFavorite ? 'Remove from favorites' : 'Add to favorites', icon: Star },
     { action: 'rename', label: 'Rename', icon: FluentRenameIcon },
     { action: 'share', label: 'Share', icon: Share2 },
-    { action: 'duplicate', label: 'Duplicate', icon: Copy },
+    { action: 'duplicate', label: 'Duplicate', icon: FluentCopyIcon },
     { action: 'move', label: 'Move into a folder', icon: FluentFolderArrowLeftIcon },
   ];
   const secondary: MenuEntry[] = [

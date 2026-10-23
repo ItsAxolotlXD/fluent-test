@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Play, 
   Volume2, 
@@ -67,6 +68,24 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isLooping, setIsLooping] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showEpgOverlay, setShowEpgOverlay] = useState(false);
+  const [playerTooltip, setPlayerTooltip] = useState<{ label: string; top: number; left: number } | null>(null);
+
+  const showTooltip = (label: string, e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPlayerTooltip({
+      label,
+      top: rect.top - 8,
+      left: rect.left + rect.width / 2,
+    });
+  };
+
+  const hideTooltip = () => {
+    setPlayerTooltip(null);
+  };
+
+  useEffect(() => {
+    hideTooltip();
+  }, [channel.id, isFullscreen, showControls]);
 
   const handleOpenEpgSchedule = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -509,6 +528,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-epg-btn"
               type="button"
               onClick={handleOpenEpgSchedule}
+              onMouseEnter={(e) => showTooltip('Lịch phát sóng (EPG)', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 showEpgOverlay
                   ? 'text-[#4cc2ff] bg-[#4cc2ff]/20'
@@ -516,8 +537,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     ? 'text-black/70 hover:text-black hover:bg-black/10'
                     : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
-              title="Lịch phát sóng (EPG)"
-              aria-label="Lịch phát sóng"
+              aria-label="Lịch phát sóng (EPG)"
             >
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -526,10 +546,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={onPrevChannel}
+              onMouseEnter={(e) => showTooltip('Kênh trước', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLightMode ? 'text-black/60 hover:text-black hover:bg-black/10' : 'text-white/60 hover:text-white hover:bg-white/10'
               }`}
-              title="Kênh trước"
+              aria-label="Kênh trước"
             >
               <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -539,10 +561,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-rewind-btn"
               type="button"
               onClick={handleRewind10}
+              onMouseEnter={(e) => showTooltip('Lùi 10 giây', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
-              title="Lùi 10 giây"
+              aria-label="Lùi 10 giây"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -561,10 +585,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   togglePlay();
                   resetControlsTimeout();
                 }}
+                onMouseEnter={(e) => showTooltip(isPlaying ? 'Tạm dừng' : 'Phát', e)}
+                onMouseLeave={hideTooltip}
                 className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
                   isLightMode ? 'bg-[#f4f4f5] hover:bg-[#e4e4e7]' : 'bg-[#18181c] hover:bg-[#222329]'
                 }`}
-                title={isPlaying ? 'Tạm dừng' : 'Phát'}
                 aria-label={isPlaying ? 'Tạm dừng' : 'Phát'}
               >
                 {isPlaying ? (
@@ -583,10 +608,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-forward-btn"
               type="button"
               onClick={handleForward30}
+              onMouseEnter={(e) => showTooltip('Tua tới 30 giây', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
-              title="Tua tới 30 giây"
+              aria-label="Tua tới 30 giây"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -599,10 +626,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={onNextChannel}
+              onMouseEnter={(e) => showTooltip('Kênh tiếp theo', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLightMode ? 'text-black/60 hover:text-black hover:bg-black/10' : 'text-white/60 hover:text-white hover:bg-white/10'
               }`}
-              title="Kênh tiếp theo"
+              aria-label="Kênh tiếp theo"
             >
               <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -611,10 +640,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={handleToggleLoop}
+              onMouseEnter={(e) => showTooltip(isLooping ? 'Đang lặp lại' : 'Lặp lại (Loop)', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLooping ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/70 hover:text-black hover:bg-black/10' : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
-              title={isLooping ? 'Đang lặp lại' : 'Lặp lại (Loop)'}
+              aria-label={isLooping ? 'Đang lặp lại' : 'Lặp lại (Loop)'}
             >
               <Repeat className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -626,10 +657,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <button
               type="button"
               onClick={handleToggleCaptions}
+              onMouseEnter={(e) => showTooltip(isCaptionsOn ? 'Tắt phụ đề' : 'Bật phụ đề', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isCaptionsOn ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
-              title={isCaptionsOn ? 'Tắt phụ đề' : 'Bật phụ đề'}
+              aria-label={isCaptionsOn ? 'Tắt phụ đề' : 'Bật phụ đề'}
             >
               <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="15" x="2" y="4.5" rx="2" />
@@ -647,10 +680,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   toggleMute();
                   resetControlsTimeout();
                 }}
+                onMouseEnter={(e) => showTooltip(isMuted || volume === 0 ? 'Bật âm thanh' : 'Tắt tiếng', e)}
+                onMouseLeave={hideTooltip}
                 className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                   isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
-                title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
+                aria-label={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
               >
                 {isMuted || volume === 0 ? (
                   <VolumeX className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
@@ -660,10 +695,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </button>
               <div
                 onClick={handleVolumeSliderClick}
+                onMouseEnter={(e) => showTooltip(`Âm lượng: ${Math.round((isMuted ? 0 : volume) * 100)}%`, e)}
+                onMouseLeave={hideTooltip}
                 className={`w-10 sm:w-16 h-1 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 ${
                   isLightMode ? 'bg-black/20 hover:bg-black/40' : 'bg-white/30 hover:bg-white/50'
                 }`}
-                title={`Âm lượng: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
+                aria-label={`Âm lượng: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
               >
                 <div
                   className={`h-full rounded-full transition-all duration-75 ${
@@ -679,10 +716,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-fullscreen-btn"
               type="button"
               onClick={handleFullscreenToggle}
+              onMouseEnter={(e) => showTooltip(isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                 isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
-              title={isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}
+              aria-label={isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}
             >
               {isFullscreen ? (
                 <Minimize2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
@@ -696,10 +735,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               id="video-player-pip-btn"
               type="button"
               onClick={handlePiP}
+              onMouseEnter={(e) => showTooltip('Thu nhỏ Picture-in-Picture', e)}
+              onMouseLeave={hideTooltip}
               className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer hidden xs:flex ${
                 isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}
-              title="Thu nhỏ Picture-in-Picture"
+              aria-label="Thu nhỏ Picture-in-Picture"
             >
               <PictureInPicture2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </button>
@@ -713,10 +754,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   setShowMoreMenu(!showMoreMenu);
                   resetControlsTimeout();
                 }}
+                onMouseEnter={(e) => showTooltip('Tùy chọn khác', e)}
+                onMouseLeave={hideTooltip}
                 className={`p-1 sm:p-1.5 rounded-full transition-colors cursor-pointer ${
                   showMoreMenu ? 'text-[#ff6b22] bg-[#ff6b22]/15' : isLightMode ? 'text-black/80 hover:text-black hover:bg-black/10' : 'text-white/80 hover:text-white hover:bg-white/10'
                 }`}
-                title="Tùy chọn khác"
+                aria-label="Tùy chọn khác"
               >
                 <MoreHorizontal className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </button>
@@ -819,6 +862,34 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Tooltip for Player Controls (matching sidebar tooltip styling) */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {playerTooltip && (
+            <motion.div
+              key="player-control-tooltip"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+              style={{
+                position: 'fixed',
+                top: `${playerTooltip.top}px`,
+                left: `${playerTooltip.left}px`,
+                transform: 'translate(-50%, -100%)',
+                backgroundColor: isLightMode ? 'rgba(255, 255, 255, 0.50)' : 'rgba(24, 24, 28, 0.50)',
+                backdropFilter: 'blur(16px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+              }}
+              className="z-[99999] px-3 py-1.5 min-h-[30px] flex items-center rounded-[6px] text-[#111827] dark:text-white text-xs font-medium shadow-[0_4px_20px_rgba(0,0,0,0.18)] border-0 outline-none pointer-events-none whitespace-nowrap select-none"
+            >
+              {playerTooltip.label}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
