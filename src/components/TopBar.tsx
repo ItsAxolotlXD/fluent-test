@@ -193,6 +193,21 @@ export const TopBar: React.FC<TopBarProps> = ({
     setSearchQuery(tabSearchQuery || '');
   }, [tabSearchQuery, currentRoute]);
 
+  // Listen for vplay:focus-topbar-search event to open search flyout and focus input
+  useEffect(() => {
+    const handleFocusTopBarSearch = () => {
+      setIsSearchFlyoutOpen(true);
+      setIsSearchFocused(true);
+      const input = searchContainerRef.current?.querySelector('input');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    };
+    window.addEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
+    return () => window.removeEventListener('vplay:focus-topbar-search', handleFocusTopBarSearch);
+  }, []);
+
   // Load gallery items so TopBar search can find gallery media/documents
   useEffect(() => {
     galleryDB.getAll().then(setGalleryItems).catch(() => {});
@@ -1605,7 +1620,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
                   : 'bg-black/5 dark:bg-[#282c31]'
-              }`}
+              } ${currentRoute === '/search' || currentRoute.startsWith('/search') ? 'topbar-search-box-spotlight-glow' : ''}`}
             >
               <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
               <input
@@ -1634,6 +1649,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   setIsSearchFocused(false);
                 }}
                 placeholder={(() => {
+                  if (currentRoute === '/search' || currentRoute.startsWith('/search')) return 'Try new search here!';
                   if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                   if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';
                   if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';

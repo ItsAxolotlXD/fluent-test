@@ -1,167 +1,29 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { 
   X, 
-  Flame, 
   Play, 
   Tv, 
   Newspaper, 
   SlidersHorizontal,
   ChevronRight,
   Clock,
-  Sparkles,
-  Calendar
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 import { FluentSearchIcon } from '../components/FluentIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import { CHANNELS_DATA } from '../data/channels';
 import { NEWS_DATA } from '../data/news';
 import { Channel, NewsArticle } from '../types';
-import { CategoryIcon } from '../components/CategoryIcon';
 import { searchEpgSchedule, EpgSearchResultItem } from '../services/epgService';
 import { SpinningRing } from '../components/SpinningRing';
 import { useIsMobile } from '../hooks/useIsMobile';
-
 
 interface ImmersiveSearchProps {
   navigate: (path: string, state?: any) => void;
   onSelectChannel: (channel: Channel) => void;
   onClose?: () => void;
 }
-
-// Popular searches styled as circular badges (hình tròn)
-interface PopularSearchItem {
-  id: string;
-  title: string;
-  searchTerm: string;
-  subText?: string;
-  circleBg: string;
-  borderColor: string;
-  textColor: string;
-  icon: React.ReactNode;
-}
-
-const POPULAR_SEARCH_ITEMS: PopularSearchItem[] = [
-  {
-    id: 'loi-chao-ngay-moi',
-    title: 'Morning Greeting',
-    searchTerm: 'Morning Greeting',
-    subText: 'MORNING',
-    circleBg: 'radial-gradient(circle, #ff6b35 0%, #b83200 65%, #4a1200 100%)',
-    borderColor: '#ff8c42',
-    textColor: '#ffe5d9',
-    icon: <Flame className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'mua-he-nam-ay',
-    title: 'That Summer',
-    searchTerm: 'That Summer',
-    subText: 'DRAMA',
-    circleBg: 'radial-gradient(circle, #e6005a 0%, #99003c 65%, #3d0018 100%)',
-    borderColor: '#ff3385',
-    textColor: '#ffccd5',
-    icon: <Sparkles className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'lua-trang',
-    title: 'White Fire',
-    searchTerm: 'White Fire',
-    subText: 'HOT SERIES',
-    circleBg: 'radial-gradient(circle, #ff0055 0%, #a80038 65%, #470018 100%)',
-    borderColor: '#ff4d88',
-    textColor: '#ffffff',
-    icon: <Flame className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'thoi-su-19h',
-    title: 'Evening News 19:00',
-    searchTerm: 'Evening News 19:00',
-    subText: 'VTV1 LIVE',
-    circleBg: 'radial-gradient(circle, #c9184a 0%, #800f2f 65%, #420516 100%)',
-    borderColor: '#ff4d6d',
-    textColor: '#ffffff',
-    icon: <Newspaper className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'doi-bong-nu',
-    title: 'Village Women Football',
-    searchTerm: 'Village Women Football',
-    subText: 'COMEDY',
-    circleBg: 'radial-gradient(circle, #00b4d8 0%, #0077b6 65%, #023e8a 100%)',
-    borderColor: '#48cae4',
-    textColor: '#caf0f8',
-    icon: <Tv className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'phu-sa',
-    title: 'Alluvium',
-    searchTerm: 'Alluvium',
-    subText: 'CLASSIC FILM',
-    circleBg: 'radial-gradient(circle, #7209b7 0%, #480ca8 65%, #240046 100%)',
-    borderColor: '#9d4edd',
-    textColor: '#e0aaff',
-    icon: <Play className="w-6 h-6 text-white fill-white drop-shadow-md" />,
-  },
-  {
-    id: 'khai-giang',
-    title: 'School Opening',
-    searchTerm: 'School Opening',
-    subText: 'EDUCATION',
-    circleBg: 'radial-gradient(circle, #f77f00 0%, #d62828 65%, #6a040f 100%)',
-    borderColor: '#fcbf49',
-    textColor: '#ffeaa7',
-    icon: <Sparkles className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'pccc',
-    title: 'Fire Safety',
-    searchTerm: 'Fire Safety',
-    subText: 'SKILLS',
-    circleBg: 'radial-gradient(circle, #d90429 0%, #8d0801 65%, #370617 100%)',
-    borderColor: '#ef233c',
-    textColor: '#ffb3c1',
-    icon: <Flame className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'chinh-phu',
-    title: 'Government Policy',
-    searchTerm: 'Government Policy',
-    subText: 'PUBLIC AFFAIRS',
-    circleBg: 'radial-gradient(circle, #2a6f97 0%, #014f86 65%, #012a4a 100%)',
-    borderColor: '#468faf',
-    textColor: '#e0fbfc',
-    icon: <Newspaper className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'tin-tuc-21h',
-    title: 'News at 21:00',
-    searchTerm: 'News at 21:00',
-    subText: 'HIGHLIGHTS',
-    circleBg: 'radial-gradient(circle, #8338ec 0%, #5a189a 65%, #3c096c 100%)',
-    borderColor: '#9d4edd',
-    textColor: '#f3c4fb',
-    icon: <Clock className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'vtv-giai-tri',
-    title: 'VTV Entertainment',
-    searchTerm: 'VTV Entertainment',
-    subText: 'SHOWS & MUSIC',
-    circleBg: 'radial-gradient(circle, #b5179e 0%, #7209b7 65%, #3a0ca3 100%)',
-    borderColor: '#f72585',
-    textColor: '#ffb3c6',
-    icon: <Tv className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-  {
-    id: 'thoi-tiet',
-    title: 'Weather Forecast',
-    searchTerm: 'Weather Forecast',
-    subText: 'FORECAST',
-    circleBg: 'radial-gradient(circle, #0096c7 0%, #0077b6 65%, #03045e 100%)',
-    borderColor: '#48cae4',
-    textColor: '#caf0f8',
-    icon: <Sparkles className="w-6 h-6 text-white drop-shadow-md" />,
-  },
-];
 
 export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
   navigate,
@@ -323,8 +185,27 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
           </div>
         </div>
 
-        {/* Dynamic Display: Search Results or Default Sections */}
-        {trimmed ? (
+        {/* Deprecation Notice: exactly below find and search */}
+        <div className="flex flex-col items-center text-center space-y-3 py-4 sm:py-6 px-4 max-w-xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#111827] dark:text-white tracking-tight">
+            Spotlight Search is deprecated
+          </h2>
+          <p className="text-xs sm:text-[13.5px] text-[#6b7280] dark:text-[#a1a1aa] leading-relaxed max-w-lg">
+            The dedicated search page is no longer available. Instead, please try out the brand-new, better, smarter and more optimized search experience by clicking the search box located on the top bar.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
+            }}
+            className="mt-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white bg-[#d946ef] hover:bg-[#c026d3] active:bg-[#a21caf] shadow-[0_0_18px_rgba(217,70,239,0.4)] hover:shadow-[0_0_24px_rgba(217,70,239,0.6)] transition-all cursor-pointer flex items-center gap-2"
+          >
+            <span>Go to new search</span>
+          </button>
+        </div>
+
+        {/* Dynamic Display: Search Results */}
+        {trimmed && (
           /* Search Results View */
           <div className="space-y-6">
             {/* Filter Tabs & Header */}
@@ -607,60 +488,6 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
                 )}
               </motion.div>
             )}
-          </div>
-        ) : (
-          /* Default Immersive View with circular popular searches */
-          <div className="space-y-4 pt-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm sm:text-base font-bold font-square text-[#111827] dark:text-white tracking-wide flex items-center gap-2.5">
-                <CategoryIcon className="w-6.5 h-6.5 sm:w-7 sm:h-7 shrink-0" />
-                <span>Trending Searches</span>
-              </h3>
-              <span className="text-xs text-[#8A798C]">Click to search quickly</span>
-            </div>
-
-            {/* Circular Badges Grid (hình tròn giống chuyên trang đề xuất) */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 xl:grid-cols-6 gap-4 sm:gap-6 pt-2">
-              {POPULAR_SEARCH_ITEMS.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => {
-                    setQuery(item.searchTerm);
-                    inputRef.current?.focus();
-                  }}
-                  className="group flex flex-col items-center text-center cursor-pointer transition-all"
-                >
-                  {/* Circle Orb */}
-                  <div 
-                    className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex flex-col items-center justify-center p-2 text-center shadow-lg group-hover:scale-108 group-hover:shadow-[0_0_22px_rgba(230,0,90,0.45)] transition-all duration-300 overflow-hidden border-2 cursor-pointer"
-                    style={{
-                      background: item.circleBg,
-                      borderColor: item.borderColor,
-                    }}
-                  >
-                    {/* Glossy overlay sheen */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/35 pointer-events-none rounded-full" />
-                    
-                    <div className="z-10 mb-1 transform group-hover:scale-110 transition-transform duration-300">
-                      {item.icon}
-                    </div>
-
-                    {item.subText && (
-                      <span 
-                        className="text-[8px] sm:text-[9px] font-extrabold tracking-wider uppercase drop-shadow-sm z-10 px-1 line-clamp-1"
-                        style={{ color: item.textColor }}
-                      >
-                        {item.subText}
-                      </span>
-                    )}
-                  </div>
-
-                  <span className="mt-2.5 text-xs font-semibold text-[#D4CAD6] group-hover:text-white transition-colors line-clamp-2 max-w-[105px] leading-tight">
-                    {item.title}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </div>

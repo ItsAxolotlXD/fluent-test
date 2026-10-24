@@ -374,40 +374,31 @@ export default function App() {
     setPendingNavigation(null);
   };
 
-  // Open search handler (respects navigation mode and immersive search experiment)
+  // Open search handler - opens new search box on TopBar
   const handleOpenSearch = useCallback(() => {
-    if (settings.navigationMode === 'floaty') {
-      window.dispatchEvent(new CustomEvent('vplay:open-floaty-search'));
-    } else if (settings.immersiveSearch) {
-      if (currentRoute !== '/search') {
-        previousRouteRef.current = currentRoute;
-      }
-      navigate('/search');
-    } else {
-      setIsSpotlightOpen(true);
-    }
-  }, [settings.navigationMode, settings.immersiveSearch, currentRoute]);
+    window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
+  }, []);
 
   // Global search shortcut (Cmd+K / Ctrl+K)
   useEffect(() => {
     const handleGlobalSearchKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        handleOpenSearch();
+        window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
       }
     };
     window.addEventListener('keydown', handleGlobalSearchKey);
     return () => window.removeEventListener('keydown', handleGlobalSearchKey);
-  }, [handleOpenSearch]);
+  }, []);
 
-  // Global Customizable Keybinds (Alt+1: Home, Alt+2: Search, Alt+3: Tools menu, Alt+4: Settings, Alt+5: Recent Channel)
+  // Global Customizable Keybinds (Alt+1: Home, Alt+2: Search box mới, Alt+3: Tools menu, Alt+4: Settings, Alt+5: Recent Channel)
   useKeyboardShortcuts({
     onHome: useCallback(() => {
       navigate('/');
     }, [navigate]),
     onSearch: useCallback(() => {
-      handleOpenSearch();
-    }, [handleOpenSearch]),
+      window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
+    }, []),
     onTools: useCallback(() => {
       window.dispatchEvent(new CustomEvent('vone:toggle-tools'));
       window.dispatchEvent(new CustomEvent('vplay:toggle-tools'));

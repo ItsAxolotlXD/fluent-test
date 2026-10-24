@@ -18,7 +18,7 @@ export const KEYBIND_DEFINITIONS: KeybindDefinition[] = [
   {
     id: 'search',
     label: 'Search',
-    description: 'Open Spotlight Search.',
+    description: 'Open TopBar Search.',
     defaultKey: 'Alt+2'
   },
   {
