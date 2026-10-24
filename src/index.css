@@ -23,6 +23,44 @@
   src: url('https://fonts.gstatic.com/s/googlesans/v58/4UabrENHsxJlGDuGo1OIlLV154t3CwZ-Pw.woff2') format('woff2');
 }
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&display=swap');
+
+/* Global magenta text highlight/selection: #d946ef in light mode, #ff2d92 in dark mode */
+::selection {
+  background-color: #d946ef !important;
+  color: #ffffff !important;
+}
+
+::-moz-selection {
+  background-color: #d946ef !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) ::selection,
+html.dark ::selection,
+.dark ::selection {
+  background-color: #ff2d92 !important;
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) ::-moz-selection,
+html.dark ::-moz-selection,
+.dark ::-moz-selection {
+  background-color: #ff2d92 !important;
+  color: #ffffff !important;
+}
+
+html.light-mode ::selection,
+.light-mode ::selection {
+  background-color: #d946ef !important;
+  color: #ffffff !important;
+}
+
+html.light-mode ::-moz-selection,
+.light-mode ::-moz-selection {
+  background-color: #d946ef !important;
+  color: #ffffff !important;
+}
+
 @layer base {
   html.light-mode .light-mode-white-label {
     color: #000000 !important;
@@ -2131,7 +2169,7 @@ html.light-mode #immersive-search-page .text-\[\#E0D8E2\] {
   background-color: #323232 !important;
   background-image: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.18), 0 5px 16px rgba(0, 0, 0, 0.32);
-  transform: scale(1.085) !important;
+  transform: none !important;
 }
 
 #news-category-tabs button:hover,
@@ -2178,7 +2216,7 @@ html.light-mode #immersive-search-page .text-\[\#E0D8E2\] {
   background-image: none !important;
   border: none !important;
   box-shadow: none !important;
-  transform: scale(1.15) !important;
+  transform: none !important;
   opacity: 1 !important;
 }
 
@@ -2296,7 +2334,7 @@ button:hover > .settings-icon-hoverable,
   background-color: var(--ui-accent) !important;
   background-image: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
-  transform: scale(1.05) !important;
+  transform: none !important;
 }
 
 #btn-top-settings-apply-checkbox:hover::after {
@@ -2866,7 +2904,7 @@ button[class*="bg-[#4cc2ff]"],
   background-color: var(--ui-accent) !important;
   border-bottom: none !important;
   box-shadow: 0 6px 20px rgba(88, 101, 242, 0.55) !important;
-  transform: scale(1.05) !important;
+  transform: none !important;
 }
 
 #btn-changelogs-read,
@@ -2918,7 +2956,7 @@ button[class*="bg-[#4cc2ff]"]:hover,
 .btn-fd932f:hover {
   background-color: var(--ui-accent) !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 1px 0 rgba(255, 255, 255, 0.4), 0 5px 18px rgba(76, 194, 255, 0.48) !important;
-  transform: scale(1.05) !important;
+  transform: none !important;
 }
 
 #btn-discord-join:active,
@@ -3131,7 +3169,7 @@ button:not(:disabled):not([role="switch"]):not([id^="toggle-"]):not(#waves-deskt
 }
 
 button:not(:disabled):not([role="switch"]):not([id^="toggle-"]):not(#waves-desktop-sidebar button):not(#waves-desktop-sidebar *):not(.sidebar-nav-item):not([id^="sidebar-nav-"]):not([id^="mobile-nav-"]):not(#btn-sidebar-collapse):not(#btn-sidebar-expand):not(#btn-sidebar-expand-logo):not(#btn-sidebar-expand-toggle):not(#btn-desktop-sidebar-toggle):not(#btn-mobile-sidebar-toggle):not(#btn-mobile-sidebar-close):not(#btn-sidebar-back):not(#btn-top-tools-menu):not(#btn-top-search):not(#btn-top-notifications):not(#btn-top-light-mode):not(#btn-top-settings-apply-checkbox):not(#btn-mobile-menu-toggle):not(#btn-topbar-nav-tv):not(#btn-topbar-nav-news):not(#slider-prev-btn):not(#slider-next-btn):not(#dock-spotlight-btn):not(#dock-search):not(#dock-home):not(#dock-tv):not(#dock-news):not(#dock-settings):not(#dock-more):not(#btn-discord-close):not(#btn-welcome-close-icon):not(#btn-discord-join):not(#btn-welcome-close):not(#btn-under-construction-close):not(#btn-changelogs-read):not(#btn-test-vplay-switch):not(#btn-hero-watch-now):not(#btn-theme-light):not(#btn-theme-dark):not(#livetv-category-tabs button):not([id^="livetv-cat-btn-"]):not(#news-category-tabs button):not([id^="news-cat-btn-"]):not([id^="video-player-"]):not(.video-player-glass-btn):not(.video-player-live-badge):not(.video-player-accent-btn):not(.glass-player-btn):not(.glass-player-center-play):not(.glass-player-center-seek):not([id^="nav-item-"]):not([id^="mobile-nav-item-"]):hover {
-  transform: scale(1.06);
+  transform: none !important;
 }
 
 button:not(:disabled):not([role="switch"]):not([id^="toggle-"]):not(#waves-desktop-sidebar button):not(#waves-desktop-sidebar *):not(.sidebar-nav-item):not([id^="sidebar-nav-"]):not([id^="mobile-nav-"]):not(#btn-sidebar-collapse):not(#btn-sidebar-expand):not(#btn-sidebar-expand-logo):not(#btn-sidebar-expand-toggle):not(#btn-desktop-sidebar-toggle):not(#btn-mobile-sidebar-toggle):not(#btn-mobile-sidebar-close):not(#btn-sidebar-back):not(#btn-top-tools-menu):not(#btn-top-search):not(#btn-top-notifications):not(#btn-top-light-mode):not(#btn-top-settings-apply-checkbox):not(#btn-mobile-menu-toggle):not(#btn-topbar-nav-tv):not(#btn-topbar-nav-news):not(#slider-prev-btn):not(#slider-next-btn):not(#dock-spotlight-btn):not(#dock-search):not(#dock-home):not(#dock-tv):not(#dock-news):not(#dock-settings):not(#dock-more):not(#btn-discord-close):not(#btn-welcome-close-icon):not(#btn-discord-join):not(#btn-welcome-close):not(#btn-under-construction-close):not(#btn-changelogs-read):not(#btn-test-vplay-switch):not(#btn-hero-watch-now):not(#btn-theme-light):not(#btn-theme-dark):not(#livetv-category-tabs button):not([id^="livetv-cat-btn-"]):not(#news-category-tabs button):not([id^="news-cat-btn-"]):not([id^="video-player-"]):not(.video-player-glass-btn):not(.video-player-live-badge):not(.video-player-accent-btn):not(.glass-player-btn):not(.glass-player-center-play):not(.glass-player-center-seek):not([id^="nav-item-"]):not([id^="mobile-nav-item-"]):active {
@@ -3401,7 +3439,7 @@ html.light-mode .btn-fd932f:hover {
   background-color: #0067c0 !important;
   background-image: none !important;
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.45), 0 4px 12px rgba(0, 95, 184, 0.40) !important;
-  transform: scale(1.03) !important;
+  transform: none !important;
   color: #FFFFFF !important;
 }
 
@@ -3995,22 +4033,35 @@ html.light-mode .fluent-input-box:focus-within {
 html:not(.light-mode) #topbar-search-box,
 html.dark #topbar-search-box,
 html:not(.light-mode) .fluent-search-box,
-html.dark .fluent-search-box,
-html:not(.light-mode) .fluent-input-box,
-html.dark .fluent-input-box {
+html.dark .fluent-search-box {
   background-color: #282c31 !important;
   border-radius: 6px !important;
   box-shadow: none !important;
 }
+
+html:not(.light-mode) .fluent-input-box,
+html.dark .fluent-input-box {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  -webkit-backdrop-filter: blur(50px) !important;
+  backdrop-filter: blur(50px) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
 html:not(.light-mode) #topbar-search-box:focus-within,
 html.dark #topbar-search-box:focus-within,
 html:not(.light-mode) #topbar-search-box.search-flyout-open,
 html.dark #topbar-search-box.search-flyout-open,
 html:not(.light-mode) .fluent-search-box:focus-within,
-html.dark .fluent-search-box:focus-within,
+html.dark .fluent-search-box:focus-within {
+  background-color: #282c31 !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
 html:not(.light-mode) .fluent-input-box:focus-within,
 html.dark .fluent-input-box:focus-within {
-  background-color: #282c31 !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
   color: #ffffff !important;
   border-radius: 6px !important;
 }
@@ -4591,11 +4642,11 @@ html.light-mode .fluent-btn-secondary:active {
 #channels-search-box,
 #settings-search-box,
 #find-words-bar > div,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
-input[type="email"],
-input[type="url"],
-input[type="password"],
-input[type="number"]:not([data-no-line]) {
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input) {
   border-bottom: 1.5px solid #777777 !important;
   transition: border-bottom-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
@@ -4616,11 +4667,11 @@ input[type="number"]:not([data-no-line]) {
 #channels-search-box:focus-within,
 #settings-search-box:focus-within,
 #find-words-bar > div:focus-within,
-input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
-input[type="email"]:focus,
-input[type="url"]:focus,
-input[type="password"]:focus,
-input[type="number"]:focus {
+input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus {
   border-bottom: 1.5px solid #4cc2ff !important;
   outline: none !important;
 }
@@ -4634,11 +4685,11 @@ html.light-mode #sidebar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #settings-search-box,
 html.light-mode #find-words-bar > div,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input),
-html.light-mode input[type="email"],
-html.light-mode input[type="url"],
-html.light-mode input[type="password"],
-html.light-mode input[type="number"]:not([data-no-line]) {
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input),
+html.light-mode input[type="number"]:not([data-no-line]):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input) {
   border-bottom: 1.5px solid #8e8e93 !important;
 }
 
@@ -4652,12 +4703,34 @@ html.light-mode #sidebar-search-box:focus-within,
 html.light-mode #channels-search-box:focus-within,
 html.light-mode #settings-search-box:focus-within,
 html.light-mode #find-words-bar > div:focus-within,
-html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):focus,
-html.light-mode input[type="email"]:focus,
-html.light-mode input[type="url"]:focus,
-html.light-mode input[type="password"]:focus,
-html.light-mode input[type="number"]:focus {
+html.light-mode input[type="text"]:not(#spotlight-search-container input):not(#immersive-search-capsule input):not(#sidebar-search-box input):not(#settings-search-box input):not(#channels-search-box input):not(#topbar-search-box input):not(.winui-search-input input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="email"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="url"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="password"]:not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus,
+html.light-mode input[type="number"]:not(.fluent-search-box input):not(.fluent-input-box input):not(.fluent-modal-dialog input):focus {
   border-bottom: 1.5px solid #005fb8 !important;
+}
+
+/* Ensure text inside input boxes has no underline or inner border-bottom */
+.fluent-input-box input,
+.fluent-input-box input:focus,
+.fluent-search-box input,
+.fluent-search-box input:focus,
+#topbar-search-box input,
+#topbar-search-box input:focus,
+.winui-search-input input,
+.winui-search-input input:focus,
+.fluent-modal-dialog input,
+.fluent-modal-dialog input:focus,
+html.dark .fluent-input-box input,
+html.dark .fluent-input-box input:focus,
+html.light-mode .fluent-input-box input,
+html.light-mode .fluent-input-box input:focus {
+  border-bottom: none !important;
+  border-bottom-width: 0 !important;
+  border-bottom-color: transparent !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
 /* Search Sparkle Icon styling */
@@ -6098,7 +6171,7 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
   background-color: rgba(255, 255, 255, 0.30) !important;
   border-color: rgba(255, 255, 255, 0.60) !important;
   box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.65), inset 0 -1px 2px 0 rgba(255, 255, 255, 0.65), 0 12px 30px rgba(0, 0, 0, 0.45) !important;
-  transform: scale(1.06) !important;
+  transform: none !important;
 }
 
 .glass-player-btn:active {
@@ -6120,7 +6193,7 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
   background-color: rgba(255, 255, 255, 0.32) !important;
   border-color: rgba(255, 255, 255, 0.75) !important;
   box-shadow: inset 0 2px 3px 0 rgba(255, 255, 255, 0.80), inset 0 -2px 3px 0 rgba(255, 255, 255, 0.80), 0 20px 50px rgba(0, 0, 0, 0.60) !important;
-  transform: scale(1.08) !important;
+  transform: none !important;
 }
 
 .glass-player-center-play:active {
@@ -6142,7 +6215,7 @@ html.light-mode #news-summary-dialog button.bg-\[\#28282E\]:hover {
   background-color: rgba(255, 255, 255, 0.28) !important;
   border-color: rgba(255, 255, 255, 0.60) !important;
   box-shadow: inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.65), inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.65), 0 14px 36px rgba(0, 0, 0, 0.45) !important;
-  transform: scale(1.08) !important;
+  transform: none !important;
 }
 
 .glass-player-center-seek:active {
@@ -7680,6 +7753,7 @@ html.light-mode:not(.super-dark) #root header.sticky {
 
 /* Shared frosted-white surface strength for search, channel cards, and settings options. */
 html:not(.light-mode) #topbar-search-box,
+html:not(.light-mode) .fluent-input-box,
 html:not(.light-mode) [id^="recommended-channel-"],
 html:not(.light-mode) [id^="livetv-channel-card-"],
 html:not(.light-mode) [id^="home-channel-card-"],
@@ -8010,5 +8084,21 @@ html.no-shiny-outline #livetv-category-tabs button:not(#btn-livetv-open-epg-side
 [id^="livetv-cat-btn-"]::after {
   display: none !important;
   content: none !important;
+}
+
+/* All buttons in the app: strictly never zoom or scale up on hover */
+button:hover,
+[role="button"]:hover,
+button.btn:hover,
+.btn:hover,
+button:hover *,
+[role="button"]:hover * {
+  --tw-scale-x: 1 !important;
+  --tw-scale-y: 1 !important;
+}
+
+button:hover,
+[role="button"]:hover {
+  scale: 1 !important;
 }
 

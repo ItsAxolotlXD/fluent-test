@@ -323,7 +323,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
             id="btn-coverflow-prev"
             onClick={() => prevSlide(true)}
             aria-label="Slide trước"
-            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-black/80 hover:text-black dark:text-white/75 dark:hover:text-white transition-all transform hover:scale-120 active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
+            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-black/80 hover:text-black dark:text-white/75 dark:hover:text-white transition-all transform active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
           >
             <ChevronLeft className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.25]" />
           </button>
@@ -335,7 +335,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
             id="btn-coverflow-next"
             onClick={() => nextSlide(true)}
             aria-label="Slide tiếp theo"
-            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-black/80 hover:text-black dark:text-white/75 dark:hover:text-white transition-all transform hover:scale-120 active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
+            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 p-1.5 sm:p-2 text-black/80 hover:text-black dark:text-white/75 dark:hover:text-white transition-all transform active:scale-95 cursor-default select-none outline-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] bg-transparent border-0"
           >
             <ChevronRight className="w-8 h-8 sm:w-9 sm:h-9 stroke-[2.25]" />
           </button>

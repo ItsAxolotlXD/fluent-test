@@ -511,7 +511,7 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
   let elementIndex = 0;
 
   return (
-    <div className="home-preview-page mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 selection:bg-[#ff01ff] selection:text-black dark:selection:bg-[#ff82ff] sm:gap-6 sm:py-4">
+    <div className="home-preview-page mx-auto flex w-full max-w-7xl flex-col gap-5 px-1 py-2 selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white sm:gap-6 sm:py-4">
       {/* 1. Hero Carousel */}
       <motion.div {...slideUpProps(elementIndex++)}>
         <HeroCarousel channels={channels} onSelectChannel={onSelectChannel} navigate={navigate} flipActiveSlide />

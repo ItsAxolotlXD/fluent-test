@@ -202,48 +202,116 @@ export default function App() {
     });
   };
 
-  // Edge swipe gesture: vuốt từ cạnh trái sang để mở sidebar
+  const [mobileDragOffset, setMobileDragOffset] = useState<number | null>(null);
+
+  // Edge swipe gesture: vuốt từ cạnh trái sang để mở sidebar - follow finger trong thời gian thực
   useEffect(() => {
     let startX = 0;
     let startY = 0;
     let isTrackingEdgeSwipe = false;
+    let isSwipingHorizontally = false;
+    let lastX = 0;
+    let lastTime = 0;
+    let velocityX = 0;
+
+    const getDrawerWidth = () => {
+      return typeof window !== 'undefined' ? Math.min(285, window.innerWidth * 0.85) : 285;
+    };
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       const touch = e.touches[0];
-      // Swipe originates from within 45px of the left screen edge
-      if (touch.clientX <= 45) {
+      // Swipe originates from within 45px of the left screen edge on mobile/tablet
+      if (touch.clientX <= 45 && window.innerWidth < 768) {
         startX = touch.clientX;
         startY = touch.clientY;
+        lastX = touch.clientX;
+        lastTime = Date.now();
+        velocityX = 0;
         isTrackingEdgeSwipe = true;
+        isSwipingHorizontally = false;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isTrackingEdgeSwipe) return;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      const now = Date.now();
+      const dt = Math.max(1, now - lastTime);
+      velocityX = (touch.clientX - lastX) / dt;
+      lastX = touch.clientX;
+      lastTime = now;
+
+      // Determine intent: if moving horizontally to the right
+      if (!isSwipingHorizontally) {
+        if (deltaX > 8) {
+          if (Math.abs(deltaX) > Math.abs(deltaY) * 0.8) {
+            isSwipingHorizontally = true;
+          } else {
+            isTrackingEdgeSwipe = false;
+            return;
+          }
+        } else if (deltaX < -5 || Math.abs(deltaY) > 20) {
+          isTrackingEdgeSwipe = false;
+          return;
+        }
+      }
+
+      if (isSwipingHorizontally) {
+        if (e.cancelable) e.preventDefault();
+        const drawerWidth = getDrawerWidth();
+        const currentX = Math.min(drawerWidth, Math.max(0, touch.clientX));
+        setMobileDragOffset(currentX);
       }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (!isTrackingEdgeSwipe) return;
       isTrackingEdgeSwipe = false;
-      const touch = e.changedTouches[0];
-      const deltaX = touch.clientX - startX;
-      const deltaY = touch.clientY - startY;
 
-      // Swiped right with at least 40px, predominantly horizontal
-      if (deltaX > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
-        setIsMobileSidebarOpen(true);
-        if (isSidebarCollapsed) {
-          setIsSidebarCollapsed(false);
-          try {
-            localStorage.setItem('waves_sidebar_collapsed', 'false');
-          } catch {}
+      if (isSwipingHorizontally) {
+        isSwipingHorizontally = false;
+        const drawerWidth = getDrawerWidth();
+        const touch = e.changedTouches[0];
+        const finalX = touch.clientX;
+
+        // Open if dragged past 28% of width or flicked to right with positive velocity
+        if (finalX > drawerWidth * 0.28 || velocityX > 0.3) {
+          setIsMobileSidebarOpen(true);
+          if (isSidebarCollapsed) {
+            setIsSidebarCollapsed(false);
+            try {
+              localStorage.setItem('waves_sidebar_collapsed', 'false');
+            } catch {}
+          }
+        } else {
+          setIsMobileSidebarOpen(false);
         }
+        setMobileDragOffset(null);
+      }
+    };
+
+    const handleTouchCancel = () => {
+      if (isTrackingEdgeSwipe) {
+        isTrackingEdgeSwipe = false;
+        isSwipingHorizontally = false;
+        setMobileDragOffset(null);
       }
     };
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
     };
   }, [isSidebarCollapsed]);
 
@@ -379,17 +447,17 @@ export default function App() {
     window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
   }, []);
 
-  // Global search shortcut (Cmd+K / Ctrl+K)
+  // Global search shortcut: Ctrl+K / Cmd+K vẫn mở page spotlight search (/search)
   useEffect(() => {
     const handleGlobalSearchKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
+        navigate('/search');
       }
     };
     window.addEventListener('keydown', handleGlobalSearchKey);
     return () => window.removeEventListener('keydown', handleGlobalSearchKey);
-  }, []);
+  }, [navigate]);
 
   // Global Customizable Keybinds (Alt+1: Home, Alt+2: Search box mới, Alt+3: Tools menu, Alt+4: Settings, Alt+5: Recent Channel)
   useKeyboardShortcuts({
@@ -641,7 +709,7 @@ export default function App() {
         <div
         data-immersive-sidebar={settings.immersiveSidebar}
       data-sidebar-position={settings.sidebarPosition}
-      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#4cc2ff] selection:text-black relative`}
+      className={`min-h-screen ${settings.superDarkMode ? 'bg-black' : 'bg-[#f9f9f9] dark:bg-[#1b1f24]'} text-[#111827] dark:text-[#E0E0E6] flex font-sans selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white relative`}
     >
       {/* Fixed atmospheric cosmic background matching custom nebula gradient */}
       <div 
@@ -653,7 +721,7 @@ export default function App() {
       {isInkCanvasEditor && !isInkCanvasChromeVisible && <><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 bottom-0 w-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 top-0 right-0 h-3 z-[200]" /><div onMouseEnter={() => setIsInkCanvasChromeVisible(true)} className="fixed left-0 bottom-0 right-0 h-3 z-[200]" /></>}
 
       {/* Sidebar Navigation (Desktop + Mobile Drawer) */}
-      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
+      {(settings.navigationMode === 'sidebar' || isMobileSidebarOpen || mobileDragOffset !== null) && (!isInkCanvasEditor || isInkCanvasChromeVisible) && !isGalleryViewerOpen && (
         <Sidebar
           currentRoute={currentRoute}
           navigate={navigate}
@@ -662,6 +730,7 @@ export default function App() {
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={toggleSidebarCollapse}
           isMobileOpen={isMobileSidebarOpen}
+          mobileDragOffset={mobileDragOffset}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           channels={channels}
           currentChannel={currentChannel}
@@ -688,7 +757,7 @@ export default function App() {
       )}
 
       {/* Main App Container */}
-      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-300 ease-in-out bg-[#f3f3f3] dark:bg-[#1b1f24] ${
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)] bg-[#f3f3f3] dark:bg-[#1b1f24] ${
         isInkCanvasEditor || isGalleryViewerOpen
           ? 'md:pl-0 md:pr-0 pb-0'
           : settings.navigationMode === 'topbar'

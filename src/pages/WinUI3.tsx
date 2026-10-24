@@ -423,10 +423,14 @@ export const WinUI3: React.FC = () => {
                   Ô nhập văn bản tên người dùng hiển thị
                 </div>
               </div>
-              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-white/10 flex items-center px-3.5 rounded-[6px] transition-colors border-none backdrop-blur-[50px]">
                 <input
                   type="text"
                   placeholder="Enter a name"
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
                   className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
                 />
               </div>
@@ -441,10 +445,14 @@ export const WinUI3: React.FC = () => {
                   Ô nhập địa chỉ thư điện tử xác thực
                 </div>
               </div>
-              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+              <div className="fluent-input-box relative w-full sm:w-64 h-9 bg-black/5 dark:bg-white/10 flex items-center px-3.5 rounded-[6px] transition-colors border-none backdrop-blur-[50px]">
                 <input
                   type="email"
                   placeholder="you@example.com"
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
                   className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
                 />
               </div>
@@ -744,7 +752,7 @@ export const WinUI3: React.FC = () => {
                         }`}
                       >
                         <div
-                          className="flex items-center justify-center transition-transform group-hover:scale-110 mb-2"
+                          className="flex items-center justify-center mb-2"
                           style={{ width: `${Math.max(36, iconPreviewSize + 12)}px`, height: `${Math.max(36, iconPreviewSize + 12)}px` }}
                         >
                           <div style={{ width: `${iconPreviewSize}px`, height: `${iconPreviewSize}px` }} className="flex items-center justify-center">

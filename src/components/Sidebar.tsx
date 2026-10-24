@@ -211,6 +211,7 @@ interface SidebarProps {
   onOpenUpdate?: () => void;
   onOpenOfficeTool?: (tool: string) => void;
   isSplashFinished?: boolean;
+  mobileDragOffset?: number | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -236,7 +237,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onChangeFontSize = (_size: number) => {},
   onOpenUpdate = () => {},
   onOpenOfficeTool = (_tool: string) => {},
-  isSplashFinished = false
+  isSplashFinished = false,
+  mobileDragOffset = null
 }) => {
   const { settings, updateSetting } = useSettings();
   const { favoriteChannelIds } = useFavorites();
@@ -382,27 +384,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isToolsFlyoutOpen, isSignInFlyoutOpen]);
 
-  // Touch swipe to close mobile drawer
+  // Touch swipe to close mobile drawer & follow finger
   const drawerTouchStartX = useRef<number | null>(null);
-  const drawerTouchStartY = useRef<number | null>(null);
+  const [closeDragOffset, setCloseDragOffset] = useState<number | null>(null);
 
   const handleDrawerTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       drawerTouchStartX.current = e.touches[0].clientX;
-      drawerTouchStartY.current = e.touches[0].clientY;
+      setCloseDragOffset(0);
+    }
+  };
+
+  const handleDrawerTouchMove = (e: React.TouchEvent) => {
+    if (drawerTouchStartX.current === null) return;
+    const deltaX = e.touches[0].clientX - drawerTouchStartX.current;
+    if (deltaX < 0) {
+      setCloseDragOffset(deltaX);
+    } else {
+      setCloseDragOffset(0);
     }
   };
 
   const handleDrawerTouchEnd = (e: React.TouchEvent) => {
-    if (drawerTouchStartX.current === null || drawerTouchStartY.current === null) return;
+    if (drawerTouchStartX.current === null) return;
     const deltaX = e.changedTouches[0].clientX - drawerTouchStartX.current;
-    const deltaY = e.changedTouches[0].clientY - drawerTouchStartY.current;
-
-    if (deltaX < -35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+    if (deltaX < -55) {
       onCloseMobile?.();
     }
     drawerTouchStartX.current = null;
-    drawerTouchStartY.current = null;
+    setCloseDragOffset(null);
   };
 
   const favoriteChannels = useMemo(() => {
@@ -1801,7 +1811,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className={`hidden md:flex flex-col h-screen bg-[#f3f3f3] dark:bg-[#1b1f24] text-[#111827] dark:text-white select-none shrink-0 fixed top-0 overflow-visible border-r border-[#e5e5e5] dark:border-[#2e2e2e] ${
             settings.sidebarPosition === 'right' ? 'right-0 border-l' : 'left-0 border-r'
           } ${
-            shouldAnimateSidebar ? 'transition-[width,box-shadow] duration-300 ease-in-out' : 'transition-none'
+            shouldAnimateSidebar ? 'transition-[width,box-shadow] duration-[160ms] ease-[cubic-bezier(0.34,1.45,0.64,1)]' : 'transition-none'
           } ${
             effectiveCollapsed ? 'w-[48px]' : 'w-[260px]'
           } ${
@@ -2178,50 +2188,74 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </aside>
       )}
 
-      {/* 2. Mobile Drawer Navigation with Smooth Animation */}
+      {/* 2. Mobile Drawer Navigation with Smooth Animation & Follow Finger */}
       <AnimatePresence>
-        {isMobileOpen && (
-          <div 
-            className="fixed inset-0 z-50 md:hidden flex"
-            role="dialog"
-            aria-modal="true"
-          >
-            {/* Backdrop with smooth fade */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.28, ease: 'easeOut' }}
-              onClick={onCloseMobile}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
-              aria-hidden="true"
-            />
+        {(isMobileOpen || (mobileDragOffset !== null && mobileDragOffset > 0)) && (() => {
+          const drawerWidth = typeof window !== 'undefined' ? Math.min(285, window.innerWidth * 0.85) : 285;
+          const isDragging = (mobileDragOffset !== null && mobileDragOffset > 0) || (closeDragOffset !== null && closeDragOffset < 0);
+          
+          let currentTranslateX = 0;
+          if (mobileDragOffset !== null && mobileDragOffset > 0) {
+            currentTranslateX = Math.min(0, -drawerWidth + mobileDragOffset);
+          } else if (closeDragOffset !== null && closeDragOffset < 0) {
+            currentTranslateX = Math.max(-drawerWidth, closeDragOffset);
+          }
 
-            {/* Slide-out Sidebar Drawer with smooth spring transition */}
-            <motion.div 
-              id="waves-mobile-sidebar"
-              initial={{ x: '-100%', opacity: 0.8 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '-100%', opacity: 0.8 }}
-              transition={{ 
-                type: 'spring', 
-                damping: 26, 
-                stiffness: 290, 
-                mass: 0.8 
-              }}
-              onTouchStart={handleDrawerTouchStart}
-              onTouchEnd={handleDrawerTouchEnd}
-              className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3]/90 dark:bg-[#1b1f24]/90 text-[#111827] dark:text-white shadow-none flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333] backdrop-blur-2xl"
-              style={{
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                boxShadow: 'none',
-              }}
+          let backdropOpacity = 1;
+          if (mobileDragOffset !== null && mobileDragOffset > 0) {
+            backdropOpacity = Math.min(1, Math.max(0, mobileDragOffset / drawerWidth));
+          } else if (closeDragOffset !== null && closeDragOffset < 0) {
+            backdropOpacity = Math.max(0, 1 + closeDragOffset / drawerWidth);
+          }
+
+          return (
+            <div 
+              className="fixed inset-0 z-50 md:hidden flex"
+              role="dialog"
+              aria-modal="true"
             >
-              {renderSidebarBody(true)}
-            </motion.div>
-          </div>
-        )}
+              {/* Backdrop with smooth fade or follow finger */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: backdropOpacity }}
+                exit={{ opacity: 0 }}
+                transition={isDragging ? { duration: 0 } : { duration: 0.22, ease: 'easeOut' }}
+                onClick={onCloseMobile}
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+                aria-hidden="true"
+              />
+
+              {/* Slide-out Sidebar Drawer with smooth spring transition or follow finger */}
+              <motion.div 
+                id="waves-mobile-sidebar"
+                initial={{ x: '-100%', opacity: 0.8 }}
+                animate={{ x: currentTranslateX, opacity: 1 }}
+                exit={{ x: '-100%', opacity: 0.8 }}
+                transition={
+                  isDragging
+                    ? { duration: 0 }
+                    : { 
+                        type: 'spring', 
+                        damping: 18, 
+                        stiffness: 450, 
+                        mass: 0.6 
+                      }
+                }
+                onTouchStart={handleDrawerTouchStart}
+                onTouchMove={handleDrawerTouchMove}
+                onTouchEnd={handleDrawerTouchEnd}
+                className="relative w-[285px] max-w-[85vw] h-full bg-[#f3f3f3]/90 dark:bg-[#1b1f24]/90 text-[#111827] dark:text-white shadow-none flex flex-col z-10 border-r border-[#e5e5e5] dark:border-[#333333] backdrop-blur-2xl"
+                style={{
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  boxShadow: 'none',
+                }}
+              >
+                {renderSidebarBody(true)}
+              </motion.div>
+            </div>
+          );
+        })()}
       </AnimatePresence>
 
       {/* Discord Welcome Modal */}

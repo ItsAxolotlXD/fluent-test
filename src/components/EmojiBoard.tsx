@@ -274,7 +274,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
                     e.preventDefault();
                     handleEmojiClick(emoji);
                   }}
-                  className="w-[46px] h-[40px] sm:w-[54px] sm:h-[46px] flex items-center justify-center text-[28px] sm:text-[32px] leading-none transition-transform hover:scale-120 active:scale-130 active:opacity-75 cursor-default select-none bg-transparent border-0 shadow-none p-0 outline-none"
+                  className="w-[46px] h-[40px] sm:w-[54px] sm:h-[46px] flex items-center justify-center text-[28px] sm:text-[32px] leading-none transition-opacity active:opacity-75 cursor-default select-none bg-transparent border-0 shadow-none p-0 outline-none"
                 >
                   {emoji}
                 </button>

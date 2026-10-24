@@ -576,7 +576,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </button>
 
             {/* Center Main Play / Pause Button with Vibrant Orange to Magenta / Purple Gradient Ring */}
-            <div className="p-[2.5px] rounded-full bg-gradient-to-br from-[#ff6b22] via-[#e11d48] to-[#a855f7] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform">
+            <div className="p-[2.5px] rounded-full bg-gradient-to-br from-[#ff6b22] via-[#e11d48] to-[#a855f7] shadow-lg flex items-center justify-center active:scale-95 transition-transform">
               <button
                 id="video-player-play-btn"
                 type="button"

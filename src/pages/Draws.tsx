@@ -1088,7 +1088,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                     if (activeColorSlot === 1) setColor1(col);
                     else setColor2(col);
                   }}
-                  className="w-3.5 h-3.5 rounded-[3px] border border-black/30 dark:border-black/50 hover:scale-125 transition-transform cursor-pointer"
+                  className="w-3.5 h-3.5 rounded-[3px] border border-black/30 dark:border-black/50 transition-colors cursor-pointer"
                   style={{ backgroundColor: col }}
                   title={col}
                 />

@@ -1626,6 +1626,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               <input
                 type="text"
                 value={searchQuery}
+                spellCheck={false}
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
                 onChange={(e) => {
                   const val = e.target.value;
                   setSearchQuery(val);

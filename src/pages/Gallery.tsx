@@ -99,7 +99,7 @@ interface GalleryProps {
 
 type FilterType = 'all' | 'image' | 'video' | 'audio' | 'document' | 'favorites' | 'folders';
 type GridDensity = 'small' | 'medium' | 'large';
-type SortOrder = 'date-desc' | 'date-asc' | 'title-asc' | 'size-desc';
+type SortOrder = 'dont-sort' | 'year' | 'month';
 
 export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', routeState }) => {
   const { settings } = useSettings();
@@ -108,7 +108,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
   const [items, setItems] = useState<GalleryMediaItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [gridDensity, setGridDensity] = useState<GridDensity>('medium');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('date-desc');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('month');
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const filterDropdownRef = useRef<HTMLDivElement>(null);
@@ -261,10 +261,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
   ];
 
   const SORT_OPTIONS: { id: SortOrder; label: string }[] = [
-    { id: 'date-desc', label: 'Newest first' },
-    { id: 'date-asc', label: 'Oldest first' },
-    { id: 'title-asc', label: 'Name (A to Z)' },
-    { id: 'size-desc', label: 'Largest size' },
+    { id: 'dont-sort', label: "Don't sort" },
+    { id: 'year', label: 'Year' },
+    { id: 'month', label: 'Month' },
   ];
 
   // Filter & sort items
@@ -294,29 +293,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       return true;
     });
 
-    // Sort order
+    // Sort order: always newest down to oldest
     result = [...result].sort((a, b) => {
-      if (sortOrder === 'date-desc') {
-        const timeA = new Date(a.dateAdded).getTime() || 0;
-        const timeB = new Date(b.dateAdded).getTime() || 0;
-        return timeB - timeA;
-      }
-      if (sortOrder === 'date-asc') {
-        const timeA = new Date(a.dateAdded).getTime() || 0;
-        const timeB = new Date(b.dateAdded).getTime() || 0;
-        return timeA - timeB;
-      }
-      if (sortOrder === 'title-asc') {
-        return a.title.localeCompare(b.title);
-      }
-      if (sortOrder === 'size-desc') {
-        return (b.size || 0) - (a.size || 0);
-      }
-      return 0;
+      const timeA = new Date(a.dateAdded).getTime() || 0;
+      const timeB = new Date(b.dateAdded).getTime() || 0;
+      return timeB - timeA;
     });
 
     return result;
-  }, [items, activeFilter, searchQuery, currentFolderId, sortOrder]);
+  }, [items, activeFilter, searchQuery, currentFolderId]);
 
   const folderItemCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -338,43 +323,87 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
     return { images, videos, audios, docs, favs };
   }, [items]);
 
-  // Group filtered items by date/year matching Windows 11 Photos layout
+  // Group filtered items based on sortOrder (Don't sort, Year, Month)
   const groupedSections = useMemo(() => {
     if (filteredItems.length === 0) return [];
 
-    const groupsMap = new Map<string, { year: number; label: string; items: GalleryMediaItem[] }>();
+    // 1. Don't sort: hiển thị toàn bộ files/items ở gallery theo thứ tự từ newest xuống oldest k chia theo ngày tháng năm
+    if (sortOrder === 'dont-sort') {
+      return [{
+        id: 'all-items',
+        year: 0,
+        label: '',
+        isUngrouped: true,
+        items: filteredItems,
+      }];
+    }
+
+    // 2. Year: chỉ chia theo năm
+    if (sortOrder === 'year') {
+      const groupsMap = new Map<number, { year: number; label: string; items: GalleryMediaItem[] }>();
+      for (const item of filteredItems) {
+        let year = item.year;
+        if (!year && item.dateAdded) {
+          const d = new Date(item.dateAdded);
+          if (!isNaN(d.getFullYear())) year = d.getFullYear();
+        }
+        year = year || 2026;
+
+        if (!groupsMap.has(year)) {
+          groupsMap.set(year, { year, label: `${year}`, items: [] });
+        }
+        groupsMap.get(year)!.items.push(item);
+      }
+
+      return Array.from(groupsMap.entries())
+        .sort((a, b) => b[0] - a[0])
+        .map(([year, val]) => ({
+          id: `year-${year}`,
+          year: val.year,
+          label: val.label,
+          isUngrouped: false,
+          items: val.items,
+        }));
+    }
+
+    // 3. Month: chia theo tháng, năm, VD October 2026
+    const groupsMap = new Map<string, { year: number; month: number; label: string; items: GalleryMediaItem[] }>();
 
     for (const item of filteredItems) {
       let year = item.year;
-      if (!year && item.dateAdded) {
-        const d = new Date(item.dateAdded);
-        if (!isNaN(d.getFullYear())) year = d.getFullYear();
-      }
-      year = year || 2022;
-
-      let label = item.dateLabel || `${year}`;
+      let month = 0;
+      let monthName = 'October';
       if (item.dateAdded) {
         const d = new Date(item.dateAdded);
         if (!isNaN(d.getTime())) {
-          const monthName = d.toLocaleString('en-US', { month: 'long' });
-          label = `${monthName} ${year}`;
+          if (!year) year = d.getFullYear();
+          month = d.getMonth();
+          monthName = d.toLocaleString('en-US', { month: 'long' });
         }
       }
+      year = year || 2026;
+      const label = `${monthName} ${year}`;
+      const key = `${year}-${String(month).padStart(2, '0')}`;
 
-      const key = `${year}-${label}`;
       if (!groupsMap.has(key)) {
-        groupsMap.set(key, { year, label, items: [] });
+        groupsMap.set(key, { year, month, label, items: [] });
       }
       groupsMap.get(key)!.items.push(item);
     }
 
-    return Array.from(groupsMap.entries()).map(([key, value]) => ({
-      id: key,
-      year: value.year,
-      label: value.label,
-      items: value.items,
-    }));
-  }, [filteredItems]);
+    return Array.from(groupsMap.entries())
+      .sort((a, b) => {
+        if (b[1].year !== a[1].year) return b[1].year - a[1].year;
+        return b[1].month - a[1].month;
+      })
+      .map(([key, value]) => ({
+        id: key,
+        year: value.year,
+        label: value.label,
+        isUngrouped: false,
+        items: value.items,
+      }));
+  }, [filteredItems, sortOrder]);
 
   // Toggle selection for all items in a date group
   const toggleGroupSelect = (groupItems: GalleryMediaItem[]) => {
@@ -1444,38 +1473,40 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                     data-year={group.year}
                     className="gallery-year-section space-y-3"
                   >
-                    {/* Date Header without background or border */}
-                    <div className="flex items-center justify-between px-2 py-1.5 bg-transparent transition-colors">
-                      <div className="flex items-baseline gap-2.5">
-                        <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white">
-                          {group.label}
-                        </h3>
-                        <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] font-normal">
-                          {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
-                        </span>
-                      </div>
+                    {/* Date Header without background or border (hidden when Don't sort is active) */}
+                    {!group.isUngrouped && (
+                      <div className="flex items-center justify-between px-2 py-1.5 bg-transparent transition-colors">
+                        <div className="flex items-baseline gap-2.5">
+                          <h3 className="text-base sm:text-lg font-bold text-[#111827] dark:text-white">
+                            {group.label}
+                          </h3>
+                          <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] font-normal">
+                            {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
+                          </span>
+                        </div>
 
-                      {/* Group Select Button */}
-                      <button
-                        type="button"
-                        onClick={() => toggleGroupSelect(group.items)}
-                        className={`px-2.5 py-1 rounded-[6px] text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-                          isAllGroupSelected && isSelectMode
-                            ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold shadow-xs'
-                            : 'hover:bg-black/5 dark:hover:bg-white/10 text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white'
-                        }`}
-                        title="Select all items in this section"
-                      >
-                        {isAllGroupSelected && isSelectMode ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                            <span>Selected</span>
-                          </>
-                        ) : (
-                          <span>Select</span>
-                        )}
-                      </button>
-                    </div>
+                        {/* Group Select Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleGroupSelect(group.items)}
+                          className={`px-2.5 py-1 rounded-[6px] text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                            isAllGroupSelected && isSelectMode
+                              ? 'bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold shadow-xs'
+                              : 'hover:bg-black/5 dark:hover:bg-white/10 text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white'
+                          }`}
+                          title="Select all items in this section"
+                        >
+                          {isAllGroupSelected && isSelectMode ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                              <span>Selected</span>
+                            </>
+                          ) : (
+                            <span>Select</span>
+                          )}
+                        </button>
+                      </div>
+                    )}
 
                     {(() => {
                       const tileItems = group.items.filter((it) => it.type !== 'image' && it.type !== 'video');
@@ -1779,10 +1810,12 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
 
       <PromptDialog
         isOpen={isNewFolderOpen}
-        title="New folder"
-        label="Folder name"
-        initialValue="New folder"
+        title="Create a new folder"
+        label="Enter a name for this folder"
+        placeholder="Enter a name for this folder"
+        initialValue=""
         confirmLabel="Create"
+        maxWidthClass="max-w-[340px]"
         onConfirm={handleCreateFolder}
         onClose={() => setIsNewFolderOpen(false)}
       />

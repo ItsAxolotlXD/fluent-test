@@ -4,7 +4,12 @@ import { Folder, Home, Check } from 'lucide-react';
 import { FluentFolderAddIcon } from '../FluentIcons';
 import type { GalleryFolder } from '../../services/galleryStorage';
 
-const DialogShell: React.FC<{ title: string; onClose: () => void; children: React.ReactNode }> = ({ title, onClose, children }) => {
+const DialogShell: React.FC<{ 
+  title: string; 
+  onClose: () => void; 
+  children: React.ReactNode; 
+  maxWidthClass?: string;
+}> = ({ title, onClose, children, maxWidthClass = 'max-w-[480px]' }) => {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -46,7 +51,7 @@ const DialogShell: React.FC<{ title: string; onClose: () => void; children: Reac
             ease: [0.16, 1, 0.3, 1]
           }
         }}
-        className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
+        className={`fluent-modal-dialog relative z-10 w-full ${maxWidthClass} bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]`}
       >
         <div className="p-6 pb-4">
           <h2 className="text-[19px] sm:text-[20px] font-semibold text-[#111827] dark:text-[#FFFFFF] tracking-tight leading-snug font-sans">{title}</h2>
@@ -65,28 +70,51 @@ interface PromptDialogProps {
   isOpen: boolean;
   title: string;
   label: string;
+  placeholder?: string;
   initialValue?: string;
   confirmLabel: string;
   onConfirm: (value: string) => void;
   onClose: () => void;
+  maxWidthClass?: string;
 }
 
-export const PromptDialog: React.FC<PromptDialogProps> = ({ isOpen, title, label, initialValue = '', confirmLabel, onConfirm, onClose }) => (
+export const PromptDialog: React.FC<PromptDialogProps> = ({ 
+  isOpen, 
+  title, 
+  label, 
+  placeholder,
+  initialValue = '', 
+  confirmLabel, 
+  onConfirm, 
+  onClose,
+  maxWidthClass 
+}) => (
   <AnimatePresence>
     {isOpen && (
       <PromptDialogBody
         title={title}
         label={label}
+        placeholder={placeholder}
         initialValue={initialValue}
         confirmLabel={confirmLabel}
         onConfirm={onConfirm}
         onClose={onClose}
+        maxWidthClass={maxWidthClass}
       />
     )}
   </AnimatePresence>
 );
 
-const PromptDialogBody: React.FC<Omit<PromptDialogProps, 'isOpen'>> = ({ title, label, initialValue = '', confirmLabel, onConfirm, onClose }) => {
+const PromptDialogBody: React.FC<Omit<PromptDialogProps, 'isOpen'>> = ({ 
+  title, 
+  label, 
+  placeholder,
+  initialValue = '', 
+  confirmLabel, 
+  onConfirm, 
+  onClose,
+  maxWidthClass 
+}) => {
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -94,31 +122,40 @@ const PromptDialogBody: React.FC<Omit<PromptDialogProps, 'isOpen'>> = ({ title, 
     const input = inputRef.current;
     if (!input) return;
     input.focus();
-    const dot = initialValue.lastIndexOf('.');
-    input.setSelectionRange(0, dot > 0 ? dot : initialValue.length);
+    if (initialValue) {
+      const dot = initialValue.lastIndexOf('.');
+      input.setSelectionRange(0, dot > 0 ? dot : initialValue.length);
+    }
   }, [initialValue]);
 
   const trimmed = value.trim();
 
   return (
-    <DialogShell title={title} onClose={onClose}>
+    <DialogShell title={title} onClose={onClose} maxWidthClass={maxWidthClass}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           if (trimmed) onConfirm(trimmed);
         }}
       >
-        <label className="block px-5">
-          <span className="sr-only">{label}</span>
-          <input
-            ref={inputRef}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            maxLength={120}
-            placeholder={label}
-            className="w-full h-9 px-3 rounded-[6px] bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 border-b-2 border-b-[#005fb8] dark:border-b-[#4cc2ff] text-sm outline-none"
-          />
-        </label>
+        <div className="px-6 pb-5 pt-0.5">
+          <label className="sr-only">{label}</label>
+          <div className="fluent-input-box relative w-full h-9 bg-black/5 dark:bg-white/10 flex items-center px-3.5 rounded-[6px] transition-colors border-none backdrop-blur-[50px]">
+            <input
+              ref={inputRef}
+              type="text"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              maxLength={120}
+              placeholder={placeholder || label}
+              spellCheck={false}
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-[#9CA3AF] outline-none border-none py-1"
+            />
+          </div>
+        </div>
         <div className={footerClass}>
           <button type="button" onClick={onClose} className={secondaryBtn}>
             Cancel

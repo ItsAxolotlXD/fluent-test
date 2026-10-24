@@ -955,7 +955,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                         setStickyColorId(c.id);
                         setShowStickyColorMenu(false);
                       }}
-                      className="w-8 h-8 rounded-lg border border-white/20 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer"
+                      className="w-8 h-8 rounded-lg border border-white/20 transition-colors flex items-center justify-center cursor-pointer"
                       style={{ backgroundColor: c.bg }}
                       title={c.name}
                     >
@@ -1323,7 +1323,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                     key={c}
                     type="button"
                     onClick={() => handleSelectColor(c)}
-                    className="w-5 h-5 rounded-full border border-white/20 hover:scale-110 transition-transform"
+                    className="w-5 h-5 rounded-full border border-white/20 transition-colors"
                     style={{ backgroundColor: c }}
                   />
                 ))}
@@ -1350,7 +1350,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
                     key={c}
                     type="button"
                     onClick={() => handleSelectHighlight(c)}
-                    className="w-5 h-5 rounded border border-white/20 hover:scale-110 transition-transform"
+                    className="w-5 h-5 rounded border border-white/20 transition-colors"
                     style={{ backgroundColor: c === 'transparent' ? '#333' : c }}
                     title={c === 'transparent' ? 'Không màu' : c}
                   />
@@ -1401,7 +1401,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({ navigate }) => {
               onInput={handleEditorInput}
               onKeyUp={updateToolbarStates}
               onMouseUp={updateToolbarStates}
-              className="flex-1 outline-none text-neutral-200 text-sm sm:text-base leading-relaxed selection:bg-[#0078d4]/40 selection:text-white pb-24"
+              className="flex-1 outline-none text-neutral-200 text-sm sm:text-base leading-relaxed selection:bg-[#d946ef] selection:text-white dark:selection:bg-[#ff2d92] dark:selection:text-white pb-24"
               style={{
                 fontFamily: selectedFont.fontFamily,
                 minHeight: '400px'

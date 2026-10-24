@@ -33,7 +33,7 @@ interface TabLoadingScreenProps {
 }
 
 const largeIconClass =
-  'w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 drop-shadow-2xl flex items-center justify-center [&_img]:!w-20 [&_img]:!h-20 sm:[&_img]:!w-28 sm:[&_img]:!h-28 md:[&_img]:!w-32 md:[&_img]:!h-32 [&_img]:!object-contain [&_svg]:!w-20 [&_svg]:!h-20 sm:[&_svg]:!w-28 sm:[&_svg]:!h-28 md:[&_svg]:!w-32 md:[&_svg]:!h-32';
+  'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 drop-shadow-xl flex items-center justify-center [&_img]:!w-16 [&_img]:!h-16 sm:[&_img]:!w-20 sm:[&_img]:!h-20 md:[&_img]:!w-24 md:[&_img]:!h-24 [&_img]:!object-contain [&_svg]:!w-16 [&_svg]:!h-16 sm:[&_svg]:!w-20 sm:[&_svg]:!h-20 md:[&_svg]:!w-24 md:[&_svg]:!h-24';
 const standardIconClass = `${largeIconClass} text-[#0078d4] dark:text-[#4cc2ff]`;
 
 export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
@@ -177,17 +177,17 @@ export const TabLoadingScreen: React.FC<TabLoadingScreenProps> = ({
     >
       <motion.div
         key={`tab-icon-${route}`}
-        initial={{ y: 16, scale: 0.88 }}
+        initial={{ scale: 0.15, opacity: 0 }}
         animate={{
-          y: [16, -10, 3, -1, 0],
-          scale: [0.88, 1.08, 0.98, 1.02, 1],
+          scale: [0.15, 1.18, 0.92, 1.05, 1],
+          opacity: [0, 1, 1, 1, 1],
         }}
         transition={{
-          duration: 0.62,
-          times: [0, 0.35, 0.65, 0.85, 1],
-          ease: [0.16, 1, 0.3, 1],
+          duration: 0.65,
+          times: [0, 0.4, 0.68, 0.86, 1],
+          ease: [0.34, 1.56, 0.64, 1],
         }}
-        className="relative mt-8 flex items-center justify-center pointer-events-none select-none bg-transparent"
+        className="relative flex items-center justify-center origin-center pointer-events-none select-none bg-transparent"
       >
         {getTabIcon()}
       </motion.div>

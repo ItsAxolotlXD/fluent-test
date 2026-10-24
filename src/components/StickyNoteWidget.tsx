@@ -242,7 +242,7 @@ export const StickyNoteWidget: React.FC<StickyNoteWidgetProps> = ({ onNavigateNo
                       setStickyColorId(c.id);
                       setShowColorPicker(false);
                     }}
-                    className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform flex items-center justify-center cursor-pointer"
+                    className="w-6 h-6 rounded-full border border-white/20 transition-colors flex items-center justify-center cursor-pointer"
                     style={{ backgroundColor: c.bg }}
                     title={c.name}
                   >

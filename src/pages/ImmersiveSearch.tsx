@@ -198,7 +198,7 @@ export const ImmersiveSearch: React.FC<ImmersiveSearchProps> = ({
             onClick={() => {
               window.dispatchEvent(new CustomEvent('vplay:focus-topbar-search'));
             }}
-            className="mt-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white bg-[#d946ef] hover:bg-[#c026d3] active:bg-[#a21caf] shadow-[0_0_18px_rgba(217,70,239,0.4)] hover:shadow-[0_0_24px_rgba(217,70,239,0.6)] transition-all cursor-pointer flex items-center gap-2"
+            className="mt-2 h-8 sm:h-9 px-4 rounded-[6px] text-xs sm:text-sm font-semibold text-white dark:text-black bg-[#d946ef] hover:bg-[#c026d3] active:bg-[#a21caf] shadow-xs border-none transition-colors cursor-pointer flex items-center gap-2"
           >
             <span>Go to new search</span>
           </button>
