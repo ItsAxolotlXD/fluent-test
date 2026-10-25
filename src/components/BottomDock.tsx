@@ -364,10 +364,6 @@ export const BottomDock: React.FC<BottomDockProps> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onTouchCancel={handleTouchCancel}
-                whileHover={{
-                  scale: 1.01,
-                  transition: { duration: 0.15 }
-                }}
                 whileTap={{ scale: 0.98 }}
                 style={{
                   backdropFilter: isSpatialGlassActive ? `blur(${blurPx}px)` : 'none',

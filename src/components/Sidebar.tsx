@@ -1073,7 +1073,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             y: 0,
             transition: { duration: 0.38, delay: 0.18, ease: [0.16, 1, 0.3, 1] },
           }}
-          title="Bật/tắt nhanh Fluent icons (Insider flag)"
+          aria-label="Bật/tắt nhanh Fluent icons (Insider flag)"
           onClick={() => {
             onToggleFluentIcons();
             onClose();
@@ -1096,7 +1096,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             y: 0,
             transition: { duration: 0.38, delay: 0.20, ease: [0.16, 1, 0.3, 1] },
           }}
-          title="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Ink Canvas..."
+          aria-label="Dynamic sidebar icons: icon thường cho Sign In, Settings, WinUI 3; icon Fluent 3D màu cho Home, Update blogs, Watch, Gallery, Notes, Ink Canvas..."
           onClick={() => {
             onToggleDynamicSidebarIcons();
             onClose();
@@ -1183,7 +1183,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={handleGoBack}
             onMouseEnter={(e) => showTooltip('Go back', e)}
             onMouseLeave={hideTooltip}
-            title="Go back"
             aria-label="Go back"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
@@ -1197,7 +1196,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={isMobile ? onCloseMobile : onToggleCollapse}
             onMouseEnter={(e) => showTooltip('Collapse or expand', e)}
             onMouseLeave={hideTooltip}
-            title="Collapse or expand"
             aria-label="Collapse or expand"
             className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-[6px] flex items-center justify-center text-black dark:text-white hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 cursor-pointer transition-colors shrink-0"
           >
@@ -1209,7 +1207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             onClick={() => handleNavClick('/')}
             className="cursor-pointer flex items-center p-0 border-0 bg-transparent hover:opacity-85 active:scale-95 transition-opacity"
-            title="Home"
+            aria-label="Home"
           >
             <img 
               src={LOGO_SRC}
@@ -1240,7 +1238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-home' : 'sidebar-nav-home'}
               data-nav-active={(currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview') ? 'true' : undefined}
               onClick={() => handleNavClick('/')}
-              title="Home"
+              aria-label="Home"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview')
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1263,7 +1261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-articles' : 'sidebar-nav-articles'}
               data-nav-active={(currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates')) ? 'true' : undefined}
               onClick={() => handleNavClick('/news')}
-              title="Feed"
+              aria-label="Feed"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1294,7 +1292,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-live-tv' : 'sidebar-nav-live-tv'}
               data-nav-active={(currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv')) ? 'true' : undefined}
               onClick={() => handleNavClick('/live-tv')}
-              title="Watch"
+              aria-label="Watch"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1371,7 +1369,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   } catch {}
                   handleNavClick('/gallery', { folderId: null });
                 }}
-                title="Gallery"
+                aria-label="Gallery"
                 className={`sidebar-nav-item flex-1 h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                   (currentRoute === '/gallery' || currentRoute.startsWith('/gallery')) && selectedSidebarFolderId === null
                     ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1396,8 +1394,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   setIsGalleryTreeExpanded((prev) => !prev);
                 }}
                 className="w-8 h-8 flex items-center justify-center rounded-[6px] hover:bg-black/5 dark:hover:bg-white/[0.08] text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer shrink-0 mr-1"
-                title={isGalleryTreeExpanded ? "Thu gọn sơ đồ cây" : "Mở rộng sơ đồ cây thư mục"}
-                aria-label="Toggle folder tree"
+                aria-label={isGalleryTreeExpanded ? "Thu gọn sơ đồ cây" : "Mở rộng sơ đồ cây thư mục"}
               >
                 {isGalleryTreeExpanded ? (
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -1478,7 +1475,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                   });
                                 }}
                                 className="w-4 h-4 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors shrink-0 cursor-pointer"
-                                title={isFolderExpanded ? "Thu gọn" : "Mở rộng"}
+                                aria-label={isFolderExpanded ? "Thu gọn" : "Mở rộng"}
                               >
                                 {isFolderExpanded ? (
                                   <ChevronDown className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
@@ -1530,7 +1527,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                         handleNavClick('/gallery', { folderId: folder.id, itemId: item.id });
                                       }}
                                       className="group relative w-full h-[26px] px-2 rounded-[4px] flex items-center gap-2 text-left hover:bg-black/5 dark:hover:bg-white/5 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-                                      title={item.title}
+                                      aria-label={item.title}
                                     >
                                       <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-[1px] bg-black/15 dark:border-white/15 pointer-events-none" />
                                       {item.type === 'image' && (
@@ -1570,7 +1567,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-draws' : 'sidebar-nav-draws'}
               data-nav-active={(currentRoute === '/draws' || currentRoute.startsWith('/draws')) ? 'true' : undefined}
               onClick={() => handleNavClick('/draws')}
-              title="Ink Canvas"
+              aria-label="Ink Canvas"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1595,7 +1592,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-notes' : 'sidebar-nav-notes'}
               data-nav-active={(currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table') ? 'true' : undefined}
               onClick={() => handleNavClick('/notes')}
-              title="Notes"
+              aria-label="Notes"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1620,7 +1617,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-screenbug' : 'sidebar-nav-screenbug'}
               data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
               onClick={() => handleNavClick('/screenbug')}
-              title="Screenbug"
+              aria-label="Screenbug"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1653,7 +1650,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-craftmine' : 'sidebar-nav-craftmine'}
               data-nav-active={currentRoute === '/craftmine' ? 'true' : undefined}
               onClick={() => handleNavClick('/craftmine')}
-              title="Craftmine"
+              aria-label="Craftmine"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/craftmine'
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1676,7 +1673,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               id={isMobile ? 'mobile-nav-photopea' : 'sidebar-nav-photopea'}
               data-nav-active={currentRoute === '/photopea' ? 'true' : undefined}
               onClick={() => handleNavClick('/photopea')}
-              title="Photopea"
+              aria-label="Photopea"
               className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 currentRoute === '/photopea'
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1701,7 +1698,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 if (isMobile) onCloseMobile?.();
                 window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer');
               }}
-              title="Discord"
+              aria-label="Discord"
               className="sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white cursor-pointer text-left rounded-[6px] transition-colors"
             >
               {useFluent3DForContent ? (
@@ -1724,7 +1721,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'mobile-nav-winui-3' : 'sidebar-nav-winui-3'}
             data-nav-active={currentRoute === '/winui-3' ? 'true' : undefined}
             onClick={() => handleNavClick('/winui-3')}
-            title="WinUI 3"
+            aria-label="WinUI 3"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               currentRoute === '/winui-3'
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1734,7 +1731,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <img
               src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
               alt=""
-              className="w-5 h-5 shrink-0 object-contain"
+              className="w-5 h-5 shrink-0 object-contain winui-sidebar-icon"
               aria-hidden="true"
             />
             <span className="truncate text-[13.5px]">WinUI 3</span>
@@ -1746,7 +1743,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'mobile-nav-feedback' : 'sidebar-nav-feedback'}
             data-nav-active={isCurrentActive('/feedback') ? 'true' : undefined}
             onClick={() => handleNavClick('/feedback')}
-            title="Feedback"
+            aria-label="Feedback"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               isCurrentActive('/feedback')
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1769,7 +1766,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id={isMobile ? 'mobile-nav-settings' : 'sidebar-nav-settings'}
             data-nav-active={isCurrentActive('/settings') ? 'true' : undefined}
             onClick={() => handleNavClick('/settings')}
-            title="Settings"
+            aria-label="Settings"
             className={`sidebar-nav-item w-full h-[38px] flex items-center gap-3.5 px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
               isCurrentActive('/settings')
                 ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1850,7 +1847,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onMouseEnter={(e) => showTooltip('Go back', e)}
                   onMouseLeave={hideTooltip}
                   className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                  title="Go back"
                   aria-label="Go back"
                 >
                   <ArrowLeft className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
@@ -1864,7 +1860,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onMouseEnter={(e) => showTooltip('Collapse or expand', e)}
                   onMouseLeave={hideTooltip}
                   className="w-9 h-9 rounded-[6px] shrink-0 flex items-center justify-center text-black dark:text-white/90 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white cursor-pointer transition-colors"
-                  title="Collapse or expand"
                   aria-label="Collapse or expand"
                 >
                   <Menu className="w-5 h-5 stroke-[1.75] text-black dark:text-white" />
@@ -1890,7 +1885,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/')}
                   onMouseEnter={(e) => showTooltip('Home', e)}
                   onMouseLeave={hideTooltip}
-                  title="Home"
                   aria-label="Home"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/' || currentRoute === '/home' || currentRoute === '/home-preview')
@@ -1913,7 +1907,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/news')}
                   onMouseEnter={(e) => showTooltip('Feed', e)}
                   onMouseLeave={hideTooltip}
-                  title="Feed"
+                  aria-label="Feed"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/news' || currentRoute.startsWith('/article') || currentRoute.startsWith('/news/') || currentRoute === '/updates' || currentRoute.startsWith('/updates'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -1938,7 +1932,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/live-tv')}
                   onMouseEnter={(e) => showTooltip('Watch', e)}
                   onMouseLeave={hideTooltip}
-                  title="Watch"
                   aria-label="Watch"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/live-tv' || currentRoute.startsWith('/live-tv'))
@@ -1961,7 +1954,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/gallery')}
                   onMouseEnter={(e) => showTooltip('Gallery', e)}
                   onMouseLeave={hideTooltip}
-                  title="Gallery"
+                  aria-label="Gallery"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -1983,7 +1976,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/draws')}
                   onMouseEnter={(e) => showTooltip('Ink Canvas', e)}
                   onMouseLeave={hideTooltip}
-                  title="Ink Canvas"
+                  aria-label="Ink Canvas"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/draws' || currentRoute.startsWith('/draws'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2005,7 +1998,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/notes')}
                   onMouseEnter={(e) => showTooltip('Notes', e)}
                   onMouseLeave={hideTooltip}
-                  title="Notes"
+                  aria-label="Notes"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/notes' || currentRoute === '/write' || currentRoute === '/present' || currentRoute === '/table')
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2027,7 +2020,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/screenbug')}
                   onMouseEnter={(e) => showTooltip('Screenbug', e)}
                   onMouseLeave={hideTooltip}
-                  title="Screenbug"
+                  aria-label="Screenbug"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2052,7 +2045,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/craftmine')}
                   onMouseEnter={(e) => showTooltip('Craftmine', e)}
                   onMouseLeave={hideTooltip}
-                  title="Craftmine"
+                  aria-label="Craftmine"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/craftmine'
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2074,7 +2067,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/photopea')}
                   onMouseEnter={(e) => showTooltip('Photopea', e)}
                   onMouseLeave={hideTooltip}
-                  title="Photopea"
+                  aria-label="Photopea"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/photopea'
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
@@ -2095,7 +2088,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => window.open('https://discord.gg/wcdjaDDayK', '_blank', 'noopener,noreferrer')}
                   onMouseEnter={(e) => showTooltip('Discord', e)}
                   onMouseLeave={hideTooltip}
-                  title="Discord"
+                  aria-label="Discord"
                   className="sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white"
                 >
                   {useFluent3DForContent ? (
@@ -2117,7 +2110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/winui-3')}
                   onMouseEnter={(e) => showTooltip('WinUI 3', e)}
                   onMouseLeave={hideTooltip}
-                  title="WinUI 3"
+                  aria-label="WinUI 3"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     currentRoute === '/winui-3'
                       ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
@@ -2127,7 +2120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <img
                     src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
                     alt="WinUI 3"
-                    className="w-5 h-5 shrink-0 object-contain"
+                    className="w-5 h-5 shrink-0 object-contain winui-sidebar-icon"
                   />
                 </button>
 
@@ -2139,7 +2132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/feedback')}
                   onMouseEnter={(e) => showTooltip('Feedback', e)}
                   onMouseLeave={hideTooltip}
-                  title="Feedback"
+                  aria-label="Feedback"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     isCurrentActive('/feedback')
                       ? 'bg-black/10 dark:bg-white/[0.12] text-[#111827] dark:text-white shadow-xs'
@@ -2163,7 +2156,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => handleNavClick('/settings')}
                   onMouseEnter={(e) => showTooltip('Settings', e)}
                   onMouseLeave={hideTooltip}
-                  title="Settings"
+                  aria-label="Settings"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     isCurrentActive('/settings')
                       ? 'bg-black/5 dark:bg-white/[0.08] text-[#111827] dark:text-white shadow-xs'
@@ -2268,7 +2261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <UnderConstructionModal
         isOpen={isSignInUnderConstructionOpen}
         onClose={() => setIsSignInUnderConstructionOpen(false)}
-        title="Under construction"
+        aria-label="Under construction"
         description="This feature is working in progress and might be available in future builds."
         buttonText="Understood"
       />

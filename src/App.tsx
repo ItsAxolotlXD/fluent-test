@@ -20,6 +20,8 @@ import { NotesProvider } from './context/NotesContext';
 import { StickyNoteWidget } from './components/StickyNoteWidget';
 import { TabLoadingScreen } from './components/TabLoadingScreen';
 import { AppScrollbar } from './components/AppScrollbar';
+import { GlobalToast } from './components/GlobalToast';
+import { showAppToast } from './utils/toast';
 import { HomePreview } from './pages/HomePreview';
 import { About } from './pages/About';
 import { LiveTV } from './pages/LiveTV';
@@ -584,7 +586,10 @@ export default function App() {
         return (
           <LiveTV
             currentChannel={currentChannel}
-            onSelectChannel={setCurrentChannel}
+            onSelectChannel={(ch) => {
+              showAppToast(`Switched to ${ch.name}`);
+              setCurrentChannel(ch);
+            }}
             channels={channels}
             onOpenCustomStreamModal={() => setIsCustomStreamModalOpen(true)}
             searchQuery={currentTabSearchQuery}
@@ -949,6 +954,9 @@ export default function App() {
 
       {/* App Native Virtual Keyboard for Touch Devices */}
       <NativeKeyboard />
+
+      {/* Global Application Toast Notifications */}
+      <GlobalToast />
 
       {/* Startup Splash Screen (3 seconds) */}
       <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />

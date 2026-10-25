@@ -7,7 +7,8 @@ import {
   Play,
   X,
   Search,
-  Code2
+  Code2,
+  ExternalLink
 } from 'lucide-react';
 import { SpinningRing } from '../components/SpinningRing';
 import {
@@ -151,39 +152,155 @@ export const WinUI3: React.FC = () => {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={`winui3-page-wrapper w-full max-w-5xl mx-auto pb-28 pt-2 px-4 sm:px-6 select-none space-y-6 ${isDarkMode ? 'text-white' : 'text-[#111827]'}`}
     >
-      {/* Top Header - Matches Settings Tab */}
-      <div className="pb-3 border-none bg-transparent">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <img
-                src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/WinUI.svg/120px-WinUI.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20241127184612"
-                alt=""
-                className="w-4 h-4 object-contain inline-block"
-              />
-              <span className={`text-[11px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-[#4cc2ff]' : 'text-[#005fb8]'}`}>
-                Fluent Design System
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white tracking-tight">
-              WinUI 3
+      {/* WinUI Gallery Hero Banner & 4 Quick Links matching reference */}
+      <div id="winui-hero-banner-section" className="space-y-3.5">
+        {/* Top Hero Banner with Segoe UI Display Typography */}
+        <div className="relative w-full rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 shadow-xs bg-[#d9d9e3] dark:bg-[#202028] min-h-[160px] sm:min-h-[190px] md:min-h-[220px] flex items-center">
+          <img
+            src="/assets/winui3/hero_banner_clean.png"
+            alt="WinUI 3 Gallery"
+            className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none"
+          />
+          <div className="relative z-10 px-6 sm:px-10 py-6 flex flex-col justify-center select-none">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#0c0d0e] dark:text-white tracking-tight"
+              style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+            >
+              WinUI 3 Gallery
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
-              A practical collection of familiar Windows controls, ready to use across Sparkle
+            <p
+              className="text-lg sm:text-xl md:text-2xl font-normal text-[#1a1b1d] dark:text-[#d1d5db] mt-1 sm:mt-1.5"
+              style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+            >
+              SDK 2.9
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-[#6B7280] dark:text-[#9CA3AF] self-start sm:self-center">
-            <span className="size-2 rounded-full bg-emerald-400" />
-            <span>Library ready</span>
-            <button
-              type="button"
-              onClick={copyToken}
-              className="ml-2 inline-flex items-center gap-1.5 rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs text-[#111827] dark:text-white px-3 py-1.5 text-xs font-medium hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition cursor-pointer border-none"
+        </div>
+
+        {/* 4 Quick Link Cards - Compact, 1 Single Row, Magenta / Red / Pink Palettes */}
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          {/* Card 1: Getting Started - Magenta */}
+          <a
+            href="https://learn.microsoft.com/windows/apps/winui/winui3/get-started-winui3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 bg-white dark:bg-[#2c3037] hover:bg-black/[0.03] dark:hover:bg-[#363b43] transition-colors flex flex-col cursor-pointer shadow-xs text-inherit no-underline"
+          >
+            <div
+              className="w-full h-14 sm:h-18 md:h-20 relative flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'radial-gradient(circle at 50% 120%, #ff2d92 0%, #d946ef 45%, #701a75 100%)',
+              }}
             >
-              {copied ? <Check className="size-3.5 text-emerald-400" /> : <FluentCopyIcon className="size-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy token'}</span>
-            </button>
-          </div>
+              <div className="relative z-10 w-12 h-8 sm:w-16 sm:h-10 md:w-20 md:h-12 rounded-[4px] sm:rounded-[6px] bg-white/35 dark:bg-black/35 backdrop-blur-md border border-white/50 dark:border-white/20 shadow-sm flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white drop-shadow-sm" fill="currentColor">
+                  <rect x="2.5" y="2.5" width="8.8" height="8.8" rx="0.5" />
+                  <rect x="12.7" y="2.5" width="8.8" height="8.8" rx="0.5" />
+                  <rect x="2.5" y="12.7" width="8.8" height="8.8" rx="0.5" />
+                  <rect x="12.7" y="12.7" width="8.8" height="8.8" rx="0.5" />
+                </svg>
+              </div>
+            </div>
+            <div className="px-2 sm:px-2.5 py-1.5 flex items-center justify-between gap-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10.5px] sm:text-xs font-medium text-[#111827] dark:text-white truncate">
+                Getting Started
+              </span>
+              <ExternalLink className="size-3 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors shrink-0" />
+            </div>
+          </a>
+
+          {/* Card 2: Windows Design - Red */}
+          <a
+            href="https://learn.microsoft.com/windows/apps/design/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 bg-white dark:bg-[#2c3037] hover:bg-black/[0.03] dark:hover:bg-[#363b43] transition-colors flex flex-col cursor-pointer shadow-xs text-inherit no-underline"
+          >
+            <div
+              className="w-full h-14 sm:h-18 md:h-20 relative flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'radial-gradient(circle at 50% 120%, #ff4b72 0%, #e11d48 45%, #881337 100%)',
+              }}
+            >
+              <div className="relative z-10 w-14 h-9 sm:w-18 sm:h-11 md:w-22 md:h-13 rounded-[4px] sm:rounded-[6px] bg-white/85 dark:bg-[#1a1c22]/90 backdrop-blur-md border border-white/60 dark:border-white/20 shadow-sm flex flex-col justify-center px-2 py-1">
+                <span
+                  className="text-sm sm:text-base md:text-lg font-bold leading-none text-neutral-900 dark:text-white tracking-tight"
+                  style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif" }}
+                >
+                  Aa
+                </span>
+                <div className="flex h-1 sm:h-1.5 w-full rounded-[2px] overflow-hidden mt-1 gap-[1.5px]">
+                  <div className="flex-1 bg-[#ffe4e6]" />
+                  <div className="flex-1 bg-[#fda4af]" />
+                  <div className="flex-1 bg-[#fb7185]" />
+                  <div className="flex-1 bg-[#e11d48]" />
+                  <div className="flex-1 bg-[#881337]" />
+                </div>
+              </div>
+            </div>
+            <div className="px-2 sm:px-2.5 py-1.5 flex items-center justify-between gap-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10.5px] sm:text-xs font-medium text-[#111827] dark:text-white truncate">
+                Windows Design
+              </span>
+              <ExternalLink className="size-3 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors shrink-0" />
+            </div>
+          </a>
+
+          {/* Card 3: GitHub Repo - Rose / Pink */}
+          <a
+            href="https://github.com/microsoft/WinUI-Gallery"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 bg-white dark:bg-[#2c3037] hover:bg-black/[0.03] dark:hover:bg-[#363b43] transition-colors flex flex-col cursor-pointer shadow-xs text-inherit no-underline"
+          >
+            <div
+              className="w-full h-14 sm:h-18 md:h-20 relative flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'radial-gradient(circle at 50% 110%, #f43f5e 0%, #be123c 50%, #4c0519 100%)',
+              }}
+            >
+              <div className="relative z-10 w-12 h-8 sm:w-16 sm:h-10 md:w-20 md:h-12 rounded-[4px] sm:rounded-[6px] bg-white/25 dark:bg-white/10 backdrop-blur-md border border-white/35 dark:border-white/15 shadow-sm flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 fill-white drop-shadow-sm">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+              </div>
+            </div>
+            <div className="px-2 sm:px-2.5 py-1.5 flex items-center justify-between gap-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10.5px] sm:text-xs font-medium text-[#111827] dark:text-white truncate">
+                GitHub Repo
+              </span>
+              <ExternalLink className="size-3 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors shrink-0" />
+            </div>
+          </a>
+
+          {/* Card 4: Template Studio - Deep Magenta / Hot Pink */}
+          <a
+            href="https://github.com/microsoft/TemplateStudio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 bg-white dark:bg-[#2c3037] hover:bg-black/[0.03] dark:hover:bg-[#363b43] transition-colors flex flex-col cursor-pointer shadow-xs text-inherit no-underline"
+          >
+            <div
+              className="w-full h-14 sm:h-18 md:h-20 relative flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'radial-gradient(circle at 50% 110%, #f472b6 0%, #db2777 45%, #701a75 100%)',
+              }}
+            >
+              <div className="relative z-10 w-12 h-8 sm:w-16 sm:h-10 md:w-20 md:h-12 rounded-[4px] sm:rounded-[6px] bg-white/25 dark:bg-white/10 backdrop-blur-md border border-white/35 dark:border-white/15 shadow-sm flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 fill-white drop-shadow-sm">
+                  <path d="M12 2.5L3 7.5L12 12.5L21 7.5L12 2.5Z" />
+                  <path d="M3 11.5L12 16.5L21 11.5L19 10.4L12 14.3L5 10.4L3 11.5Z" />
+                  <path d="M3 15.5L12 20.5L21 15.5L19 14.4L12 18.3L5 14.4L3 15.5Z" />
+                </svg>
+              </div>
+            </div>
+            <div className="px-2 sm:px-2.5 py-1.5 flex items-center justify-between gap-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10.5px] sm:text-xs font-medium text-[#111827] dark:text-white truncate">
+                Template Studio
+              </span>
+              <ExternalLink className="size-3 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors shrink-0" />
+            </div>
+          </a>
         </div>
       </div>
 
@@ -658,20 +775,20 @@ export const WinUI3: React.FC = () => {
               <div className="flex flex-col gap-3">
                 {/* Search Bar + Size Picker */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                  <div className="fluent-search-box group relative flex-1 max-w-md h-9 bg-black/5 dark:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
-                    <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none mr-2" />
+                  <div className="fluent-search-box group relative flex-1 max-w-md h-9 bg-[#fbfbfb] focus-within:bg-white dark:bg-[#282c31] dark:focus-within:bg-[#282c31] flex items-center px-3.5 rounded-[6px] transition-colors border-none">
+                    <FluentSearchIcon className="w-[16px] h-[16px] text-black dark:text-white shrink-0 pointer-events-none select-none mr-2" />
                     <input
                       type="text"
                       value={iconSearchTerm}
                       onChange={(e) => setIconSearchTerm(e.target.value)}
                       placeholder="Tìm biểu tượng (copy, home, settings...)..."
-                      className="w-full bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-1"
+                      className="w-full bg-transparent text-xs sm:text-[13px] text-black dark:text-white placeholder-black/75 dark:placeholder-white outline-none border-none py-1"
                     />
                     {iconSearchTerm && (
                       <button
                         type="button"
                         onClick={() => setIconSearchTerm('')}
-                        className="text-[#71717a] dark:text-white hover:text-black dark:hover:text-white cursor-pointer ml-1 p-0.5 border-none"
+                        className="text-black dark:text-white hover:text-black dark:hover:text-white cursor-pointer ml-1 p-0.5 border-none"
                         title="Clear search"
                       >
                         <X className="w-3.5 h-3.5" />

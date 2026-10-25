@@ -164,7 +164,7 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
   // Scroll by delta
   const scrollByDelta = useCallback((deltaY: number) => {
     const { scrollTop } = getScrollInfo();
-    scrollToPosition(scrollTop + deltaY, true);
+    scrollToPosition(scrollTop + deltaY, false);
   }, [getScrollInfo, scrollToPosition]);
 
   // Thumb Dragging Handler using Pointer Events
@@ -219,7 +219,7 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
 
     const { scrollHeight, clientHeight } = getScrollInfo();
     const maxScroll = Math.max(0, scrollHeight - clientHeight);
-    scrollToPosition(targetProgress * maxScroll, true);
+    scrollToPosition(targetProgress * maxScroll, false);
   };
 
   // Calculate thumb offset top
@@ -246,7 +246,7 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
         setIsHovered(false);
         showTemporarily();
       }}
-      className={`fixed right-1 ${topOffsetClass} bottom-2 z-40 select-none flex flex-col items-center justify-between transition-all duration-200 pointer-events-auto ${
+      className={`fixed right-1 ${topOffsetClass} bottom-2 z-40 select-none flex flex-col items-center justify-between transition-all duration-200 pointer-events-auto cursor-default ${
         isHovered || isDragging ? 'w-3.5' : 'w-2'
       } ${
         isVisible || isHovered || isDragging
@@ -263,9 +263,9 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
           e.stopPropagation();
           scrollByDelta(-220);
         }}
-        className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer ${
+        className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-colors cursor-default ${
           isHovered
-            ? 'opacity-80 hover:opacity-100 bg-black/10 dark:bg-white/10 text-neutral-800 dark:text-white'
+            ? 'opacity-80 hover:opacity-100 bg-black/10 dark:bg-white/10 text-neutral-600 dark:text-neutral-400'
             : 'opacity-0 pointer-events-none'
         }`}
         title="Scroll up"
@@ -277,9 +277,9 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
       <div
         ref={trackRef}
         onClick={handleTrackClick}
-        className={`relative flex-1 w-full my-0.5 rounded-full cursor-pointer transition-colors ${
+        className={`relative flex-1 w-full my-0.5 rounded-full cursor-default transition-colors ${
           isHovered || isDragging
-            ? 'bg-black/8 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-xs'
+            ? 'bg-black/10 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-xs'
             : 'bg-transparent'
         }`}
       >
@@ -298,10 +298,12 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
             top: `${thumbTop}px`,
             height: `${thumbHeight}px`,
           }}
-          className={`absolute left-1/2 -translate-x-1/2 rounded-full cursor-grab active:cursor-grabbing transition-all ${
+          className={`absolute left-1/2 -translate-x-1/2 rounded-full cursor-default ${
+            isDragging ? 'transition-none' : 'transition-[width,background-color] duration-150'
+          } ${
             isHovered || isDragging
-              ? 'w-2.5 bg-neutral-600/75 dark:bg-neutral-200/80 hover:bg-neutral-800 dark:hover:bg-white active:bg-[#005fb8] dark:active:bg-[#4cc2ff] shadow-sm'
-              : 'w-1.5 bg-neutral-500/50 dark:bg-neutral-400/50'
+              ? 'w-2.5 bg-neutral-500 dark:bg-neutral-400 hover:bg-neutral-600 dark:hover:bg-neutral-300 active:bg-neutral-700 dark:active:bg-neutral-200 shadow-sm'
+              : 'w-1.5 bg-neutral-400/60 dark:bg-neutral-500/60'
           }`}
         />
       </div>
@@ -314,9 +316,9 @@ export const AppScrollbar: React.FC<AppScrollbarProps> = ({
           e.stopPropagation();
           scrollByDelta(220);
         }}
-        className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer ${
+        className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-colors cursor-default ${
           isHovered
-            ? 'opacity-80 hover:opacity-100 bg-black/10 dark:bg-white/10 text-neutral-800 dark:text-white'
+            ? 'opacity-80 hover:opacity-100 bg-black/10 dark:bg-white/10 text-neutral-600 dark:text-neutral-400'
             : 'opacity-0 pointer-events-none'
         }`}
         title="Scroll down"

@@ -864,26 +864,173 @@ html.light-mode .fluent-3d-icon img {
   filter: none !important;
 }
 
+/* Mobile device typography: when viewport is mobile (< 768px), entire app switches to Google Sans */
+@media (max-width: 767px) {
+  html,
+  body,
+  #root,
+  *,
+  *::before,
+  *::after,
+  h1, h2, h3, h4, h5, h6,
+  p, span, div, a, button, input, textarea, select, label,
+  [role="heading"],
+  .title, [class*="title"],
+  .heading, [class*="heading"] {
+    font-family: 'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+}
+
+/* Light mode: Toàn bộ nền các hộp input box / search box là #fbfbfb, 100% opacity (khi focused là #ffffff, 100% opacity) */
+/* 1. Các hộp / container input box & search box */
 html.light-mode #settings-search-box,
 html.light-mode #topbar-search-box,
 html.light-mode #channels-search-box,
 html.light-mode #immersive-search-capsule,
 html.light-mode #spotlight-search-container,
-html.light-mode #find-words-bar {
+html.light-mode #spotlight-search-box,
+html.light-mode #find-words-bar,
+html.light-mode .fluent-search-box,
+html.light-mode .fluent-input-box,
+html.light-mode .search-box,
+html.light-mode [class*="search-box"],
+html.light-mode [role="search"],
+html.light-mode [role="searchbox"] {
   background-color: #fbfbfb !important;
+  background: #fbfbfb !important;
+  opacity: 1 !important;
 }
 
-html.light-mode [data-nav-active="true"] {
-  background-color: #eaeaea !important;
+/* Khi focused / focus-within: hộp input box / search box chuyển sang #ffffff, 100% opacity */
+html.light-mode #settings-search-box:focus-within,
+html.light-mode #topbar-search-box:focus-within,
+html.light-mode #topbar-search-box.is-focused,
+html.light-mode #topbar-search-box.search-flyout-open,
+html.light-mode #channels-search-box:focus-within,
+html.light-mode #immersive-search-capsule:focus-within,
+html.light-mode #spotlight-search-container:focus-within,
+html.light-mode #spotlight-search-box:focus-within,
+html.light-mode #find-words-bar:focus-within,
+html.light-mode .fluent-search-box:focus-within,
+html.light-mode .fluent-input-box:focus-within,
+html.light-mode .search-box:focus-within,
+html.light-mode [class*="search-box"]:focus-within,
+html.light-mode [role="search"]:focus-within,
+html.light-mode [role="searchbox"]:focus {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
 }
 
+/* 2. Text input BÊN TRONG hộp search box / input box luôn trong suốt (transparent) để nền thuộc về hộp input box chứ KHÔNG phải text */
 html.light-mode #settings-search-box input,
 html.light-mode #topbar-search-box input,
 html.light-mode #channels-search-box input,
 html.light-mode #immersive-search-capsule input,
 html.light-mode #spotlight-search-container input,
-html.light-mode #find-words-bar input {
+html.light-mode #spotlight-search-box input,
+html.light-mode #find-words-bar input,
+html.light-mode .fluent-search-box input,
+html.light-mode .fluent-input-box input,
+html.light-mode .search-box input,
+html.light-mode [class*="search-box"] input,
+html.light-mode [role="search"] input {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Light mode: Toàn bộ text và icon trên các hộp input box / search box đổi sang màu đen hoàn toàn (#000000) */
+html.light-mode #settings-search-box input,
+html.light-mode #topbar-search-box input,
+html.light-mode #channels-search-box input,
+html.light-mode #immersive-search-capsule input,
+html.light-mode #spotlight-search-container input,
+html.light-mode #spotlight-search-box input,
+html.light-mode #find-words-bar input,
+html.light-mode .fluent-search-box input,
+html.light-mode .fluent-input-box input,
+html.light-mode .search-box input,
+html.light-mode [class*="search-box"] input,
+html.light-mode [role="search"] input,
+html.light-mode input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="color"]):not([type="file"]),
+html.light-mode textarea {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+html.light-mode #settings-search-box input::placeholder,
+html.light-mode #topbar-search-box input::placeholder,
+html.light-mode #channels-search-box input::placeholder,
+html.light-mode #immersive-search-capsule input::placeholder,
+html.light-mode #spotlight-search-container input::placeholder,
+html.light-mode #spotlight-search-box input::placeholder,
+html.light-mode #find-words-bar input::placeholder,
+html.light-mode .fluent-search-box input::placeholder,
+html.light-mode .fluent-input-box input::placeholder,
+html.light-mode .search-box input::placeholder,
+html.light-mode [class*="search-box"] input::placeholder,
+html.light-mode [role="search"] input::placeholder,
+html.light-mode input::placeholder,
+html.light-mode textarea::placeholder {
+  color: #000000 !important;
+  opacity: 0.7 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+html.light-mode #settings-search-box svg,
+html.light-mode #settings-search-box svg *,
+html.light-mode #topbar-search-box svg,
+html.light-mode #topbar-search-box svg *,
+html.light-mode #channels-search-box svg,
+html.light-mode #channels-search-box svg *,
+html.light-mode #immersive-search-capsule svg,
+html.light-mode #immersive-search-capsule svg *,
+html.light-mode #spotlight-search-container svg,
+html.light-mode #spotlight-search-container svg *,
+html.light-mode #spotlight-search-box svg,
+html.light-mode #spotlight-search-box svg *,
+html.light-mode #find-words-bar svg,
+html.light-mode #find-words-bar svg *,
+html.light-mode .fluent-search-box svg,
+html.light-mode .fluent-search-box svg *,
+html.light-mode .fluent-input-box svg,
+html.light-mode .fluent-input-box svg *,
+html.light-mode .search-box svg,
+html.light-mode .search-box svg *,
+html.light-mode [class*="search-box"] svg,
+html.light-mode [class*="search-box"] svg *,
+html.light-mode [role="search"] svg,
+html.light-mode [role="search"] svg * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+html.light-mode #topbar-search-box svg [fill="currentColor"],
+html.light-mode .fluent-search-box svg [fill="currentColor"],
+html.light-mode .fluent-input-box svg [fill="currentColor"],
+html.light-mode .search-box svg [fill="currentColor"],
+html.light-mode [class*="search-box"] svg [fill="currentColor"] {
+  fill: #000000 !important;
+}
+
+/* 3. Các input box / textarea độc lập (không nằm trong wrapper hộp search) */
+html.light-mode input:not(#settings-search-box input):not(#topbar-search-box input):not(#channels-search-box input):not(#immersive-search-capsule input):not(#spotlight-search-container input):not(#spotlight-search-box input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.search-box input):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="color"]):not([type="file"]),
+html.light-mode textarea {
   background-color: #fbfbfb !important;
+  background: #fbfbfb !important;
+  opacity: 1 !important;
+}
+
+html.light-mode input:not(#settings-search-box input):not(#topbar-search-box input):not(#channels-search-box input):not(#immersive-search-capsule input):not(#spotlight-search-container input):not(#spotlight-search-box input):not(#find-words-bar input):not(.fluent-search-box input):not(.fluent-input-box input):not(.search-box input):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="color"]):not([type="file"]):focus,
+html.light-mode textarea:focus {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html.light-mode [data-nav-active="true"] {
+  background-color: #eaeaea !important;
 }
 
 html:not(.light-mode) .home-preview-page .banner-card,
@@ -4915,12 +5062,20 @@ html.light-mode svg:not(:has(linearGradient))[fill="#4CC2FF"] {
   fill: #000000 !important;
 }
 
-/* Icon ảnh png trong dock bar và sidebar ở Light Mode chuyển sang màu đen */
-html.light-mode .floaty-bar__item:not(.is-active) img,
-html.light-mode #waves-desktop-sidebar .sidebar-nav-item img:not(.fluent-3d-icon):not(.fluent-3d-icon img),
-html.light-mode #waves-mobile-sidebar .sidebar-nav-item img:not(.fluent-3d-icon):not(.fluent-3d-icon img),
-html.light-mode #topbar-navigation button img {
+/* Icon ảnh png trong dock bar và sidebar ở Light Mode chuyển sang màu đen (ngoại trừ WinUI 3 icon giữ nguyên màu) */
+html.light-mode .floaty-bar__item:not(.is-active) img:not(.winui-sidebar-icon):not([src*="WinUI"]):not([id*="winui"]),
+html.light-mode #waves-desktop-sidebar .sidebar-nav-item:not([id*="winui-3"]) img:not(.fluent-3d-icon):not(.fluent-3d-icon img):not(.winui-sidebar-icon):not([src*="WinUI"]),
+html.light-mode #waves-mobile-sidebar .sidebar-nav-item:not([id*="winui-3"]) img:not(.fluent-3d-icon):not(.fluent-3d-icon img):not(.winui-sidebar-icon):not([src*="WinUI"]),
+html.light-mode #topbar-navigation button img:not(.winui-sidebar-icon):not([src*="WinUI"]) {
   filter: brightness(0) !important;
+}
+
+html.light-mode .winui-sidebar-icon,
+html.light-mode img[src*="WinUI"],
+html.light-mode [id*="winui-3"] img {
+  filter: none !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
 }
 
 /* 3. NGOẠI TRỪ (EXCEPTIONS): Các nút bấm và thành phần trên nền #005fb8
@@ -5749,10 +5904,19 @@ body::-webkit-scrollbar {
   height: 0 !important;
 }
 
-/* Custom In-App Fluent Scrollbar for internal scroll containers */
+/* Custom In-App Fluent Scrollbar for internal scroll containers: Grey color, no delay, default cursor */
+* {
+  scrollbar-color: #8a8a8a transparent;
+  scroll-behavior: auto !important;
+}
+
+html.light-mode * {
+  scrollbar-color: #9e9e9e transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -5760,22 +5924,53 @@ body::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 140, 140, 0.35);
+  background: #8a8a8a;
   border-radius: 9999px;
   border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 140, 140, 0.65);
+  background: #6b7280;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #4b5563;
+  background-clip: padding-box;
 }
 
 html.light-mode ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.25);
+  background: #9e9e9e;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 html.light-mode ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.50);
+  background: #757575;
+  background-clip: padding-box;
 }
+
+html.light-mode ::-webkit-scrollbar-thumb:active {
+  background: #505050;
+  background-clip: padding-box;
+}
+
+/* Scrollbar Cursor: Standard default cursor (NOT hand/pointer, NOT grab/grabbing) */
+::-webkit-scrollbar,
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner,
+[role="scrollbar"],
+aside[aria-label="App custom scroller"],
+aside[aria-label="App custom scroller"] *,
+.app-scrollbar,
+.app-scrollbar * {
+  cursor: default !important;
+}
+
 
 /* Text Gradients */
 .text-gradient-red {
@@ -7895,7 +8090,9 @@ html.light-mode input[type="email"]:not(.fluent-search-box input):not(.fluent-in
 html.light-mode input[type="password"]:not(.fluent-search-box input):not(.fluent-input-box input),
 html.light-mode input[type="search"]:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
 html.light-mode input[type="url"]:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: #fbfbfb !important;
+  background: #fbfbfb !important;
+  opacity: 1 !important;
   border: none !important;
   border-bottom: 2px solid rgba(0, 0, 0, 0.32) !important;
   border-radius: 6px !important;
@@ -7909,6 +8106,8 @@ html.light-mode input[type="password"]:focus:not(.fluent-search-box input):not(.
 html.light-mode input[type="search"]:focus:not(#floating-search-input):not(#topbar-search-box input):not(.fluent-search-box input):not(.fluent-input-box input),
 html.light-mode input[type="url"]:focus:not(#floating-search-input):not(.fluent-search-box input):not(.fluent-input-box input) {
   background-color: #ffffff !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
   border-bottom: 2px solid var(--ui-accent, #0078d4) !important;
   outline: none !important;
 }
@@ -8100,5 +8299,14 @@ button:hover *,
 button:hover,
 [role="button"]:hover {
   scale: 1 !important;
+}
+
+/* App Toast Tick Styling: Black in light mode, White in dark mode */
+html.light-mode .app-toast-tick {
+  color: #000000 !important;
+}
+html:not(.light-mode) .app-toast-tick,
+html.dark .app-toast-tick {
+  color: #ffffff !important;
 }
 

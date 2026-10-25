@@ -329,51 +329,8 @@ function getDraftSnapshot(): SystemSettings {
 }
 
 export const updateDraftSetting = <K extends keyof SystemSettings>(key: K, value: SystemSettings[K]) => {
-  draftSettingsStore = { ...draftSettingsStore, [key]: value };
-
-  // Khi bật light mode, opacity của spatial glass tự động nhảy lên 43%
-  if (key === 'theme') {
-    if (value === 'light') {
-      draftSettingsStore.spatialGlassOpacity = 43;
-    }
-  }
-
-  if (typeof document !== 'undefined') {
-    if (key === 'theme') {
-      if (value === 'light') {
-        document.documentElement.classList.add('light-mode');
-        document.documentElement.classList.remove('dark');
-        document.body?.classList.add('light-mode');
-      } else {
-        document.documentElement.classList.remove('light-mode');
-        document.documentElement.classList.add('dark');
-        document.body?.classList.remove('light-mode');
-      }
-    }
-
-    if (key === 'spatialGlassOpacity' || key === 'spatialGlassBlur' || key === 'spatialGlass' || key === 'theme') {
-      const isAct = draftSettingsStore.spatialGlass !== false;
-      const opacity = draftSettingsStore.spatialGlassOpacity ?? 20;
-      const blur = draftSettingsStore.spatialGlassBlur ?? 10;
-      const isDarkContent = isAct && opacity > 40;
-      const isUnder40 = isAct && opacity < 40;
-      document.documentElement.classList.toggle('spatial-glass-dark-content', isDarkContent);
-      document.documentElement.classList.toggle('spatial-glass-under-40', isUnder40);
-
-      if (!isAct) {
-        document.documentElement.style.setProperty('--spatial-glass-opacity', '0');
-        document.documentElement.style.setProperty('--spatial-glass-bg', 'rgba(24, 24, 27, 0.85)');
-        document.documentElement.style.setProperty('--spatial-glass-blur', '0px');
-      } else {
-        const opacityVal = opacity / 100;
-        const blurPx = Math.round((blur / 100) * 40);
-        document.documentElement.style.setProperty('--spatial-glass-opacity', String(opacityVal));
-        document.documentElement.style.setProperty('--spatial-glass-bg', `rgba(255, 255, 255, ${opacityVal})`);
-        document.documentElement.style.setProperty('--spatial-glass-blur', `${blurPx}px`);
-      }
-    }
-  }
-  notifyDraftListeners();
+  // Auto-save immediately: changing an option saves immediately without manual confirmation
+  updateGlobalSetting(key, value);
 };
 
 export const discardDraftSettings = () => {

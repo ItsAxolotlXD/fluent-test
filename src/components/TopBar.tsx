@@ -1512,11 +1512,9 @@ export const TopBar: React.FC<TopBarProps> = ({
         {settings.navigationMode !== 'floaty' && (
           <motion.button
             id="btn-mobile-menu-toggle"
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={onOpenMobileMenu}
             className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer shrink-0"
-            title="Collapse or expand"
             aria-label="Collapse or expand"
           >
             <Menu className="w-5 h-5 transition-transform text-black dark:text-white" />
@@ -1535,7 +1533,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Home"
+              aria-label="Home"
             >
               <FluentHomeIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
               <span>Home</span>
@@ -1555,7 +1553,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Watch"
+              aria-label="Watch"
             >
               <Fluent3DWatchPreviewIcon className="w-4 h-4 shrink-0" />
               <span>Watch</span>
@@ -1575,7 +1573,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   ? 'bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white font-medium'
                   : 'text-[#4b5563] dark:text-[#d1d5db] hover:bg-black/5 dark:hover:bg-white/[0.06] hover:text-[#111827] dark:hover:text-white'
               }`}
-              title="Update blogs"
+              aria-label="Update blogs"
             >
               <FluentNewsIcon className="w-4 h-4 shrink-0 text-[#111827] dark:text-white" />
               <span>Update blogs</span>
@@ -1607,7 +1605,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                 setIsSearchFocused(false);
               }}
               className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 shrink-0 cursor-pointer"
-              title="Close search"
               aria-label="Back"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -1619,10 +1616,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               className={`group relative w-full h-9 sm:h-9 rounded-[100px] flex items-center px-3.5 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
-                  : 'bg-black/5 dark:bg-[#282c31]'
+                  : 'bg-[#fbfbfb] dark:bg-[#282c31]'
               } ${currentRoute === '/search' || currentRoute.startsWith('/search') ? 'topbar-search-box-spotlight-glow' : ''}`}
             >
-              <FluentSearchIcon className="w-[16px] h-[16px] text-[#71717a] dark:text-white shrink-0 pointer-events-none select-none" />
+              <FluentSearchIcon className="w-[16px] h-[16px] text-black dark:text-white shrink-0 pointer-events-none select-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -1672,7 +1669,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
                   return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
                 })()}
-                className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-[#111827] dark:text-white placeholder-[#71717a] dark:placeholder-white outline-none border-none py-0.5 pr-1"
+                className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-black dark:text-white placeholder-black/75 dark:placeholder-white outline-none border-none py-0.5 pr-1"
               />
               <div className="flex items-center gap-1.5 shrink-0">
                 {searchQuery && (
@@ -1686,8 +1683,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                         onTabSearchChange('');
                       }
                     }}
-                    title="Clear search"
-                    className="text-[#71717a] dark:text-white hover:text-[#111827] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                    aria-label="Clear search"
+                    className="text-black dark:text-white hover:text-black dark:hover:text-white p-0.5 transition-colors cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -1705,7 +1702,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                         handleSaveSettings();
                       }}
                       disabled={isSavingSettings}
-                      title="Save changes"
                       className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
                       aria-label="Save changes"
                     >
@@ -1877,7 +1873,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                           e.stopPropagation();
                           removeFromHistory(item.title);
                         }}
-                        title="Remove from history"
+                        aria-label="Remove from history"
                         className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-[#6b7280] dark:text-[#9ca3af] hover:text-[#111827] dark:hover:text-white shrink-0 cursor-pointer transition-none"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -2045,7 +2041,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 ? 'bg-black/10 dark:bg-white/15'
                 : 'hover:bg-black/5 dark:hover:bg-white/10'
             }`}
-            title="Settings"
+            aria-label="Settings"
           >
             <img 
               src={SETTINGS_ICON_SRC}

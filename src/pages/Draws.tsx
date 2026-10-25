@@ -770,22 +770,21 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
 
   return (
     <div className="flex flex-col h-full min-h-screen bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none">
-      {/* Toast notification */}
+      {/* Toast notification - Adaptive light mode, bottom position, button radius, no sparkle icon */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-[#16181d]/95 backdrop-blur-xl border border-white/10 text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-3"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-white/95 dark:bg-[#20242a]/95 backdrop-blur-xl border border-black/10 dark:border-white/10 text-[#111827] dark:text-white text-xs sm:text-sm px-4 py-2.5 rounded-[6px] shadow-xl flex items-center gap-3 font-medium"
           >
-            <Sparkles className="w-4 h-4 text-[#4cc2ff]" />
             <span>{toastMessage.text}</span>
             {toastMessage.actionLabel && toastMessage.onAction && (
               <button
                 type="button"
                 onClick={toastMessage.onAction}
-                className="px-2.5 py-0.5 rounded-full bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer"
+                className="px-2.5 py-1 rounded-[4px] bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold text-xs hover:opacity-90 transition-opacity cursor-pointer border-none"
               >
                 {toastMessage.actionLabel}
               </button>

@@ -840,16 +840,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
 
   return (
     <div id="gallery-page" className="flex flex-col h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] overflow-hidden bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
-      {/* Toast Notification */}
+      {/* Toast Notification - Adaptive light mode, bottom position, button radius, no sparkle icon */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-[#16181d]/90 dark:bg-[#16181d]/95 backdrop-blur-2xl border border-white/10 text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2"
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-white/95 dark:bg-[#20242a]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-[#111827] dark:text-white text-xs sm:text-sm px-4 py-2.5 rounded-[6px] shadow-xl flex items-center gap-2 font-medium"
           >
-            <Sparkles className="w-4 h-4 text-[#4cc2ff]" />
             <span>{toastMessage}</span>
           </motion.div>
         )}

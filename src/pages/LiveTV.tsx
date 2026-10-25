@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SequentialSection } from '../components/SequentialSection';
 import { useSettings } from '../hooks/useSettings';
 import { EpgScheduleWidget } from '../components/EpgScheduleWidget';
+import { showAppToast } from '../utils/toast';
 
 interface LiveTVProps {
   currentChannel: Channel;
@@ -65,12 +66,17 @@ export const LiveTV: React.FC<LiveTVProps> = ({
       .filter((group) => group.channels.length > 0);
   }, [distinctCategories, filteredChannels]);
 
+  const handleSelectChannel = (channel: Channel) => {
+    showAppToast(`Switched to ${channel.name}`);
+    onSelectChannel(channel);
+  };
+
   // Navigation helpers for channel controls
   const handleNextChannel = () => {
     const currentIndex = channels.findIndex((c) => c.id === currentChannel.id);
     if (currentIndex !== -1) {
       const nextIndex = (currentIndex + 1) % channels.length;
-      onSelectChannel(channels[nextIndex]);
+      handleSelectChannel(channels[nextIndex]);
     }
   };
 
@@ -78,7 +84,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
     const currentIndex = channels.findIndex((c) => c.id === currentChannel.id);
     if (currentIndex !== -1) {
       const prevIndex = (currentIndex - 1 + channels.length) % channels.length;
-      onSelectChannel(channels[prevIndex]);
+      handleSelectChannel(channels[prevIndex]);
     }
   };
 
@@ -86,7 +92,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
     const pool = channels.filter((c) => c.id !== currentChannel.id);
     if (pool.length > 0) {
       const rand = pool[Math.floor(Math.random() * pool.length)];
-      onSelectChannel(rand);
+      handleSelectChannel(rand);
     }
   };
 
@@ -250,7 +256,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                         <div
                           key={ch.id}
                           id={`livetv-channel-card-${ch.id}`}
-                          onClick={() => onSelectChannel(ch)}
+                          onClick={() => handleSelectChannel(ch)}
                           className={`fluent-reveal-item onair-card channel-card group relative w-full aspect-[136/78] rounded-[6px] sm:rounded-[8px] transition-colors cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-white dark:bg-[#38383d] border shadow-xs ${
                             isSelected
                               ? 'border-[#4cc2ff] ring-1 ring-[#4cc2ff]'

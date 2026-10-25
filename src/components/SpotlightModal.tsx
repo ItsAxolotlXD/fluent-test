@@ -240,7 +240,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                     type="button"
                     onClick={onClose}
                     className="z-10 w-7 h-7 rounded-full bg-transparent hover:bg-transparent border-none flex items-center justify-center text-[#8E8E93] hover:text-black dark:hover:text-white transition-colors cursor-default"
-                    title="Close"
+                    aria-label="Close"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -459,7 +459,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                             inputRef.current?.focus();
                           }}
                           className="p-1 rounded-full text-[#8E8E93] hover:text-[#111827] dark:hover:text-white transition-colors cursor-default"
-                          title="Clear search"
+                          aria-label="Clear search"
                         >
                           <X className="w-4 h-4" />
                         </motion.button>
@@ -486,7 +486,7 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                               ? 'bg-[#4cc2ff] text-white dark:text-black shadow-[0_0_12px_rgba(76,194,255,0.8)] scale-105 animate-pulse'
                               : 'text-[#888888] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'
                           }`}
-                          title={isListening ? "Stop listening" : "Voice search"}
+                          aria-label={isListening ? "Stop listening" : "Voice search"}
                         >
                           {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                         </motion.button>
@@ -502,7 +502,6 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
                         setViewMode('settings');
                       }}
                       className="w-7 h-7 rounded-full flex items-center justify-center text-[#8E8E93] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-default shrink-0"
-                      title="Search settings"
                       aria-label="Search settings"
                     >
                       <SettingsIcon className="w-4 h-4" />

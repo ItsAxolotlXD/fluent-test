@@ -157,7 +157,7 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
               type="button"
               onClick={handlePrev}
               disabled={matchCount === 0}
-              title="Previous match (Shift+Enter)"
+              aria-label="Previous match (Shift+Enter)"
               className="p-1.5 rounded-lg bg-[#27121d] hover:bg-[#331726] disabled:opacity-40 disabled:hover:bg-[#27121d] text-white cursor-default"
             >
               <ChevronUp className="w-4 h-4" />
@@ -166,7 +166,7 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
               type="button"
               onClick={handleNext}
               disabled={matchCount === 0}
-              title="Next match (Enter)"
+              aria-label="Next match (Enter)"
               className="p-1.5 rounded-lg bg-[#27121d] hover:bg-[#331726] disabled:opacity-40 disabled:hover:bg-[#27121d] text-white cursor-default"
             >
               <ChevronDown className="w-4 h-4" />
@@ -174,7 +174,7 @@ export const FindWordsBar: React.FC<FindWordsBarProps> = ({ isOpen, onClose }) =
             <button
               type="button"
               onClick={onClose}
-              title="Close search (Esc)"
+              aria-label="Close search (Esc)"
               className="p-1.5 rounded-lg bg-[#27121d] hover:bg-[#331726] text-[#9CA3AF] hover:text-white cursor-default ml-1"
             >
               <X className="w-4 h-4" />

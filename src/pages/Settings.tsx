@@ -14,6 +14,35 @@ import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSett
 import { SfCheckmark } from '../components/SfCheckmark';
 import { KEYBIND_DEFINITIONS, DEFAULT_KEYBINDS, eventToKeyString, validateKeybind } from '../utils/keybinds';
 import { KeybindAction } from '../types';
+import { showAppToast } from '../utils/toast';
+
+const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
+  theme: 'App theme',
+  navigationMode: 'Navigation mode',
+  sidebarPosition: 'Sidebar position',
+  fontScale: 'Font scaling',
+  superDarkMode: 'Super dark mode',
+  spatialGlass: 'Spatial glass',
+  spatialGlassOpacity: 'Spatial glass opacity',
+  spatialGlassBlur: 'Spatial glass blur',
+  autoHideSidebar: 'Auto-hide sidebar',
+  hoverToExpand: 'Hover to expand',
+  nativeKeyboard: 'Native keyboard',
+  keyboardNumberRow: 'Keyboard number row',
+  keyboardClipboard: 'Keyboard clipboard',
+  keyboardSoundEnabled: 'Keyboard sound',
+  customKeybinds: 'Keybinds',
+  newWatchTab: 'Watch tab layout',
+  fluentIcons: 'Fluent icons',
+  dynamicSidebarIcons: 'Dynamic sidebar icons',
+  pageAnimation: 'Page animation',
+  pageLoading: 'Page loading',
+  loadPagesSequentially: 'Load pages sequentially',
+  streamAspectRatio: 'Stream aspect ratio',
+  immersiveSearch: 'Immersive search',
+  developerMode: 'Developer mode',
+  triangleExperiment: 'Loading experiment',
+};
 
 export type SettingsCategoryId = 
   | 'settings-section-experimental'
@@ -87,8 +116,12 @@ export const Settings: React.FC<SettingsProps> = ({
     return Boolean(collapsedCategories[catId]);
   };
 
-  const updateDraft = <K extends keyof SystemSettings>(key: K, value: SystemSettings[K]) => {
+  const updateDraft = <K extends keyof SystemSettings>(key: K, value: SystemSettings[K], silentToast = false) => {
     updateDraftSetting(key, value);
+    if (!silentToast) {
+      const label = SETTING_LABELS[key] || String(key);
+      showAppToast(`Updated ${label}`);
+    }
     if (key === 'superDarkMode') {
       if (value) {
         document.documentElement.classList.add('super-dark');
@@ -119,16 +152,6 @@ export const Settings: React.FC<SettingsProps> = ({
       }
     }
   };
-
-  useEffect(() => {
-    const handleAppliedEvent = () => {
-      setToastMessage('Đã lưu các cài đặt thành công!');
-      setShowApplyToast(true);
-      setTimeout(() => setShowApplyToast(false), 2400);
-    };
-    window.addEventListener('settings-applied-toast', handleAppliedEvent);
-    return () => window.removeEventListener('settings-applied-toast', handleAppliedEvent);
-  }, []);
 
   // Search filter helper
   const query = searchQuery.trim().toLowerCase();
@@ -1372,10 +1395,10 @@ export const Settings: React.FC<SettingsProps> = ({
             >
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Version information */}
-                {matchesSearch(['Update version', 'Build number', 'Branch', 'Insider Preview', '261019']) && (
+                {matchesSearch(['Update version', 'Build number', 'Branch', 'Insider Preview', '261024.1629']) && (
                   <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Update version</span><span className="font-semibold text-[#9CA3AF]">26.11</span></div>
-                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">261019</span></div>
+                    <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">261024.1629</span></div>
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#4cc2ff]">Insider Preview</span></div>
                   </motion.div>
                 )}
@@ -1489,7 +1512,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       if (event.key === 'Enter') {
                         if (lightModeUnlockCode === '366761') {
                           updateDraft('theme', 'light');
-                          updateDraft('spatialGlassOpacity', 43);
                           setIsLightModeUnlockOpen(false);
                         } else {
                           setLightModeUnlockError('Mã bảo vệ không chính xác.');
@@ -1517,7 +1539,6 @@ export const Settings: React.FC<SettingsProps> = ({
                   onClick={() => {
                     if (lightModeUnlockCode === '366761') {
                       updateDraft('theme', 'light');
-                      updateDraft('spatialGlassOpacity', 43);
                       setIsLightModeUnlockOpen(false);
                     } else {
                       setLightModeUnlockError('Mã bảo vệ không chính xác.');
@@ -1529,23 +1550,6 @@ export const Settings: React.FC<SettingsProps> = ({
                 </button>
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Floating Apply Feedback Toast */}
-      <AnimatePresence>
-        {showApplyToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-2.5 rounded-[6px] bg-[#1E1D24] text-white text-xs sm:text-sm font-normal shadow-2xl border-none"
-          >
-            <div className="w-5 h-5 rounded-full bg-[#4cc2ff] flex items-center justify-center shrink-0">
-              <SfCheckmark className="w-3 h-3" />
-            </div>
-            <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
