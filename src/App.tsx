@@ -587,7 +587,6 @@ export default function App() {
           <LiveTV
             currentChannel={currentChannel}
             onSelectChannel={(ch) => {
-              showAppToast(`Switched to ${ch.name}`);
               setCurrentChannel(ch);
             }}
             channels={channels}

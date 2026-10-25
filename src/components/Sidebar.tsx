@@ -73,6 +73,7 @@ import {
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
 import { CHANNELS_DATA } from '../data/channels';
+import { showAppToast } from '../utils/toast';
 import { Channel, NewsArticle } from '../types';
 import { DiscordWelcomeModal } from './DiscordWelcomeModal';
 import { UnderConstructionModal } from './UnderConstructionModal';
@@ -1145,11 +1146,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
             isCollapsed={isCollapsed}
             onToggleCollapse={onToggleCollapse}
             hoverToExpand={settings.hoverToExpand}
-            onToggleHoverToExpand={() => updateSetting('hoverToExpand', !settings.hoverToExpand)}
+            onToggleHoverToExpand={() => {
+              const next = !settings.hoverToExpand;
+              updateSetting('hoverToExpand', next);
+              showAppToast(next ? 'Enable Hover to expand' : 'Disable Hover to expand');
+            }}
             fluentIcons={settings.fluentIcons}
-            onToggleFluentIcons={() => updateSetting('fluentIcons', !settings.fluentIcons)}
+            onToggleFluentIcons={() => {
+              const next = !settings.fluentIcons;
+              updateSetting('fluentIcons', next);
+              showAppToast(next ? 'Enable Fluent icons' : 'Disable Fluent icons');
+            }}
             dynamicSidebarIcons={settings.dynamicSidebarIcons}
-            onToggleDynamicSidebarIcons={() => updateSetting('dynamicSidebarIcons', !settings.dynamicSidebarIcons)}
+            onToggleDynamicSidebarIcons={() => {
+              const next = !settings.dynamicSidebarIcons;
+              updateSetting('dynamicSidebarIcons', next);
+              showAppToast(next ? 'Enable Dynamic sidebar icons' : 'Disable Dynamic sidebar icons');
+            }}
             onNavigateSettings={() => navigate('/settings')}
             onGoBack={handleGoBack}
             onClose={() => setSidebarContextMenu(null)}
@@ -1334,6 +1347,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => {
                       handleNavClick(`/live-tv?channel=${ch.slug}`);
                       if (onSelectChannel) onSelectChannel(ch);
+                      showAppToast(`Switched to ${ch.name}`);
                     }}
                     className="w-full h-[30px] flex items-center justify-between px-2.5 rounded-[4px] text-xs text-black dark:text-[#a1a1aa] hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                   >

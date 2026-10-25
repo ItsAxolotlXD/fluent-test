@@ -289,20 +289,19 @@ html.light-mode .winui3 .text-white\/30 {
   border-width: 1.5px !important;
 }
 
-/* Global Interactive Cursor Hand (pointer) */
-button,
-a,
-[role="button"],
-.sidebar-nav-item,
-.fluent-reveal-item,
+/* Global Interactive Cursor Hand (pointer) - excludes sidebar and modal dialogs */
+button:not(#waves-desktop-sidebar button):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar button):not(#waves-mobile-sidebar *):not(.sidebar-nav-item):not(.fluent-modal-dialog button):not(.fluent-modal-dialog *):not([role="dialog"] button):not([role="dialog"] *),
+a:not(#waves-desktop-sidebar a):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar a):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog a):not(.fluent-modal-dialog *):not([role="dialog"] a):not([role="dialog"] *),
+[role="button"]:not(#waves-desktop-sidebar [role="button"]):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar [role="button"]):not(#waves-mobile-sidebar *):not(.sidebar-nav-item):not(.fluent-modal-dialog [role="button"]):not(.fluent-modal-dialog *):not([role="dialog"] [role="button"]):not([role="dialog"] *),
+.fluent-reveal-item:not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog *):not([role="dialog"] *),
 .channel-card,
 .news-card,
 .onair-card,
 .setting-card,
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-[tabindex="0"] {
+input[type="button"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
+input[type="submit"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
+input[type="reset"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
+[tabindex="0"]:not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog *):not([role="dialog"] *) {
   cursor: pointer !important;
 }
 
@@ -3267,46 +3266,151 @@ button[role="switch"] span:hover,
   background-image: none !important;
 }
 
-/* Interactive cursor: Hand select (pointer) on buttons and sidebar items when hovering */
-.cursor-pointer,
-.sidebar-nav-item,
+/* Sidebar and Modal Dialogs: Standard point cursor (default arrow cursor) instead of pointer hand */
+#waves-desktop-sidebar,
+#waves-desktop-sidebar *,
 #waves-desktop-sidebar button,
-#waves-desktop-sidebar [role="button"],
+#waves-desktop-sidebar button *,
 #waves-desktop-sidebar a,
+#waves-desktop-sidebar a *,
+#waves-desktop-sidebar [role="button"],
+#waves-desktop-sidebar [role="button"] *,
+#waves-mobile-sidebar,
+#waves-mobile-sidebar *,
 #waves-mobile-sidebar button,
-#waves-mobile-sidebar [role="button"],
+#waves-mobile-sidebar button *,
 #waves-mobile-sidebar a,
-.tools-flyout-container button {
-  cursor: pointer !important;
-}
-
-#waves-desktop-sidebar h2,
-#waves-desktop-sidebar h2 * {
+#waves-mobile-sidebar a *,
+#waves-mobile-sidebar [role="button"],
+#waves-mobile-sidebar [role="button"] *,
+aside#waves-desktop-sidebar,
+aside#waves-desktop-sidebar *,
+.sidebar-nav-item,
+.sidebar-nav-item *,
+[id^="sidebar-nav-"],
+[id^="sidebar-nav-"] *,
+[id^="sidebar-collapsed-"],
+[id^="sidebar-collapsed-"] *,
+[id^="mobile-nav-"],
+[id^="mobile-nav-"] *,
+[id^="nav-item-"],
+[id^="nav-item-"] *,
+[id^="mobile-nav-item-"],
+[id^="mobile-nav-item-"] *,
+.tools-flyout-container,
+.tools-flyout-container *,
+.signin-flyout-container,
+.signin-flyout-container *,
+.sidebar-context-menu,
+.sidebar-context-menu *,
+.fluent-modal-dialog,
+.fluent-modal-dialog *,
+[role="dialog"] .fluent-modal-dialog,
+[role="dialog"] .fluent-modal-dialog *,
+.fluent-modal-dialog button,
+.fluent-modal-dialog button *,
+.fluent-modal-dialog a,
+.fluent-modal-dialog a *,
+.fluent-modal-dialog [role="button"],
+.fluent-modal-dialog [role="button"] *,
+.fluent-modal-dialog label,
+.fluent-modal-dialog label *,
+.fluent-modal-dialog input[type="button"],
+.fluent-modal-dialog input[type="submit"],
+.fluent-modal-dialog input[type="reset"],
+.fluent-modal-dialog input[type="checkbox"],
+.fluent-modal-dialog input[type="radio"],
+.fluent-modal-dialog select,
+.fluent-modal-dialog .cursor-pointer,
+.fluent-modal-footer,
+.fluent-modal-footer *,
+.fluent-modal-footer button,
+.fluent-modal-footer button *,
+.fluent-btn-primary,
+.fluent-btn-secondary,
+#welcome-modal-dialog,
+#welcome-modal-dialog *,
+#discord-welcome-dialog,
+#discord-welcome-dialog *,
+#under-construction-modal-dialog,
+#under-construction-modal-dialog *,
+#developer-mode-modal-dialog,
+#developer-mode-modal-dialog *,
+#custom-stream-dialog,
+#custom-stream-dialog *,
+#help-modal-dialog,
+#help-modal-dialog *,
+#news-summary-dialog,
+#news-summary-dialog *,
+#unsaved-settings-modal-dialog,
+#unsaved-settings-modal-dialog *,
+#add-stream-dialog,
+#add-stream-dialog *,
+#spotlight-popup-card,
+#spotlight-popup-card *,
+.spatial-glass-modal,
+.spatial-glass-modal *,
+[role="dialog"],
+[role="dialog"] *,
+dialog,
+dialog *,
+[aria-modal="true"],
+[aria-modal="true"] *,
+[id$="-modal-backdrop"],
+[id$="-modal-container"],
+[id$="-dialog"],
+[id$="-dialog"] * {
   cursor: default !important;
 }
 
-button:hover,
-[role="button"]:hover,
-.cursor-pointer:hover,
+/* Hover and active states for Sidebar and Modal Dialogs: strictly cursor: default */
+#waves-desktop-sidebar *:hover,
+#waves-desktop-sidebar *:active,
+#waves-mobile-sidebar *:hover,
+#waves-mobile-sidebar *:active,
 .sidebar-nav-item:hover,
-.sidebar-nav-item:hover *,
-#waves-desktop-sidebar button:hover,
-#waves-desktop-sidebar button:hover *,
-#waves-desktop-sidebar [role="button"]:hover,
-#waves-desktop-sidebar a:hover,
-#waves-desktop-sidebar .sidebar-nav-item:hover,
-#waves-desktop-sidebar .sidebar-nav-item:hover *,
-#waves-mobile-sidebar button:hover,
-#waves-mobile-sidebar button:hover *,
-#waves-mobile-sidebar [role="button"]:hover,
-#waves-mobile-sidebar a:hover,
-#waves-mobile-sidebar .sidebar-nav-item:hover,
-#waves-mobile-sidebar .sidebar-nav-item:hover *,
-.tools-flyout-container button:hover,
-.tools-flyout-container button:hover *,
-.signin-flyout-container button:hover,
-.signin-flyout-container button:hover * {
-  cursor: pointer !important;
+.sidebar-nav-item:active,
+.fluent-modal-dialog *:hover,
+.fluent-modal-dialog *:active,
+[role="dialog"] *:hover,
+[role="dialog"] *:active,
+.spatial-glass-modal *:hover,
+.spatial-glass-modal *:active {
+  cursor: default !important;
+}
+
+/* Sidebar and Modal text inputs keep text editing cursor */
+#waves-desktop-sidebar input[type="text"],
+#waves-desktop-sidebar input[type="search"],
+#waves-mobile-sidebar input[type="text"],
+#waves-mobile-sidebar input[type="search"],
+.fluent-modal-dialog input[type="text"],
+.fluent-modal-dialog input[type="search"],
+.fluent-modal-dialog input[type="url"],
+.fluent-modal-dialog input[type="email"],
+.fluent-modal-dialog input[type="password"],
+.fluent-modal-dialog input[type="number"],
+.fluent-modal-dialog textarea,
+[role="dialog"] input[type="text"],
+[role="dialog"] input[type="search"],
+[role="dialog"] input[type="url"],
+[role="dialog"] input[type="email"],
+[role="dialog"] input[type="password"],
+[role="dialog"] input[type="number"],
+[role="dialog"] textarea,
+.fluent-modal-dialog input[type="text"]:hover,
+.fluent-modal-dialog input[type="search"]:hover,
+.fluent-modal-dialog input[type="url"]:hover,
+.fluent-modal-dialog input[type="email"]:hover,
+.fluent-modal-dialog input[type="password"]:hover,
+.fluent-modal-dialog textarea:hover,
+[role="dialog"] input[type="text"]:hover,
+[role="dialog"] input[type="search"]:hover,
+[role="dialog"] input[type="url"]:hover,
+[role="dialog"] input[type="email"]:hover,
+[role="dialog"] input[type="password"]:hover,
+[role="dialog"] textarea:hover {
+  cursor: text !important;
 }
 
 /* Global Button Hover Bounce for general buttons across the app */
@@ -3416,7 +3520,7 @@ html:not(.light-mode) .signin-flyout-panel {
 [id^="mobile-nav-"]:hover *,
 [id^="nav-item-"]:hover,
 [id^="mobile-nav-item-"]:hover {
-  cursor: pointer !important;
+  cursor: default !important;
 }
 #waves-desktop-sidebar button:active,
 #waves-desktop-sidebar a:active,
@@ -3431,6 +3535,120 @@ html:not(.light-mode) .signin-flyout-panel {
 [id^="mobile-nav-item-"]:active {
   transform: none !important;
   scale: 1 !important;
+}
+
+/* Toast Checkmark Icon Styling (Strictly Black in Light Mode, White in Dark Mode) */
+html.light-mode .app-toast-tick {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+html:not(.light-mode) .app-toast-tick,
+.dark .app-toast-tick {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* WinUI 3 Hero Banner Typography in Dark Mode (Pure White & Light) */
+html:not(.light-mode) #winui3-hero-title,
+html.dark #winui3-hero-title,
+.dark #winui3-hero-title,
+html:not(.light-mode) #winui-hero-banner-section h1,
+html.dark #winui-hero-banner-section h1,
+.dark #winui-hero-banner-section h1 {
+  color: #ffffff !important;
+}
+
+html:not(.light-mode) #winui3-hero-subtitle,
+html.dark #winui3-hero-subtitle,
+.dark #winui3-hero-subtitle,
+html:not(.light-mode) #winui-hero-banner-section p,
+html.dark #winui-hero-banner-section p,
+.dark #winui-hero-banner-section p {
+  color: #e5e7eb !important;
+}
+
+html.light-mode #winui3-hero-title,
+html.light-mode #winui-hero-banner-section h1 {
+  color: #0c0d0e !important;
+}
+
+html.light-mode #winui3-hero-subtitle,
+html.light-mode #winui-hero-banner-section p {
+  color: #1a1b1d !important;
+}
+
+/* Sidebar Tab Icon Bounce: gentle sink down on click/hold, spring bounce on release */
+.sidebar-nav-item:not([id*="settings"]) svg:not(.settings-spin-icon):not(.settings-spin-icon *),
+.sidebar-nav-item:not([id*="settings"]) img:not(.settings-spin-icon):not(.settings-spin-icon *),
+.sidebar-nav-item:not([id*="settings"]) .fluent-3d-icon:not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]) svg:not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]) img:not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]) .fluent-3d-icon:not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]) svg:not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]) img:not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]) .fluent-3d-icon:not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]) svg:not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]) img:not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]) .fluent-3d-icon:not(.settings-spin-icon) {
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Prevent double-scaling inside 3D icon wrappers so all tab icons have identical bounce depth */
+.sidebar-nav-item .fluent-3d-icon img,
+[id^="sidebar-nav-"] .fluent-3d-icon img,
+[id^="mobile-nav-"] .fluent-3d-icon img,
+[id^="sidebar-collapsed-"] .fluent-3d-icon img {
+  transform: none !important;
+}
+
+/* Equal bounce depth across all tabs (WinUI 3, Feedback, Home, Watch, etc.) */
+.sidebar-nav-item:not([id*="settings"]):active svg:not(.settings-spin-icon):not(.settings-spin-icon *),
+.sidebar-nav-item:not([id*="settings"]):active img:not(.fluent-3d-icon *):not(.settings-spin-icon *),
+.sidebar-nav-item:not([id*="settings"]):active .fluent-3d-icon:not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]):active svg:not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]):active img:not(.fluent-3d-icon *):not(.settings-spin-icon),
+[id^="sidebar-nav-"]:not([id*="settings"]):active .fluent-3d-icon:not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]):active svg:not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]):active img:not(.fluent-3d-icon *):not(.settings-spin-icon),
+[id^="mobile-nav-"]:not([id*="settings"]):active .fluent-3d-icon:not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]):active svg:not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]):active img:not(.fluent-3d-icon *):not(.settings-spin-icon),
+[id^="sidebar-collapsed-"]:not([id*="settings"]):active .fluent-3d-icon:not(.settings-spin-icon),
+[id*="winui-3"]:active img,
+[id*="feedback"]:active svg {
+  transform: scale(0.72) translateY(1.8px) !important;
+  transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.4, 1) !important;
+}
+
+/* Settings Tab Icon: spins 360deg smoothly on hover & active, never bounces/sinks down */
+.settings-spin-icon {
+  transform-origin: center center;
+  transition: transform 0.65s cubic-bezier(0.42, 0, 0.58, 1) !important;
+}
+
+button:hover .settings-spin-icon,
+.group:hover .settings-spin-icon,
+a:hover .settings-spin-icon,
+.settings-spin-icon:hover,
+button:active .settings-spin-icon,
+.group:active .settings-spin-icon,
+.sidebar-nav-item:active .settings-spin-icon,
+[id*="settings"]:active .settings-spin-icon,
+.settings-spin-icon:active,
+.sidebar-nav-item[id*="settings"]:active svg,
+.sidebar-nav-item[id*="settings"]:active img,
+.sidebar-nav-item[id*="settings"]:active .fluent-3d-icon,
+[id^="sidebar-nav-settings"]:active svg,
+[id^="sidebar-nav-settings"]:active img,
+[id^="mobile-nav-settings"]:active svg,
+[id^="mobile-nav-settings"]:active img,
+[id^="sidebar-collapsed-settings"]:active svg,
+[id^="sidebar-collapsed-settings"]:active img {
+  transform: rotate(360deg) !important;
+  scale: 1 !important;
+  transition: transform 0.65s cubic-bezier(0.42, 0, 0.58, 1) !important;
 }
 
 /* THICK FOCUS BORDER ON SEARCH BOX CONTAINER ONLY (3px Solid Reddish Magenta, No Outer Ring) */

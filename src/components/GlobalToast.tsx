@@ -32,14 +32,17 @@ export const GlobalToast: React.FC = () => {
       {toast && (
         <motion.div
           key={toast.id || toast.message}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, y: 16 }}
+          transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[99999] bg-white/95 dark:bg-[#20242a]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-[#111827] dark:text-white text-xs sm:text-sm px-4 py-2.5 rounded-[6px] shadow-xl flex items-center gap-2.5 font-medium select-none pointer-events-auto"
         >
           {/* Tick icon on left: strictly black in light mode, white in dark mode */}
-          <Check className="app-toast-tick w-4 h-4 text-black dark:text-white stroke-[2.5] shrink-0" />
+          <Check
+            className="app-toast-tick w-4 h-4 text-black dark:text-white stroke-[2.5] shrink-0"
+            aria-hidden="true"
+          />
           <span className="leading-tight">{toast.message}</span>
           {toast.actionLabel && toast.onAction && (
             <button

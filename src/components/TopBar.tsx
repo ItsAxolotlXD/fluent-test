@@ -55,6 +55,7 @@ import { useNotes } from '../context/NotesContext';
 import { Channel, NewsArticle } from '../types';
 import { NEWS_DATA } from '../data/news';
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
+import { showAppToast } from '../utils/toast';
 
 function stripHtml(html: string): string {
   return (html || '').replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
@@ -1832,7 +1833,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                             item.customToggle.onToggle();
                           } else if (item.settingKey) {
                             const currentVal = Boolean(settings[item.settingKey]);
-                            updateSetting(item.settingKey, !currentVal);
+                            const nextVal = !currentVal;
+                            updateSetting(item.settingKey, nextVal);
+                            showAppToast(nextVal ? `Enable ${item.title}` : `Disable ${item.title}`);
                           }
                         }}
                         className="toggle-switch-btn shrink-0"

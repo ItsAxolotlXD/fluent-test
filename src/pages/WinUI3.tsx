@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useSettings } from '../hooks/useSettings';
 import {
   Check,
   ChevronRight,
@@ -96,12 +97,11 @@ const ICON_CATALOG: IconEntry[] = [
 ];
 
 export const WinUI3: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return !document.documentElement.classList.contains('light-mode');
-    }
-    return true;
-  });
+  const { settings, updateSetting } = useSettings();
+  const isDarkMode = settings.theme !== 'light';
+  const toggleDarkMode = () => {
+    updateSetting('theme', isDarkMode ? 'light' : 'dark');
+  };
   const [volume, setVolume] = useState(68);
   const [notifications, setNotifications] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -155,22 +155,32 @@ export const WinUI3: React.FC = () => {
       {/* WinUI Gallery Hero Banner & 4 Quick Links matching reference */}
       <div id="winui-hero-banner-section" className="space-y-3.5">
         {/* Top Hero Banner with Segoe UI Display Typography */}
-        <div className="relative w-full rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 shadow-xs bg-[#d9d9e3] dark:bg-[#202028] min-h-[160px] sm:min-h-[190px] md:min-h-[220px] flex items-center">
+        <div className="relative w-full rounded-[8px] overflow-hidden border border-black/10 dark:border-white/10 shadow-xs bg-[#d9d9e3] dark:bg-[#1b1f24] min-h-[160px] sm:min-h-[190px] md:min-h-[220px] flex items-center">
           <img
             src="/assets/winui3/hero_banner_clean.png"
             alt="WinUI 3 Gallery"
-            className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none"
+            className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none dark:opacity-40"
           />
+          {/* Dark gradient backdrop behind text in dark mode for high-contrast white text */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#181920]/95 via-[#181920]/80 to-transparent pointer-events-none hidden dark:block z-[2]" />
           <div className="relative z-10 px-6 sm:px-10 py-6 flex flex-col justify-center select-none">
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#0c0d0e] dark:text-white tracking-tight"
-              style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+              id="winui3-hero-title"
+              className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black dark:text-white tracking-tight"
+              style={{
+                fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif",
+                color: isDarkMode ? '#ffffff' : '#0c0d0e'
+              }}
             >
               WinUI 3 Gallery
             </h1>
             <p
-              className="text-lg sm:text-xl md:text-2xl font-normal text-[#1a1b1d] dark:text-[#d1d5db] mt-1 sm:mt-1.5"
-              style={{ fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+              id="winui3-hero-subtitle"
+              className="text-lg sm:text-xl md:text-2xl font-normal text-black dark:text-[#e5e7eb] mt-1 sm:mt-1.5"
+              style={{
+                fontFamily: "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif",
+                color: isDarkMode ? '#e5e7eb' : '#1a1b1d'
+              }}
             >
               SDK 2.9
             </p>
@@ -408,7 +418,7 @@ export const WinUI3: React.FC = () => {
 
             {/* 2. Dark appearance */}
             <div
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={toggleDarkMode}
               className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
             >
               <div className="min-w-0 flex-1 pr-2">
@@ -425,7 +435,7 @@ export const WinUI3: React.FC = () => {
                 aria-checked={isDarkMode}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsDarkMode(!isDarkMode);
+                  toggleDarkMode();
                 }}
                 className={`relative h-5 w-10 rounded-full transition cursor-pointer border-none shrink-0 ${
                   isDarkMode ? 'bg-[#4cc2ff]' : 'bg-[#0078d4]'
