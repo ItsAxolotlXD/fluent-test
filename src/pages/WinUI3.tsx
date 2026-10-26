@@ -36,6 +36,7 @@ import {
   FluentFolderArrowLeftIcon,
   FluentArrowUploadIcon,
   FluentInkCanvasIcon,
+  FluentCameraIcon,
 } from '../components/FluentIcons';
 import {
   Fluent3DHomeIcon,
@@ -73,6 +74,7 @@ const ICON_CATALOG: IconEntry[] = [
   { name: '3D Watch', category: '3d', componentName: 'Fluent3DWatchIcon', component: Fluent3DWatchIcon, is3D: true, description: 'Icon 3D Colore Phim & Truyền hình' },
   { name: 'Arrow loop', category: 'system', componentName: 'FluentUpdatesIcon', component: FluentUpdatesIcon, glyphHex: 'E895', description: 'Đồng bộ và cập nhật phần mềm' },
   { name: 'Arrow up', category: 'system', componentName: 'FluentArrowUploadIcon', component: FluentArrowUploadIcon, glyphHex: 'E898', description: 'Nhập và tải lên tệp tin' },
+  { name: 'Camera', category: 'media', componentName: 'FluentCameraIcon', component: FluentCameraIcon, glyphHex: 'E722', description: 'Ứng dụng máy ảnh và quay phim WinUI 3' },
   { name: 'Copy', category: 'doc', componentName: 'FluentCopyIcon', component: FluentCopyIcon, glyphHex: 'E8C8', description: 'Sao chép hoặc nhân bản tệp/nội dung' },
   { name: 'Craftmine', category: 'system', componentName: 'FluentCraftmineIcon', component: FluentCraftmineIcon, glyphHex: 'F158', description: 'Khối 3D voxel sandbox game' },
   { name: 'Document with pen', category: 'doc', componentName: 'FluentNotesIcon', component: FluentNotesIcon, glyphHex: 'E70F', description: 'Soạn thảo văn bản và ghi chú' },

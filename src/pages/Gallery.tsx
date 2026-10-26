@@ -1835,10 +1835,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
         {isMobileAppModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ opacity: 0, scale: 1.06, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } }}
               className="w-full max-w-md bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-xl shadow-2xl border border-black/10 dark:border-white/10 p-6 relative select-none"
             >
               <button
@@ -1903,10 +1902,9 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
             }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 12 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ opacity: 0, scale: 1.06, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } }}
               className="w-full max-w-2xl bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-2xl shadow-2xl border border-black/10 dark:border-white/10 p-6 sm:p-8 relative select-none max-h-[90vh] overflow-y-auto no-scrollbar"
             >
               <button

@@ -40,6 +40,7 @@ import { Updates } from './pages/Updates';
 import { Gallery } from './pages/Gallery';
 import { Draws } from './pages/Draws';
 import { VLC } from './pages/VLC';
+import { Camera } from './pages/Camera';
 import { Auth } from './pages/Auth';
 import { Feedback } from './pages/Feedback';
 import { WinUI3 } from './pages/WinUI3';
@@ -694,6 +695,9 @@ export default function App() {
       case '/vlc':
         return <VLC navigate={navigate} />;
 
+      case '/camera':
+        return <Camera navigate={navigate} />;
+
       case '/craftmine':
         return <Craftmine />;
 
@@ -811,7 +815,7 @@ export default function App() {
 
         {/* Dynamic Page Content with smooth slide-up transition - Bo cong 10px góc trên trái ở desktop, không bo ở mobile */}
         <main className={`main-tab-page flex-1 w-full mx-auto rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden bg-[#f9f9f9] dark:bg-[#282c31] ${
-          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/')
+          currentRoute === '/' || currentRoute === '/home' || isOfficeRoute || currentRoute === '/craftmine' || currentRoute === '/photopea' || currentRoute === '/vlc' || currentRoute === '/screenbox' || currentRoute === '/screenbug' || currentRoute === '/gallery' || currentRoute === '/draws' || currentRoute.startsWith('/draws/') || currentRoute === '/camera'
             ? 'p-0 max-w-none pt-0' 
             : 'px-4 sm:px-6 md:px-8 py-5 max-w-7xl'
         } ${

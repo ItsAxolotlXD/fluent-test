@@ -2,7 +2,8 @@
   "name": "fluent",
   "description": "Nền tảng cộng đồng dành cho những người yêu thích, theo dõi và lưu trữ nội dung về truyền hình Việt Nam với giao diện streaming hiện đại.",
   "requestFramePermissions": [
-    "microphone"
+    "microphone",
+    "camera"
   ],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

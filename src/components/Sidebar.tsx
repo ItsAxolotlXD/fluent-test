@@ -51,7 +51,8 @@ import {
   FluentVlcIcon,
   FluentPhotopeaIcon,
   FluentPersonFeedbackIcon,
-  FluentArrowUploadIcon
+  FluentArrowUploadIcon,
+  FluentCameraIcon
 } from './FluentIcons';
 import {
   Fluent3DHomeIcon,
@@ -69,6 +70,7 @@ import {
   Fluent3DDiscordIcon,
   Fluent3DUserIcon,
   Fluent3DSettingsIcon,
+  Fluent3DCameraIcon
 } from './Fluent3DIcons';
 import { useFavorites } from '../hooks/useFavorites';
 import { useSettings } from '../hooks/useSettings';
@@ -530,6 +532,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (route === '/gallery' && (currentRoute === '/gallery' || currentRoute.startsWith('/gallery'))) return true;
     if (route === '/draws' && (currentRoute === '/draws' || currentRoute.startsWith('/draws'))) return true;
     if (route === '/vlc' && (currentRoute === '/vlc' || currentRoute.startsWith('/vlc'))) return true;
+    if (route === '/camera' && (currentRoute === '/camera' || currentRoute.startsWith('/camera'))) return true;
     if (route === '/craftmine' && currentRoute === '/craftmine') return true;
     if (route === '/photopea' && currentRoute === '/photopea') return true;
     if (route === '/settings' && (currentRoute === '/settings' || currentRoute.startsWith('/settings'))) return true;
@@ -719,6 +722,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span>VLC</span>
           </div>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Media player</span>
+        </button>
+
+        {/* Camera Tool */}
+        <button
+          type="button"
+          id="tool-camera"
+          onClick={() => {
+            setIsToolsFlyoutOpen(false);
+            handleNavClick('/camera');
+          }}
+          className="w-full h-[36px] px-3 rounded-[4px] flex items-center justify-between text-[13px] text-[#111827] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 transition-colors cursor-pointer text-left"
+        >
+          <div className="flex items-center gap-2.5">
+            <FluentCameraIcon className="w-4 h-4 shrink-0 text-black dark:text-white" />
+            <span>Camera</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Insider</span>
         </button>
 
         {/* Photopea Tool */}
@@ -1649,6 +1669,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
+          {/* 9. Camera */}
+          <div className="w-full">
+            <button
+              type="button"
+              id={isMobile ? 'mobile-nav-camera' : 'sidebar-nav-camera'}
+              data-nav-active={(currentRoute === '/camera' || currentRoute.startsWith('/camera')) ? 'true' : undefined}
+              onClick={() => handleNavClick('/camera')}
+              aria-label="Camera"
+              className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
+                (currentRoute === '/camera' || currentRoute.startsWith('/camera'))
+                  ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
+                  : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center gap-3.5 truncate">
+                {useFluent3DForContent ? (
+                  <Fluent3DCameraIcon className="w-5 h-5 shrink-0" />
+                ) : (
+                  <FluentCameraIcon className="w-5 h-5 shrink-0 text-black dark:text-white" />
+                )}
+                <span className="truncate text-[13.5px]">Camera</span>
+              </div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Insider</span>
+            </button>
+          </div>
+
           {/* Divider & Category Heading: LAC's project */}
           <div className="my-2 mx-1 h-[1px] bg-black/10 dark:bg-white/10" />
           <div className="px-1.5 pt-0.5 pb-1 shrink-0">
@@ -2045,6 +2091,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <Fluent3DScreenbugIcon className="w-5 h-5 shrink-0" />
                   ) : (
                     <FluentScreenbugIcon white className="w-5 h-5 text-white" />
+                  )}
+                </button>
+
+                {/* 8. Camera Icon */}
+                <button
+                  type="button"
+                  id="sidebar-collapsed-camera"
+                  data-nav-active={(currentRoute === '/camera' || currentRoute.startsWith('/camera')) ? 'true' : undefined}
+                  onClick={() => handleNavClick('/camera')}
+                  onMouseEnter={(e) => showTooltip('Camera', e)}
+                  onMouseLeave={hideTooltip}
+                  aria-label="Camera"
+                  className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
+                    (currentRoute === '/camera' || currentRoute.startsWith('/camera'))
+                      ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'
+                      : 'text-black dark:text-[#cccccc] hover:bg-black/5 dark:hover:bg-white/[0.05] hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  {useFluent3DForContent ? (
+                    <Fluent3DCameraIcon className="w-5 h-5 shrink-0" />
+                  ) : (
+                    <FluentCameraIcon className="w-5 h-5 text-black dark:text-white" />
                   )}
                 </button>
 

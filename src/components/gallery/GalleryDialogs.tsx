@@ -26,7 +26,7 @@ const DialogShell: React.FC<{
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.25, ease: 'easeOut' }}
+        transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
         className="fixed inset-0 bg-black/50 backdrop-blur-xs"
         onClick={onClose}
       />
@@ -34,7 +34,7 @@ const DialogShell: React.FC<{
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        initial={{ opacity: 0, scale: 1.05 }}
+        initial={{ opacity: 0, scale: 1.06 }}
         animate={{ 
           opacity: 1, 
           scale: 1,
@@ -45,10 +45,10 @@ const DialogShell: React.FC<{
         }}
         exit={{ 
           opacity: 0, 
-          scale: 1.04,
+          scale: 1.06,
           transition: {
             duration: 0.18,
-            ease: [0.16, 1, 0.3, 1]
+            ease: [0.4, 0, 0.2, 1]
           }
         }}
         className={`fluent-modal-dialog relative z-10 w-full ${maxWidthClass} bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]`}

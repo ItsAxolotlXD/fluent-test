@@ -486,6 +486,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-draws', title: 'Ink Canvas', subtitle: 'Switch page', keywords: 'ink canvas draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
       { id: 'page-screenbox', title: 'Screenbox', subtitle: 'Switch page', keywords: 'screenbox screenbug vlc media player phát video âm thanh stream disc network equalizer open url', type: 'page', onSelect: () => navigate('/screenbox') },
+      { id: 'page-camera', title: 'Camera', subtitle: 'Switch page', keywords: 'camera máy ảnh chụp ảnh camera rolls webcam snapshot photo insider', type: 'page', onSelect: () => navigate('/camera') },
       { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
       // All Interactive System Settings & Action Toggles (Search & execute right on Search UI)
       {

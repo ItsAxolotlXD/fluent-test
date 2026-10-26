@@ -684,4 +684,18 @@ export const Fluent3DMailIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5
   </svg>
 );
 
+export const CAMERA_ICON_URL = 'https://static.wikia.nocookie.net/logopedia/images/3/38/Camera_Win10X.svg/revision/latest/scale-to-width-down/200?cb=20221230185750';
+
+export const Fluent3DCameraIcon: React.FC<Fluent3DIconProps> = ({ className = 'w-5 h-5', style }) => (
+  <div className={`fluent-3d-icon ${className} shrink-0 flex items-center justify-center`} style={style}>
+    <img
+      src={CAMERA_ICON_URL}
+      alt="Camera"
+      referrerPolicy="no-referrer"
+      draggable={false}
+      className="fluent-3d-icon w-[18px] h-[18px] shrink-0 object-contain select-none"
+    />
+  </div>
+);
+
 
