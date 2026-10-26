@@ -35,7 +35,7 @@ export const WatchPreview: React.FC<WatchPreviewProps> = ({ enabled = false }) =
         </motion.header>
         <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {channels.map((channel, index) => (
-            <motion.article key={channel.title} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} className="group overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm dark:border-white/10 dark:bg-[#2c3037]">
+            <motion.article key={channel.title} data-channel-card="true" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} className="channel-card group cursor-pointer overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm dark:border-white/10 dark:bg-[#2c3037]">
               <div className="relative h-44 overflow-hidden bg-gradient-to-br from-[#dbeafe] via-white to-[#f3f4f6] dark:from-[#263b4a] dark:via-[#2c3037] dark:to-[#202328]">
                 <div className="absolute inset-5 rounded-xl border border-black/5 dark:border-white/10" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
                 <div className="absolute left-9 top-10 flex size-12 items-center justify-center rounded-2xl text-white shadow-lg" style={{ backgroundColor: channel.color }}><Radio className="size-6" /></div>

@@ -289,20 +289,144 @@ html.light-mode .winui3 .text-white\/30 {
   border-width: 1.5px !important;
 }
 
-/* Global Interactive Cursor Hand (pointer) - excludes sidebar and modal dialogs */
-button:not(#waves-desktop-sidebar button):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar button):not(#waves-mobile-sidebar *):not(.sidebar-nav-item):not(.fluent-modal-dialog button):not(.fluent-modal-dialog *):not([role="dialog"] button):not([role="dialog"] *),
-a:not(#waves-desktop-sidebar a):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar a):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog a):not(.fluent-modal-dialog *):not([role="dialog"] a):not([role="dialog"] *),
-[role="button"]:not(#waves-desktop-sidebar [role="button"]):not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar [role="button"]):not(#waves-mobile-sidebar *):not(.sidebar-nav-item):not(.fluent-modal-dialog [role="button"]):not(.fluent-modal-dialog *):not([role="dialog"] [role="button"]):not([role="dialog"] *),
-.fluent-reveal-item:not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog *):not([role="dialog"] *),
-.channel-card,
+/* ==========================================================================
+   APP-WIDE CURSOR SPECIFICATION:
+   "Toàn bộ element app (trừ các ô kênh, các ô files/media trong gallery,
+   các block và toggles trong settings) ko sử dụng cursor hand (pointer)
+   mà sử dụng cursor point thường (default)"
+   ========================================================================== */
+
+/* 1. Global default: ALL elements across the app use standard arrow cursor (default) */
+html,
+body,
+*,
+*::before,
+*::after {
+  cursor: default;
+}
+
+/* 2. Explicitly prevent hand cursor (pointer) on buttons, links, tabs, menus, cards, and cursor-pointer utilities */
+button,
+a,
+summary,
+select,
+label,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+[role="checkbox"],
+[role="radio"],
+.cursor-pointer,
+[class*="cursor-pointer"],
+.fluent-reveal-item,
 .news-card,
-.onair-card,
-.setting-card,
-input[type="button"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
-input[type="submit"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
-input[type="reset"]:not(.fluent-modal-dialog *):not([role="dialog"] *),
-[tabindex="0"]:not(#waves-desktop-sidebar *):not(#waves-mobile-sidebar *):not(.fluent-modal-dialog *):not([role="dialog"] *) {
+.onair-card:not(.channel-card),
+.sidebar-nav-item,
+.dock-item,
+.topbar-item,
+[tabindex] {
+  cursor: default !important;
+}
+
+/* 3. Text inputs, search fields, textareas, and contenteditable retain text selection beam */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+[contenteditable="true"],
+[contenteditable="true"] * {
+  cursor: text !important;
+}
+
+/* 4. Resizing controls and disabled elements retain functional cursors */
+[style*="cursor: col-resize"], .cursor-col-resize { cursor: col-resize !important; }
+[style*="cursor: row-resize"], .cursor-row-resize { cursor: row-resize !important; }
+[style*="cursor: grab"], .cursor-grab { cursor: grab !important; }
+[style*="cursor: grabbing"], .cursor-grabbing { cursor: grabbing !important; }
+:disabled, [aria-disabled="true"], button:disabled { cursor: not-allowed !important; }
+
+/* ==========================================================================
+   THE 3 AUTHORIZED EXCEPTIONS THAT USE CURSOR HAND (cursor: pointer):
+   1. Các ô kênh (Channel cards)
+   2. Các ô files/media trong gallery (Files and media cards in Gallery)
+   3. Các block và toggles trong settings (Blocks and toggles in Settings)
+   ========================================================================== */
+
+/* EXCEPTION 1: Các ô kênh (Channel cards) */
+.channel-card,
+.channel-card *,
+.channel-card:hover,
+.channel-card *:hover,
+[data-channel-card],
+[data-channel-card] *,
+[id^="channel-card-"],
+[id^="channel-card-"] *,
+[id^="livetv-channel-card-"],
+[id^="livetv-channel-card-"] *,
+[id^="test-channel-card-"],
+[id^="test-channel-card-"] *,
+[id^="rec-card-ch-"],
+[id^="rec-card-ch-"] * {
   cursor: pointer !important;
+}
+
+/* EXCEPTION 2: Các ô files/media trong gallery (File & media cards in Gallery) */
+.gallery-media-card,
+.gallery-media-card *,
+.gallery-media-card:hover,
+.gallery-media-card *:hover,
+.gallery-file-card,
+.gallery-file-card *,
+.gallery-file-card:hover,
+.gallery-file-card *:hover,
+#gallery-page .gallery-media-card,
+#gallery-page .gallery-media-card *,
+#gallery-page .gallery-file-card,
+#gallery-page .gallery-file-card *,
+#gallery-page [data-gallery-item],
+#gallery-page [data-gallery-item] *,
+.gallery-lightbox-thumb,
+.gallery-lightbox-thumb * {
+  cursor: pointer !important;
+}
+
+/* EXCEPTION 3: Các block và toggles trong settings (Blocks and toggles in Settings) */
+#settings-page .settings-block-card,
+#settings-page .settings-block-card *,
+#settings-page .settings-block-card:hover,
+#settings-page .settings-block-card *:hover,
+.settings-page-wrapper .settings-block-card,
+.settings-page-wrapper .settings-block-card *,
+#settings-page [id^="setting-"],
+#settings-page [id^="setting-"] *,
+#settings-page section > div > div > div,
+#settings-page section > div > div > div *,
+#settings-page .fluent-category-header,
+#settings-page .fluent-category-header *,
+#settings-page .settings-segmented-group button,
+#settings-page .settings-segmented-group button *,
+#settings-page .toggle-switch-btn,
+#settings-page .toggle-switch-btn *,
+#settings-page button[role="switch"],
+#settings-page button[role="switch"] *,
+#settings-page [id^="toggle-"],
+#settings-page [id^="toggle-"] *,
+.toggle-switch-btn,
+.toggle-switch-btn *,
+.toggle-switch-btn:hover,
+.toggle-switch-btn *:hover,
+button[role="switch"],
+button[role="switch"] *,
+button[role="switch"]:hover,
+button[role="switch"] *:hover {
+  cursor: pointer !important;
+}
+
+/* Preserving text input cursors inside Settings blocks */
+#settings-page input[type="text"],
+#settings-page input[type="password"],
+#settings-page input[type="search"],
+#settings-page textarea {
+  cursor: text !important;
 }
 
 /* Light Mode Global Overrides: Main tab page is #f9f9f9, Sidebar & TopBar are #f3f3f3 */
@@ -3157,7 +3281,7 @@ button[role="switch"],
   align-items: center !important;
   justify-content: flex-start !important;
   transition: background-color 0.16s ease !important;
-  cursor: default !important;
+  cursor: pointer !important;
   flex-shrink: 0 !important;
   -webkit-tap-highlight-color: transparent !important;
 }

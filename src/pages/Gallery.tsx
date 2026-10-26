@@ -1320,7 +1320,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                         <button
                           type="button"
                           onClick={() => setCurrentFolderId(folder.id)}
-                          className="group flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:shadow-md w-full"
+                          className="gallery-file-card group flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] border border-black/10 dark:border-white/10 text-left cursor-pointer transition-all hover:shadow-md w-full"
                         >
                           <img
                             src={WINDOWS_11_FOLDER_ICON}
@@ -1551,7 +1551,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
                                       onTouchMove={clearLongPress}
                                       onTouchEnd={clearLongPress}
                                       onTouchCancel={clearLongPress}
-                                      className={`group relative flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer shadow-xs hover:shadow-md transition-all select-none border ${
+                                      className={`gallery-file-card gallery-media-card group relative flex flex-row items-center gap-3 p-2.5 sm:p-3 rounded-[8px] sm:rounded-[10px] bg-black/[0.02] dark:bg-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] cursor-pointer shadow-xs hover:shadow-md transition-all select-none border ${
                                         isSelected
                                           ? 'ring-2 ring-[#005fb8] dark:ring-[#4cc2ff] border-transparent'
                                           : 'border-black/10 dark:border-white/10'
@@ -2342,15 +2342,15 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
               {filteredItems.slice(Math.max(0, currentIndex - 5), currentIndex + 6).map((it) => {
                 const isCurrent = it.id === selectedItem.id;
                 return (
-                  <button
-                    key={it.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedItem(it);
-                      setZoomLevel(1);
-                      setRotation(0);
-                    }}
-                    className={`w-12 h-12 rounded-[6px] overflow-hidden shrink-0 transition-all cursor-pointer border ${
+                    <button
+                      key={it.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedItem(it);
+                        setZoomLevel(1);
+                        setRotation(0);
+                      }}
+                      className={`gallery-media-card gallery-lightbox-thumb w-12 h-12 rounded-[6px] overflow-hidden shrink-0 transition-all cursor-pointer border ${
                       isCurrent
                         ? 'ring-2 ring-[#4cc2ff] border-white opacity-100 shadow-md'
                         : 'border-white/20 opacity-60 hover:opacity-100'

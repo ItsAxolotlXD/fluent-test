@@ -221,8 +221,9 @@ export const TestChannels: React.FC<TestChannelsProps> = ({
                       <div
                         key={ch.id}
                         id={`livetv-channel-card-${ch.id}`}
+                        data-channel-card="true"
                         onClick={() => onSelectChannel(ch)}
-                        className={`group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#353535] ${
+                        className={`channel-card group relative w-full aspect-[136/78] rounded-xl sm:rounded-2xl transition-none cursor-pointer overflow-hidden flex items-center justify-center p-1.5 sm:p-2.5 select-none bg-[#353535] ${
                           isSelected ? 'is-selected' : ''
                         }`}
                         title={ch.name}

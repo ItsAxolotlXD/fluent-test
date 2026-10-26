@@ -560,12 +560,13 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
               role="button"
               tabIndex={0}
               id={`rec-card-ch-${ch0.id}`}
+              data-channel-card="true"
               data-selected={selectedRecommendedId === `rec-ch-${ch0.id}`}
               aria-selected={selectedRecommendedId === `rec-ch-${ch0.id}`}
               onClick={(e) => handleRecCardClick(e, `rec-ch-${ch0.id}`, () => openChannel(ch0))}
               onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch0))}
               onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch0.id}`, () => openChannel(ch0))}
-              className={`relative flex-1 min-h-[220px] sm:min-h-[250px] md:min-h-[280px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+              className={`channel-card relative flex-1 min-h-[220px] sm:min-h-[250px] md:min-h-[280px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
                 selectedRecommendedId === `rec-ch-${ch0.id}`
                   ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
                   : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
@@ -591,12 +592,13 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                 role="button"
                 tabIndex={0}
                 id={`rec-card-ch-${ch1.id}`}
+                data-channel-card="true"
                 data-selected={selectedRecommendedId === `rec-ch-${ch1.id}`}
                 aria-selected={selectedRecommendedId === `rec-ch-${ch1.id}`}
                 onClick={(e) => handleRecCardClick(e, `rec-ch-${ch1.id}`, () => openChannel(ch1))}
                 onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch1))}
                 onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch1.id}`, () => openChannel(ch1))}
-                className={`relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+                className={`channel-card relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
                   selectedRecommendedId === `rec-ch-${ch1.id}`
                     ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
                     : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'
@@ -619,12 +621,13 @@ export const HomePreview: React.FC<HomePreviewProps> = ({ channels, onSelectChan
                 role="button"
                 tabIndex={0}
                 id={`rec-card-ch-${ch2.id}`}
+                data-channel-card="true"
                 data-selected={selectedRecommendedId === `rec-ch-${ch2.id}`}
                 aria-selected={selectedRecommendedId === `rec-ch-${ch2.id}`}
                 onClick={(e) => handleRecCardClick(e, `rec-ch-${ch2.id}`, () => openChannel(ch2))}
                 onDoubleClick={(e) => handleRecCardDoubleClick(e, () => openChannel(ch2))}
                 onKeyDown={(e) => handleRecCardKeyDown(e, `rec-ch-${ch2.id}`, () => openChannel(ch2))}
-                className={`relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
+                className={`channel-card relative h-[86px] sm:h-[98px] rounded-2xl shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-transparent ${
                   selectedRecommendedId === `rec-ch-${ch2.id}`
                     ? 'is-selected border-[3px] border-[#d91a9c] dark:border-[#ff82ff]'
                     : 'border-[3px] border-black/[0.08] dark:border-white/[0.08]'

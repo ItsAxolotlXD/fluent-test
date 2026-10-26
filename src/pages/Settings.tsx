@@ -253,7 +253,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <button
                 type="button"
                 onClick={() => toggleCategoryCollapse('settings-section-experimental')}
-                className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
                   <img src="/icons/settings/insider.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
@@ -290,7 +290,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-experimental-native-keyboard"
                     onClick={() => updateDraft('nativeKeyboard', !draftSettings.nativeKeyboard)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -326,7 +326,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-experimental-immersive-search"
                     onClick={() => updateDraft('immersiveSearch', !draftSettings.immersiveSearch)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -362,7 +362,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-experimental-fluent-icons"
                     onClick={() => updateDraft('fluentIcons', !draftSettings.fluentIcons)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
                       <div className="w-9 h-9 flex items-center justify-center shrink-0">
@@ -409,7 +409,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-experimental-new-watch-tab"
                     onClick={() => updateDraft('newWatchTab', !draftSettings.newWatchTab)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2">
@@ -431,7 +431,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-dynamic-sidebar-icons"
                     onClick={() => updateDraft('dynamicSidebarIcons', !draftSettings.dynamicSidebarIcons)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
                       <div className="w-9 h-9 flex items-center justify-center shrink-0">
@@ -486,7 +486,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <button
                 type="button"
                 onClick={() => toggleCategoryCollapse('settings-section-interface')}
-                className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
                   <img src="/icons/settings/appearance.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
@@ -522,7 +522,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     animate="visible"
                     custom={elementIndex++}
                     id="setting-theme-mode"
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -550,7 +550,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             }
                             updateDraft('theme', val);
                           }}
-                          className={`flex items-center justify-center gap-1.5 rounded-[6px] px-3 py-1.5 text-xs transition-colors cursor-default border-none ${
+                          className={`flex items-center justify-center gap-1.5 rounded-[6px] px-3 py-1.5 text-xs transition-colors settings-block-card cursor-pointer border-none ${
                             (draftSettings.theme || 'dark') === val
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
@@ -572,7 +572,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     initial="hidden"
                     animate="visible"
                     custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -604,7 +604,7 @@ export const Settings: React.FC<SettingsProps> = ({
                             updateDraft('navigationMode', value); 
                             updateDraft('immersiveSidebar', false); 
                           }} 
-                          className={`rounded-[6px] px-2.5 py-1.5 text-xs font-normal transition-colors cursor-default text-center truncate border-none ${
+                          className={`rounded-[6px] px-2.5 py-1.5 text-xs font-normal transition-colors settings-block-card cursor-pointer text-center truncate border-none ${
                             draftSettings.navigationMode === value
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
@@ -626,7 +626,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     initial="hidden"
                     animate="visible"
                     custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 space-y-2 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 space-y-2 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div className="min-w-0 flex-1">
@@ -652,7 +652,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           step="1"
                           value={draftSettings.fontScale}
                           onChange={(e) => updateDraft('fontScale', parseInt(e.target.value, 10))}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-default z-20"
+                          className="absolute inset-0 w-full h-full opacity-0 settings-block-card cursor-pointer z-20"
                           aria-label="Thu phóng giao diện"
                         />
 
@@ -685,7 +685,7 @@ export const Settings: React.FC<SettingsProps> = ({
                               type="button"
                               id={`btn-font-scale-${idx}`}
                               onClick={() => updateDraft('fontScale', idx)}
-                              className={`cursor-default transition-colors py-1 border-none ${alignClass} ${
+                              className={`settings-block-card cursor-pointer transition-colors py-1 border-none ${alignClass} ${
                                 isSelected
                                   ? 'text-[#0078d4] dark:text-[#4cc2ff] font-normal text-xs'
                                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white font-normal'
@@ -708,7 +708,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     animate="visible"
                     custom={elementIndex++}
                     id="setting-sidebar-position"
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -727,7 +727,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           key={pos}
                           type="button"
                           onClick={() => updateDraft('sidebarPosition', pos as 'left' | 'right')}
-                          className={`rounded-[6px] px-3 py-1.5 text-xs font-normal transition-colors cursor-default text-center border-none ${
+                          className={`rounded-[6px] px-3 py-1.5 text-xs font-normal transition-colors settings-block-card cursor-pointer text-center border-none ${
                             draftSettings.sidebarPosition === pos
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
@@ -748,7 +748,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     animate="visible"
                     custom={elementIndex++}
                     id="setting-super-dark-mode"
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -773,7 +773,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 )}
 
                 {matchesInterface && (
-                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none">
                     <div className="min-w-0 flex-1 pr-2"><div className="font-normal text-sm text-[#111827] dark:text-white">Tự động ẩn Side View</div><div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Tự động thu gọn thanh menu khi không di chuột vào.</div></div>
                     <button id="toggle-autohide-sidebar-appearance" type="button" role="switch" aria-checked={draftSettings.autoHideSidebar} onClick={() => updateDraft('autoHideSidebar', !draftSettings.autoHideSidebar)} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
                   </motion.div>
@@ -796,7 +796,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <button
                 type="button"
                 onClick={() => toggleCategoryCollapse('settings-section-keyboard')}
-                className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
                   <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tZDhYcOsxyui7l0TvqaoPI63JZnsSF.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
@@ -833,7 +833,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-hover-to-expand"
                     onClick={() => updateDraft('hoverToExpand', !draftSettings.hoverToExpand)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -869,7 +869,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-page-loading"
                     onClick={() => updateDraft('pageLoading', !draftSettings.pageLoading)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -905,7 +905,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-load-pages-sequentially"
                     onClick={() => updateDraft('loadPagesSequentially', !draftSettings.loadPagesSequentially)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -941,7 +941,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-keyboard-number-row"
                     onClick={() => updateDraft('keyboardNumberRow', !draftSettings.keyboardNumberRow)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -977,7 +977,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-keyboard-clipboard"
                     onClick={() => updateDraft('keyboardClipboard', !draftSettings.keyboardClipboard)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -1013,7 +1013,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     custom={elementIndex++}
                     id="setting-keyboard-sound"
                     onClick={() => updateDraft('keyboardSoundEnabled', !draftSettings.keyboardSoundEnabled)}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 cursor-default hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -1063,7 +1063,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           setKeybindError(null);
                         }}
                         title="Đặt lại tất cả phím tắt về mặc định"
-                        className="px-2.5 py-1 rounded-[6px] text-xs font-normal text-[#0078d4] dark:text-[#4cc2ff] hover:bg-black/5 dark:hover:bg-black/20 transition-colors flex items-center gap-1.5 shrink-0 cursor-default border-none"
+                        className="px-2.5 py-1 rounded-[6px] text-xs font-normal text-[#0078d4] dark:text-[#4cc2ff] hover:bg-black/5 dark:hover:bg-black/20 transition-colors flex items-center gap-1.5 shrink-0 settings-block-card cursor-pointer border-none"
                       >
                         <RotateCcw className="w-3.5 h-3.5 text-white" />
                         <span>Phím tắt mặc định</span>
@@ -1080,7 +1080,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           <div
                             key={def.id}
                             id={`keybind-row-${def.id}`}
-                            className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col gap-2 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                            className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col gap-2 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="min-w-0 flex-1">
@@ -1171,7 +1171,7 @@ export const Settings: React.FC<SettingsProps> = ({
                                         setKeybindError(null);
                                       }}
                                       title="Nhấp để thay đổi phím tắt"
-                                      className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-black/30 hover:bg-black/10 dark:hover:bg-black/40 text-[#111827] dark:text-white font-mono text-xs font-normal transition-colors cursor-default border-none"
+                                      className="px-2.5 py-1 rounded-[6px] bg-black/5 dark:bg-black/30 hover:bg-black/10 dark:hover:bg-black/40 text-[#111827] dark:text-white font-mono text-xs font-normal transition-colors settings-block-card cursor-pointer border-none"
                                     >
                                       {currentKey}
                                     </button>
@@ -1186,7 +1186,7 @@ export const Settings: React.FC<SettingsProps> = ({
                                           updateDraft('customKeybinds', updated);
                                           setKeybindError(null);
                                         }}
-                                        className="p-1 rounded-[6px] text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-default border-none"
+                                        className="p-1 rounded-[6px] text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors settings-block-card cursor-pointer border-none"
                                         title="Khôi phục mặc định"
                                       >
                                         <RotateCcw className="w-3 h-3 text-white" />
@@ -1227,7 +1227,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <button
                 type="button"
                 onClick={() => toggleCategoryCollapse('settings-section-tools')}
-                className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
                   <img src="/icons/settings/tools.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
@@ -1262,7 +1262,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     initial="hidden"
                     animate="visible"
                     custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -1285,7 +1285,7 @@ export const Settings: React.FC<SettingsProps> = ({
                           type="button"
                           id={`btn-aspect-${value.replace(':', '-')}`}
                           onClick={() => updateDraft('streamAspectRatio', value as '16:9' | '4:3')}
-                          className={`rounded-[6px] px-3 py-1.5 text-xs font-normal transition-colors cursor-default text-center border-none ${
+                          className={`rounded-[6px] px-3 py-1.5 text-xs font-normal transition-colors settings-block-card cursor-pointer text-center border-none ${
                             draftSettings.streamAspectRatio === value
                               ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black shadow-xs font-normal'
                               : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 font-normal'
@@ -1306,7 +1306,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     initial="hidden"
                     animate="visible"
                     custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-[#363b43] border-none"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
@@ -1337,7 +1337,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     initial="hidden"
                     animate="visible"
                     custom={elementIndex++}
-                    className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
@@ -1354,7 +1354,7 @@ export const Settings: React.FC<SettingsProps> = ({
                     <button
                       type="button"
                       onClick={() => onOpenOfficeTool?.('notes')}
-                      className="px-4 py-1.5 rounded-[6px] font-normal text-xs text-white bg-[#0078d4] hover:bg-[#106ebe] dark:bg-[#4cc2ff] dark:text-black dark:hover:bg-[#6bd0ff] transition-colors flex items-center gap-2 self-start sm:self-auto cursor-default shadow-xs border-none"
+                      className="px-4 py-1.5 rounded-[6px] font-normal text-xs text-white bg-[#0078d4] hover:bg-[#106ebe] dark:bg-[#4cc2ff] dark:text-black dark:hover:bg-[#6bd0ff] transition-colors flex items-center gap-2 self-start sm:self-auto settings-block-card cursor-pointer shadow-xs border-none"
                     >
                       <span>Mở Sparkle Notes</span>
                     </button>
@@ -1378,7 +1378,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <button
                 type="button"
                 onClick={() => toggleCategoryCollapse('settings-section-version')}
-                className="w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
+                className="fluent-category-header settings-block-card w-full flex items-center justify-between py-2 px-1 text-left bg-transparent hover:opacity-85 transition-opacity cursor-pointer select-none border-none"
               >
                 <div className="flex items-center gap-2.5">
                   <img src="/icons/settings/updates.png" alt="" aria-hidden="true" draggable={false} className="fluent-3d-icon w-6 h-6 object-contain shrink-0" />
@@ -1408,7 +1408,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="space-y-2.5 bg-transparent pt-0.5">
                 {/* 1. Version information */}
                 {matchesSearch(['Update version', 'Build number', 'Branch', 'Insider Preview', '261024.1629']) && (
-                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Update version</span><span className="font-semibold text-[#9CA3AF]">26.11</span></div>
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Build number</span><span className="font-semibold text-[#9CA3AF]">261024.1629</span></div>
                     <div className="flex items-center justify-between text-xs sm:text-sm"><span className="text-[#111827] dark:text-white">Branch</span><span className="font-semibold text-[#4cc2ff]">Insider Preview</span></div>
@@ -1417,7 +1417,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 2. Sparkle Insider Program */}
                 {matchesSearch(['Join Sparkle Insider Program', 'Functional purpose', 'Early Access', 'Feedback Collection', 'How are you doing']) && (
-                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-4 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-4 select-text hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div>
                       <h3 className="text-sm sm:text-base font-semibold text-[#111827] dark:text-white">Join Sparkle Insider Program</h3>
                       <p className="text-xs sm:text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-2 leading-relaxed">The Sparkle Insider Program is an open software testing program that lets users try out early, pre-release features and builds of Sparkle before they roll-out officially to the general public with Sparkle Insider Preview. Additionally, users who joined Sparkle Insider Program will have a door to access more random out of context Sparkle test builds with Sparkle Dev Insider Preview.</p>
@@ -1429,7 +1429,7 @@ export const Settings: React.FC<SettingsProps> = ({
 
                 {/* 3. Developer preview */}
                 {matchesSearch(['Sparkle Dev Insider Preview', 'Test Sparkle', 'test build']) && (
-                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
+                  <motion.div variants={slideUpVariant} initial="hidden" animate="visible" custom={elementIndex++} className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-4.5 flex items-center justify-between gap-3 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
                     <div><div className="font-normal text-[#111827] dark:text-white text-xs sm:text-sm">Sparkle Dev Insider Preview</div><div className="text-[11px] sm:text-xs text-[#9CA3AF] mt-0.5 leading-normal">Try experimental Sparkle builds with early, unreleased features.</div></div>
                     <a id="btn-test-vplay-switch" href="https://test-vplay.vercel.app" target="_blank" rel="noopener noreferrer" className="px-4 py-1.5 rounded-[6px] font-normal text-white bg-[#005fb8] dark:bg-[#4cc2ff] hover:bg-[#0067c0] dark:hover:bg-[#6bd0ff] dark:text-black transition-colors text-xs flex items-center justify-center shrink-0 shadow-xs tracking-tight text-center select-none border-none"><span className="light-mode-white-label">Switch</span></a>
                   </motion.div>
