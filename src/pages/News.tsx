@@ -70,14 +70,14 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm sm:text-base font-semibold text-black dark:text-white">
-                Sparkle 26.11 (Build 261019)
+                Sparkle 26.11 (Build 261024)
               </h2>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
                 Latest
               </span>
             </div>
             <p className="text-xs text-black/70 dark:text-[#AAAAAA] mt-0.5">
-              Brand Identity • Home Preview • Project Orbit • Settings Cleanup
+              Feedback Page • Tooltips • WinUI 3 Refresh • Project Orbit Milestone 4
             </p>
           </div>
         </div>
@@ -103,21 +103,21 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           className="news-card-featured relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-white dark:bg-[#38383d] border-none hover:shadow-xl cursor-pointer group shadow-md transition-all"
         >
           <div className="grid grid-cols-1 md:grid-cols-12 min-h-[200px] md:min-h-[220px]">
-            {/* Image */}
-            <div className="md:col-span-6 lg:col-span-5 relative h-48 md:h-full overflow-hidden">
-              <img
-                src={featured.coverImage || DEFAULT_BANNER_PLACEHOLDER}
-                alt={featured.title}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (target.src !== DEFAULT_BANNER_PLACEHOLDER) {
-                    target.src = DEFAULT_BANNER_PLACEHOLDER;
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-transparent via-black/20 to-black/60 md:to-[#38383d] hidden dark:block" />
+            {/* Template Studio Gradient Banner */}
+            <div 
+              className="md:col-span-6 lg:col-span-5 relative h-48 md:h-full overflow-hidden flex items-center justify-center select-none"
+              style={{
+                background: 'radial-gradient(circle at 50% 110%, #f472b6 0%, #db2777 45%, #701a75 100%)',
+              }}
+            >
+              <div className="relative z-10 px-5 py-2.5 sm:px-6 sm:py-3 rounded-[10px] bg-white/20 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                <span className="text-base sm:text-lg font-bold text-white drop-shadow-md tracking-wide">
+                  {(() => {
+                    const m = featured.title.match(/Build\s+([A-Za-z0-9.]+)/i) || featured.id.match(/\b(26\d+)\b/);
+                    return m ? `Build ${m[1]}` : 'Build 261024';
+                  })()}
+                </span>
+              </div>
               
               <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF2020] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md">

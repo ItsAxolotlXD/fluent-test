@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   Menu, 
   History, 
   X, 
   ChevronRight, 
+  ChevronUp,
+  ChevronDown,
   Folder, 
   FileText, 
   Image as ImageIcon, 
@@ -12,7 +14,8 @@ import {
   Tv, 
   Settings as SettingsIcon,
   Globe,
-  ArrowLeft
+  ArrowLeft,
+  BookOpen
 } from 'lucide-react';
 import { SpinningRing } from './SpinningRing';
 import { 
@@ -161,6 +164,106 @@ export const TopBar: React.FC<TopBarProps> = ({
     left: number;
     placement: 'top' | 'bottom';
   } | null>(null);
+
+  const isArticlePage = currentRoute.startsWith('/news/') || currentRoute.startsWith('/article');
+  const [isFindWordsMode, setIsFindWordsMode] = useState(false);
+  const [findWordsTerm, setFindWordsTerm] = useState('');
+  const [findWordsMatchCount, setFindWordsMatchCount] = useState(0);
+  const [findWordsMatchIndex, setFindWordsMatchIndex] = useState(0);
+  const findWordsInputRef = useRef<HTMLInputElement>(null);
+
+  const clearArticleHighlights = useCallback(() => {
+    const marks = document.querySelectorAll('mark.vplay-search-highlight');
+    marks.forEach((mark) => {
+      const parent = mark.parentNode;
+      if (parent) {
+        parent.replaceChild(document.createTextNode(mark.textContent || ''), mark);
+        parent.normalize();
+      }
+    });
+  }, []);
+
+  const scrollArticleMatch = useCallback((index: number, markList?: NodeListOf<Element>) => {
+    const marks = markList || document.querySelectorAll('mark.vplay-search-highlight');
+    if (marks.length === 0) return;
+
+    marks.forEach((m, idx) => {
+      if (idx === index) {
+        m.classList.add('ring-2', 'ring-[#4cc2ff]', 'bg-[#4cc2ff]', 'text-black');
+        m.classList.remove('bg-amber-400');
+        m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        m.classList.remove('ring-2', 'ring-[#4cc2ff]', 'bg-[#4cc2ff]');
+        m.classList.add('bg-amber-400', 'text-black');
+      }
+    });
+  }, []);
+
+  const highlightArticleText = useCallback((term: string) => {
+    clearArticleHighlights();
+    if (!term.trim() || term.length < 1) {
+      setFindWordsMatchCount(0);
+      setFindWordsMatchIndex(0);
+      return;
+    }
+
+    const container = document.querySelector('article') || document.querySelector('main');
+    if (!container) return;
+
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+
+    const walk = (node: Node) => {
+      if (node.nodeType === 3) {
+        const text = node.nodeValue;
+        if (text && regex.test(text)) {
+          const span = document.createElement('span');
+          span.innerHTML = text.replace(regex, '<mark class="vplay-search-highlight bg-amber-400 text-black px-1 py-0.5 rounded font-bold shadow-sm">$1</mark>');
+          node.parentNode?.replaceChild(span, node);
+        }
+      } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE' && node.nodeName !== 'INPUT') {
+        Array.from(node.childNodes).forEach(walk);
+      }
+    };
+
+    walk(container);
+
+    const highlights = document.querySelectorAll('mark.vplay-search-highlight');
+    setFindWordsMatchCount(highlights.length);
+    if (highlights.length > 0) {
+      setFindWordsMatchIndex(1);
+      scrollArticleMatch(0, highlights);
+    } else {
+      setFindWordsMatchIndex(0);
+    }
+  }, [clearArticleHighlights, scrollArticleMatch]);
+
+  const handleNextFindMatch = () => {
+    if (findWordsMatchCount === 0) return;
+    const nextIdx = findWordsMatchIndex >= findWordsMatchCount ? 1 : findWordsMatchIndex + 1;
+    setFindWordsMatchIndex(nextIdx);
+    scrollArticleMatch(nextIdx - 1);
+  };
+
+  const handlePrevFindMatch = () => {
+    if (findWordsMatchCount === 0) return;
+    const prevIdx = findWordsMatchIndex <= 1 ? findWordsMatchCount : findWordsMatchIndex - 1;
+    setFindWordsMatchIndex(prevIdx);
+    scrollArticleMatch(prevIdx - 1);
+  };
+
+  const handleExitFindWords = useCallback(() => {
+    clearArticleHighlights();
+    setFindWordsTerm('');
+    setFindWordsMatchCount(0);
+    setFindWordsMatchIndex(0);
+    setIsFindWordsMode(false);
+  }, [clearArticleHighlights]);
+
+  useEffect(() => {
+    if (!isArticlePage && isFindWordsMode) {
+      handleExitFindWords();
+    }
+  }, [isArticlePage, isFindWordsMode, handleExitFindWords]);
 
   const handleResultMouseEnter = (title: string, e: React.MouseEvent<HTMLElement>) => {
     const currentTarget = e.currentTarget;
@@ -382,7 +485,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       { id: 'page-gallery', title: 'Gallery', subtitle: 'Switch page', keywords: 'gallery bộ sưu tập ảnh video âm thanh phương tiện media photos', type: 'page', onSelect: () => navigate('/gallery') },
       { id: 'page-draws', title: 'Ink Canvas', subtitle: 'Switch page', keywords: 'ink canvas draws paint vẽ hội họa bút cọ sketch ms paint canvas', type: 'page', onSelect: () => navigate('/draws') },
       { id: 'page-notes', title: 'Notes', subtitle: 'Switch page', keywords: 'ghi chú soạn thảo notes office', type: 'page', onSelect: () => navigate('/notes') },
-      { id: 'page-screenbug', title: 'Screenbug', subtitle: 'Switch page', keywords: 'screenbug vlc screenbox media player phát video âm thanh stream disc network equalizer open url', type: 'page', onSelect: () => navigate('/screenbug') },
+      { id: 'page-screenbox', title: 'Screenbox', subtitle: 'Switch page', keywords: 'screenbox screenbug vlc media player phát video âm thanh stream disc network equalizer open url', type: 'page', onSelect: () => navigate('/screenbox') },
       { id: 'page-settings', title: 'Settings', subtitle: 'Switch page', keywords: 'cài đặt hệ thống settings preferences', type: 'page', onSelect: () => navigate('/settings') },
       // All Interactive System Settings & Action Toggles (Search & execute right on Search UI)
       {
@@ -1611,117 +1714,223 @@ export const TopBar: React.FC<TopBarProps> = ({
               <ArrowLeft className="w-4 h-4" />
             </button>
           )}
-          <form onSubmit={handleSearchSubmit} className="flex-1 w-full min-w-0">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isFindWordsMode) {
+                handleNextFindMatch();
+                return;
+              }
+              handleSearchSubmit(e);
+            }} 
+            className="flex-1 w-full min-w-0"
+          >
             <div
               id="topbar-search-box"
               className={`group relative w-full h-9 sm:h-9 rounded-[100px] flex items-center px-3.5 gap-2 transition-all ${
                 isSearchFlyoutOpen || isSearchFocused
                   ? 'search-flyout-open is-focused bg-white dark:bg-[#282c31]'
                   : 'bg-[#fbfbfb] dark:bg-[#282c31]'
-              } ${currentRoute === '/search' || currentRoute.startsWith('/search') ? 'topbar-search-box-spotlight-glow' : ''}`}
+              } ${isFindWordsMode ? 'ring-2 ring-[#0078d4] dark:ring-[#4cc2ff]' : ''} ${currentRoute === '/search' || currentRoute.startsWith('/search') ? 'topbar-search-box-spotlight-glow' : ''}`}
             >
               <FluentSearchIcon className="w-[16px] h-[16px] text-black dark:text-white shrink-0 pointer-events-none select-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                spellCheck={false}
-                autoCapitalize="off"
-                autoComplete="off"
-                autoCorrect="off"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSearchQuery(val);
-                  setShowAllResults(false);
-                  if (currentRoute !== '/settings') {
-                    setIsSearchFlyoutOpen(true);
-                  } else {
-                    setIsSearchFlyoutOpen(false);
-                  }
-                  if (onTabSearchChange) {
-                    onTabSearchChange(val);
-                  }
-                }}
-                onFocus={() => {
-                  setIsSearchFocused(true);
-                  if (currentRoute !== '/settings') {
-                    setIsSearchFlyoutOpen(true);
-                  }
-                }}
-                onBlur={() => {
-                  setIsSearchFocused(false);
-                }}
-                placeholder={(() => {
-                  if (currentRoute === '/search' || currentRoute.startsWith('/search')) return 'Try new search here!';
-                  if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
-                  if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';
-                  if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
-                  if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
-                  if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
-                  if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
-                  if (currentRoute.startsWith('/vlc') || currentRoute.startsWith('/screenbox')) return 'Search Screenbox';
-                  if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';
-                  if (currentRoute.startsWith('/photopea')) return 'Search Photopea';
-                  if (currentRoute.startsWith('/settings')) return 'Search settings';
-                  if (currentRoute.startsWith('/winui-3') || currentRoute.startsWith('/winui')) return 'Search WinUI 3 Gallery';
-                  if (currentRoute.startsWith('/channels')) return 'Search Channels';
-                  if (currentRoute.startsWith('/favorites')) return 'Search Favorites';
-                  if (currentRoute.startsWith('/about')) return 'Search About';
-                  if (currentRoute.startsWith('/test')) return 'Search Insider Flags';
-                  const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
-                  return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
-                })()}
-                className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-black dark:text-white placeholder-black/75 dark:placeholder-white outline-none border-none py-0.5 pr-1"
-              />
-              <div className="flex items-center gap-1.5 shrink-0">
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery('');
-                      setIsSearchFlyoutOpen(false);
-                      setShowAllResults(false);
-                      if (onTabSearchChange) {
-                        onTabSearchChange('');
-                      }
-                    }}
-                    aria-label="Clear search"
-                    className="text-black dark:text-white hover:text-black dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
 
-                {/* Save button without background (pure icon button) inside search box */}
-                {(currentRoute === '/settings' || currentRoute.startsWith('/settings') || currentRoute.includes('settings') || (typeof window !== 'undefined' && window.location.pathname.includes('settings'))) && (
-                  <div className="relative group/savetooltip flex items-center">
+              {isFindWordsMode ? (
+                <input
+                  ref={findWordsInputRef}
+                  type="text"
+                  value={findWordsTerm}
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoFocus
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFindWordsTerm(val);
+                    highlightArticleText(val);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleNextFindMatch();
+                    } else if (e.key === 'Escape') {
+                      e.preventDefault();
+                      handleExitFindWords();
+                    }
+                  }}
+                  placeholder="Find some words"
+                  className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-black dark:text-white placeholder-black/75 dark:placeholder-white outline-none border-none py-0.5 pr-1"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={searchQuery}
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchQuery(val);
+                    setShowAllResults(false);
+                    if (currentRoute !== '/settings') {
+                      setIsSearchFlyoutOpen(true);
+                    } else {
+                      setIsSearchFlyoutOpen(false);
+                    }
+                    if (onTabSearchChange) {
+                      onTabSearchChange(val);
+                    }
+                  }}
+                  onFocus={() => {
+                    setIsSearchFocused(true);
+                    if (currentRoute !== '/settings') {
+                      setIsSearchFlyoutOpen(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    setIsSearchFocused(false);
+                  }}
+                  placeholder={(() => {
+                    if (currentRoute === '/search' || currentRoute.startsWith('/search')) return 'Try new search here!';
+                    if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
+                    if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';
+                    if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
+                    if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
+                    if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
+                    if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
+                    if (currentRoute.startsWith('/vlc') || currentRoute.startsWith('/screenbox')) return 'Search Screenbox';
+                    if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';
+                    if (currentRoute.startsWith('/photopea')) return 'Search Photopea';
+                    if (currentRoute.startsWith('/settings')) return 'Search settings';
+                    if (currentRoute.startsWith('/winui-3') || currentRoute.startsWith('/winui')) return 'Search WinUI 3 Gallery';
+                    if (currentRoute.startsWith('/channels')) return 'Search Channels';
+                    if (currentRoute.startsWith('/favorites')) return 'Search Favorites';
+                    if (currentRoute.startsWith('/about')) return 'Search About';
+                    if (currentRoute.startsWith('/test')) return 'Search Insider Flags';
+                    const clean = currentRoute.replace(/^\//, '').split(/[/?#]/)[0];
+                    return `Search ${clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Home'}`;
+                  })()}
+                  className="flex-1 min-w-0 bg-transparent text-xs sm:text-[13px] text-black dark:text-white placeholder-black/75 dark:placeholder-white outline-none border-none py-0.5 pr-1"
+                />
+              )}
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                {isFindWordsMode ? (
+                  <>
+                    {findWordsTerm.trim() && (
+                      <span className="text-[11px] font-semibold text-[#6b7280] dark:text-[#9ca3af] px-1 select-none">
+                        {findWordsMatchCount > 0 ? `${findWordsMatchIndex}/${findWordsMatchCount}` : '0/0'}
+                      </span>
+                    )}
                     <button
                       type="button"
-                      id="btn-topbar-settings-save"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleSaveSettings();
-                      }}
-                      disabled={isSavingSettings}
-                      className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
-                      aria-label="Save changes"
+                      onClick={handlePrevFindMatch}
+                      disabled={findWordsMatchCount === 0}
+                      title="Previous match"
+                      className="p-1 rounded text-[#111827] dark:text-white hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                     >
-                      {isSavingSettings ? (
-                        <SpinningRing size={16} strokeWidth={2.5} />
-                      ) : (
-                        <img
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"
-                          alt=""
-                          className="topbar-settings-save-icon w-[18px] h-[18px] shrink-0 object-contain pointer-events-none"
-                          aria-hidden="true"
-                        />
-                      )}
+                      <ChevronUp className="w-3.5 h-3.5" />
                     </button>
-                    {/* Hover Tooltip: Save changes */}
-                    <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-[6px] bg-[#1f1f1f] dark:bg-[#2d2d2d] text-white text-[11px] font-medium shadow-xl border border-black/10 dark:border-white/15 opacity-0 group-hover/savetooltip:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50">
-                      Save changes
-                    </div>
-                  </div>
+                    <button
+                      type="button"
+                      onClick={handleNextFindMatch}
+                      disabled={findWordsMatchCount === 0}
+                      title="Next match"
+                      className="p-1 rounded text-[#111827] dark:text-white hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                    >
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExitFindWords}
+                      title="Exit word search"
+                      className="p-1 rounded text-[#111827] dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setIsSearchFlyoutOpen(false);
+                          setShowAllResults(false);
+                          if (onTabSearchChange) {
+                            onTabSearchChange('');
+                          }
+                        }}
+                        aria-label="Clear search"
+                        className="text-black dark:text-white hover:text-black dark:hover:text-white p-0.5 transition-colors cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+
+                    {/* Book Icon on article page */}
+                    {isArticlePage && (
+                      <div className="relative group/bookbtn flex items-center">
+                        <button
+                          type="button"
+                          id="btn-topbar-find-words"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setIsSearchFlyoutOpen(false);
+                            setIsSearchFocused(false);
+                            setIsFindWordsMode(true);
+                            setTimeout(() => {
+                              findWordsInputRef.current?.focus();
+                            }, 50);
+                          }}
+                          className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] hover:bg-black/5 dark:hover:bg-white/10 active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none"
+                          aria-label="Find some words in this article"
+                        >
+                          <BookOpen className="w-[17px] h-[17px] shrink-0 pointer-events-none fill-none stroke-[1.8]" />
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-[6px] bg-[#1f1f1f] dark:bg-[#2d2d2d] text-white text-[11px] font-medium shadow-xl border border-black/10 dark:border-white/15 opacity-0 group-hover/bookbtn:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50">
+                          Find some words
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Save button without background (pure icon button) inside search box */}
+                    {(currentRoute === '/settings' || currentRoute.startsWith('/settings') || currentRoute.includes('settings') || (typeof window !== 'undefined' && window.location.pathname.includes('settings'))) && (
+                      <div className="relative group/savetooltip flex items-center">
+                        <button
+                          type="button"
+                          id="btn-topbar-settings-save"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleSaveSettings();
+                          }}
+                          disabled={isSavingSettings}
+                          className="p-1 rounded-[6px] text-[#111827] dark:text-white hover:text-[#0078d4] dark:hover:text-[#4cc2ff] active:opacity-75 flex items-center justify-center shrink-0 transition-colors cursor-pointer select-none bg-transparent border-none shadow-none"
+                          aria-label="Save changes"
+                        >
+                          {isSavingSettings ? (
+                            <SpinningRing size={16} strokeWidth={2.5} />
+                          ) : (
+                            <img
+                              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YwocFq7vTTHvRXruXCpkOX6434urQW.png"
+                              alt=""
+                              className="topbar-settings-save-icon w-[18px] h-[18px] shrink-0 object-contain pointer-events-none"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </button>
+                        {/* Hover Tooltip: Save changes */}
+                        <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-[6px] bg-[#1f1f1f] dark:bg-[#2d2d2d] text-white text-[11px] font-medium shadow-xl border border-black/10 dark:border-white/15 opacity-0 group-hover/savetooltip:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50">
+                          Save changes
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -1729,7 +1938,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
             {/* Flyout Result Dropdown: Displays up to 4 items initially with slide-up animation and layout morph */}
             <AnimatePresence>
-              {isSearchFlyoutOpen && currentRoute !== '/settings' && (
+              {isSearchFlyoutOpen && !isFindWordsMode && currentRoute !== '/settings' && (
                 <motion.div
                 key="topbar-search-flyout"
                 layout

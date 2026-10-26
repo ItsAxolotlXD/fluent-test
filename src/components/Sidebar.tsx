@@ -1624,14 +1624,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* 8. Screenbug */}
+          {/* 8. Screenbox */}
           <div className="w-full">
             <button
               type="button"
-              id={isMobile ? 'mobile-nav-screenbug' : 'sidebar-nav-screenbug'}
+              id={isMobile ? 'mobile-nav-screenbox' : 'sidebar-nav-screenbox'}
               data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
-              onClick={() => handleNavClick('/screenbug')}
-              aria-label="Screenbug"
+              onClick={() => handleNavClick('/screenbox')}
+              aria-label="Screenbox"
               className={`sidebar-nav-item w-full h-[38px] flex items-center justify-between px-3 cursor-pointer relative text-left rounded-[6px] transition-colors ${
                 (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                   ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white font-medium shadow-xs'
@@ -1644,7 +1644,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 ) : (
                   <FluentScreenbugIcon white className="w-5 h-5 shrink-0 text-white" />
                 )}
-                <span className="truncate text-[13.5px]">Screenbug</span>
+                <span className="truncate text-[13.5px]">Screenbox</span>
               </div>
             </button>
           </div>
@@ -2026,15 +2026,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </button>
 
-                {/* 7. Screenbug Icon */}
+                {/* 7. Screenbox Icon */}
                 <button
                   type="button"
-                  id="sidebar-collapsed-screenbug"
+                  id="sidebar-collapsed-screenbox"
                   data-nav-active={(currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug')) ? 'true' : undefined}
-                  onClick={() => handleNavClick('/screenbug')}
-                  onMouseEnter={(e) => showTooltip('Screenbug', e)}
+                  onClick={() => handleNavClick('/screenbox')}
+                  onMouseEnter={(e) => showTooltip('Screenbox', e)}
                   onMouseLeave={hideTooltip}
-                  aria-label="Screenbug"
+                  aria-label="Screenbox"
                   className={`sidebar-nav-item w-10 h-[38px] rounded-[6px] shrink-0 flex items-center justify-center relative transition-colors cursor-pointer ${
                     (currentRoute === '/vlc' || currentRoute.startsWith('/vlc') || currentRoute === '/screenbox' || currentRoute.startsWith('/screenbox') || currentRoute === '/screenbug' || currentRoute.startsWith('/screenbug'))
                       ? 'bg-black/5 dark:bg-white/[0.08] text-black dark:text-white shadow-xs'

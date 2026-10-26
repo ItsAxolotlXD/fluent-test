@@ -35,6 +35,21 @@ const slideUpProps = (index: number) => ({
   },
 });
 
+const renderFormattedContent = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className="font-semibold text-black dark:text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
+
 export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 }) => {
   const [inputPassword, setInputPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -52,6 +67,8 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
   const article = NEWS_DATA.find((a) => a.slug === slug) || NEWS_DATA[0];
   const isLocked = article.isLocked && !unlockedArticles[article.slug];
   const relatedArticles = NEWS_DATA.filter((a) => a.id !== article.id).slice(0, 2);
+  const buildMatch = article.title.match(/Build\s+([A-Za-z0-9.]+)/i) || article.id.match(/\b(26\d+)\b/);
+  const bigThumbnailTitle = buildMatch ? `26.11 Insider Preview - Build ${buildMatch[1]}` : article.title.replace(/^#\s*/, '');
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,25 +175,18 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
             </motion.p>
           )}
 
-          {/* 4. Hero Cover Image */}
+          {/* 4. Big Hero Cover Thumbnail matching Template Studio */}
           <motion.div 
             {...slideUpProps(elementIndex++)}
-            onClick={() => {
-              setLightboxImage(article.coverImage);
-              setLightboxZoom(1);
+            className="group relative rounded-[20px] sm:rounded-[24px] overflow-hidden border border-black/10 dark:border-white/10 aspect-video sm:aspect-[21/9] shadow-lg flex items-center justify-center select-none"
+            style={{
+              background: 'radial-gradient(circle at 50% 110%, #f472b6 0%, #db2777 45%, #701a75 100%)',
             }}
-            className="group relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-transparent border border-[#E5E7EB] dark:border-[#2D2D35] aspect-video sm:aspect-[21/9] shadow-md cursor-default"
-            title="Click to view full size"
           >
-            <img
-              src={article.coverImage}
-              alt={article.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-300"
-            />
-            <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-[4px] bg-black/75 text-white text-[11px] font-normal flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Maximize2 className="w-3.5 h-3.5" />
-              <span>Full size preview</span>
+            <div className="relative z-10 px-5 py-3 sm:px-8 sm:py-4.5 rounded-[12px] bg-white/20 dark:bg-white/10 backdrop-blur-md border border-white/35 dark:border-white/20 shadow-2xl flex items-center justify-center gap-3 group-hover:scale-102 transition-transform duration-300 text-center max-w-[92%]">
+              <h2 className="text-base sm:text-2xl md:text-3xl font-bold text-white drop-shadow-md tracking-tight">
+                {bigThumbnailTitle}
+              </h2>
             </div>
           </motion.div>
 
@@ -228,13 +238,28 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                       {...slideUpProps(currentPIndex)}
                       className="my-5 p-4 sm:p-5 rounded-xl bg-black/5 dark:bg-white/[0.06] border-l-4 border-[#ff2df7] dark:border-[#d946ef] text-sm sm:text-base italic leading-relaxed text-[#1f2937] dark:text-[#E5E7EB]"
                     >
-                      {quoteText}
+                      {renderFormattedContent(quoteText)}
                     </motion.blockquote>
                   );
                 }
 
-                // Section headings (e.g. # ..., ## ..., I. MỘT HÀNH TRÌNH..., II. NHỮNG CÁI TÊN...)
-                const isMarkdownHeading = /^#+\s/.test(paragraph);
+                // Subheading (## ...) — note: ## là phần nhỏ của #
+                if (paragraph.startsWith('## ')) {
+                  const subHeadingText = paragraph.replace(/^##\s*/, '');
+                  return (
+                    <motion.h3 
+                      key={idx}
+                      {...slideUpProps(currentPIndex)}
+                      className="text-base sm:text-lg md:text-xl font-semibold text-[#111827] dark:text-white pt-4 pb-1 flex items-center gap-2.5 tracking-tight"
+                    >
+                      <span className="w-1 h-3.5 sm:h-4 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] shrink-0 inline-block" />
+                      <span>{renderFormattedContent(subHeadingText)}</span>
+                    </motion.h3>
+                  );
+                }
+
+                // Section headings (e.g. # ..., I. MỘT HÀNH TRÌNH..., II. NHỮNG CÁI TÊN...)
+                const isMainHeading = /^#\s/.test(paragraph);
                 const isRomanSection = /^[I|V|X]+\.\s/.test(paragraph);
                 const isMajorHeading = [
                   'TƯỞNG NHƯ KHÔNG ĐỔI, NHƯNG ĐÃ ĐỔI THAY RẤT NHIỀU',
@@ -243,17 +268,33 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   'BẢN LĨNH CỦA MỘT ĐỊNH CHẾ TRUYỀN THÔNG QUỐC GIA'
                 ].includes(paragraph);
 
-                if (isMarkdownHeading || isRomanSection || isMajorHeading) {
-                  const headingText = paragraph.replace(/^#+\s*/, '');
+                if (isMainHeading || isRomanSection || isMajorHeading) {
+                  const headingText = paragraph.replace(/^#\s*/, '');
                   return (
-                    <motion.h2 
+                    <motion.div key={idx} {...slideUpProps(currentPIndex)} className="space-y-3">
+                      <div className="w-20 sm:w-24 h-[1px] bg-black/15 dark:bg-white/15 mt-8 mb-4 rounded-full" />
+                      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#111827] dark:text-white pb-1 flex items-center gap-3 tracking-tight">
+                        <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+                        <span>{headingText}</span>
+                      </h2>
+                    </motion.div>
+                  );
+                }
+
+                // Bullet item (dấu chấm đầu dòng: • hoặc -)
+                if (paragraph.startsWith('• ') || paragraph.startsWith('- ')) {
+                  const bulletText = paragraph.replace(/^[•\-]\s*/, '');
+                  return (
+                    <motion.div
                       key={idx}
                       {...slideUpProps(currentPIndex)}
-                      className="text-lg sm:text-xl md:text-2xl font-bold text-[#111827] dark:text-white pt-8 pb-3 border-b border-[#E5E7EB] dark:border-[#2D2D35] flex items-center gap-3 tracking-tight"
+                      className="flex items-start gap-3 my-2 pl-2 sm:pl-3"
                     >
-                      <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
-                      <span>{headingText}</span>
-                    </motion.h2>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#ff2df7] dark:bg-[#4cc2ff] mt-2.5 shrink-0" />
+                      <p className="text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB] flex-1">
+                        {renderFormattedContent(bulletText)}
+                      </p>
+                    </motion.div>
                   );
                 }
 
@@ -297,7 +338,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
 
                 return (
                   <motion.p key={idx} {...slideUpProps(currentPIndex)} className="whitespace-pre-line leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
-                    {paragraph}
+                    {renderFormattedContent(paragraph)}
                   </motion.p>
                 );
               })}

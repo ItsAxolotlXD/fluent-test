@@ -722,20 +722,20 @@ export const ToolsMenu: React.FC<ToolsMenuProps> = ({
                 <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Ghi chú</span>
               </button>
 
-              {/* Screenbug */}
+              {/* Screenbox */}
               <button
-                id="tool-screenbug"
+                id="tool-screenbox"
                 type="button"
                 onClick={() => {
                   setIsOpen(false);
-                  onNavigate('/screenbug');
+                  onNavigate('/screenbox');
                 }}
                 className="fluent-reveal-item w-full h-[34px] px-2.5 rounded-[4px] flex items-center justify-between text-[13px] font-normal transition-colors text-left cursor-default text-[#1b1b1b] dark:text-[#f3f3f3] hover:bg-black/5 dark:hover:bg-white/[0.08] active:bg-black/10 dark:active:bg-white/[0.05]"
                 {...revealProps}
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <FluentScreenbugIcon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">Screenbug</span>
+                  <span className="truncate">Screenbox</span>
                 </div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-[2px] bg-black/5 dark:bg-white/10 text-neutral-600 dark:text-neutral-300 font-medium">Media player</span>
               </button>

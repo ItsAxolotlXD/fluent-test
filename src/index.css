@@ -429,6 +429,31 @@ button[role="switch"] *:hover {
   cursor: text !important;
 }
 
+/* EXCEPTION 4: Search UI - Search flyout results, items, buttons, and actions use cursor pointer (hand) */
+.topbar-search-results-dropdown,
+.topbar-search-results-dropdown *,
+.topbar-search-results-dropdown button,
+.topbar-search-results-dropdown [role="button"],
+.topbar-search-results-dropdown .group,
+.topbar-search-results-dropdown [class*="cursor-pointer"],
+#immersive-search button,
+#immersive-search [role="button"],
+#immersive-search .cursor-pointer,
+#search-page button,
+#search-page [role="button"],
+#search-page .cursor-pointer,
+#topbar-search-box button,
+#topbar-search-box [role="button"],
+#topbar-search-box button * {
+  cursor: pointer !important;
+}
+
+#topbar-search-box input,
+#immersive-search input,
+#search-page input {
+  cursor: text !important;
+}
+
 /* Light Mode Global Overrides: Main tab page is #f9f9f9, Sidebar & TopBar are #f3f3f3 */
 html.light-mode,
 html.light-mode body,

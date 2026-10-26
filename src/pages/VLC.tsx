@@ -1119,10 +1119,10 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
         className="vlc-menu-bar h-9 bg-white/90 dark:bg-[#202024]/90 backdrop-blur-md border-b border-black/10 dark:border-white/10 flex items-center justify-between px-2 text-xs font-normal relative z-40 shrink-0 text-neutral-800 dark:text-neutral-200"
       >
         <div className="flex items-center gap-0.5">
-          {/* Screenbug Branding */}
+          {/* Screenbox Branding */}
           <div className="flex items-center gap-1.5 px-2 py-0.5 mr-1 font-semibold text-neutral-900 dark:text-white tracking-tight">
             <FluentScreenbugIcon className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff]" />
-            <span className="hidden sm:inline text-[13px] text-[#0078d4] dark:text-[#4cc2ff] font-bold">Screenbug</span>
+            <span className="hidden sm:inline text-[13px] text-[#0078d4] dark:text-[#4cc2ff] font-bold">Screenbox</span>
           </div>
 
           {/* Media Menu */}
@@ -1418,11 +1418,11 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                     onClick={() => {
                       setActiveMenu(null);
                       setVolume(200);
-                      showToast('Screenbug Volume boosted to 200% maximum!');
+                      showToast('Screenbox Volume boosted to 200% maximum!');
                     }}
                     className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 font-semibold text-[#0078d4] dark:text-[#4cc2ff] rounded-[6px] transition-colors cursor-pointer text-xs"
                   >
-                    Boost Volume to 200% (Screenbug Max)
+                    Boost Volume to 200% (Screenbox Max)
                   </button>
                   <div className="h-px bg-black/10 dark:bg-white/10 my-1 mx-1" />
                   <button
@@ -1710,7 +1710,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                     }}
                     className="w-full text-left px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/15 flex items-center gap-2 rounded-[6px] transition-colors text-neutral-800 dark:text-neutral-200 cursor-pointer text-xs font-normal"
                   >
-                    <FluentScreenbugIcon className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> About Screenbug
+                    <FluentScreenbugIcon className="w-3.5 h-3.5 text-[#0078d4] dark:text-[#4cc2ff]" /> About Screenbox
                   </button>
                 </motion.div>
               )}
@@ -1832,7 +1832,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               <div className="w-24 h-24 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 shadow-xl">
                 <FluentScreenbugIcon className="w-16 h-16" />
               </div>
-              <h2 className="text-lg font-bold text-white mb-1">Screenbug</h2>
+              <h2 className="text-lg font-bold text-white mb-1">Screenbox</h2>
               <p className="text-xs text-neutral-400 max-w-xs mb-6">
                 Plays everything — Files, Discs, URLs, Webcams, Devices and Streams
               </p>
@@ -3194,7 +3194,7 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
               <div className="px-4 py-3 bg-neutral-50/90 dark:bg-[#1a1a1e]/90 border-b border-black/10 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FluentScreenbugIcon className="w-4 h-4 text-[#0078d4] dark:text-[#4cc2ff]" />
-                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About Screenbug</h3>
+                  <h3 className="text-sm font-bold text-neutral-900 dark:text-white">About Screenbox</h3>
                 </div>
                 <button
                   type="button"
@@ -3209,13 +3209,13 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
                 <div className="w-20 h-20 mx-auto rounded-2xl bg-[#0078d4]/10 dark:bg-[#4cc2ff]/10 border border-[#0078d4]/30 dark:border-[#4cc2ff]/30 flex items-center justify-center shadow-lg shadow-[#0078d4]/10">
                   <FluentScreenbugIcon className="w-14 h-14 text-[#0078d4] dark:text-[#4cc2ff]" />
                 </div>
-                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Screenbug</h3>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white">Screenbox</h3>
                 <p className="text-xs text-[#0078d4] dark:text-[#4cc2ff] font-mono font-semibold">Sparkle Edition</p>
                 <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm mx-auto">
-                  Screenbug is a modern multimedia player and framework that plays files, audio, video, web URLs (YouTube, TikTok, Spotify, Apple Music, Shazam, etc.), and network streams with hardware acceleration and 200% volume boost.
+                  Screenbox is a modern multimedia player and framework that plays files, audio, video, web URLs (YouTube, TikTok, Spotify, Apple Music, Shazam, etc.), and network streams with hardware acceleration and 200% volume boost.
                 </p>
                 <div className="p-2.5 rounded-[6px] bg-black/5 dark:bg-black/30 border border-black/5 dark:border-white/5 text-[11px] text-neutral-500 dark:text-neutral-400">
-                  Copyright © 1996-2026 Screenbug and Sparkle Project
+                  Copyright © 1996-2026 Screenbox and Sparkle Project
                 </div>
               </div>
 

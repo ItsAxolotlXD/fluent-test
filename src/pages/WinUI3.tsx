@@ -87,7 +87,7 @@ const ICON_CATALOG: IconEntry[] = [
   { name: 'Ink Canvas', category: 'media', componentName: 'FluentInkCanvasIcon', component: FluentInkCanvasIcon, glyphHex: 'ED63', description: 'Khung vẽ tự do Windows Ink' },
   { name: 'Photopea', category: 'media', componentName: 'FluentPhotopeaIcon', component: FluentPhotopeaIcon, glyphHex: 'E8B7', description: 'Công cụ chỉnh sửa đồ họa ảnh' },
   { name: 'Rename', category: 'doc', componentName: 'FluentRenameIcon', component: FluentRenameIcon, glyphHex: 'E8AC', description: 'Đổi tên tệp hoặc thư mục' },
-  { name: 'Screenbug', category: 'media', componentName: 'FluentScreenbugIcon', component: FluentScreenbugIcon, glyphHex: 'E7F4', description: 'Biểu trưng kênh và màn hình' },
+  { name: 'Screenbox', category: 'media', componentName: 'FluentScreenbugIcon', component: FluentScreenbugIcon, glyphHex: 'E7F4', description: 'Biểu trưng kênh và màn hình' },
   { name: 'Search with sparkles', category: 'system', componentName: 'FluentSearchIcon', component: FluentSearchIcon, glyphHex: 'E721', description: 'Tìm kiếm thông minh toàn hệ thống' },
   { name: 'Settings', category: 'system', componentName: 'FluentSettingsIcon', component: FluentSettingsIcon, glyphHex: 'E713', description: 'Cài đặt và tùy chỉnh hệ thống' },
   { name: 'Trash', category: 'system', componentName: 'FluentDeleteIcon', component: FluentDeleteIcon, glyphHex: 'E74D', description: 'Xóa tệp tin hoặc thư mục' },
