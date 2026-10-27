@@ -2,10 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Check } from 'lucide-react';
 import { AppToastDetail } from '../utils/toast';
+import { TOAST_NOTIFICATION_SOUND_SRC, TOAST_NOTIFICATION_SOUND_FALLBACK_URL } from '../constants/assets';
 
 export const GlobalToast: React.FC = () => {
   const [toast, setToast] = useState<AppToastDetail | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    try {
+      const audio = new Audio(TOAST_NOTIFICATION_SOUND_SRC);
+      audio.preload = 'auto';
+      audio.volume = 0.65;
+      audioRef.current = audio;
+    } catch (e) {
+      console.warn('Init toast audio failed', e);
+    }
+  }, []);
 
   useEffect(() => {
     const handleShowToast = (e: Event) => {
@@ -14,6 +27,27 @@ export const GlobalToast: React.FC = () => {
 
       if (timerRef.current) clearTimeout(timerRef.current);
       setToast(customEvent.detail);
+
+      // Play Windows Notify System Generic sound
+      try {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play().catch(() => {
+            // If failed (e.g. user interaction required on fresh tab), fallback smoothly
+            try {
+              const fallbackAudio = new Audio(TOAST_NOTIFICATION_SOUND_SRC);
+              fallbackAudio.volume = 0.65;
+              fallbackAudio.play().catch(() => {});
+            } catch {}
+          });
+        } else {
+          const freshAudio = new Audio(TOAST_NOTIFICATION_SOUND_SRC);
+          freshAudio.volume = 0.65;
+          freshAudio.play().catch(() => {});
+        }
+      } catch (err) {
+        console.warn('Toast sound play error:', err);
+      }
 
       timerRef.current = setTimeout(() => {
         setToast(null);

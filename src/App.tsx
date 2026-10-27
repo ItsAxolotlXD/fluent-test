@@ -14,6 +14,7 @@ import { FindWordsBar } from './components/FindWordsBar';
 import { AddStreamModal } from './components/AddStreamModal';
 import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
+import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
 import { NotesProvider } from './context/NotesContext';
@@ -150,6 +151,7 @@ export default function App() {
 
   // Modals state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const [isBootVideoFinished, setIsBootVideoFinished] = useState(() => !settings.animatedBootScreen);
   const [isSplashFinished, setIsSplashFinished] = useState(false);
   const [isUnderConstructionOpen, setIsUnderConstructionOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
@@ -832,14 +834,17 @@ export default function App() {
               <TabLoadingScreen route={currentRoute} />
             </div>
           ) : (
-            <div
-              key={`tab-loaded-${currentRoute}-${tabLoadCount}`}
+            <motion.div
+              key={`tab-loaded-${currentRoute}-${tabLoadCount}-${isSplashFinished ? 'booted' : 'booting'}`}
+              initial={{ opacity: 0, y: 22 }}
+              animate={isSplashFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+              transition={{ duration: 0.44, ease: [0.16, 1, 0.3, 1] }}
               className={`tab-element-slide-up-container w-full h-full rounded-tl-none md:rounded-tl-[10px] rounded-tr-none rounded-br-none rounded-bl-none overflow-hidden ${
                 settings.pageAnimation === 'zoomIn' ? 'page-anim-zoom origin-center' : ''
               }`}
             >
               {renderContent()}
-            </div>
+            </motion.div>
           )}
         </main>
 
@@ -961,8 +966,15 @@ export default function App() {
       {/* Global Application Toast Notifications */}
       <GlobalToast />
 
-      {/* Startup Splash Screen (3 seconds) */}
-      <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
+      {/* Animated Boot Screen (if enabled via Insider experiments) */}
+      {!isBootVideoFinished && settings.animatedBootScreen && (
+        <AnimatedBootScreen onFinish={() => setIsBootVideoFinished(true)} />
+      )}
+
+      {/* Startup Splash Screen (3 seconds, starts after boot video if enabled) */}
+      {isBootVideoFinished && !isSplashFinished && (
+        <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
+      )}
 
       {/* Update Sparkle Splash Screen (1 minute: 60s) */}
       {isUpdating && (

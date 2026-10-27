@@ -1254,8 +1254,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Unified Navigation List inside common scroll container */}
         <div 
           ref={containerRef}
-          key="sidebar-nav-expanded"
-          className="sidebar-items-slide-up flex-1 overflow-y-auto pb-4 no-scrollbar space-y-1 px-2.5 font-normal relative"
+          key={`sidebar-nav-expanded-${isSplashFinished ? 'booted' : 'booting'}`}
+          className={`flex-1 overflow-y-auto pb-4 no-scrollbar space-y-1 px-2.5 font-normal relative ${
+            isSplashFinished ? 'sidebar-items-slide-up' : 'opacity-0'
+          }`}
         >
           {/* Morphing Vertical Blue Accent Bar */}
           <MorphingVerticalIndicator
@@ -1774,7 +1776,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Bottom Section: WinUI 3, Sign In (placed directly above Settings) & Settings */}
-        <div className="px-2.5 py-2 shrink-0 mt-auto space-y-1 relative signin-flyout-container">
+        <div 
+          key={`sidebar-bottom-expanded-${isSplashFinished ? 'booted' : 'booting'}`}
+          className={`px-2.5 py-2 shrink-0 mt-auto space-y-1 relative signin-flyout-container ${
+            isSplashFinished ? 'sidebar-bottom-slide-up' : 'opacity-0'
+          }`}
+        >
           {/* WinUI 3 component library - icon thường */}
           <button
             type="button"
@@ -1929,7 +1936,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Scrollable Navigation List (spaced out like expanded, never squeezed, can scroll down) */}
               <div 
                 ref={collapsedNavRef}
-                className="flex-1 w-full overflow-y-auto no-scrollbar py-1 space-y-1 flex flex-col items-center relative"
+                key={`sidebar-nav-collapsed-${isSplashFinished ? 'booted' : 'booting'}`}
+                className={`flex-1 w-full overflow-y-auto no-scrollbar py-1 space-y-1 flex flex-col items-center relative ${
+                  isSplashFinished ? 'sidebar-items-slide-up' : 'opacity-0'
+                }`}
               >
                 <MorphingVerticalIndicator
                   containerRef={collapsedNavRef}
@@ -2184,7 +2194,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
 
               {/* Bottom WinUI 3, Sign In & Settings Icons */}
-              <div className="shrink-0 w-full mt-auto pt-2 pb-1 space-y-1 flex flex-col items-center relative signin-flyout-container border-t border-black/5 dark:border-white/5">
+              <div 
+                key={`sidebar-collapsed-bottom-${isSplashFinished ? 'booted' : 'booting'}`}
+                className={`shrink-0 w-full mt-auto pt-2 pb-1 space-y-1 flex flex-col items-center relative signin-flyout-container border-t border-black/5 dark:border-white/5 ${
+                  isSplashFinished ? 'sidebar-bottom-slide-up' : 'opacity-0'
+                }`}
+              >
                 {/* WinUI 3 Collapsed Button (icon thường) */}
                 <button
                   type="button"

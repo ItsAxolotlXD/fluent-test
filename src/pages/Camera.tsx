@@ -6,23 +6,19 @@ import {
   Timer, 
   Grid3X3, 
   Sparkles, 
-  Lock, 
   Folder, 
-  ExternalLink, 
   Check, 
   Volume2, 
   VolumeX, 
   Maximize, 
-  Sliders, 
-  ChevronRight,
-  ShieldAlert,
-  KeyRound,
   RefreshCw,
-  Video,
-  Image as ImageIcon
+  Image as ImageIcon,
+  AlertCircle,
+  ShieldAlert,
+  Download,
+  Video
 } from 'lucide-react';
 import { galleryDB, GalleryMediaItem, GalleryFolder } from '../services/galleryStorage';
-import { UnderConstructionModal } from '../components/UnderConstructionModal';
 import { useSettings } from '../hooks/useSettings';
 import { showAppToast } from '../utils/toast';
 import { CAMERA_ICON_URL } from '../components/FluentIcons';
@@ -36,36 +32,31 @@ type GridMode = 'off' | 'rule_of_thirds' | 'golden_ratio';
 type CameraFilter = 'none' | 'vivid' | 'mono' | 'warm' | 'cool' | 'vintage' | 'cyberpunk';
 
 const FILTER_STYLES: Record<CameraFilter, { name: string; css: string }> = {
-  none: { name: 'Natural', css: 'none' },
-  vivid: { name: 'Vivid', css: 'saturate(1.4) contrast(1.1)' },
-  mono: { name: 'B&W', css: 'grayscale(1) contrast(1.15)' },
-  warm: { name: 'Warm', css: 'sepia(0.25) saturate(1.2) hue-rotate(-10deg)' },
-  cool: { name: 'Cool', css: 'saturate(1.1) hue-rotate(15deg) brightness(1.05)' },
-  vintage: { name: 'Vintage', css: 'sepia(0.4) contrast(0.9) brightness(1.05)' },
-  cyberpunk: { name: 'Neon', css: 'hue-rotate(180deg) saturate(1.6) contrast(1.2)' }
+  none: { name: 'Tự nhiên', css: 'none' },
+  vivid: { name: 'Sống động', css: 'saturate(1.4) contrast(1.1)' },
+  mono: { name: 'Đơn sắc', css: 'grayscale(1) contrast(1.15)' },
+  warm: { name: 'Ấm áp', css: 'sepia(0.25) saturate(1.2) hue-rotate(-10deg)' },
+  cool: { name: 'Mát mẻ', css: 'saturate(1.1) hue-rotate(15deg) brightness(1.05)' },
+  vintage: { name: 'Cổ điển', css: 'sepia(0.4) contrast(0.9) brightness(1.05)' },
+  cyberpunk: { name: 'Cyberpunk', css: 'hue-rotate(180deg) saturate(1.6) contrast(1.2)' }
 };
 
 export const Camera: React.FC<CameraProps> = ({ navigate }) => {
   const { settings } = useSettings();
   const isLightMode = settings.theme === 'light';
 
-  // 1. Password & Lock State (Persisted in sessionStorage)
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
-    return sessionStorage.getItem('sparkle_camera_unlocked') === 'true';
-  });
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(() => {
-    return sessionStorage.getItem('sparkle_camera_unlocked') !== 'true';
-  });
-
-  // 2. Hardware / Stream State
+  // 1. Hardware / MediaStream State
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const virtualCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [isStreamActive, setIsStreamActive] = useState(false);
-  const [isVirtualCamera, setIsVirtualCamera] = useState(false);
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
+  const [permissionError, setPermissionError] = useState<'denied' | 'not_found' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
-  const [streamError, setStreamError] = useState<string | null>(null);
+  const [availableDevices, setAvailableDevices] = useState<MediaDeviceInfo[]>([]);
+  const [activeDeviceId, setActiveDeviceId] = useState<string>('');
 
-  // 3. Camera Controls & Modes
+  // 2. Camera Controls & Modes
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
   const [gridMode, setGridMode] = useState<GridMode>('rule_of_thirds');
   const [timerSeconds, setTimerSeconds] = useState<number>(0); // 0 = off, 3, 5, 10
@@ -76,7 +67,7 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
   const [isFlashing, setIsFlashing] = useState(false);
   const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
 
-  // 4. Recent captured photo & Camera Rolls folder
+  // 3. Captured photo state & Camera Rolls folder
   const [recentCapture, setRecentCapture] = useState<GalleryMediaItem | null>(null);
   const [cameraRollFolder, setCameraRollFolder] = useState<GalleryFolder | null>(null);
 
@@ -130,7 +121,7 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
       osc2.start(now + 0.05);
       osc2.stop(now + 0.14);
     } catch (e) {
-      console.warn('Audio playback not permitted or supported', e);
+      console.warn('Audio playback error', e);
     }
   }, [getAudioContext, isShutterSoundOn]);
 
@@ -169,7 +160,6 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
           setCameraRollFolder(roll);
         }
 
-        // Also check if there are existing photos in Camera Rolls for quick preview
         const allItems = await galleryDB.getAll();
         const rollItems = allItems.filter((it) => it.folderId === roll?.id);
         if (rollItems.length > 0 && !isCancelled) {
@@ -186,183 +176,105 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
     };
   }, []);
 
-  // Initialize or start webcam stream
-  const startCamera = useCallback(async () => {
-    if (!isUnlocked) return;
-    setStreamError(null);
+  // Enumerate connected cameras
+  const enumerateDevices = useCallback(async () => {
+    if (!navigator.mediaDevices?.enumerateDevices) return;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+      setAvailableDevices(videoInputs);
+    } catch (e) {
+      console.warn('Failed to enumerate devices:', e);
+    }
+  }, []);
 
-    // Stop existing stream if any
-    if (videoRef.current && videoRef.current.srcObject) {
-      const oldStream = videoRef.current.srcObject as MediaStream;
-      oldStream.getTracks().forEach((track) => track.stop());
+  // Stop camera tracks helper
+  const stopCurrentStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
       videoRef.current.srcObject = null;
+    }
+    setIsStreamActive(false);
+  }, []);
+
+  // Request actual camera stream from the device
+  const startCamera = useCallback(async (forcedDeviceId?: string) => {
+    stopCurrentStream();
+    setIsRequestingPermission(true);
+    setPermissionError(null);
+    setErrorMessage('');
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setIsRequestingPermission(false);
+      setPermissionError('error');
+      setErrorMessage('Trình duyệt hiện tại không hỗ trợ Web Camera API (getUserMedia).');
+      return;
     }
 
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera API not supported in this browser.');
+      const deviceIdToUse = forcedDeviceId !== undefined ? forcedDeviceId : activeDeviceId;
+      const constraints: MediaStreamConstraints = {
+        audio: false,
+        video: deviceIdToUse
+          ? {
+              deviceId: { exact: deviceIdToUse },
+              width: { ideal: 1920, min: 640 },
+              height: { ideal: 1080, min: 480 }
+            }
+          : {
+              facingMode: facingMode,
+              width: { ideal: 1920, min: 640 },
+              height: { ideal: 1080, min: 480 }
+            }
+      };
+
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (err: any) {
+        // Fallback: If 1080p ideal fails, try generic video constraint
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: facingMode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        },
-        audio: false
-      });
-
+      streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch(console.error);
         };
       }
+
       setIsStreamActive(true);
-      setIsVirtualCamera(false);
+      setPermissionError(null);
+      await enumerateDevices();
     } catch (err: any) {
-      console.warn('Physical camera unavailable, activating Virtual Camera mode:', err);
+      console.error('Lỗi khi truy cập camera thiết bị:', err);
       setIsStreamActive(false);
-      setIsVirtualCamera(true);
-      setStreamError(
-        err.name === 'NotAllowedError'
-          ? 'Camera permission denied. Using Virtual Camera simulation.'
-          : 'No camera hardware found or access blocked. Using Virtual Camera simulation.'
-      );
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setPermissionError('denied');
+        setErrorMessage('Quyền truy cập máy ảnh đã bị từ chối. Hãy nhấn "Cho phép" trên thông báo trình duyệt.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setPermissionError('not_found');
+        setErrorMessage('Không tìm thấy thiết bị máy ảnh nào kết nối với thiết bị.');
+      } else {
+        setPermissionError('error');
+        setErrorMessage(err.message || 'Không thể khởi động camera của thiết bị.');
+      }
+    } finally {
+      setIsRequestingPermission(false);
     }
-  }, [facingMode, isUnlocked]);
+  }, [activeDeviceId, enumerateDevices, facingMode, stopCurrentStream]);
 
-  // Handle stream lifecycle when unlocked
+  // Start real device camera on mount or when facingMode changes
   useEffect(() => {
-    if (isUnlocked) {
-      startCamera();
-    }
+    startCamera();
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
-      }
+      stopCurrentStream();
     };
-  }, [isUnlocked, startCamera]);
-
-  // Render Virtual Camera scenic animation on Canvas when physical webcam is unavailable
-  useEffect(() => {
-    if (!isVirtualCamera || !isUnlocked) return;
-    const canvas = virtualCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animId: number;
-    let frameCount = 0;
-
-    const render = () => {
-      frameCount++;
-      const w = canvas.width;
-      const h = canvas.height;
-
-      // Dynamic scenic landscape with horizon & animated sun/particles
-      const gradient = ctx.createLinearGradient(0, 0, 0, h);
-      gradient.addColorStop(0, '#0f172a');
-      gradient.addColorStop(0.5, '#1e293b');
-      gradient.addColorStop(0.75, '#334155');
-      gradient.addColorStop(1, '#020617');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, w, h);
-
-      // Glowing sun/orb
-      const orbX = w * 0.5 + Math.sin(frameCount * 0.01) * 40;
-      const orbY = h * 0.38 + Math.cos(frameCount * 0.015) * 15;
-      const orbGrad = ctx.createRadialGradient(orbX, orbY, 10, orbX, orbY, 160);
-      orbGrad.addColorStop(0, 'rgba(56, 189, 248, 0.85)');
-      orbGrad.addColorStop(0.3, 'rgba(14, 165, 233, 0.45)');
-      orbGrad.addColorStop(1, 'rgba(2, 6, 23, 0)');
-      ctx.fillStyle = orbGrad;
-      ctx.beginPath();
-      ctx.arc(orbX, orbY, 160, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cyber Grid / Landscape lines
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
-      ctx.lineWidth = 1;
-      const horizonY = h * 0.62;
-      for (let i = -10; i <= 10; i++) {
-        ctx.beginPath();
-        ctx.moveTo(w * 0.5 + i * 20, horizonY);
-        ctx.lineTo(w * 0.5 + i * 180, h);
-        ctx.stroke();
-      }
-      for (let y = horizonY; y < h; y += 22) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-
-      // Animated floating cyber crystals / particles
-      for (let i = 0; i < 18; i++) {
-        const px = (Math.sin(frameCount * 0.01 + i * 1.5) * 0.5 + 0.5) * w;
-        const py = (Math.cos(frameCount * 0.012 + i * 2.1) * 0.4 + 0.45) * h;
-        const size = (Math.sin(frameCount * 0.03 + i) + 1.5) * 3;
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(56, 189, 248, 0.7)' : 'rgba(236, 72, 153, 0.7)';
-        ctx.beginPath();
-        ctx.arc(px, py, size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Center subject silhouette (Simulated human subject in viewfinder)
-      const centerX = w * 0.5;
-      const centerY = h * 0.55;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      // Head
-      ctx.beginPath();
-      ctx.arc(centerX, centerY - 60, 36, 0, Math.PI * 2);
-      ctx.fill();
-      // Shoulders / torso
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY + 30, 85, 60, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Virtual tracking reticle box around subject
-      const boxSize = 180 + Math.sin(frameCount * 0.04) * 4;
-      const bx = centerX - boxSize / 2;
-      const by = centerY - 100;
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
-      ctx.lineWidth = 1.5;
-      const corner = 20;
-
-      // Draw 4 corners
-      // Top-Left
-      ctx.beginPath();
-      ctx.moveTo(bx, by + corner);
-      ctx.lineTo(bx, by);
-      ctx.lineTo(bx + corner, by);
-      ctx.stroke();
-      // Top-Right
-      ctx.beginPath();
-      ctx.moveTo(bx + boxSize - corner, by);
-      ctx.lineTo(bx + boxSize, by);
-      ctx.lineTo(bx + boxSize, by + corner);
-      ctx.stroke();
-      // Bottom-Left
-      ctx.beginPath();
-      ctx.moveTo(bx, by + boxSize - corner);
-      ctx.lineTo(bx, by + boxSize);
-      ctx.lineTo(bx + corner, by + boxSize);
-      ctx.stroke();
-      // Bottom-Right
-      ctx.beginPath();
-      ctx.moveTo(bx + boxSize - corner, by + boxSize);
-      ctx.lineTo(bx + boxSize, by + boxSize);
-      ctx.lineTo(bx + boxSize, by + boxSize - corner);
-      ctx.stroke();
-
-      animId = requestAnimationFrame(render);
-    };
-
-    render();
-    return () => cancelAnimationFrame(animId);
-  }, [isVirtualCamera, isUnlocked]);
+  }, [facingMode]);
 
   // Focus tap effect
   const handleViewfinderClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -377,26 +289,42 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
 
   // Perform the capture and save to Gallery -> Camera Rolls folder
   const executeCapture = async () => {
+    if (!videoRef.current || !isStreamActive) {
+      showAppToast('Máy ảnh chưa sẵn sàng');
+      return;
+    }
+
     setIsFlashing(true);
     playShutterSound();
     setTimeout(() => setIsFlashing(false), 160);
 
     try {
-      // 1. Prepare target offscreen canvas
-      const offscreen = document.createElement('canvas');
-      let sourceWidth = 1920;
-      let sourceHeight = 1080;
+      const v = videoRef.current;
+      const vWidth = v.videoWidth || 1920;
+      const vHeight = v.videoHeight || 1080;
 
-      if (aspectRatio === '4:3') {
-        sourceWidth = 1440;
-        sourceHeight = 1080;
-      } else if (aspectRatio === '1:1') {
-        sourceWidth = 1080;
-        sourceHeight = 1080;
+      // Determine dimensions based on chosen aspect ratio
+      let cropW = vWidth;
+      let cropH = vHeight;
+
+      if (aspectRatio === '1:1') {
+        cropW = Math.min(vWidth, vHeight);
+        cropH = cropW;
+      } else if (aspectRatio === '4:3') {
+        cropW = (vHeight * 4) / 3;
+        cropH = vHeight;
+        if (cropW > vWidth) {
+          cropW = vWidth;
+          cropH = (vWidth * 3) / 4;
+        }
       }
 
-      offscreen.width = sourceWidth;
-      offscreen.height = sourceHeight;
+      const cropX = (vWidth - cropW) / 2;
+      const cropY = (vHeight - cropH) / 2;
+
+      const offscreen = document.createElement('canvas');
+      offscreen.width = cropW;
+      offscreen.height = cropH;
       const ctx = offscreen.getContext('2d');
       if (!ctx) return;
 
@@ -405,60 +333,22 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
         ctx.filter = FILTER_STYLES[activeFilter].css;
       }
 
-      if (isStreamActive && videoRef.current && videoRef.current.videoWidth > 0) {
-        const v = videoRef.current;
-        // Crop / draw video according to selected aspect ratio
-        const vWidth = v.videoWidth;
-        const vHeight = v.videoHeight;
-        let cropW = vWidth;
-        let cropH = vHeight;
-
-        if (aspectRatio === '1:1') {
-          cropW = Math.min(vWidth, vHeight);
-          cropH = cropW;
-        } else if (aspectRatio === '4:3') {
-          cropW = (vHeight * 4) / 3;
-          cropH = vHeight;
-          if (cropW > vWidth) {
-            cropW = vWidth;
-            cropH = (vWidth * 3) / 4;
-          }
-        }
-
-        const cropX = (vWidth - cropW) / 2;
-        const cropY = (vHeight - cropH) / 2;
-
-        if (facingMode === 'user') {
-          // Mirror front camera
-          ctx.translate(sourceWidth, 0);
-          ctx.scale(-1, 1);
-        }
-
-        ctx.drawImage(v, cropX, cropY, cropW, cropH, 0, 0, sourceWidth, sourceHeight);
-      } else if (virtualCanvasRef.current) {
-        // Draw virtual camera canvas
-        const vc = virtualCanvasRef.current;
-        ctx.drawImage(vc, 0, 0, vc.width, vc.height, 0, 0, sourceWidth, sourceHeight);
-      } else {
-        // Fallback procedural placeholder
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, sourceWidth, sourceHeight);
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 36px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('WIN_CAMERA_PRO', sourceWidth / 2, sourceHeight / 2);
+      // Mirror front-facing camera
+      if (facingMode === 'user') {
+        ctx.translate(cropW, 0);
+        ctx.scale(-1, 1);
       }
 
-      // Reset filter
+      ctx.drawImage(v, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
       ctx.filter = 'none';
 
-      // 2. Generate JPEG Blob and Data URL
+      // Generate JPEG Blob and Data URL
       const dataUrl = offscreen.toDataURL('image/jpeg', 0.95);
       const blob: Blob = await new Promise((resolve) => {
         offscreen.toBlob((b) => resolve(b || new Blob()), 'image/jpeg', 0.95);
       });
 
-      // 3. Ensure "Camera Rolls" folder exists
+      // Ensure "Camera Rolls" folder exists
       let targetFolder = cameraRollFolder;
       if (!targetFolder) {
         const folders = await galleryDB.getFolders();
@@ -472,7 +362,7 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
         setCameraRollFolder(found);
       }
 
-      // 4. Create standard Windows Camera filename: WIN_YYYYMMDD_HHMMSS_Pro.jpg
+      // Create standard Windows Camera filename: WIN_YYYYMMDD_HHMMSS_Pro.jpg
       const now = new Date();
       const pad = (n: number) => String(n).padStart(2, '0');
       const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
@@ -489,24 +379,24 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
         mimeType: 'image/jpeg',
         size: blob.size,
         dateAdded: now.toISOString(),
-        dateLabel: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        dateLabel: now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }),
         year: now.getFullYear(),
-        dimensions: { width: sourceWidth, height: sourceHeight },
-        aspectRatio: sourceWidth / sourceHeight,
+        dimensions: { width: cropW, height: cropH },
+        aspectRatio: cropW / cropH,
         isFavorite: false,
-        tags: ['Camera', 'Camera Rolls', 'Photo', activeFilter !== 'none' ? activeFilter : 'Natural'],
-        description: `Captured with Sparkle Camera (${sourceWidth}x${sourceHeight}).`,
+        tags: ['Camera', 'Camera Rolls', 'Ảnh chụp thực tế', activeFilter !== 'none' ? FILTER_STYLES[activeFilter].name : 'Tự nhiên'],
+        description: `Được chụp bằng Camera thực tế (${cropW}x${cropH}).`,
         source: 'upload',
         folderId: targetFolder ? targetFolder.id : null
       };
 
-      // 5. Save to Gallery IndexedDB
+      // Save to Gallery IndexedDB
       await galleryDB.add(newItem);
       setRecentCapture(newItem);
-      showAppToast(`Photo saved to "Camera Rolls" in Gallery`);
+      showAppToast(`Đã lưu ảnh vào mục "Camera Rolls" trong Gallery`);
     } catch (err) {
-      console.error('Failed to capture photo', err);
-      showAppToast('Failed to save photo');
+      console.error('Lỗi khi chụp và lưu ảnh:', err);
+      showAppToast('Không thể lưu ảnh chụp');
     }
   };
 
@@ -561,16 +451,17 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
     else setTimerSeconds(0);
   };
 
-  // Flip camera
+  // Switch camera: if multiple devices, cycle them; otherwise toggle facingMode
   const handleFlipCamera = () => {
-    setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
-  };
-
-  // Lock feature again (to test the Under construction modal)
-  const handleLockFeature = () => {
-    sessionStorage.removeItem('sparkle_camera_unlocked');
-    setIsUnlocked(false);
-    setIsModalOpen(true);
+    if (availableDevices.length > 1) {
+      const currentIndex = availableDevices.findIndex((d) => d.deviceId === activeDeviceId);
+      const nextIndex = (currentIndex + 1) % availableDevices.length;
+      const nextDevice = availableDevices[nextIndex];
+      setActiveDeviceId(nextDevice.deviceId);
+      startCamera(nextDevice.deviceId);
+    } else {
+      setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
+    }
   };
 
   return (
@@ -588,436 +479,387 @@ export const Camera: React.FC<CameraProps> = ({ navigate }) => {
             animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16, ease: 'easeOut' }}
-            className="fixed inset-0 z-9999 bg-white pointer-events-none"
+            className="fixed inset-0 z-[9999] bg-white pointer-events-none"
           />
         )}
       </AnimatePresence>
 
-      {/* Under Construction Modal Dialog */}
-      <UnderConstructionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Under construction"
-        description="Camera application is currently in Insider Preview development. Enter the developer passcode to unlock full camera capabilities and save photos directly to your Camera Rolls gallery."
-        buttonText={isUnlocked ? "Close" : "Understood"}
-        requirePassword={!isUnlocked}
-        expectedPassword="camera"
-        onUnlockSuccess={() => {
-          setIsUnlocked(true);
-          sessionStorage.setItem('sparkle_camera_unlocked', 'true');
-          showAppToast('Camera feature unlocked successfully');
-        }}
-      />
+      {/* Main Camera Layout */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Top WinUI 3 Camera Ribbon */}
+        <header className={`h-12 px-4 flex items-center justify-between border-b shrink-0 z-20 backdrop-blur-md ${
+          isLightMode 
+            ? 'bg-white/80 border-black/[0.08]' 
+            : 'bg-[#202020]/80 border-white/[0.08]'
+        }`}>
+          {/* Left: App Title and Live Status */}
+          <div className="flex items-center gap-2.5">
+            <img
+              src={CAMERA_ICON_URL}
+              alt="Camera"
+              referrerPolicy="no-referrer"
+              className="w-5 h-5 object-contain"
+            />
+            <span className="font-semibold text-xs tracking-tight">Camera</span>
+            {isStreamActive ? (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Trực tiếp ({facingMode === 'user' ? 'Trước' : 'Sau'})</span>
+              </span>
+            ) : isRequestingPermission ? (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium">
+                Đang kết nối...
+              </span>
+            ) : (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 font-medium">
+                Chưa kết nối
+              </span>
+            )}
+          </div>
 
-      {/* 1. If Locked: Clean WinUI 3 Locked Card Screen */}
-      {!isUnlocked ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={`w-full max-w-[460px] p-8 rounded-[12px] border shadow-xl flex flex-col items-center gap-5 ${
-              isLightMode 
-                ? 'bg-white border-black/10 shadow-black/5' 
-                : 'bg-[#202020] border-white/10 shadow-black/40'
-            }`}
-          >
-            {/* Camera WinUI 3 Icon */}
-            <div className="relative">
-              <img
-                src={CAMERA_ICON_URL}
-                alt="Camera"
-                referrerPolicy="no-referrer"
-                className="w-20 h-20 object-contain drop-shadow-md"
-              />
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] flex items-center justify-center text-white dark:text-black shadow-md border-2 border-white dark:border-[#202020]">
-                <Lock className="w-3.5 h-3.5 stroke-[2.2]" />
-              </div>
-            </div>
+          {/* Center Quick Tool Icons */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Aspect Ratio Toggle */}
+            <button
+              type="button"
+              onClick={handleCycleAspectRatio}
+              title={`Tỷ lệ khung hình: ${aspectRatio}`}
+              className="h-8 px-2.5 rounded-[5px] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Maximize className="w-3.5 h-3.5" />
+              <span className="font-mono text-[11px]">{aspectRatio}</span>
+            </button>
 
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 mb-2">
-                <span>Insider Preview · Under construction</span>
-              </div>
-              <h1 className="text-xl font-bold tracking-tight">Camera App</h1>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2 leading-relaxed">
-                This feature is under active development. Enter the developer passcode to unlock the viewfinder, shutter controls, and direct Camera Rolls gallery integration.
-              </p>
-            </div>
+            {/* Grid Toggle */}
+            <button
+              type="button"
+              onClick={handleCycleGrid}
+              title={`Khung lưới: ${gridMode}`}
+              className={`w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer ${
+                gridMode !== 'off' ? 'text-[#0078d4] dark:text-[#4cc2ff]' : 'text-neutral-500 dark:text-neutral-400'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-2">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="w-full sm:flex-1 h-9 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] dark:active:bg-[#3bb2ef] text-white dark:text-black font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Enter Passcode</span>
-              </button>
+            {/* Timer Toggle */}
+            <button
+              type="button"
+              onClick={handleCycleTimer}
+              title={`Hẹn giờ chụp: ${timerSeconds === 0 ? 'Tắt' : `${timerSeconds}s`}`}
+              className={`h-8 px-2 rounded-[5px] flex items-center gap-1 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer ${
+                timerSeconds > 0 ? 'text-[#0078d4] dark:text-[#4cc2ff]' : 'text-neutral-500 dark:text-neutral-400'
+              }`}
+            >
+              <Timer className="w-4 h-4" />
+              {timerSeconds > 0 && <span className="text-[11px] font-mono font-bold">{timerSeconds}s</span>}
+            </button>
 
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                className="w-full sm:w-auto px-4 h-9 rounded-[6px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-xs font-medium transition-colors cursor-pointer"
-              >
-                Back to Home
-              </button>
-            </div>
-          </motion.div>
+            {/* Shutter Sound Mute Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsShutterSoundOn(!isShutterSoundOn)}
+              title={`Âm thanh chụp: ${isShutterSoundOn ? 'Bật' : 'Tắt'}`}
+              className="w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 dark:text-neutral-400 transition-colors cursor-pointer"
+            >
+              {isShutterSoundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </button>
+
+            {/* Flip camera */}
+            <button
+              type="button"
+              onClick={handleFlipCamera}
+              title="Đổi máy ảnh (Trước / Sau)"
+              className="w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 dark:text-neutral-400 transition-colors cursor-pointer"
+            >
+              <RotateCw className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Right: Gallery Shortcut */}
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (cameraRollFolder) {
+                  navigate('/gallery', { folderId: cameraRollFolder.id });
+                } else {
+                  navigate('/gallery');
+                }
+              }}
+              title="Mở thư mục Camera Rolls trong Gallery"
+              className="h-8 px-2.5 rounded-[5px] text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Folder className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Camera Rolls</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Filter Preset Chips Bar */}
+        <div className={`h-8 px-4 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 border-b text-xs ${
+          isLightMode ? 'bg-[#fafafa] border-black/[0.05]' : 'bg-[#1c1c1f] border-white/[0.05]'
+        }`}>
+          <span className="text-[11px] text-neutral-400 font-medium shrink-0">Bộ lọc:</span>
+          {(Object.keys(FILTER_STYLES) as CameraFilter[]).map((filterKey) => (
+            <button
+              key={filterKey}
+              type="button"
+              onClick={() => setActiveFilter(filterKey)}
+              className={`px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-colors cursor-pointer shrink-0 ${
+                activeFilter === filterKey
+                  ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/10'
+              }`}
+            >
+              {FILTER_STYLES[filterKey].name}
+            </button>
+          ))}
         </div>
-      ) : (
-        /* 2. Unlocked: Full Native-grade WinUI 3 Camera Experience */
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          {/* Top WinUI 3 Camera Ribbon */}
-          <header className={`h-12 px-4 flex items-center justify-between border-b shrink-0 z-20 backdrop-blur-md ${
-            isLightMode 
-              ? 'bg-white/80 border-black/[0.08]' 
-              : 'bg-[#202020]/80 border-white/[0.08]'
-          }`}>
-            {/* Left: App Title and Status */}
-            <div className="flex items-center gap-2.5">
-              <img
-                src={CAMERA_ICON_URL}
-                alt="Camera"
-                referrerPolicy="no-referrer"
-                className="w-5 h-5 object-contain"
+
+        {/* Main Stage: Real Viewfinder + Controls Layout */}
+        <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden bg-black">
+          {/* Viewfinder Viewport */}
+          <div 
+            className="flex-1 relative flex items-center justify-center overflow-hidden cursor-crosshair"
+            onClick={handleViewfinderClick}
+          >
+            {/* Aspect Ratio Sizing Wrapper */}
+            <div 
+              className="relative overflow-hidden transition-all duration-200 shadow-2xl flex items-center justify-center bg-black"
+              style={{
+                aspectRatio: aspectRatio === '16:9' ? '16/9' : aspectRatio === '4:3' ? '4/3' : '1/1',
+                maxHeight: '100%',
+                maxWidth: '100%',
+                width: aspectRatio === '1:1' ? 'min(75vh, 75vw)' : '100%',
+                height: aspectRatio === '1:1' ? 'min(75vh, 75vw)' : '100%',
+              }}
+            >
+              {/* Real Hardware Webcam Video element */}
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{
+                  filter: FILTER_STYLES[activeFilter].css,
+                  transform: facingMode === 'user' ? 'scaleX(-1)' : 'none'
+                }}
+                className={`w-full h-full object-cover transition-opacity duration-200 ${
+                  isStreamActive ? 'opacity-100' : 'opacity-0'
+                }`}
               />
-              <span className="font-semibold text-xs tracking-tight">Camera</span>
-              {isVirtualCamera ? (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 font-medium">
-                  Virtual Camera
-                </span>
-              ) : (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium">
-                  Live View
-                </span>
+
+              {/* State 1: Connecting / Requesting camera permission */}
+              {isRequestingPermission && (
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/85 text-white p-6 text-center">
+                  <RefreshCw className="w-8 h-8 animate-spin text-[#4cc2ff]" />
+                  <p className="text-sm font-medium">Đang kết nối với máy ảnh của thiết bị...</p>
+                  <p className="text-xs text-white/60 max-w-sm">
+                    Vui lòng bấm &ldquo;Cho phép&rdquo; (Allow) nếu trình duyệt hỏi quyền sử dụng camera.
+                  </p>
+                </div>
+              )}
+
+              {/* State 2: Permission Denied or Camera Error Screen */}
+              {!isStreamActive && !isRequestingPermission && permissionError && (
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-[#18181b] text-white p-6 text-center select-none">
+                  <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                    <ShieldAlert className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold">
+                      {permissionError === 'denied' 
+                        ? 'Chưa cấp quyền truy cập Camera' 
+                        : permissionError === 'not_found'
+                        ? 'Không tìm thấy máy ảnh'
+                        : 'Không thể mở Camera'}
+                    </h2>
+                    <p className="text-xs text-neutral-400 mt-1 max-w-sm leading-relaxed">
+                      {errorMessage || 'Để sử dụng ứng dụng Camera, bạn cần cho phép trình duyệt truy cập vào máy ảnh của thiết bị.'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => startCamera()}
+                      className="px-4 py-2 rounded-[6px] bg-[#0078d4] dark:bg-[#4cc2ff] hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] text-white dark:text-black font-semibold text-xs flex items-center gap-2 transition-colors cursor-pointer shadow-md"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Cấp lại quyền & Thử lại</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Framing Grid Overlay */}
+              {gridMode === 'rule_of_thirds' && isStreamActive && (
+                <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 z-10">
+                  <div className="border-r border-b border-white/25" />
+                  <div className="border-r border-b border-white/25" />
+                  <div className="border-b border-white/25" />
+                  <div className="border-r border-b border-white/25" />
+                  <div className="border-r border-b border-white/25" />
+                  <div className="border-b border-white/25" />
+                  <div className="border-r border-b border-white/25" />
+                  <div className="border-r border-b border-white/25" />
+                  <div />
+                </div>
+              )}
+
+              {gridMode === 'golden_ratio' && isStreamActive && (
+                <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between">
+                  <div className="w-full h-[38.2%] border-b border-white/25 flex">
+                    <div className="h-full w-[38.2%] border-r border-white/25" />
+                    <div className="h-full w-[23.6%] border-r border-white/25" />
+                    <div className="h-full flex-1" />
+                  </div>
+                  <div className="w-full h-[23.6%] border-b border-white/25 flex">
+                    <div className="h-full w-[38.2%] border-r border-white/25" />
+                    <div className="h-full w-[23.6%] border-r border-white/25" />
+                    <div className="h-full flex-1" />
+                  </div>
+                  <div className="w-full flex-1 flex">
+                    <div className="h-full w-[38.2%] border-r border-white/25" />
+                    <div className="h-full w-[23.6%] border-r border-white/25" />
+                    <div className="h-full flex-1" />
+                  </div>
+                </div>
+              )}
+
+              {/* Focus Ring Indicator on Tap/Click */}
+              <AnimatePresence>
+                {focusPoint && (
+                  <motion.div
+                    initial={{ scale: 1.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ left: focusPoint.x - 28, top: focusPoint.y - 28 }}
+                    className="absolute w-14 h-14 border border-amber-400 rounded-[6px] pointer-events-none z-20 shadow-[0_0_12px_rgba(251,191,36,0.6)]"
+                  >
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-amber-400/40" />
+                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-amber-400/40" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Countdown Large Number Overlay */}
+              <AnimatePresence>
+                {isCountingDown && (
+                  <motion.div
+                    key={countdownValue}
+                    initial={{ scale: 1.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
+                  >
+                    <div className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center border-2 border-white/80 shadow-2xl">
+                      <span className="text-white text-5xl font-black font-mono">
+                        {countdownValue}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Bottom Watermark Overlay */}
+              {isStreamActive && (
+                <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 pointer-events-none">
+                  <span className="px-2 py-0.5 rounded-[4px] bg-black/50 backdrop-blur-md text-white/90 text-[10px] font-mono font-medium">
+                    {aspectRatio} · {activeFilter !== 'none' ? FILTER_STYLES[activeFilter].name : 'Tự nhiên'}
+                  </span>
+                </div>
               )}
             </div>
+          </div>
 
-            {/* Center Quick Tool Icons */}
-            <div className="flex items-center gap-1 sm:gap-2">
-              {/* Aspect Ratio Toggle */}
+          {/* WinUI 3 Camera Controls Sidebar (Right side on Desktop, Bottom bar on Mobile) */}
+          <div className={`w-full md:w-28 shrink-0 flex md:flex-col items-center justify-between p-4 z-20 backdrop-blur-xl ${
+            isLightMode 
+              ? 'bg-white/90 md:border-l border-t md:border-t-0 border-black/10' 
+              : 'bg-[#18181b]/95 md:border-l border-t md:border-t-0 border-white/10'
+          }`}>
+            {/* Top / Left Action: Re-connect or cycle devices */}
+            <div className="flex md:flex-col items-center gap-3">
               <button
                 type="button"
-                onClick={handleCycleAspectRatio}
-                title={`Aspect Ratio: ${aspectRatio}`}
-                className="h-8 px-2.5 rounded-[5px] text-xs font-medium hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+                onClick={() => startCamera()}
+                title="Tải lại kết nối Camera"
+                className="p-2.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
               >
-                <Maximize className="w-3.5 h-3.5" />
-                <span className="font-mono text-[11px]">{aspectRatio}</span>
-              </button>
-
-              {/* Grid Toggle */}
-              <button
-                type="button"
-                onClick={handleCycleGrid}
-                title={`Framing Grid: ${gridMode}`}
-                className={`w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer ${
-                  gridMode !== 'off' ? 'text-[#0078d4] dark:text-[#4cc2ff]' : 'text-neutral-500 dark:text-neutral-400'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-
-              {/* Timer Toggle */}
-              <button
-                type="button"
-                onClick={handleCycleTimer}
-                title={`Shutter Timer: ${timerSeconds === 0 ? 'Off' : `${timerSeconds}s`}`}
-                className={`h-8 px-2 rounded-[5px] flex items-center gap-1 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer ${
-                  timerSeconds > 0 ? 'text-[#0078d4] dark:text-[#4cc2ff]' : 'text-neutral-500 dark:text-neutral-400'
-                }`}
-              >
-                <Timer className="w-4 h-4" />
-                {timerSeconds > 0 && <span className="text-[11px] font-mono font-bold">{timerSeconds}s</span>}
-              </button>
-
-              {/* Shutter Sound Mute Toggle */}
-              <button
-                type="button"
-                onClick={() => setIsShutterSoundOn(!isShutterSoundOn)}
-                title={`Shutter Sound: ${isShutterSoundOn ? 'On' : 'Off'}`}
-                className="w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 dark:text-neutral-400 transition-colors cursor-pointer"
-              >
-                {isShutterSoundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-              </button>
-
-              {/* Flip camera */}
-              <button
-                type="button"
-                onClick={handleFlipCamera}
-                title="Switch Camera (Front / Rear)"
-                className="w-8 h-8 rounded-[5px] flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 dark:text-neutral-400 transition-colors cursor-pointer"
-              >
-                <RotateCw className="w-4 h-4" />
+                <RefreshCw className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Right: Gallery Shortcut & Re-lock */}
-            <div className="flex items-center gap-1.5">
+            {/* Shutter Capture Button - WinUI 3 Fluent Circular Button */}
+            <div className="flex flex-col items-center gap-2">
               <button
                 type="button"
+                id="btn-camera-shutter"
+                onClick={handleTakeShutter}
+                disabled={isCountingDown || !isStreamActive}
+                aria-label="Chụp ảnh"
+                className="group relative w-16 h-16 sm:w-18 sm:h-18 rounded-full border-[3px] border-white/90 flex items-center justify-center p-1 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.35)'
+                }}
+              >
+                {/* Outer glow ring */}
+                <div className="absolute inset-0 rounded-full border border-black/20 pointer-events-none" />
+
+                {/* Inner capture disk */}
+                <div className="w-full h-full rounded-full bg-white dark:bg-white group-hover:bg-neutral-100 dark:group-hover:bg-neutral-200 group-active:scale-90 transition-all flex items-center justify-center shadow-inner">
+                  <CameraIcon className="w-6 h-6 text-neutral-800 shrink-0" />
+                </div>
+              </button>
+              <span className="text-[11px] font-medium tracking-tight text-neutral-500 dark:text-neutral-400 hidden sm:inline">
+                Chụp ảnh
+              </span>
+            </div>
+
+            {/* Bottom / Right: Recent Photo Bubble Preview */}
+            <div className="flex md:flex-col items-center gap-2">
+              <button
+                type="button"
+                id="btn-camera-recent-preview"
                 onClick={() => {
-                  if (cameraRollFolder) {
+                  if (recentCapture && cameraRollFolder) {
+                    navigate('/gallery', { 
+                      folderId: cameraRollFolder.id, 
+                      itemId: recentCapture.id 
+                    });
+                  } else if (cameraRollFolder) {
                     navigate('/gallery', { folderId: cameraRollFolder.id });
                   } else {
                     navigate('/gallery');
                   }
                 }}
-                title="Open Camera Rolls in Gallery"
-                className="h-8 px-2.5 rounded-[5px] text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title={recentCapture ? `Xem ${recentCapture.title} trong Camera Rolls` : 'Xem thư viện ảnh'}
+                className="group relative w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 dark:border-white/30 hover:border-[#0078d4] dark:hover:border-[#4cc2ff] transition-all cursor-pointer shadow-md shrink-0 bg-neutral-800"
               >
-                <Folder className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Camera Rolls</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleLockFeature}
-                title="Re-lock feature with Under construction modal"
-                className="h-8 w-8 rounded-[5px] text-neutral-400 hover:text-amber-500 hover:bg-amber-500/10 flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <Lock className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </header>
-
-          {/* Filter Preset Chips Bar */}
-          <div className={`h-8 px-4 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 border-b text-xs ${
-            isLightMode ? 'bg-[#fafafa] border-black/[0.05]' : 'bg-[#1c1c1f] border-white/[0.05]'
-          }`}>
-            <span className="text-[11px] text-neutral-400 font-medium shrink-0">Filters:</span>
-            {(Object.keys(FILTER_STYLES) as CameraFilter[]).map((filterKey) => (
-              <button
-                key={filterKey}
-                type="button"
-                onClick={() => setActiveFilter(filterKey)}
-                className={`px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-colors cursor-pointer shrink-0 ${
-                  activeFilter === filterKey
-                    ? 'bg-[#0078d4] dark:bg-[#4cc2ff] text-white dark:text-black font-semibold'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/10'
-                }`}
-              >
-                {FILTER_STYLES[filterKey].name}
-              </button>
-            ))}
-          </div>
-
-          {/* Center Main Stage: Viewfinder + Controls Layout */}
-          <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden bg-black">
-            {/* Viewfinder Viewport */}
-            <div 
-              className="flex-1 relative flex items-center justify-center overflow-hidden cursor-crosshair"
-              onClick={handleViewfinderClick}
-            >
-              {/* Aspect Ratio Sizing Wrapper */}
-              <div 
-                className="relative overflow-hidden transition-all duration-200 shadow-2xl flex items-center justify-center bg-black"
-                style={{
-                  aspectRatio: aspectRatio === '16:9' ? '16/9' : aspectRatio === '4:3' ? '4/3' : '1/1',
-                  maxHeight: '100%',
-                  maxWidth: '100%',
-                  width: aspectRatio === '1:1' ? 'min(75vh, 75vw)' : '100%',
-                  height: aspectRatio === '1:1' ? 'min(75vh, 75vw)' : '100%',
-                }}
-              >
-                {/* 1. Hardware Webcam Video element */}
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  style={{
-                    filter: FILTER_STYLES[activeFilter].css,
-                    transform: facingMode === 'user' ? 'scaleX(-1)' : 'none'
-                  }}
-                  className={`w-full h-full object-cover transition-opacity duration-200 ${
-                    isStreamActive && !isVirtualCamera ? 'opacity-100' : 'hidden opacity-0'
-                  }`}
-                />
-
-                {/* 2. Virtual Camera Canvas element */}
-                <canvas
-                  ref={virtualCanvasRef}
-                  width={1920}
-                  height={1080}
-                  style={{
-                    filter: FILTER_STYLES[activeFilter].css
-                  }}
-                  className={`w-full h-full object-cover ${
-                    isVirtualCamera ? 'block' : 'hidden'
-                  }`}
-                />
-
-                {/* Framing Grid Overlay */}
-                {gridMode === 'rule_of_thirds' && (
-                  <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 z-10">
-                    <div className="border-r border-b border-white/25" />
-                    <div className="border-r border-b border-white/25" />
-                    <div className="border-b border-white/25" />
-                    <div className="border-r border-b border-white/25" />
-                    <div className="border-r border-b border-white/25" />
-                    <div className="border-b border-white/25" />
-                    <div className="border-r border-white/25" />
-                    <div className="border-r border-white/25" />
-                    <div />
+                {recentCapture?.thumbnailUrl || recentCapture?.url ? (
+                  <img
+                    src={recentCapture.thumbnailUrl || recentCapture.url}
+                    alt="Ảnh vừa chụp"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-neutral-700 text-neutral-300">
+                    <ImageIcon className="w-4 h-4" />
                   </div>
                 )}
 
-                {gridMode === 'golden_ratio' && (
-                  <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between">
-                    <div className="w-full h-[38.2%] border-b border-white/25 flex">
-                      <div className="h-full w-[38.2%] border-r border-white/25" />
-                      <div className="h-full w-[23.6%] border-r border-white/25" />
-                      <div className="h-full flex-1" />
-                    </div>
-                    <div className="w-full h-[23.6%] border-b border-white/25 flex">
-                      <div className="h-full w-[38.2%] border-r border-white/25" />
-                      <div className="h-full w-[23.6%] border-r border-white/25" />
-                      <div className="h-full flex-1" />
-                    </div>
-                    <div className="w-full flex-1 flex">
-                      <div className="h-full w-[38.2%] border-r border-white/25" />
-                      <div className="h-full w-[23.6%] border-r border-white/25" />
-                      <div className="h-full flex-1" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Focus Ring Indicator on Tap/Click */}
-                <AnimatePresence>
-                  {focusPoint && (
-                    <motion.div
-                      initial={{ scale: 1.4, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.9, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      style={{ left: focusPoint.x - 28, top: focusPoint.y - 28 }}
-                      className="absolute w-14 h-14 border border-amber-400 rounded-[6px] pointer-events-none z-20 shadow-[0_0_12px_rgba(251,191,36,0.6)]"
-                    >
-                      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-amber-400/40" />
-                      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-amber-400/40" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Countdown Large Number Overlay */}
-                <AnimatePresence>
-                  {isCountingDown && (
-                    <motion.div
-                      key={countdownValue}
-                      initial={{ scale: 1.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.5, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
-                    >
-                      <div className="w-24 h-24 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center border-2 border-white/80 shadow-2xl">
-                        <span className="text-white text-5xl font-black font-mono">
-                          {countdownValue}
-                        </span>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Bottom Watermark Overlay */}
-                <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 pointer-events-none">
-                  <span className="px-2 py-0.5 rounded-[4px] bg-black/50 backdrop-blur-md text-white/90 text-[10px] font-mono font-medium">
-                    {aspectRatio} · {activeFilter !== 'none' ? FILTER_STYLES[activeFilter].name : 'Natural'}
-                  </span>
+                {/* Camera Roll badge */}
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] flex items-center justify-center text-white dark:text-black">
+                  <Folder className="w-2.5 h-2.5" />
                 </div>
-              </div>
-            </div>
-
-            {/* WinUI 3 Camera Controls Sidebar (Right side on Desktop, Bottom bar on Mobile) */}
-            <div className={`w-full md:w-28 shrink-0 flex md:flex-col items-center justify-between p-4 z-20 backdrop-blur-xl ${
-              isLightMode 
-                ? 'bg-white/90 md:border-l border-t md:border-t-0 border-black/10' 
-                : 'bg-[#18181b]/95 md:border-l border-t md:border-t-0 border-white/10'
-            }`}>
-              {/* Top / Left Secondary Action */}
-              <div className="flex md:flex-col items-center gap-3">
-                {/* Physical Camera Retry button if currently virtual */}
-                {isVirtualCamera && (
-                  <button
-                    type="button"
-                    onClick={startCamera}
-                    title="Attempt connecting to physical camera"
-                    className="p-2.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-neutral-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Shutter Capture Button - WinUI 3 Fluent Circular Button */}
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  type="button"
-                  id="btn-camera-shutter"
-                  onClick={handleTakeShutter}
-                  disabled={isCountingDown}
-                  aria-label="Take Photo"
-                  className="group relative w-16 h-16 sm:w-18 sm:h-18 rounded-full border-[3px] border-white/90 flex items-center justify-center p-1 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-xl disabled:opacity-50"
-                  style={{
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.35)'
-                  }}
-                >
-                  {/* Outer glow ring */}
-                  <div className="absolute inset-0 rounded-full border border-black/20 pointer-events-none" />
-
-                  {/* Inner capture disk */}
-                  <div className="w-full h-full rounded-full bg-white dark:bg-white group-hover:bg-neutral-100 dark:group-hover:bg-neutral-200 group-active:scale-90 transition-all flex items-center justify-center shadow-inner">
-                    <CameraIcon className="w-6 h-6 text-neutral-800 shrink-0" />
-                  </div>
-                </button>
-                <span className="text-[11px] font-medium tracking-tight text-neutral-500 dark:text-neutral-400 hidden sm:inline">
-                  Photo
-                </span>
-              </div>
-
-              {/* Bottom / Right: Recent Photo Bubble Preview */}
-              <div className="flex md:flex-col items-center gap-2">
-                <button
-                  type="button"
-                  id="btn-camera-recent-preview"
-                  onClick={() => {
-                    if (recentCapture && cameraRollFolder) {
-                      navigate('/gallery', { 
-                        folderId: cameraRollFolder.id, 
-                        itemId: recentCapture.id 
-                      });
-                    } else if (cameraRollFolder) {
-                      navigate('/gallery', { folderId: cameraRollFolder.id });
-                    } else {
-                      navigate('/gallery');
-                    }
-                  }}
-                  title={recentCapture ? `View ${recentCapture.title} in Camera Rolls` : 'View Camera Rolls'}
-                  className="group relative w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 dark:border-white/30 hover:border-[#0078d4] dark:hover:border-[#4cc2ff] transition-all cursor-pointer shadow-md shrink-0 bg-neutral-800"
-                >
-                  {recentCapture?.thumbnailUrl || recentCapture?.url ? (
-                    <img
-                      src={recentCapture.thumbnailUrl || recentCapture.url}
-                      alt="Recent capture"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-neutral-700 text-neutral-300">
-                      <ImageIcon className="w-4 h-4" />
-                    </div>
-                  )}
-
-                  {/* Tiny Camera Roll badge */}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] flex items-center justify-center text-white dark:text-black">
-                    <Folder className="w-2.5 h-2.5" />
-                  </div>
-                </button>
-              </div>
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

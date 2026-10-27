@@ -1265,7 +1265,7 @@ html.light-mode #btn-mobile-menu-toggle svg {
 }
 
 .sidebar-items-slide-up > * {
-  animation: sidebarItemSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: sidebarItemSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .sidebar-items-slide-up > *:nth-child(1) { animation-delay: 0.02s; }
@@ -1276,7 +1276,22 @@ html.light-mode #btn-mobile-menu-toggle svg {
 .sidebar-items-slide-up > *:nth-child(6) { animation-delay: 0.12s; }
 .sidebar-items-slide-up > *:nth-child(7) { animation-delay: 0.14s; }
 .sidebar-items-slide-up > *:nth-child(8) { animation-delay: 0.16s; }
-.sidebar-items-slide-up > *:nth-child(n+9) { animation-delay: 0.18s; }
+.sidebar-items-slide-up > *:nth-child(9) { animation-delay: 0.18s; }
+.sidebar-items-slide-up > *:nth-child(10) { animation-delay: 0.20s; }
+.sidebar-items-slide-up > *:nth-child(11) { animation-delay: 0.22s; }
+.sidebar-items-slide-up > *:nth-child(12) { animation-delay: 0.24s; }
+.sidebar-items-slide-up > *:nth-child(13) { animation-delay: 0.26s; }
+.sidebar-items-slide-up > *:nth-child(14) { animation-delay: 0.28s; }
+.sidebar-items-slide-up > *:nth-child(15) { animation-delay: 0.30s; }
+.sidebar-items-slide-up > *:nth-child(16) { animation-delay: 0.32s; }
+.sidebar-items-slide-up > *:nth-child(17) { animation-delay: 0.34s; }
+.sidebar-items-slide-up > *:nth-child(18) { animation-delay: 0.36s; }
+.sidebar-items-slide-up > *:nth-child(n+19) { animation-delay: 0.38s; }
+
+.sidebar-bottom-slide-up {
+  animation: sidebarItemSlideUp 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.25s;
+}
 
 /* Slide up animations for tab loading and refreshed elements */
 .tab-loading-slide-up {

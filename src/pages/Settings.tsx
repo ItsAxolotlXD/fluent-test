@@ -7,8 +7,10 @@ import {
   Tv,
   ChevronDown,
   Sun,
-  Moon
+  Moon,
+  Play
 } from 'lucide-react';
+import { AnimatedBootScreen } from '../components/AnimatedBootScreen';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSettings';
 import { SfCheckmark } from '../components/SfCheckmark';
@@ -41,6 +43,7 @@ const SETTING_LABELS: Partial<Record<keyof SystemSettings, string>> = {
   streamAspectRatio: 'Stream aspect ratio',
   immersiveSearch: 'Immersive search',
   developerMode: 'Developer mode',
+  animatedBootScreen: 'Animated boot screen',
   triangleExperiment: 'Loading experiment',
 };
 
@@ -92,6 +95,7 @@ export const Settings: React.FC<SettingsProps> = ({
   const [lightModeUnlockError, setLightModeUnlockError] = useState('');
   const [editingKeybindId, setEditingKeybindId] = useState<KeybindAction | null>(null);
   const [keybindError, setKeybindError] = useState<{ id: KeybindAction; message: string } | null>(null);
+  const [isPreviewBootScreen, setIsPreviewBootScreen] = useState(false);
 
   useEffect(() => {
     if (!isLightModeUnlockOpen) return;
@@ -173,7 +177,7 @@ export const Settings: React.FC<SettingsProps> = ({
   };
 
   const matchesExperimental = 
-    matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons']);
+    matchesSearch(['Insider experiments', 'Insider Flags', 'thử nghiệm', 'native keyboard', 'bàn phím ảo', 'immersive search', 'fluent icons', '3d icons', 'animated boot screen', 'boot screen', 'khởi động', 'video khởi động']);
   const matchesInterface = 
     matchesSearch(['Appearance', 'Interface', 'giao diện', 'chế độ ứng dụng', 'ban ngày', 'ban đêm', 'light', 'dark', 'thanh điều hướng', 'navigation', 'side view', 'top view', 'tab view', 'thu phóng giao diện', 'font', 'vị trí thanh bên', 'siêu chế độ tối', 'super dark']);
   const matchesAccessibility = matchesSearch(['Accessibility', 'trợ năng', 'hover to expand']);
@@ -296,9 +300,6 @@ export const Settings: React.FC<SettingsProps> = ({
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
                         Native keyboard
                       </div>
-                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Sử dụng bàn phím của ứng dụng thay vì bàn phím của thiết bị (chỉ áp dụng cho thiết bị cảm ứng).
-                      </div>
                     </div>
 
                     <button
@@ -331,9 +332,6 @@ export const Settings: React.FC<SettingsProps> = ({
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="font-normal text-sm text-[#111827] dark:text-white" style={{ fontWeight: 400 }}>
                         Immersive search experience
-                      </div>
-                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                        Search UI that looks immersive.
                       </div>
                     </div>
 
@@ -378,9 +376,6 @@ export const Settings: React.FC<SettingsProps> = ({
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Fluent icons</span>
                         </div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                          Beautifully crafted 3D icons in vibrant colors, inspired by Microsoft Fluent Design
-                        </div>
                       </div>
                     </div>
 
@@ -416,7 +411,6 @@ export const Settings: React.FC<SettingsProps> = ({
                         <span>New Watch Tab</span>
                         <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">New</span>
                       </div>
-                      <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">Hiển thị tab Watch mới với giao diện xem nội dung.</div>
                     </div>
                     <button id="toggle-new-watch-tab" type="button" role="switch" aria-checked={draftSettings.newWatchTab} onClick={(e) => { e.stopPropagation(); updateDraft('newWatchTab', !draftSettings.newWatchTab); }} className="toggle-switch-btn focus:outline-none shrink-0 border-none"><span className="toggle-switch-thumb" /></button>
                   </motion.div>
@@ -447,9 +441,6 @@ export const Settings: React.FC<SettingsProps> = ({
                         <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
                           <span>Dynamic sidebar icons</span>
                         </div>
-                        <div className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 leading-normal">
-                          Kết hợp 2 dạng icon: Sign in, Settings, WinUI 3 dùng icon thường; Home, Update blogs, Watch, Gallery, Notes, Draws, VLC, Craftmine, Photopea, Discord dùng icon Fluent colored
-                        </div>
                       </div>
                     </div>
 
@@ -466,6 +457,71 @@ export const Settings: React.FC<SettingsProps> = ({
                     >
                       <span className="toggle-switch-thumb" />
                     </button>
+                  </motion.div>
+                )}
+
+                {/* Animated boot screen */}
+                {matchesSearch(['Animated boot screen', 'boot screen', 'animated splash', 'khởi động', 'video khởi động', 'splash screen']) && (
+                  <motion.div
+                    variants={slideUpVariant}
+                    initial="hidden"
+                    animate="visible"
+                    custom={elementIndex++}
+                    id="setting-animated-boot-screen"
+                    onClick={() => updateDraft('animatedBootScreen', !draftSettings.animatedBootScreen)}
+                    className="settings-block-card rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex items-center justify-between gap-4 settings-block-card cursor-pointer hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                      <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                        <img
+                          src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Film%20projector/3D/film_projector_3d.png"
+                          alt=""
+                          aria-hidden="true"
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 object-contain"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/icons/sidebar/watch.png';
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-normal text-sm text-[#111827] dark:text-white flex items-center gap-2" style={{ fontWeight: 400 }}>
+                          <span>Animated boot screen</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-[6px] uppercase tracking-wider bg-[#0078d4]/10 dark:bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff] font-medium">
+                            Insider
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPreviewBootScreen(true);
+                        }}
+                        className="px-2.5 py-1 text-xs font-medium rounded-[4px] bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/15 text-[#111827] dark:text-white transition-colors flex items-center gap-1.5 shrink-0"
+                        title="Xem thử video khởi động"
+                      >
+                        <Play className="w-3 h-3 fill-current" />
+                        <span className="hidden sm:inline">Xem thử</span>
+                      </button>
+
+                      <button
+                        id="toggle-animated-boot-screen"
+                        type="button"
+                        role="switch"
+                        aria-checked={draftSettings.animatedBootScreen}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateDraft('animatedBootScreen', !draftSettings.animatedBootScreen);
+                        }}
+                        className="toggle-switch-btn focus:outline-none shrink-0 border-none"
+                      >
+                        <span className="toggle-switch-thumb" />
+                      </button>
+                    </div>
                   </motion.div>
                 )}
                   </div>
@@ -1565,6 +1621,11 @@ export const Settings: React.FC<SettingsProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Preview animated boot video inside Settings if requested */}
+      {isPreviewBootScreen && (
+        <AnimatedBootScreen onFinish={() => setIsPreviewBootScreen(false)} />
+      )}
     </motion.div>
   );
 };

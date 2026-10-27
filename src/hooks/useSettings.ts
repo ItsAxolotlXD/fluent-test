@@ -41,6 +41,7 @@ export interface SystemSettings {
   floatingSearchBarVersion?: number;
   streamAspectRatio: '16:9' | '4:3';
   developerMode: boolean;
+  animatedBootScreen: boolean;
   triangleExperiment: boolean;
   triangleExperimentVersion?: number;
   newWatchTab: boolean;
@@ -95,6 +96,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   floatingSearchBarVersion: 1,
   streamAspectRatio: '16:9',
   developerMode: false,
+  animatedBootScreen: false,
   triangleExperiment: true,
   triangleExperimentVersion: 1,
   newWatchTab: false,
@@ -186,6 +188,7 @@ export const getStoredSettings = (): SystemSettings => {
           ...DEFAULT_KEYBINDS,
           ...(parsed.customKeybinds || {})
         },
+        animatedBootScreen: typeof parsed.animatedBootScreen === 'boolean' ? parsed.animatedBootScreen : false,
         triangleExperiment: parsed.triangleExperimentVersion === 1
           ? (typeof parsed.triangleExperiment === 'boolean' ? parsed.triangleExperiment : true)
           : true,

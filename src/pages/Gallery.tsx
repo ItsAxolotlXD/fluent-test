@@ -57,6 +57,7 @@ import {
   FluentArrowUploadIcon,
   FluentCopyIcon
 } from '../components/FluentIcons';
+import { showAppToast } from '../utils/toast';
 
 export const WINDOWS_11_FOLDER_ICON = 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail';
 
@@ -119,7 +120,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
   const [rotation, setRotation] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Selection mode states
   const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
@@ -426,8 +426,7 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
   };
 
   const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    showAppToast(msg);
   };
 
   // Upload handler supporting images, videos, audio, and all office formats
@@ -840,19 +839,6 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
 
   return (
     <div id="gallery-page" className="flex flex-col h-[calc(100vh-56px)] max-h-[calc(100vh-56px)] overflow-hidden bg-transparent text-[#111827] dark:text-[#F3F4F6] relative select-none font-['Segoe_UI',system-ui,sans-serif]">
-      {/* Toast Notification - Adaptive light mode, bottom position, button radius, no sparkle icon */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-white/95 dark:bg-[#20242a]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-[#111827] dark:text-white text-xs sm:text-sm px-4 py-2.5 rounded-[6px] shadow-xl flex items-center gap-2 font-medium"
-          >
-            <span>{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Windows 11 Photos Fluent Command Bar - Fixed, does not scroll with page */}
       <header className="gallery-toolbar shrink-0 z-30 px-3 sm:px-6 py-2 border-b border-black/10 dark:border-white/10 bg-[#f9f9f9]/80 dark:bg-[#202020]/80 backdrop-blur-2xl flex items-center justify-between gap-3 rounded-none md:rounded-tl-[10px]">
