@@ -8,6 +8,7 @@ import { CustomStreamModal } from './components/CustomStreamModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { UnderConstructionModal } from './components/UnderConstructionModal';
 import { UnsavedSettingsModal } from './components/UnsavedSettingsModal';
+import { UnsavedNoteModal } from './components/UnsavedNoteModal';
 import { HelpModal } from './components/HelpModal';
 import { NewsSummaryModal } from './components/NewsSummaryModal';
 import { FindWordsBar } from './components/FindWordsBar';
@@ -34,7 +35,7 @@ import { Channels } from './pages/Channels';
 import { Favorites } from './pages/Favorites';
 import { Settings } from './pages/Settings';
 import { ImmersiveSearch } from './pages/ImmersiveSearch';
-import { NotesApp } from './pages/NotesApp';
+import { NotesApp, UnsavedNoteHandler } from './pages/NotesApp';
 import { Craftmine } from './pages/Craftmine';
 import { Photopea } from './pages/Photopea';
 import { Updates } from './pages/Updates';
@@ -366,7 +367,16 @@ export default function App() {
   }, [currentRoute]);
 
   const [isUnsavedSettingsModalOpen, setIsUnsavedSettingsModalOpen] = useState(false);
+  const [unsavedNoteState, setUnsavedNoteState] = useState<UnsavedNoteHandler | null>(null);
+  const [isUnsavedNoteModalOpen, setIsUnsavedNoteModalOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<{ path: string; state?: any } | null>(null);
+
+  // Auto-collapse sidebar when entering note editor
+  useEffect(() => {
+    if (currentRoute.startsWith('/notes/')) {
+      setIsSidebarCollapsed(true);
+    }
+  }, [currentRoute]);
 
   // Perform actual navigation
   const executeNavigation = useCallback((path: string, state?: any) => {
@@ -421,8 +431,15 @@ export default function App() {
       }
     }
 
+    // If currently editing a note with unsaved edits and attempting to switch to another tab/route, prompt before leaving
+    if (unsavedNoteState?.isDirty && path !== currentRoute) {
+      setPendingNavigation({ path, state });
+      setIsUnsavedNoteModalOpen(true);
+      return;
+    }
+
     executeNavigation(path, state);
-  }, [currentRoute, hasChanges, executeNavigation]);
+  }, [currentRoute, hasChanges, unsavedNoteState, executeNavigation]);
 
   const handleSaveAndNavigate = () => {
     applyDraftSettings();
@@ -444,6 +461,33 @@ export default function App() {
 
   const handleCancelNavigate = () => {
     setIsUnsavedSettingsModalOpen(false);
+    setPendingNavigation(null);
+  };
+
+  const handleSaveNoteAndNavigate = () => {
+    if (unsavedNoteState) {
+      unsavedNoteState.save();
+    }
+    setIsUnsavedNoteModalOpen(false);
+    if (pendingNavigation) {
+      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleDiscardNoteAndNavigate = () => {
+    if (unsavedNoteState) {
+      unsavedNoteState.discard();
+    }
+    setIsUnsavedNoteModalOpen(false);
+    if (pendingNavigation) {
+      executeNavigation(pendingNavigation.path, pendingNavigation.state);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancelNoteNavigate = () => {
+    setIsUnsavedNoteModalOpen(false);
     setPendingNavigation(null);
   };
 
@@ -504,6 +548,12 @@ export default function App() {
         setIsUnsavedSettingsModalOpen(true);
         return;
       }
+      if (unsavedNoteState?.isDirty) {
+        window.history.pushState(null, '', currentRoute);
+        setPendingNavigation({ path: window.location.pathname });
+        setIsUnsavedNoteModalOpen(true);
+        return;
+      }
       const path = window.location.pathname;
       const isTabSwitch = path !== currentRoute;
       const params = new URLSearchParams(window.location.search);
@@ -526,12 +576,12 @@ export default function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [channels, currentRoute, hasChanges, triggerUnsavedTooltip]);
+  }, [channels, currentRoute, hasChanges, unsavedNoteState, triggerUnsavedTooltip]);
 
-  // Handle page reload / unload when settings are unsaved
+  // Handle page reload / unload when settings or note edits are unsaved
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (currentRoute === '/settings' && hasChanges) {
+      if ((currentRoute === '/settings' && hasChanges) || unsavedNoteState?.isDirty) {
         e.preventDefault();
         e.returnValue = '';
         return '';
@@ -539,7 +589,7 @@ export default function App() {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [currentRoute, hasChanges]);
+  }, [currentRoute, hasChanges, unsavedNoteState]);
 
   // Handle playing a custom single channel
   const handlePlayCustomChannel = (newChannel: Channel) => {
@@ -571,6 +621,15 @@ export default function App() {
   // Render Page Content based on currentRoute
   const renderContent = () => {
     if (currentRoute.startsWith('/draws/')) return <Draws navigate={navigate} />;
+    if (currentRoute.startsWith('/notes/')) {
+      return (
+        <NotesApp
+          navigate={navigate}
+          onEnterEditor={() => setIsSidebarCollapsed(true)}
+          onRegisterUnsavedNote={setUnsavedNoteState}
+        />
+      );
+    }
 
     // Route matching for news detail: /news/:slug
     if (currentRoute.startsWith('/news/')) {
@@ -684,7 +743,13 @@ export default function App() {
       case '/write':
       case '/present':
       case '/table':
-        return <NotesApp navigate={navigate} />;
+        return (
+          <NotesApp
+            navigate={navigate}
+            onEnterEditor={() => setIsSidebarCollapsed(true)}
+            onRegisterUnsavedNote={setUnsavedNoteState}
+          />
+        );
 
       case '/gallery':
         return <Gallery navigate={navigate} searchQuery={currentTabSearchQuery} routeState={routeState} />;
@@ -711,7 +776,7 @@ export default function App() {
     }
   };
 
-  const isOfficeRoute = currentRoute === '/notes' || currentRoute === '/write';
+  const isOfficeRoute = currentRoute.startsWith('/notes') || currentRoute === '/write';
 
   return (
     <NativeKeyboardProvider>
@@ -896,6 +961,15 @@ export default function App() {
         onSave={handleSaveAndNavigate}
         onDiscard={handleDiscardAndNavigate}
         onCancel={handleCancelNavigate}
+      />
+
+      {/* Unsaved Note Confirmation Modal */}
+      <UnsavedNoteModal
+        isOpen={isUnsavedNoteModalOpen}
+        noteTitle={unsavedNoteState?.noteTitle || 'Untitled Note'}
+        onSave={handleSaveNoteAndNavigate}
+        onDiscard={handleDiscardNoteAndNavigate}
+        onCancel={handleCancelNoteNavigate}
       />
 
       <CustomStreamModal

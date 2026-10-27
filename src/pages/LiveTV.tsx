@@ -119,7 +119,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
         <div className="flex flex-col gap-2">
           <div
             id="livetv-category-tabs"
-            className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-0.5 no-scrollbar border-b border-black/10 dark:border-white/10"
+            className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-0.5 no-scrollbar border-0"
           >
             {/* All tab */}
             <button
@@ -136,7 +136,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               {selectedCategory === 'All' && (
                 <motion.div
                   layoutId="watch-category-active-underline"
-                  className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff]"
+                  className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-full bg-[#4cc2ff]"
                   initial={false}
                   animate={{
                     scaleX: [1, 1.38, 0.94, 1],
@@ -177,7 +177,7 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                   {isActive && (
                     <motion.div
                       layoutId="watch-category-active-underline"
-                      className="absolute -bottom-[1px] left-2 right-2 h-[3.5px] rounded-full bg-[#4cc2ff]"
+                      className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-full bg-[#4cc2ff]"
                       initial={false}
                       animate={{
                         scaleX: [1, 1.38, 0.94, 1],

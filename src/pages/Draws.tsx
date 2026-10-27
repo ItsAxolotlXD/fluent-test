@@ -33,6 +33,7 @@ import {
 import { galleryDB, GalleryMediaItem } from '../services/galleryStorage';
 import { CanvasContextMenu, type CanvasContextAction } from '../components/CanvasContextMenu';
 import { FluentDeleteIcon } from '../components/FluentIcons';
+import { PromptDialog } from '../components/gallery/GalleryDialogs';
 
 interface DrawsProps {
   navigate: (route: string) => void;
@@ -115,6 +116,25 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
   const [toastMessage, setToastMessage] = useState<{ text: string; actionLabel?: string; onAction?: () => void } | null>(null);
   const [canvasContextMenu, setCanvasContextMenu] = useState<{ x: number; y: number; canvasId: string } | null>(null);
   const [canvasTilt, setCanvasTilt] = useState<Record<string, { x: number; y: number }>>({});
+  const [isCreateCanvasOpen, setIsCreateCanvasOpen] = useState(false);
+  const [canvasToRename, setCanvasToRename] = useState<{ id: string; title: string } | null>(null);
+
+  const handleCreateCanvas = (canvasTitle: string) => {
+    setIsCreateCanvasOpen(false);
+    const title = canvasTitle.trim() || 'Untitled canvas';
+    const id = `canvas-${Date.now()}`;
+    setCanvasList((items) => [{ id, title, updated: 'Just now', color: '#4cc2ff' }, ...items]);
+    setSelectedCanvasId(id);
+    navigate(`/draws/${id}`);
+  };
+
+  const handleConfirmRenameCanvas = (newTitle: string) => {
+    if (!canvasToRename) return;
+    const title = newTitle.trim() || canvasToRename.title;
+    setCanvasList((items) => items.map((c) => c.id === canvasToRename.id ? { ...c, title } : c));
+    setCanvasToRename(null);
+    showToast('Canvas renamed');
+  };
 
   // Undo / Redo history
   const undoStackRef = useRef<ImageData[]>([]);
@@ -688,28 +708,27 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
     if (!selectedCanvas) return;
 
     if (action === 'rename') {
-      const title = window.prompt('Rename canvas', selectedCanvas.title)?.trim();
-      if (title) setCanvasList((items) => items.map((canvas) => canvas.id === selectedCanvas.id ? { ...canvas, title } : canvas));
+      setCanvasToRename(selectedCanvas);
       return;
     }
     if (action === 'delete') {
-      if (!window.confirm(`Delete “${selectedCanvas.title}”?`)) return;
       setCanvasList((items) => items.filter((canvas) => canvas.id !== selectedCanvas.id));
-      showToast('Canvas deleted');
+      showToast(`Deleted "${selectedCanvas.title}"`);
       return;
     }
     setSelectedCanvasId(selectedCanvas.id);
+    navigate(`/draws/${selectedCanvas.id}`);
     if (action === 'export') {
-      handleSaveToDevice('png');
+      setTimeout(() => handleSaveToDevice('png'), 350);
     } else {
-      await handleSaveToGallery();
+      setTimeout(() => handleSaveToGallery(), 350);
     }
   };
 
   if (!selectedCanvasId) {
     let animIdx = 0;
     return (
-      <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#202328] text-[#111827] dark:text-white p-6 sm:p-10">
+      <div className="min-h-screen bg-transparent text-[#111827] dark:text-white p-6 sm:p-10">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-end justify-between gap-4 mb-8">
             <motion.div
@@ -728,7 +747,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               animate="visible"
               custom={animIdx++}
               type="button" 
-              onClick={() => { const id = `canvas-${Date.now()}`; setCanvasList((items) => [{ id, title: 'Untitled canvas', updated: 'Just now', color: '#4cc2ff' }, ...items]); setSelectedCanvasId(id); navigate(`/draws/${id}`); }} 
+              onClick={() => setIsCreateCanvasOpen(true)} 
               className="h-10 px-4 rounded-lg bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2 cursor-pointer"
             >
               <span className="flex size-6 items-center justify-center"><Plus aria-hidden="true" className="size-5" strokeWidth={2.5} /></span>
@@ -748,7 +767,11 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
                   custom={itemIdx}
                   type="button"
                   onClick={() => { setSelectedCanvasId(canvas.id); navigate(`/draws/${canvas.id}`); }}
-                  onContextMenu={(event) => { event.preventDefault(); setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id }); }}
+                  onContextMenu={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setCanvasContextMenu({ x: event.clientX, y: event.clientY, canvasId: canvas.id });
+                  }}
                   onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: ((event.clientY - rect.top) / rect.height - 0.5) * -26, y: ((event.clientX - rect.left) / rect.width - 0.5) * 28 } })); }}
                   onMouseLeave={() => setCanvasTilt((items) => ({ ...items, [canvas.id]: { x: 0, y: 0 } }))}
                   style={{ rotateX: tilt.x, rotateY: tilt.y, zIndex: tilt.x || tilt.y ? 20 : 1, transformStyle: 'preserve-3d' }}
@@ -763,6 +786,28 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
           <AnimatePresence>
             {canvasContextMenu && <CanvasContextMenu x={canvasContextMenu.x} y={canvasContextMenu.y} onAction={handleCanvasContextAction} onClose={() => setCanvasContextMenu(null)} />}
           </AnimatePresence>
+
+          <PromptDialog
+            isOpen={isCreateCanvasOpen}
+            title="Create a new canvas"
+            label="Canvas title"
+            placeholder="Enter canvas name..."
+            initialValue="Untitled canvas"
+            confirmLabel="Create"
+            onConfirm={handleCreateCanvas}
+            onClose={() => setIsCreateCanvasOpen(false)}
+          />
+
+          <PromptDialog
+            isOpen={Boolean(canvasToRename)}
+            title="Rename canvas"
+            label="Canvas title"
+            placeholder="Enter canvas name..."
+            initialValue={canvasToRename?.title || ''}
+            confirmLabel="Save"
+            onConfirm={handleConfirmRenameCanvas}
+            onClose={() => setCanvasToRename(null)}
+          />
         </div>
       </div>
     );

@@ -37,17 +37,28 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({ x, y, onAc
   }, [x, y]);
 
   useEffect(() => {
-    const handlePointer = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) onClose();
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
     };
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
-    document.addEventListener('pointerdown', handlePointer, true);
+
+    // Small delay ensures initiating right-click event lifecycle finishes before listening
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('contextmenu', handleOutsideClick);
+    }, 40);
+
     document.addEventListener('keydown', handleKey);
     window.addEventListener('resize', onClose);
+
     return () => {
-      document.removeEventListener('pointerdown', handlePointer, true);
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('contextmenu', handleOutsideClick);
       document.removeEventListener('keydown', handleKey);
       window.removeEventListener('resize', onClose);
     };
@@ -63,6 +74,7 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({ x, y, onAc
       exit={{ opacity: 0, y: 14 }}
       transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
       onContextMenu={(event) => event.preventDefault()}
+      onMouseDown={(event) => event.stopPropagation()}
       className={`fixed z-[2147483647] w-[232px] ${flyoutPanelClassName} fluent-context-menu`}
       style={{ ...flyoutPanelStyle, left: position.left, top: position.top }}
     >
@@ -76,7 +88,12 @@ export const CanvasContextMenu: React.FC<CanvasContextMenuProps> = ({ x, y, onAc
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.38, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-            onClick={() => onAction(entry.action)}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAction(entry.action);
+            }}
             className={`w-full h-[36px] px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left outline-none transition-colors cursor-pointer hover:bg-black/[0.05] dark:hover:bg-white/[0.08] focus-visible:bg-black/[0.05] dark:focus-visible:bg-white/[0.08] active:bg-black/[0.08] dark:active:bg-white/[0.12] ${entry.danger ? 'text-[#c42b1c] dark:text-[#ff99a4]' : 'text-[#111827] dark:text-white'}`}
           >
             <Icon className={`w-4 h-4 shrink-0 ${entry.danger ? 'text-black dark:text-[#ff99a4]' : 'text-black dark:text-neutral-300'}`} />

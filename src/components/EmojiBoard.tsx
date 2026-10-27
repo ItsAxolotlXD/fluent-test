@@ -315,7 +315,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
       {/* BOTTOM: Category Emoji Tabs (Bên dưới) & Action Controls */}
       <div className="flex flex-col gap-1 pt-1 px-1 border-t border-black/10 shrink-0">
         {/* Category Emoji Bar placed below the emoji grid with Underline style matching Watch tab */}
-        <div className="relative flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-0.5 w-full border-b border-black/10">
+        <div className="relative flex items-center gap-1 overflow-x-auto no-scrollbar scroll-smooth py-0.5 w-full border-0">
           {EMOJI_CATEGORIES.map((cat) => {
             const isActive = activeCategoryId === cat.id && !searchQuery.trim();
             return (
@@ -341,7 +341,7 @@ export const EmojiBoard: React.FC<EmojiBoardProps> = ({
                 {isActive && (
                   <motion.div
                     layoutId="emoji-category-active-underline"
-                    className="absolute -bottom-[1px] left-1.5 right-1.5 h-[3px] rounded-full bg-[#ff01ff]"
+                    className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-5 h-[3px] rounded-full bg-[#ff01ff]"
                     initial={false}
                     animate={{
                       scaleX: [1, 1.38, 0.94, 1],
