@@ -63,22 +63,20 @@ export const UnsavedNoteModal: React.FC<UnsavedNoteModalProps> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby="unsaved-note-modal-title"
-            initial={{ opacity: 0, scale: 1.05, y: 8 }}
+            initial={{ opacity: 0, scale: 1.06 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
-              y: 0,
               transition: {
-                duration: 0.22,
+                duration: 0.24,
                 ease: [0.16, 1, 0.3, 1]
               }
             }}
             exit={{ 
               opacity: 0, 
-              scale: 1.04,
-              y: 6,
+              scale: 1.06,
               transition: {
-                duration: 0.16,
+                duration: 0.18,
                 ease: [0.4, 0, 0.2, 1]
               }
             }}
