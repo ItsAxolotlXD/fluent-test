@@ -6107,8 +6107,9 @@ html.light-mode .toggle-switch-btn[aria-checked="true"] {
 
 html.light-mode button[role="switch"][aria-checked="true"]:hover,
 html.light-mode .toggle-switch-btn[aria-checked="true"]:hover {
-  background-color: #0067c0 !important;
+  background-color: var(--ui-accent) !important;
   border: none !important;
+  outline: none !important;
 }
 
 /* Light Mode Thumb: Left 4px (Off), Left 24px (On) */

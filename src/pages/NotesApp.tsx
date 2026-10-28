@@ -86,14 +86,18 @@ function stripHtml(html: string): string {
   return tmp.textContent || tmp.innerText || '';
 }
 
-function formatNoteDate(timestamp: number): string {
+export const NOTE_ICON_URL =
+  'https://upload.wikimedia.org/wikipedia/commons/c/c9/Windows_Notepad_icon.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';
+
+function formatNoteDate(timestamp?: number): string {
+  if (!timestamp) return 'Gần đây';
   const date = new Date(timestamp);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
   if (isToday) {
     const hours = date.getHours().toString().padStart(2, '0');
     const mins = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${mins}`;
+    return `Hôm nay, ${hours}:${mins}`;
   }
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 }
@@ -545,96 +549,123 @@ export const NotesApp: React.FC<NotesAppProps> = ({
             </motion.button>
           </div>
 
-          {/* Cards Grid with 3D Tilt like Ink Canvas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 [perspective:900px]">
+          {/* Cards Grid matching Recommended Section Note Files */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
             {notes.map((note) => {
-              const tilt = noteTilt[note.id] ?? { x: 0, y: 0 };
               const itemIdx = animIdx++;
               const colorOption = STICKY_COLORS.find((c) => c.id === note.colorId) || STICKY_COLORS[0];
               const snippet = stripHtml(note.content).trim();
+              const baseTitle = note.title || 'Ghi chú';
+              const fileTitle = baseTitle.endsWith('.txt') ? baseTitle : `${baseTitle}.txt`;
+
+              const handleOpenThisNote = () => {
+                setSelectedNoteId(note.id);
+                setActiveNoteId(note.id);
+                navigate(`/notes/${note.id}`);
+              };
 
               return (
-                <motion.button
+                <motion.div
                   key={note.id}
                   variants={slideUpVariant}
                   initial="hidden"
                   animate="visible"
                   custom={itemIdx}
-                  type="button"
-                  onClick={() => {
-                    setSelectedNoteId(note.id);
-                    setActiveNoteId(note.id);
-                    navigate(`/notes/${note.id}`);
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleOpenThisNote}
+                  onDoubleClick={handleOpenThisNote}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleOpenThisNote();
+                    }
                   }}
                   onContextMenu={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     setNoteContextMenu({ x: event.clientX, y: event.clientY, noteId: note.id });
                   }}
-                  onMouseMove={(event) => {
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    setNoteTilt((items) => ({
-                      ...items,
-                      [note.id]: {
-                        x: ((event.clientY - rect.top) / rect.height - 0.5) * -26,
-                        y: ((event.clientX - rect.left) / rect.width - 0.5) * 28,
-                      },
-                    }));
-                  }}
-                  onMouseLeave={() => setNoteTilt((items) => ({ ...items, [note.id]: { x: 0, y: 0 } }))}
-                  style={{
-                    rotateX: tilt.x,
-                    rotateY: tilt.y,
-                    zIndex: tilt.x || tilt.y ? 20 : 1,
-                    transformStyle: 'preserve-3d',
-                  }}
-                  className="group relative text-left rounded-2xl overflow-hidden bg-white dark:bg-[#2c3037] border border-black/8 dark:border-white/10 shadow-sm hover:shadow-xl hover:-translate-y-0.5 hover:z-20 cursor-pointer transition-shadow"
+                  className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-3.5 sm:p-4.5 flex flex-col justify-between shadow-xs transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff]"
                 >
-                  <div className="h-44 p-5 bg-white relative overflow-hidden flex flex-col justify-between">
-                    <div
-                      className="absolute inset-5 rounded-xl border border-black/5"
-                      style={{
-                        backgroundImage:
-                          'linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px)',
-                        backgroundSize: '22px 22px',
-                      }}
-                    />
-                    <div
-                      className="absolute left-10 top-10 h-2 w-28 rounded-full opacity-60 rotate-[-8deg]"
-                      style={{ backgroundColor: colorOption.accent || '#4cc2ff' }}
-                    />
-                    <div
-                      className="absolute right-12 bottom-10 h-2 w-20 rounded-full opacity-40 rotate-[12deg]"
-                      style={{ backgroundColor: colorOption.accent || '#4cc2ff' }}
-                    />
-                    <div className="relative z-10 pt-4 px-2">
-                      <p className="text-xs text-neutral-600 line-clamp-3 leading-relaxed font-sans">
-                        {snippet || 'Empty document...'}
+                  <div className="flex items-start justify-between mb-2.5">
+                    <div className="min-w-0 pr-2">
+                      <h4 className="text-sm sm:text-base font-semibold text-black dark:text-white truncate group-hover:text-[#d91a9c] dark:group-hover:text-[#ff82ff] transition-colors">
+                        {fileTitle}
+                      </h4>
+                      <p className="text-xs text-black/60 dark:text-[#9e9ea6] truncate">
+                        Tệp ghi chú · {formatNoteDate(note.updatedAt || note.createdAt)}
                       </p>
                     </div>
-
-                    {note.pinned && (
-                      <div className="absolute top-3.5 right-3.5 z-20 w-6 h-6 rounded-full bg-amber-400 text-black flex items-center justify-center shadow-xs">
-                        <Pin className="w-3.5 h-3.5 fill-current" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4 flex items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold truncate text-[#111827] dark:text-white">
-                        {note.title || 'Untitled Note'}
-                      </div>
-                      <div className="text-xs text-black/45 dark:text-white/45 mt-1">
-                        Edited {formatNoteDate(note.updatedAt)}
+                    {/* Notepad file icon + Pin indicator */}
+                    <div className="shrink-0 mt-0.5 flex items-center gap-1.5">
+                      {note.pinned && (
+                        <div
+                          className="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center shadow-xs"
+                          title="Đã ghim"
+                        >
+                          <Pin className="w-2.5 h-2.5 fill-current" />
+                        </div>
+                      )}
+                      <div className="size-4 sm:size-4.5 flex items-center justify-center">
+                        <img
+                          src={NOTE_ICON_URL}
+                          alt="Notepad"
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                          className="size-full object-contain filter drop-shadow-xs"
+                        />
                       </div>
                     </div>
-                    <div
-                      className="w-3 h-3 rounded-full shrink-0 border border-black/10 dark:border-white/20"
-                      style={{ backgroundColor: colorOption.bg }}
-                      title={colorOption.name}
-                    />
                   </div>
-                </motion.button>
+
+                  {/* Snapshot Thumbnail */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenThisNote();
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenThisNote();
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleOpenThisNote();
+                      }
+                    }}
+                    className="relative h-[88px] sm:h-[98px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group/thumb focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-neutral-100 dark:bg-[#16181d] p-3 select-none flex items-center justify-center border-[3px] border-black/[0.08] dark:border-white/[0.08] group-hover:border-[#d91a9c]/50 dark:group-hover:border-[#ff82ff]/50"
+                  >
+                    <div className="flex items-center gap-3.5 z-10 w-full px-2">
+                      <div className="shrink-0 flex items-center justify-center bg-transparent">
+                        <img
+                          src={NOTE_ICON_URL}
+                          alt="Notepad"
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                          className="size-10 sm:size-11 object-contain filter drop-shadow-sm group-hover/thumb:scale-105 transition-transform"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[12px] font-semibold text-black dark:text-[#f3f4f6] truncate group-hover/thumb:text-[#d91a9c] dark:group-hover/thumb:text-[#ff82ff] transition-colors">
+                          {note.title || 'Ghi chú mới'}
+                        </div>
+                        <div className="text-[10px] text-black/50 dark:text-[#888892] truncate mt-0.5">
+                          {snippet.slice(0, 42) || 'Ghi chú văn bản Sparkle Notes'}
+                        </div>
+                      </div>
+                      <div
+                        className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/10 dark:border-white/20 ml-1.5"
+                        style={{ backgroundColor: colorOption.bg }}
+                        title={colorOption.name}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
               );
             })}
           </div>

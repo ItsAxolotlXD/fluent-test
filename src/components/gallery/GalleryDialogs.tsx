@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Folder, Home, Check } from 'lucide-react';
 import { FluentFolderAddIcon } from '../FluentIcons';
@@ -20,24 +21,25 @@ const DialogShell: React.FC<{
 
   return (
     <div
-      className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
+      className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none"
     >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+        className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
         onClick={onClose}
       />
       <motion.div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        initial={{ opacity: 0, scale: 1.06 }}
+        initial={{ opacity: 0, scale: 0.96, y: 10 }}
         animate={{ 
           opacity: 1, 
           scale: 1,
+          y: 0,
           transition: {
             duration: 0.24,
             ease: [0.16, 1, 0.3, 1]
@@ -45,7 +47,8 @@ const DialogShell: React.FC<{
         }}
         exit={{ 
           opacity: 0, 
-          scale: 1.06,
+          scale: 0.96,
+          y: 10,
           transition: {
             duration: 0.18,
             ease: [0.4, 0, 0.2, 1]
@@ -88,22 +91,27 @@ export const PromptDialog: React.FC<PromptDialogProps> = ({
   onConfirm, 
   onClose,
   maxWidthClass 
-}) => (
-  <AnimatePresence>
-    {isOpen && (
-      <PromptDialogBody
-        title={title}
-        label={label}
-        placeholder={placeholder}
-        initialValue={initialValue}
-        confirmLabel={confirmLabel}
-        onConfirm={onConfirm}
-        onClose={onClose}
-        maxWidthClass={maxWidthClass}
-      />
-    )}
-  </AnimatePresence>
-);
+}) => {
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <PromptDialogBody
+          title={title}
+          label={label}
+          placeholder={placeholder}
+          initialValue={initialValue}
+          confirmLabel={confirmLabel}
+          onConfirm={onConfirm}
+          onClose={onClose}
+          maxWidthClass={maxWidthClass}
+        />
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+};
 
 const PromptDialogBody: React.FC<Omit<PromptDialogProps, 'isOpen'>> = ({ 
   title, 
@@ -178,49 +186,54 @@ interface MoveDialogProps {
   onClose: () => void;
 }
 
-export const MoveToFolderDialog: React.FC<MoveDialogProps> = ({ isOpen, folders, currentFolderId, onMove, onCreateFolder, onClose }) => (
-  <AnimatePresence>
-    {isOpen && (
-      <DialogShell title="Move into a folder" onClose={onClose}>
-        <ul className="px-3 max-h-[50vh] overflow-y-auto space-y-0.5" role="listbox" aria-label="Destination folder">
-          {[{ id: null as string | null, name: 'Gallery (no folder)' }, ...folders].map((folder) => {
-            const isCurrent = folder.id === currentFolderId;
-            return (
-              <li key={folder.id ?? 'root'}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={isCurrent}
-                  disabled={isCurrent}
-                  onClick={() => onMove(folder.id)}
-                  className="w-full h-10 px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left hover:bg-black/[0.05] dark:hover:bg-white/[0.08] disabled:opacity-50 disabled:cursor-default cursor-pointer transition-colors"
-                >
-                  {folder.id === null ? (
-                    <Home className="w-4 h-4 shrink-0 text-neutral-500" />
-                  ) : (
-                    <img
-                      src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail"
-                      alt="Folder"
-                      className="w-4 h-4 object-contain shrink-0"
-                    />
-                  )}
-                  <span className="truncate flex-1">{folder.name}</span>
-                  {isCurrent && <Check className="w-4 h-4 text-[#005fb8] dark:text-[#4cc2ff]" />}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className={`${footerClass} justify-between`}>
-          <button type="button" onClick={onCreateFolder} className={`${secondaryBtn} flex items-center gap-1.5`}>
-            <FluentFolderAddIcon className="w-4 h-4" />
-            New folder
-          </button>
-          <button type="button" onClick={onClose} className={secondaryBtn}>
-            Cancel
-          </button>
-        </div>
-      </DialogShell>
-    )}
-  </AnimatePresence>
-);
+export const MoveToFolderDialog: React.FC<MoveDialogProps> = ({ isOpen, folders, currentFolderId, onMove, onCreateFolder, onClose }) => {
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <DialogShell title="Move into a folder" onClose={onClose}>
+          <ul className="px-3 max-h-[50vh] overflow-y-auto space-y-0.5" role="listbox" aria-label="Destination folder">
+            {[{ id: null as string | null, name: 'Gallery (no folder)' }, ...folders].map((folder) => {
+              const isCurrent = folder.id === currentFolderId;
+              return (
+                <li key={folder.id ?? 'root'}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={isCurrent}
+                    disabled={isCurrent}
+                    onClick={() => onMove(folder.id)}
+                    className="w-full h-10 px-3 rounded-[6px] flex items-center gap-3 text-[13px] font-medium text-left hover:bg-black/[0.05] dark:hover:bg-white/[0.08] disabled:opacity-50 disabled:cursor-default cursor-pointer transition-colors"
+                  >
+                    {folder.id === null ? (
+                      <Home className="w-4 h-4 shrink-0 text-neutral-500" />
+                    ) : (
+                      <img
+                        src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Windows_11_FOLDER.svg/1280px-Windows_11_FOLDER.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail"
+                        alt="Folder"
+                        className="w-4 h-4 object-contain shrink-0"
+                      />
+                    )}
+                    <span className="truncate flex-1">{folder.name}</span>
+                    {isCurrent && <Check className="w-4 h-4 text-[#005fb8] dark:text-[#4cc2ff]" />}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className={`${footerClass} justify-between`}>
+            <button type="button" onClick={onCreateFolder} className={`${secondaryBtn} flex items-center gap-1.5`}>
+              <FluentFolderAddIcon className="w-4 h-4" />
+              New folder
+            </button>
+            <button type="button" onClick={onClose} className={secondaryBtn}>
+              Cancel
+            </button>
+          </div>
+        </DialogShell>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+};

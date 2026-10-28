@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
 import {
@@ -110,6 +111,120 @@ export const WinUI3: React.FC = () => {
   const [isProgressActive, setIsProgressActive] = useState(true);
   const [determinateProgress, setDeterminateProgress] = useState(72);
   const [copied, setCopied] = useState(false);
+
+  // Modal Dialog Animation In/Out Code States
+  const [dialogCodeTab, setDialogCodeTab] = useState<'variants' | 'component'>('variants');
+  const [copiedDialogCode, setCopiedDialogCode] = useState(false);
+
+  const dialogVariantsCode = `// WinUI 3 / Fluent Design Modal Dialog In/Out Animation
+export const dialogAnimation = {
+  initial: { opacity: 0, scale: 0.96, y: 10 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.24,
+      ease: [0.16, 1, 0.3, 1] // Fluent Standard Decelerate
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.96,
+    y: 10,
+    transition: {
+      duration: 0.18,
+      ease: [0.4, 0, 0.2, 1] // Fluent Standard Accelerate
+    }
+  }
+};
+
+export const backdropAnimation = {
+  initial: { opacity: 0 },
+  animate: { 
+    opacity: 1, 
+    transition: { duration: 0.22, ease: [0.4, 0, 0.2, 1] } 
+  },
+  exit: { 
+    opacity: 0, 
+    transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } 
+  }
+};`;
+
+  const dialogComponentCode = `import React from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
+
+interface DialogProps {
+  isOpen: boolean;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+export const FullscreenDialog: React.FC<DialogProps> = ({
+  isOpen,
+  title,
+  onClose,
+  children
+}) => {
+  if (typeof document === 'undefined') return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none">
+            {/* Backdrop In/Out Animation */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+              onClick={onClose}
+              className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
+            />
+
+            {/* Modal Dialog In/Out Animation */}
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] }
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.96,
+                y: 10,
+                transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] }
+              }}
+              className="relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-2xl border border-black/10 dark:border-white/10"
+            >
+              <div className="p-6 pb-4">
+                <h2 className="text-[19px] font-semibold text-[#111827] dark:text-white">
+                  {title}
+                </h2>
+              </div>
+              {children}
+            </motion.div>
+          </div>,
+          document.body
+        )}
+    </AnimatePresence>
+  );
+};`;
+
+  const copyDialogCode = async () => {
+    const textToCopy = dialogCodeTab === 'variants' ? dialogVariantsCode : dialogComponentCode;
+    await navigator.clipboard?.writeText(textToCopy);
+    setCopiedDialogCode(true);
+    setTimeout(() => setCopiedDialogCode(false), 1800);
+  };
 
   // Iconography Gallery States
   const [iconCategoryFilter, setIconCategoryFilter] = useState<'all' | 'system' | '3d' | 'media' | 'doc'>('all');
@@ -351,11 +466,7 @@ export const WinUI3: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  className={`h-8 rounded-[6px] border px-3.5 text-xs font-semibold transition cursor-pointer ${
-                    isDarkMode
-                      ? 'border-[#4cc2ff]/70 text-[#75d5ff] hover:bg-[#4cc2ff]/10'
-                      : 'border-[#005fb8]/70 text-[#005fb8] hover:bg-[#005fb8]/10'
-                  }`}
+                  className="h-8 rounded-[6px] border border-black/15 dark:border-white/15 bg-black/5 dark:bg-black/30 hover:bg-black/10 dark:hover:bg-black/50 text-black dark:text-white px-3.5 text-xs font-semibold transition cursor-pointer"
                 >
                   Outline
                 </button>
@@ -743,7 +854,8 @@ export const WinUI3: React.FC = () => {
               Dialogs
             </h2>
           </div>
-          <div className="space-y-2.5 bg-transparent pt-0.5">
+          <div className="space-y-3 bg-transparent pt-0.5">
+            {/* Live Interactive Preview Card */}
             <div className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs px-4 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-black/[0.02] dark:hover:bg-[#363b43] transition-colors border-none">
               <div className="flex gap-3 items-center">
                 <div className={`w-9 h-9 rounded-[6px] flex items-center justify-center shrink-0 ${
@@ -752,10 +864,7 @@ export const WinUI3: React.FC = () => {
                   <Info className="size-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-[#111827] dark:text-white">Modal popup dialogs</h3>
-                  <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
-                    Preview an accessible confirmation dialog with keyboard-friendly actions.
-                  </p>
+                  <h3 className="text-sm font-semibold text-[#111827] dark:text-white">Modal popup dialog preview</h3>
                 </div>
               </div>
               <button
@@ -763,8 +872,81 @@ export const WinUI3: React.FC = () => {
                 onClick={() => setIsDialogOpen(true)}
                 className="inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded-[6px] px-4 text-xs font-semibold transition cursor-pointer shadow-xs bg-[#005fb8] dark:bg-[#4cc2ff] text-white dark:text-black hover:bg-[#106ebe] dark:hover:bg-[#6bd0ff] active:bg-[#005a9e] border-none"
               >
-                Open dialog <ChevronRight className="size-4" />
+                <span>Mở dialog mẫu</span> <ChevronRight className="size-4" />
               </button>
+            </div>
+
+            {/* Animation In/Out Code Snippet Card */}
+            <div className="rounded-[6px] bg-white dark:bg-[#2c3037] shadow-xs p-4 sm:p-5 space-y-3.5 border-none">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
+                    isDarkMode ? 'bg-[#4cc2ff]/15 text-[#4cc2ff]' : 'bg-[#0078d4]/10 text-[#0078d4]'
+                  }`}>
+                    <Code2 className="size-4.5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#111827] dark:text-white">
+                      Mã Animation In/Out cho Modal Dialog
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Tab Selector */}
+                  <div className="p-0.5 rounded-[6px] bg-black/5 dark:bg-white/10 flex items-center gap-1 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setDialogCodeTab('variants')}
+                      className={`px-2.5 py-1 rounded-[5px] font-medium transition cursor-pointer border-none ${
+                        dialogCodeTab === 'variants'
+                          ? 'bg-white dark:bg-[#1f2329] text-[#111827] dark:text-white shadow-xs'
+                          : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
+                      }`}
+                    >
+                      Motion Variants
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDialogCodeTab('component')}
+                      className={`px-2.5 py-1 rounded-[5px] font-medium transition cursor-pointer border-none ${
+                        dialogCodeTab === 'component'
+                          ? 'bg-white dark:bg-[#1f2329] text-[#111827] dark:text-white shadow-xs'
+                          : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
+                      }`}
+                    >
+                      Fullscreen Component
+                    </button>
+                  </div>
+
+                  {/* Copy Button */}
+                  <button
+                    type="button"
+                    onClick={copyDialogCode}
+                    className={`h-8 px-3 rounded-[6px] text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border-none shadow-xs ${
+                      copiedDialogCode
+                        ? 'bg-emerald-500 text-white'
+                        : isDarkMode
+                          ? 'bg-[#4cc2ff] text-black hover:bg-[#6bd0ff]'
+                          : 'bg-[#005fb8] text-white hover:bg-[#106ebe]'
+                    }`}
+                  >
+                    {copiedDialogCode ? <Check className="size-3.5" /> : <FluentCopyIcon className="size-3.5" />}
+                    <span>{copiedDialogCode ? 'Đã sao chép' : 'Sao chép mã'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Code Display Area */}
+              <div className="relative rounded-[6px] overflow-hidden bg-[#181a1f] dark:bg-[#121417] text-[#e5e7eb] border border-black/10 dark:border-white/10">
+                <div className="flex items-center justify-between px-3.5 py-2 bg-black/20 dark:bg-white/5 border-b border-white/5 text-[11px] text-neutral-400 font-mono">
+                  <span>{dialogCodeTab === 'variants' ? 'dialogAnimation.ts' : 'FullscreenDialog.tsx'}</span>
+                  <span>TypeScript / Motion</span>
+                </div>
+                <pre className="p-3.5 sm:p-4 text-xs font-mono overflow-x-auto leading-relaxed select-text text-neutral-200 max-h-[320px] overflow-y-auto">
+                  <code>{dialogCodeTab === 'variants' ? dialogVariantsCode : dialogComponentCode}</code>
+                </pre>
+              </div>
             </div>
           </div>
         </section>
@@ -975,75 +1157,81 @@ export const WinUI3: React.FC = () => {
       </div>
 
       {/* Confirmation Dialog Modal */}
-      <AnimatePresence>
-        {isDialogOpen && (
-          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              onClick={() => setIsDialogOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            />
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="winui-dialog-title"
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.04,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[6px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] text-[#111827] dark:text-[#F3F4F6] border-none"
-            >
-              <div className="p-6 pb-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#005fb8] dark:text-[#4cc2ff]">ContentDialog</p>
-                    <h2 id="winui-dialog-title" className="mt-2 text-[19px] sm:text-[20px] font-semibold tracking-tight text-[#111827] dark:text-white leading-snug">Apply these settings?</h2>
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {isDialogOpen && (
+              <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  onClick={() => setIsDialogOpen(false)}
+                  className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
+                />
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="winui-dialog-title"
+                  initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                  animate={{ 
+                    opacity: 1, 
+                    scale: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.24,
+                      ease: [0.16, 1, 0.3, 1]
+                    }
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    scale: 0.96,
+                    y: 10,
+                    transition: {
+                      duration: 0.18,
+                      ease: [0.4, 0, 0.2, 1]
+                    }
+                  }}
+                  className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] text-[#111827] dark:text-[#F3F4F6] border border-black/[0.08] dark:border-white/[0.08]"
+                >
+                  <div className="p-6 pb-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[#005fb8] dark:text-[#4cc2ff]">ContentDialog</p>
+                        <h2 id="winui-dialog-title" className="mt-2 text-[19px] sm:text-[20px] font-semibold tracking-tight text-[#111827] dark:text-white leading-snug">Apply these settings?</h2>
+                      </div>
+                      <button type="button" aria-label="Close dialog" onClick={() => setIsDialogOpen(false)} className="rounded-[6px] p-1.5 text-[#4b5563] hover:bg-black/5 dark:text-white/45 dark:hover:bg-white/10 cursor-pointer border-none">
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                    <p className="mt-2.5 text-[13.5px] sm:text-[14px] leading-relaxed text-[#4b5563] dark:text-[#a1a1aa] font-normal">
+                      Your selected controls will be applied to the current workspace.
+                    </p>
                   </div>
-                  <button type="button" aria-label="Close dialog" onClick={() => setIsDialogOpen(false)} className="rounded-[6px] p-1.5 text-[#4b5563] hover:bg-black/5 dark:text-white/45 dark:hover:bg-white/10 cursor-pointer border-none">
-                    <X className="size-4" />
-                  </button>
-                </div>
-                <p className="mt-2.5 text-[13.5px] sm:text-[14px] leading-relaxed text-[#4b5563] dark:text-[#a1a1aa] font-normal">
-                  Your selected controls will be applied to the current workspace.
-                </p>
+                  <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
+                  <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsDialogOpen(false)}
+                      className="fluent-btn-secondary px-4 h-8 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] text-[#111827] dark:text-white text-[12.5px] shadow-xs transition-colors flex items-center justify-center cursor-pointer border-none"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsDialogOpen(false)}
+                      className={`fluent-btn-primary px-4 h-8 rounded-[6px] ${isDarkMode ? 'bg-[#4cc2ff] text-black hover:bg-[#6bd0ff]' : 'bg-[#005fb8] text-white hover:bg-[#106ebe]'} font-semibold shadow-xs transition-colors flex items-center justify-center cursor-pointer text-[12.5px] border-none`}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </motion.div>
               </div>
-              <div className="h-[1px] w-full bg-[#E5E5E5] dark:bg-[#2F2F2F]" />
-              <div className="fluent-modal-footer bg-[#F3F3F3] dark:bg-[#1C1C1C] px-6 py-3 flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setIsDialogOpen(false)}
-                  className="fluent-btn-secondary px-4 h-8 rounded-[6px] bg-white dark:bg-[#2C2C2C] hover:bg-[#F9F9F9] dark:hover:bg-[#343434] text-[#111827] dark:text-white text-[12.5px] shadow-xs transition-colors flex items-center justify-center cursor-pointer border-none"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsDialogOpen(false)}
-                  className={`fluent-btn-primary px-4 h-8 rounded-[6px] ${isDarkMode ? 'bg-[#4cc2ff] text-black hover:bg-[#6bd0ff]' : 'bg-[#005fb8] text-white hover:bg-[#106ebe]'} font-semibold shadow-xs transition-colors flex items-center justify-center cursor-pointer text-[12.5px] border-none`}
-                >
-                  Apply
-                </button>
-              </div>
-            </motion.div>
-          </div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </motion.div>
   );
 };
