@@ -15,6 +15,7 @@ import { FindWordsBar } from './components/FindWordsBar';
 import { AddStreamModal } from './components/AddStreamModal';
 import { TextToSpeechPlayer } from './components/TextToSpeechPlayer';
 import { SplashScreen } from './components/SplashScreen';
+import { SPINNING_RING_GIF_LOOP_DURATION_MS } from './components/SpinningRing';
 import { AnimatedBootScreen } from './components/AnimatedBootScreen';
 import { NativeKeyboard } from './components/NativeKeyboard';
 import { NativeKeyboardProvider } from './context/NativeKeyboardContext';
@@ -1045,9 +1046,14 @@ export default function App() {
         <AnimatedBootScreen onFinish={() => setIsBootVideoFinished(true)} />
       )}
 
-      {/* Startup Splash Screen (3 seconds, starts after boot video if enabled) */}
+      {/* Startup splash waits for two full progress GIF loops after the boot video. */}
       {isBootVideoFinished && !isSplashFinished && (
-        <SplashScreen duration={3000} onFinish={() => setIsSplashFinished(true)} />
+        <SplashScreen
+          duration={SPINNING_RING_GIF_LOOP_DURATION_MS * 2}
+          ringSize={96}
+          isClosable={false}
+          onFinish={() => setIsSplashFinished(true)}
+        />
       )}
 
       {/* Update Sparkle Splash Screen (1 minute: 60s) */}

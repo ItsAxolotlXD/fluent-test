@@ -4,7 +4,8 @@ import { SpinningRing } from './SpinningRing';
 const LOGO_SRC = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iTzEG0iuHLTKbWp5e2y55NABj3UWZr.png';
 
 interface SplashScreenProps {
-  duration?: number; // duration in ms, default 3000 (3 seconds)
+  duration?: number;
+  ringSize?: number;
   onFinish?: () => void;
   subtitle?: string;
   isClosable?: boolean;
@@ -12,12 +13,14 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   duration = 3000,
+  ringSize = 34,
   onFinish,
   subtitle,
   isClosable = true
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [logoError, setLogoError] = useState(false);
+  const [isRingGifReady, setIsRingGifReady] = useState(false);
   const [isLightMode, setIsLightMode] = useState<boolean>(() => {
     if (typeof document !== 'undefined') {
       return document.documentElement.classList.contains('light-mode');
@@ -37,10 +40,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      onFinish?.();
-    }, duration);
+    const timer = isRingGifReady
+      ? setTimeout(() => {
+          setIsVisible(false);
+          onFinish?.();
+        }, duration)
+      : undefined;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isClosable && e.key === 'Escape') {
@@ -52,10 +57,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [duration, onFinish, isClosable]);
+  }, [duration, onFinish, isClosable, isRingGifReady]);
 
   if (!isVisible) return null;
 
@@ -90,7 +95,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
         {/* Spinning ring and subtitle centered with generous spacing below logo */}
         <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
-          <SpinningRing size={34} strokeWidth={4} />
+          <SpinningRing
+            size={ringSize}
+            strokeWidth={4}
+            onGifReady={() => setIsRingGifReady(true)}
+          />
           {subtitle && (
             <p className={`text-[12.5px] sm:text-[13.5px] ${isLightMode ? 'text-[#111827]/85' : 'text-[#FFFFFF]/90'} font-normal tracking-wide max-w-md`}>
               {subtitle}
