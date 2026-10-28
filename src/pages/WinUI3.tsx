@@ -617,9 +617,9 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-12 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={20} strokeWidth={3} color={progressAccent} />
+                        <SpinningRing size={20} strokeWidth={3} />
                       ) : (
-                        <div className="w-5 h-5 rounded-full border-2 border-current opacity-25 border-dashed" />
+                        <div className="w-5 h-5 rounded-full border-2 border-current opacity-25 border-dashed" style={{ borderColor: progressAccent }} />
                       )}
                     </div>
                     <span className="text-[11px] text-[#6B7280] dark:text-[#9CA3AF] font-medium">Small (20px)</span>
@@ -629,9 +629,9 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-12 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={36} strokeWidth={4} color={progressAccent} />
+                        <SpinningRing size={36} strokeWidth={4} />
                       ) : (
-                        <div className="w-9 h-9 rounded-full border-2 border-current opacity-25 border-dashed" />
+                        <div className="w-9 h-9 rounded-full border-2 border-current opacity-25 border-dashed" style={{ borderColor: progressAccent }} />
                       )}
                     </div>
                     <span className="text-[11px] text-[#6B7280] dark:text-[#9CA3AF] font-medium">Medium (36px)</span>
@@ -641,9 +641,9 @@ export const WinUI3: React.FC = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-12 flex items-center justify-center">
                       {isProgressActive ? (
-                        <SpinningRing size={52} strokeWidth={5} color={progressAccent} />
+                        <SpinningRing size={52} strokeWidth={5} />
                       ) : (
-                        <div className="w-13 h-13 rounded-full border-2 border-current opacity-25 border-dashed" />
+                        <div className="w-13 h-13 rounded-full border-2 border-current opacity-25 border-dashed" style={{ borderColor: progressAccent }} />
                       )}
                     </div>
                     <span className="text-[11px] text-[#6B7280] dark:text-[#9CA3AF] font-medium">Large (52px)</span>
@@ -660,6 +660,7 @@ export const WinUI3: React.FC = () => {
                           fill="none"
                           stroke={isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}
                           strokeWidth="4"
+                          data-progress-ring-track="true"
                         />
                         <circle
                           cx="22"

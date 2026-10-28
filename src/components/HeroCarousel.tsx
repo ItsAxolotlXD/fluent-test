@@ -263,7 +263,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ flipActiveSlide = fa
 
           const slideContent = isLoadingBanner ? (
             <div key="banner-loading" className={`w-full h-full flex items-center justify-center ${isLightMode ? 'bg-white' : 'bg-[#18181b]'}`}>
-              <SpinningRing size={42} strokeWidth={4.5} color={isLightMode ? '#ff01ff' : '#ff82ff'} />
+              <SpinningRing size={42} strokeWidth={4.5} />
             </div>
           ) : (
             <div key="banner-loaded" className="slide-up-refresh w-full h-full relative">
