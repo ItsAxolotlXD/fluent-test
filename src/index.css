@@ -993,11 +993,9 @@ html:not(.light-mode) #vplay-splash-screen {
   width: 100%;
   height: 100%;
   background-color: var(--ui-accent, #ff82ff);
-  -webkit-mask-image: url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ew-d4Dd9KCAbDzszRo6i0Oxnwqq4QFgh6.gif");
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: contain;
-  mask-image: url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ew-d4Dd9KCAbDzszRo6i0Oxnwqq4QFgh6.gif");
   mask-mode: alpha;
   mask-position: center;
   mask-repeat: no-repeat;
