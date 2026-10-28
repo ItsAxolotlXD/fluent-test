@@ -988,6 +988,22 @@ html:not(.light-mode) #vplay-splash-screen {
   display: block;
 }
 
+.winui-gif-progress-ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--ui-accent, #ff82ff);
+  -webkit-mask-image: url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ew-d4Dd9KCAbDzszRo6i0Oxnwqq4QFgh6.gif");
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-image: url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ew-d4Dd9KCAbDzszRo6i0Oxnwqq4QFgh6.gif");
+  mask-mode: alpha;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
 circle[data-splash-ring="true"] {
   stroke: var(--ui-accent) !important;
 }
@@ -5341,7 +5357,7 @@ html:not(.light-mode) [role="button"][class*="bg-[#4CC2FF]"]:not([class*="bg-[#4
 
 /* ==========================================================================
    Fluent Design Light Mode:
-   - Các text, icon ở light mode là màu đen (#000000)
+   - C��c text, icon ở light mode là màu đen (#000000)
    - Ngoại trừ các nút và thành phần trên màu #005fb8 (chữ trắng, icon trắng)
    ========================================================================== */
 
@@ -5423,7 +5439,7 @@ html.light-mode [data-lucide] {
 }
 
 html.light-mode svg:not(:has(linearGradient)) path:not(.fluent-3d-icon *),
-html.light-mode svg:not(:has(linearGradient)) circle:not([stroke="#005fb8"]):not([stroke="#4cc2ff"]):not(.fluent-3d-icon *),
+html.light-mode svg:not(:has(linearGradient)) circle:not([data-spinning-ring="true"]):not([data-progress-ring-track="true"]):not([stroke="#005fb8"]):not([stroke="#4cc2ff"]):not(.fluent-3d-icon *),
 html.light-mode svg:not(:has(linearGradient)) rect:not(.fluent-3d-icon *),
 html.light-mode svg:not(:has(linearGradient)) line:not(.fluent-3d-icon *),
 html.light-mode svg:not(:has(linearGradient)) polyline:not(.fluent-3d-icon *),
