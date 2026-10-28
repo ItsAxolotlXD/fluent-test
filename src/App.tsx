@@ -1050,7 +1050,7 @@ export default function App() {
       {isBootVideoFinished && !isSplashFinished && (
         <SplashScreen
           duration={SPINNING_RING_GIF_LOOP_DURATION_MS * 2}
-          ringSize={80}
+          ringSize={60}
           isClosable={false}
           onFinish={() => setIsSplashFinished(true)}
         />
