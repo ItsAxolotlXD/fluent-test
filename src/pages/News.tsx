@@ -44,6 +44,22 @@ const slideUpVariant = {
   }),
 };
 
+const cardSlideUpVariant = {
+  hidden: { opacity: 0, y: 22 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.46,
+      ease: [0.16, 1, 0.3, 1],
+      delay: 0,
+    },
+    transitionEnd: {
+      transform: 'none',
+    },
+  },
+};
+
 export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChange }) => {
   const { settings } = useSettings();
   const [activeTab, setActiveTab] = useState<FeedTab>('All');
@@ -203,19 +219,16 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
         ) : filteredNews.length <= 6 || !settings.loadPagesSequentially ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredNews.map((article) => {
-              const itemIdx = animIdx++;
               return (
                 <motion.div
-                  key={article.id}
-                  variants={slideUpVariant}
+                  key={`${activeTab}-${article.id}`}
+                  variants={cardSlideUpVariant}
                   initial="hidden"
                   animate="visible"
-                  custom={itemIdx}
                 >
                   <NewsCard
                     article={article}
                     onClick={(a) => navigate(`/news/${a.slug}`)}
-                    index={itemIdx}
                   />
                 </motion.div>
               );
@@ -227,14 +240,12 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             <SequentialSection order={0} enabled={settings.loadPagesSequentially}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredNews.slice(0, 6).map((article) => {
-                  const itemIdx = animIdx++;
                   return (
                     <motion.div
-                      key={article.id}
-                      variants={slideUpVariant}
+                      key={`${activeTab}-${article.id}`}
+                      variants={cardSlideUpVariant}
                       initial="hidden"
                       animate="visible"
-                      custom={itemIdx}
                     >
                       <NewsCard
                         article={article}
@@ -250,14 +261,12 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
             <SequentialSection order={1} enabled={settings.loadPagesSequentially}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredNews.slice(6).map((article) => {
-                  const itemIdx = animIdx++;
                   return (
                     <motion.div
-                      key={article.id}
-                      variants={slideUpVariant}
+                      key={`${activeTab}-${article.id}`}
+                      variants={cardSlideUpVariant}
                       initial="hidden"
                       animate="visible"
-                      custom={itemIdx}
                     >
                       <NewsCard
                         article={article}

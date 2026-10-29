@@ -101,6 +101,9 @@ const MorphingVerticalIndicator: React.FC<MorphingIndicatorProps> = ({
     visible: boolean;
   }>({ top: 0, left: 10, height: 38, visible: false });
 
+  const prevTopRef = useRef<number | null>(null);
+  const [stretchKey, setStretchKey] = useState(0);
+
   useEffect(() => {
     let isCancelled = false;
     let observer: ResizeObserver | null = null;
@@ -165,14 +168,23 @@ const MorphingVerticalIndicator: React.FC<MorphingIndicatorProps> = ({
     };
   }, [currentRoute, dependencyKey, containerRef]);
 
-  if (!bounds.visible) return null;
-
   const INDICATOR_HEIGHT = 16;
   const centeredTop = bounds.top + Math.round((bounds.height - INDICATOR_HEIGHT) / 2);
 
+  useEffect(() => {
+    if (bounds.visible) {
+      if (prevTopRef.current !== null && Math.abs(prevTopRef.current - centeredTop) > 2) {
+        setStretchKey((k) => k + 1);
+      }
+      prevTopRef.current = centeredTop;
+    }
+  }, [centeredTop, bounds.visible]);
+
+  if (!bounds.visible) return null;
+
   return (
     <motion.div
-      className="absolute w-[3px] h-[16px] bg-[#4cc2ff] z-30 pointer-events-none rounded-full shadow-none"
+      className="absolute w-[3px] h-[16px] z-30 pointer-events-none rounded-full"
       initial={false}
       animate={{
         top: centeredTop,
@@ -180,12 +192,33 @@ const MorphingVerticalIndicator: React.FC<MorphingIndicatorProps> = ({
         opacity: bounds.visible ? 1 : 0,
       }}
       transition={{
-        type: 'spring',
-        stiffness: 500,
-        damping: 35,
-        mass: 0.5,
+        top: {
+          duration: 0.38,
+          ease: [0.4, 0.0, 0.2, 1],
+        },
+        left: {
+          duration: 0.38,
+          ease: [0.4, 0.0, 0.2, 1],
+        },
+        opacity: {
+          duration: 0.15,
+        },
       }}
-    />
+    >
+      <motion.div
+        key={`sidebar-pill-stretch-${stretchKey}`}
+        className="w-full h-full bg-[#4cc2ff] rounded-full origin-center"
+        initial={{ scaleY: 1 }}
+        animate={{
+          scaleY: stretchKey > 0 ? [1, 2.2, 1] : 1,
+        }}
+        transition={{
+          duration: 0.38,
+          times: [0, 0.5, 1],
+          ease: [0.4, 0.0, 0.2, 1],
+        }}
+      />
+    </motion.div>
   );
 };
 
