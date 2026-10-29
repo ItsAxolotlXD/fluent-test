@@ -1797,9 +1797,9 @@ export const TopBar: React.FC<TopBarProps> = ({
                     if (currentRoute === '/search' || currentRoute.startsWith('/search')) return 'Try new search here!';
                     if (currentRoute === '/' || currentRoute === '/home') return 'Search Home';
                     if (currentRoute.startsWith('/live-tv') || currentRoute.startsWith('/watch-preview')) return 'Search Watch';
-                    if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search Update blogs';
-                    if (currentRoute.startsWith('/gallery')) return 'Search Gallery';
-                    if (currentRoute.startsWith('/draws')) return 'Search Ink Canvas';
+                    if (currentRoute.startsWith('/news') || currentRoute.startsWith('/article') || currentRoute.startsWith('/updates')) return 'Search for articles';
+                    if (currentRoute.startsWith('/gallery')) return 'Search for photos or files';
+                    if (currentRoute.startsWith('/draws')) return 'Search for canvases';
                     if (currentRoute.startsWith('/notes') || currentRoute.startsWith('/write') || currentRoute.startsWith('/present') || currentRoute.startsWith('/table')) return 'Search Notes';
                     if (currentRoute.startsWith('/vlc') || currentRoute.startsWith('/screenbox')) return 'Search Screenbox';
                     if (currentRoute.startsWith('/craftmine')) return 'Search Craftmine';

@@ -70,14 +70,14 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm sm:text-base font-semibold text-black dark:text-white">
-                Sparkle 26.11 (Build 261024)
+                Sparkle 26.11 (Build 26530.10)
               </h2>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4cc2ff]/20 text-[#0078d4] dark:text-[#4cc2ff]">
                 Latest
               </span>
             </div>
             <p className="text-xs text-black/70 dark:text-[#AAAAAA] mt-0.5">
-              Feedback Page • Tooltips • WinUI 3 Refresh • Project Orbit Milestone 4
+              New Build Numbering System • YYWDD.MM • Sparkle 26.11
             </p>
           </div>
         </div>
@@ -111,10 +111,10 @@ export const News: React.FC<NewsProps> = ({ navigate, searchQuery, onSearchChang
               }}
             >
               <div className="relative z-10 px-5 py-2.5 sm:px-6 sm:py-3 rounded-[10px] bg-white/20 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <span className="text-base sm:text-lg font-bold text-white drop-shadow-md tracking-wide">
+                <span className="text-base sm:text-lg font-bold text-white drop-shadow-md tracking-wide text-center">
                   {(() => {
                     const m = featured.title.match(/Build\s+([A-Za-z0-9.]+)/i) || featured.id.match(/\b(26\d+)\b/);
-                    return m ? `Build ${m[1]}` : 'Build 261024';
+                    return m ? `Build ${m[1]}` : featured.title.replace(/^#\s*/, '');
                   })()}
                 </span>
               </div>

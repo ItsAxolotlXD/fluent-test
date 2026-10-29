@@ -37,13 +37,38 @@ const slideUpProps = (index: number) => ({
 
 const renderFormattedContent = (text: string) => {
   if (!text) return null;
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
+      const inner = part.slice(2, -2);
+      if (inner.startsWith('`') && inner.endsWith('`')) {
+        const codeText = inner.slice(1, -1);
+        return (
+          <span
+            key={i}
+            className="px-3 py-1.5 rounded-[8px] bg-black/[0.06] dark:bg-white/[0.12] text-[#0078d4] dark:text-[#4cc2ff] font-bold text-lg sm:text-xl md:text-2xl tracking-wide inline-block border border-[#0078d4]/25 dark:border-[#4cc2ff]/30 shadow-xs my-1"
+            style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+          >
+            {codeText}
+          </span>
+        );
+      }
       return (
         <strong key={i} className="font-semibold text-black dark:text-white">
-          {part.slice(2, -2)}
+          {inner}
         </strong>
+      );
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const codeText = part.slice(1, -1);
+      return (
+        <span
+          key={i}
+          className="px-2.5 py-1 rounded-[6px] bg-black/[0.06] dark:bg-white/[0.12] text-[#0078d4] dark:text-[#4cc2ff] font-semibold text-base sm:text-lg md:text-xl tracking-wide inline-block border border-black/10 dark:border-white/10 my-1"
+          style={{ fontFamily: "'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif" }}
+        >
+          {codeText}
+        </span>
       );
     }
     return part;
@@ -247,14 +272,13 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                 if (paragraph.startsWith('## ')) {
                   const subHeadingText = paragraph.replace(/^##\s*/, '');
                   return (
-                    <motion.h3 
-                      key={idx}
-                      {...slideUpProps(currentPIndex)}
-                      className="text-base sm:text-lg md:text-xl font-semibold text-[#111827] dark:text-white pt-4 pb-1 flex items-center gap-2.5 tracking-tight"
-                    >
-                      <span className="w-1 h-3.5 sm:h-4 rounded-full bg-[#0078d4] dark:bg-[#4cc2ff] shrink-0 inline-block" />
-                      <span>{renderFormattedContent(subHeadingText)}</span>
-                    </motion.h3>
+                    <motion.div key={idx} {...slideUpProps(currentPIndex)} className="space-y-2 pt-2">
+                      <div className="w-[calc(100%-24px)] sm:w-[calc(100%-40px)] mx-auto h-[1px] bg-black/10 dark:bg-white/10 mt-7 mb-3.5 rounded-full" />
+                      <h3 className="text-base sm:text-lg md:text-xl font-semibold text-[#111827] dark:text-white pb-1 flex items-center gap-2.5 tracking-tight">
+                        <CategoryIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                        <span>{renderFormattedContent(subHeadingText)}</span>
+                      </h3>
+                    </motion.div>
                   );
                 }
 
@@ -272,10 +296,10 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   const headingText = paragraph.replace(/^#\s*/, '');
                   return (
                     <motion.div key={idx} {...slideUpProps(currentPIndex)} className="space-y-3">
-                      <div className="w-20 sm:w-24 h-[1px] bg-black/15 dark:bg-white/15 mt-8 mb-4 rounded-full" />
+                      <div className="w-[calc(100%-16px)] sm:w-[calc(100%-32px)] mx-auto h-[1px] bg-black/15 dark:bg-white/15 mt-8 mb-4 rounded-full" />
                       <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#111827] dark:text-white pb-1 flex items-center gap-3 tracking-tight">
                         <CategoryIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
-                        <span>{headingText}</span>
+                        <span>{renderFormattedContent(headingText)}</span>
                       </h2>
                     </motion.div>
                   );
@@ -294,6 +318,45 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                       <p className="text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB] flex-1">
                         {renderFormattedContent(bulletText)}
                       </p>
+                    </motion.div>
+                  );
+                }
+
+                // Numbered subheadings (e.g. **1. ...**, **2. ...**)
+                if (/^\*\*\d+\./.test(paragraph)) {
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...slideUpProps(currentPIndex)}
+                      className="pt-4 pb-1 pl-2 sm:pl-3 text-base sm:text-lg font-semibold text-[#111827] dark:text-white"
+                    >
+                      {renderFormattedContent(paragraph)}
+                    </motion.div>
+                  );
+                }
+
+                // Parameter breakdown lines (e.g. **YY** — ...)
+                if (/^\*\*[A-Z]{1,2}\*\*\s*—/.test(paragraph)) {
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...slideUpProps(currentPIndex)}
+                      className="my-1.5 pl-4 sm:pl-6 text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB]"
+                    >
+                      {renderFormattedContent(paragraph)}
+                    </motion.div>
+                  );
+                }
+
+                // Standalone formula / code chip lines (e.g. **`...`** or `...`)
+                if (/^(\*\*`|`)/.test(paragraph)) {
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...slideUpProps(currentPIndex)}
+                      className="my-2.5 pl-2 sm:pl-3"
+                    >
+                      {renderFormattedContent(paragraph)}
                     </motion.div>
                   );
                 }

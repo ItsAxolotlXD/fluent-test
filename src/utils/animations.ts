@@ -13,10 +13,10 @@ export const slideUpVariant = {
 };
 
 // Fluent modal dialog animation:
-// Animation in: Zoom từ gần (scale 1.8) ra xa (scale 1.0) with ease [0.16, 1, 0.3, 1]
-// Animation out: Zoom từ xa (scale 1.0) vào gần (scale 1.8) with ease [0.4, 0, 0.2, 1]
+// Animation in: Zoom từ gần (scale 1.7) ra xa (scale 1.0) with ease [0.16, 1, 0.3, 1]
+// Animation out: Zoom từ xa (scale 1.0) vào gần (scale 1.7) with ease [0.4, 0, 0.2, 1]
 export const modalDialogVariants = {
-  initial: { opacity: 0, scale: 1.8 },
+  initial: { opacity: 0, scale: 1.7 },
   animate: {
     opacity: 1,
     scale: 1,
@@ -27,7 +27,7 @@ export const modalDialogVariants = {
   },
   exit: {
     opacity: 0,
-    scale: 1.8,
+    scale: 1.7,
     transition: {
       duration: 0.18,
       ease: [0.4, 0, 0.2, 1],
