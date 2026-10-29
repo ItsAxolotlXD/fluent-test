@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { slideUpVariant } from '../utils/animations';
+import { slideUpVariant, modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 import {
   Play,
   Pause,
@@ -2226,30 +2226,17 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             onClick={() => setIsOpenUrlModal(false)}
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.06,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={(e) => e.stopPropagation()}
               className="fluent-modal-dialog relative z-10 w-full max-w-lg bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
@@ -2453,31 +2440,18 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={() => setIsOpenMediaModal(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.06,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fluent-modal-dialog relative z-10 w-full max-w-lg bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
               {/* Modal Header */}
@@ -2682,31 +2656,18 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={() => setIsEffectsModalOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.06,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fluent-modal-dialog relative z-10 w-full max-w-2xl bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
             >
               {/* Header */}
@@ -3070,30 +3031,17 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             onClick={() => setIsInfoModalOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.06,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={(e) => e.stopPropagation()}
               className="fluent-modal-dialog relative z-10 w-full max-w-md bg-white/95 dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-neutral-800 dark:text-neutral-200"
             >
@@ -3164,30 +3112,17 @@ export const VLC: React.FC<VLCProps> = ({ navigate }) => {
             onClick={() => setIsAboutModalOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.24,
-                  ease: [0.16, 1, 0.3, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 1.06,
-                transition: {
-                  duration: 0.18,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={(e) => e.stopPropagation()}
               className="fluent-modal-dialog relative z-10 w-full max-w-md bg-white/95 dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-neutral-800 dark:text-neutral-200"
             >

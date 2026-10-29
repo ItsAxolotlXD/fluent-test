@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 import {
   Check,
   ChevronRight,
@@ -118,11 +119,10 @@ export const WinUI3: React.FC = () => {
 
   const dialogVariantsCode = `// WinUI 3 / Fluent Design Modal Dialog In/Out Animation
 export const dialogAnimation = {
-  initial: { opacity: 0, scale: 0.96, y: 10 },
+  initial: { opacity: 0, scale: 1.8 },
   animate: {
     opacity: 1,
     scale: 1,
-    y: 0,
     transition: {
       duration: 0.24,
       ease: [0.16, 1, 0.3, 1] // Fluent Standard Decelerate
@@ -130,8 +130,7 @@ export const dialogAnimation = {
   },
   exit: {
     opacity: 0,
-    scale: 0.96,
-    y: 10,
+    scale: 1.8,
     transition: {
       duration: 0.18,
       ease: [0.4, 0, 0.2, 1] // Fluent Standard Accelerate
@@ -143,7 +142,7 @@ export const backdropAnimation = {
   initial: { opacity: 0 },
   animate: { 
     opacity: 1, 
-    transition: { duration: 0.22, ease: [0.4, 0, 0.2, 1] } 
+    transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } 
   },
   exit: { 
     opacity: 0, 
@@ -177,10 +176,10 @@ export const FullscreenDialog: React.FC<DialogProps> = ({
           <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none">
             {/* Backdrop In/Out Animation */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={onClose}
               className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
             />
@@ -190,20 +189,11 @@ export const FullscreenDialog: React.FC<DialogProps> = ({
               role="dialog"
               aria-modal="true"
               aria-label={title}
-              initial={{ opacity: 0, scale: 0.96, y: 10 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] }
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.96,
-                y: 10,
-                transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] }
-              }}
-              className="relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-2xl border border-black/10 dark:border-white/10"
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-2xl border border-black/10 dark:border-white/10"
             >
               <div className="p-6 pb-4">
                 <h2 className="text-[19px] font-semibold text-[#111827] dark:text-white">
@@ -1163,10 +1153,10 @@ export const FullscreenDialog: React.FC<DialogProps> = ({
             {isDialogOpen && (
               <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none">
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  variants={modalBackdropVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                   onClick={() => setIsDialogOpen(false)}
                   className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
                 />
@@ -1174,25 +1164,10 @@ export const FullscreenDialog: React.FC<DialogProps> = ({
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="winui-dialog-title"
-                  initial={{ opacity: 0, scale: 0.96, y: 10 }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1,
-                    y: 0,
-                    transition: {
-                      duration: 0.24,
-                      ease: [0.16, 1, 0.3, 1]
-                    }
-                  }}
-                  exit={{ 
-                    opacity: 0, 
-                    scale: 0.96,
-                    y: 10,
-                    transition: {
-                      duration: 0.18,
-                      ease: [0.4, 0, 0.2, 1]
-                    }
-                  }}
+                  variants={modalDialogVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                   className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] text-[#111827] dark:text-[#F3F4F6] border border-black/[0.08] dark:border-white/[0.08]"
                 >
                   <div className="p-6 pb-5">

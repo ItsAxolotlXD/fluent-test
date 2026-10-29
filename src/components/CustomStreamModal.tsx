@@ -5,6 +5,7 @@ import { FluentArrowUploadIcon } from './FluentIcons';
 import { parseM3UPlaylist, SAMPLE_M3U_TEMPLATE } from '../utils/m3uParser';
 import { Channel } from '../types';
 import { useSettings } from '../hooks/useSettings';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 
 interface CustomStreamModalProps {
   isOpen: boolean;
@@ -109,10 +110,10 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
           {/* 1. Backdrop / Lớp nền mờ */}
           <motion.div 
             id="custom-stream-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            variants={modalBackdropVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             onClick={onClose}
           />
@@ -120,23 +121,10 @@ export const CustomStreamModal: React.FC<CustomStreamModalProps> = ({
           {/* 2. Dialog Modal Box - Fluent Design ContentDialog */}
           <motion.div 
             id="custom-stream-dialog"
-            initial={{ opacity: 0, scale: 1.06 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              transition: {
-                duration: 0.24,
-                ease: [0.16, 1, 0.3, 1]
-              }
-            }}
-            exit={{ 
-              opacity: 0, 
-              scale: 1.06,
-              transition: {
-                duration: 0.18,
-                ease: [0.4, 0, 0.2, 1]
-              }
-            }}
+            variants={modalDialogVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
           >
             {/* Header Area */}

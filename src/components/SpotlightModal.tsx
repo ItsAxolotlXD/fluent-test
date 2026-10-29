@@ -26,6 +26,7 @@ import { Channel } from '../types';
 import { CategoryIcon } from './CategoryIcon';
 import { useSettings } from '../hooks/useSettings';
 import { useVoiceSearch } from '../hooks/useVoiceSearch';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 
 interface SpotlightModalProps {
   isOpen: boolean;
@@ -182,10 +183,10 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
           {/* 1. Backdrop */}
           <motion.div 
             id="spotlight-modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            variants={modalBackdropVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             onClick={onClose}
           />
@@ -193,23 +194,10 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
           {/* 2. Dialog Modal Box - Fluent Design */}
           <motion.div 
             id="spotlight-popup-card"
-            initial={{ opacity: 0, scale: 1.06 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              transition: {
-                duration: 0.24,
-                ease: [0.16, 1, 0.3, 1]
-              }
-            }}
-            exit={{ 
-              opacity: 0, 
-              scale: 1.06,
-              transition: {
-                duration: 0.18,
-                ease: [0.4, 0, 0.2, 1]
-              }
-            }}
+            variants={modalDialogVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="fluent-modal-dialog relative w-full max-w-[440px] sm:max-w-[480px] bg-white dark:bg-[#202020] border border-black/[0.08] dark:border-white/[0.08] rounded-[10px] p-4 sm:p-5 shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] overflow-hidden z-10 my-auto max-h-[calc(100vh-32px)] flex flex-col text-[#111827] dark:text-[#FFFFFF]"
           >
             {viewMode === 'settings' ? (

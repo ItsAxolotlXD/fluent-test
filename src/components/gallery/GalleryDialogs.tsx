@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Folder, Home, Check } from 'lucide-react';
 import { FluentFolderAddIcon } from '../FluentIcons';
 import type { GalleryFolder } from '../../services/galleryStorage';
+import { modalDialogVariants, modalBackdropVariants } from '../../utils/animations';
 
 const DialogShell: React.FC<{ 
   title: string; 
@@ -24,10 +25,10 @@ const DialogShell: React.FC<{
       className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 sm:p-6 select-none"
     >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+        variants={modalBackdropVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
         onClick={onClose}
       />
@@ -35,25 +36,10 @@ const DialogShell: React.FC<{
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        initial={{ opacity: 0, scale: 0.96, y: 10 }}
-        animate={{ 
-          opacity: 1, 
-          scale: 1,
-          y: 0,
-          transition: {
-            duration: 0.24,
-            ease: [0.16, 1, 0.3, 1]
-          }
-        }}
-        exit={{ 
-          opacity: 0, 
-          scale: 0.96,
-          y: 10,
-          transition: {
-            duration: 0.18,
-            ease: [0.4, 0, 0.2, 1]
-          }
-        }}
+        variants={modalDialogVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         className={`fluent-modal-dialog relative z-10 w-full ${maxWidthClass} bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]`}
       >
         <div className="p-6 pb-4">

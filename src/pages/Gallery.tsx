@@ -47,6 +47,7 @@ import {
 import { GalleryContextMenu, type GalleryContextAction } from '../components/gallery/GalleryContextMenu';
 import { PromptDialog, MoveToFolderDialog } from '../components/gallery/GalleryDialogs';
 import { useSettings } from '../hooks/useSettings';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 import { flyoutPanelClassName, flyoutPanelStyle } from '../components/FlyoutDropdown';
 import { 
   FluentNotesIcon,
@@ -1819,12 +1820,23 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       {/* Mobile App Dialog */}
       <AnimatePresence>
         {isMobileAppModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none">
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ opacity: 1, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
-              exit={{ opacity: 0, scale: 1.06, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } }}
-              className="w-full max-w-md bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-xl shadow-2xl border border-black/10 dark:border-white/10 p-6 relative select-none"
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              onClick={() => setIsMobileAppModalOpen(false)}
+              className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fluent-modal-dialog relative z-10 w-full max-w-md bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-xl shadow-2xl border border-black/10 dark:border-white/10 p-6 select-none"
             >
               <button
                 type="button"
@@ -1881,17 +1893,23 @@ export const Gallery: React.FC<GalleryProps> = ({ navigate, searchQuery = '', ro
       {/* Welcome Screen / Highlights Modal */}
       <AnimatePresence>
         {isWelcomeScreenOpen && (
-          <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setIsWelcomeScreenOpen(false);
-            }}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none">
             <motion.div
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ opacity: 1, scale: 1, transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] } }}
-              exit={{ opacity: 0, scale: 1.06, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } }}
-              className="w-full max-w-2xl bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-2xl shadow-2xl border border-black/10 dark:border-white/10 p-6 sm:p-8 relative select-none max-h-[90vh] overflow-y-auto no-scrollbar"
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              onClick={() => setIsWelcomeScreenOpen(false)}
+              className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fluent-modal-dialog relative z-10 w-full max-w-2xl bg-[#ffffff] dark:bg-[#202020] text-[#111827] dark:text-white rounded-2xl shadow-2xl border border-black/10 dark:border-white/10 p-6 sm:p-8 select-none max-h-[90vh] overflow-y-auto no-scrollbar"
             >
               <button
                 type="button"

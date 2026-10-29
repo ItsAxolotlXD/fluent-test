@@ -13,6 +13,7 @@ import {
 import { AnimatedBootScreen } from '../components/AnimatedBootScreen';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings, FONT_SCALE_CONFIG, SystemSettings } from '../hooks/useSettings';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 import { SfCheckmark } from '../components/SfCheckmark';
 import { KEYBIND_DEFINITIONS, DEFAULT_KEYBINDS, eventToKeyString, validateKeybind } from '../utils/keybinds';
 import { KeybindAction } from '../types';
@@ -1499,22 +1500,18 @@ export const Settings: React.FC<SettingsProps> = ({
       {/* Temporary light mode maintenance lock */}
       <AnimatePresence>
         {isLightModeUnlockOpen && (
-          <motion.div
+          <div
             key="light-mode-lock-container"
             id="light-mode-lock-container"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
             className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 select-none"
           >
             <motion.div
               key="light-mode-lock-backdrop"
               id="light-mode-lock-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.14, ease: [0.4, 0, 0.2, 1] }}
+              variants={modalBackdropVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={() => setIsLightModeUnlockOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             />
@@ -1524,39 +1521,10 @@ export const Settings: React.FC<SettingsProps> = ({
               role="dialog"
               aria-modal="true"
               aria-labelledby="light-mode-lock-title"
-              initial={{ opacity: 0, scale: 0.68 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                transition: {
-                  duration: 0.16,
-                  ease: [0.4, 0, 0.2, 1], // ease in / ease out
-                  opacity: {
-                    duration: 0.12,
-                    ease: [0, 0, 0.2, 1], // visible right away so zoom-in from far away is clearly seen
-                  },
-                  scale: {
-                    duration: 0.16,
-                    ease: [0.4, 0, 0.2, 1],
-                  }
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                scale: 0.68,
-                transition: {
-                  duration: 0.15,
-                  ease: [0.4, 0, 0.2, 1], // ease in / ease out
-                  opacity: {
-                    duration: 0.14,
-                    ease: [0.5, 0, 1, 1], // delays fade so zoom out is clearly visible
-                  },
-                  scale: {
-                    duration: 0.15,
-                    ease: [0.4, 0, 0.2, 1],
-                  }
-                }
-              }}
+              variants={modalDialogVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="fluent-modal-dialog relative z-10 w-full max-w-[480px] bg-white dark:bg-[#202020] rounded-[6px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] text-[#111827] dark:text-[#F3F4F6] border-none"
             >
               <div className="p-6 pb-5">
@@ -1618,7 +1586,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 </button>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSettings } from '../hooks/useSettings';
+import { modalDialogVariants, modalBackdropVariants } from '../utils/animations';
 
 interface UnsavedNoteModalProps {
   isOpen: boolean;
@@ -35,23 +36,19 @@ export const UnsavedNoteModal: React.FC<UnsavedNoteModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <div
           key="unsaved-note-modal-container"
           id="unsaved-note-modal-container"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 select-none"
         >
           {/* Backdrop */}
           <motion.div
             key="unsaved-note-modal-backdrop"
             id="unsaved-note-modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.14, ease: [0.4, 0, 0.2, 1] }}
+            variants={modalBackdropVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             onClick={onCancel}
             className="fixed inset-0 bg-black/50 backdrop-blur-xs"
           />
@@ -63,23 +60,10 @@ export const UnsavedNoteModal: React.FC<UnsavedNoteModalProps> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby="unsaved-note-modal-title"
-            initial={{ opacity: 0, scale: 1.06 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              transition: {
-                duration: 0.24,
-                ease: [0.16, 1, 0.3, 1]
-              }
-            }}
-            exit={{ 
-              opacity: 0, 
-              scale: 1.06,
-              transition: {
-                duration: 0.18,
-                ease: [0.4, 0, 0.2, 1]
-              }
-            }}
+            variants={modalDialogVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="fluent-modal-dialog relative z-10 w-full max-w-[460px] bg-white dark:bg-[#202020] rounded-[10px] overflow-hidden shadow-[0_24px_48px_rgba(0,0,0,0.22),0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.7),0_2px_6px_rgba(255,255,255,0.04)] border border-black/[0.08] dark:border-white/[0.08] text-[#111827] dark:text-[#F3F4F6]"
           >
             {/* Header & Body Content */}
@@ -127,7 +111,7 @@ export const UnsavedNoteModal: React.FC<UnsavedNoteModalProps> = ({
               </button>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
