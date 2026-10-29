@@ -35,10 +35,39 @@ const slideUpProps = (index: number) => ({
   },
 });
 
-const renderFormattedContent = (text: string) => {
+const renderFormattedContent = (text: string, onNavigate?: (url: string) => void) => {
   if (!text) return null;
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  // Match markdown links [text](url), bold **...**, or code `...`
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|`[^`]+`)/g);
   return parts.map((part, i) => {
+    // Markdown link: [label](url)
+    if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+      const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (match) {
+        const rawLabel = match[1];
+        let url = match[2].trim();
+        if (url === 'direct to the numbering system article' || url.includes('numbering-system')) {
+          url = '/news/introducing-a-new-build-numbering-system-for-sparkle';
+        }
+        return (
+          <a
+            key={i}
+            href={url}
+            onClick={(e) => {
+              e.preventDefault();
+              if (onNavigate) {
+                onNavigate(url);
+              } else {
+                window.location.href = url;
+              }
+            }}
+            className="font-bold text-[#0078d4] dark:text-[#4cc2ff] hover:underline underline-offset-4 cursor-pointer inline-flex items-center gap-1 transition-colors"
+          >
+            {renderFormattedContent(rawLabel, onNavigate)}
+          </a>
+        );
+      }
+    }
     if (part.startsWith('**') && part.endsWith('**')) {
       const inner = part.slice(2, -2);
       if (inner.startsWith('`') && inner.endsWith('`')) {
@@ -55,7 +84,7 @@ const renderFormattedContent = (text: string) => {
       }
       return (
         <strong key={i} className="font-semibold text-black dark:text-white">
-          {inner}
+          {renderFormattedContent(inner, onNavigate)}
         </strong>
       );
     }
@@ -93,7 +122,10 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
   const isLocked = article.isLocked && !unlockedArticles[article.slug];
   const relatedArticles = NEWS_DATA.filter((a) => a.id !== article.id).slice(0, 2);
   const buildMatch = article.title.match(/Build\s+([A-Za-z0-9.]+)/i) || article.id.match(/\b(26\d+)\b/);
-  const bigThumbnailTitle = buildMatch ? `26.11 Insider Preview - Build ${buildMatch[1]}` : article.title.replace(/^#\s*/, '');
+  const isRtm = /RTM/i.test(article.title);
+  const bigThumbnailTitle = buildMatch 
+    ? `26.11 ${isRtm ? 'RTM' : 'Insider Preview'} - Build ${buildMatch[1]}` 
+    : article.title.replace(/^#\s*/, '');
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
@@ -305,6 +337,21 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                   );
                 }
 
+                // Build list items (e.g. `26.10 - Build 261003` (`b_release`) or - `26.10 - Build 261003` ...)
+                // These must NOT have a bullet dot
+                if (/^[-•]?\s*`26\.\d{2}\s*-\s*Build/i.test(paragraph)) {
+                  const cleanText = paragraph.replace(/^[-•]\s*/, '');
+                  return (
+                    <motion.div
+                      key={idx}
+                      {...slideUpProps(currentPIndex)}
+                      className="my-1.5 pl-4 sm:pl-6 text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB]"
+                    >
+                      {renderFormattedContent(cleanText, navigate)}
+                    </motion.div>
+                  );
+                }
+
                 // Bullet item (dấu chấm đầu dòng: • hoặc -)
                 if (paragraph.startsWith('• ') || paragraph.startsWith('- ')) {
                   const bulletText = paragraph.replace(/^[•\-]\s*/, '');
@@ -316,7 +363,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-[#ff2df7] dark:bg-[#4cc2ff] mt-2.5 shrink-0" />
                       <p className="text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB] flex-1">
-                        {renderFormattedContent(bulletText)}
+                        {renderFormattedContent(bulletText, navigate)}
                       </p>
                     </motion.div>
                   );
@@ -330,7 +377,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                       {...slideUpProps(currentPIndex)}
                       className="pt-4 pb-1 pl-2 sm:pl-3 text-base sm:text-lg font-semibold text-[#111827] dark:text-white"
                     >
-                      {renderFormattedContent(paragraph)}
+                      {renderFormattedContent(paragraph, navigate)}
                     </motion.div>
                   );
                 }
@@ -343,7 +390,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                       {...slideUpProps(currentPIndex)}
                       className="my-1.5 pl-4 sm:pl-6 text-sm sm:text-base leading-relaxed text-[#374151] dark:text-[#D1D5DB]"
                     >
-                      {renderFormattedContent(paragraph)}
+                      {renderFormattedContent(paragraph, navigate)}
                     </motion.div>
                   );
                 }
@@ -356,7 +403,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
                       {...slideUpProps(currentPIndex)}
                       className="my-2.5 pl-2 sm:pl-3"
                     >
-                      {renderFormattedContent(paragraph)}
+                      {renderFormattedContent(paragraph, navigate)}
                     </motion.div>
                   );
                 }
@@ -401,7 +448,7 @@ export const Article: React.FC<ArticleProps> = ({ slug, navigate, fontSize = 16 
 
                 return (
                   <motion.p key={idx} {...slideUpProps(currentPIndex)} className="whitespace-pre-line leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
-                    {renderFormattedContent(paragraph)}
+                    {renderFormattedContent(paragraph, navigate)}
                   </motion.p>
                 );
               })}

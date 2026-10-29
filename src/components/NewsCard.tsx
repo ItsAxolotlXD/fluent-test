@@ -1,96 +1,93 @@
 import React from 'react';
-import { Calendar, ArrowRight, Bookmark, Lock } from 'lucide-react';
 import { NewsArticle } from '../types';
-import { useFavorites } from '../hooks/useFavorites';
-import { DEFAULT_BANNER_PLACEHOLDER } from '../data/heroSlides';
 
 interface NewsCardProps {
   article: NewsArticle;
   onClick: (article: NewsArticle) => void;
+  index?: number;
 }
 
 export const NewsCard: React.FC<NewsCardProps> = ({ article, onClick }) => {
-  const { isNewsBookmarked, toggleBookmarkNews } = useFavorites();
-  const bookmarked = isNewsBookmarked(article.slug);
-
   const buildMatch = article.title.match(/Build\s+([A-Za-z0-9.]+)/i) || article.id.match(/\b(26\d+)\b/);
   const buildLabel = buildMatch ? `Build ${buildMatch[1]}` : (article.category || 'Sparkle');
 
   return (
-    <div
+    <button
       id={`news-card-${article.slug}`}
+      type="button"
       onClick={() => onClick(article)}
-      className="fluent-reveal-item news-card group relative rounded-[8px] bg-white dark:bg-[#38383d] border border-[#e5e5e5] dark:border-[#48484e] hover:border-[#cccccc] dark:hover:border-[#606066] hover:bg-[#fafafa] dark:hover:bg-[#424248] transition-colors overflow-hidden flex flex-col justify-between cursor-default shadow-xs"
+      className="w-full group relative text-left rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 shadow-sm hover:shadow-2xl hover:-translate-y-1.5 cursor-pointer select-none bg-[#1c1822] transition-all duration-300"
     >
-      {/* Cover Gradient Banner matching Template Studio */}
-      <div 
-        className="relative h-44 sm:h-48 overflow-hidden flex items-center justify-center select-none"
-        style={{
-          background: 'radial-gradient(circle at 50% 110%, #f472b6 0%, #db2777 45%, #701a75 100%)',
-        }}
-      >
-        <div className="relative z-10 px-4 py-2 sm:px-5 sm:py-2.5 rounded-[8px] bg-white/20 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-md flex items-center justify-center gap-2 group-hover:scale-105 transition-transform duration-300">
-          <span className="text-sm sm:text-base font-bold text-white drop-shadow-md tracking-wide">
+      {/* Card Background: User-provided fluid artwork */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <img
+          src="/assets/aistudio/image_ee030999.png"
+          alt=""
+          aria-hidden="true"
+          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/15 group-hover:bg-black/5 transition-colors" />
+      </div>
+
+      {/* Sheet Preview / Badge Area with Enlarged Build text & reliable frosted blur */}
+      <div className="relative z-10 h-44 p-5 flex items-center justify-center">
+        <div 
+          className="relative px-6 py-3 rounded-2xl border border-white/25 shadow-2xl group-hover:scale-105 group-hover:border-white/40 transition-transform duration-300 overflow-hidden"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.40)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
+          {/* Hardware-accelerated blurred backdrop clone that never fails or turns opaque during scroll */}
+          <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+            <img
+              src="/assets/aistudio/image_ee030999.png"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover scale-150 filter blur-xl brightness-75 contrast-125"
+            />
+            <div className="absolute inset-0 bg-black/35" />
+          </div>
+
+          <span 
+            className="relative z-10 text-base sm:text-lg font-bold tracking-tight text-white drop-shadow-md select-none" 
+            style={{ color: '#ffffff' }}
+          >
             {buildLabel}
           </span>
         </div>
+      </div>
 
-        {/* Category Badge & Lock Badge */}
-        {article.category && (
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-            <div className="px-2 py-0.5 rounded-[3px] bg-black/75 text-[10px] font-semibold text-white uppercase tracking-wider">
-              {article.category}
-            </div>
-            {article.isLocked && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-amber-600 text-[10px] font-semibold text-white">
-                <Lock className="w-3 h-3" />
-                <span>Locked</span>
-              </div>
-            )}
-          </div>
-        )}
+      {/* Info Section - Frosted dark glass overlay, 2 lines white text */}
+      <div 
+        className="relative z-10 p-4 border-t border-white/15 overflow-hidden transition-colors"
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.55)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+        }}
+      >
+        {/* Hardware-accelerated blurred backdrop clone that never fails or turns opaque during scroll */}
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <img
+            src="/assets/aistudio/image_ee030999.png"
+            alt=""
+            aria-hidden="true"
+            className="w-full h-full object-cover scale-150 filter blur-xl brightness-75 contrast-125"
+          />
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
 
-        {/* Bookmark Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleBookmarkNews(article.slug);
-          }}
-          className={`absolute top-2.5 right-2.5 z-30 w-7 h-7 rounded-[4px] flex items-center justify-center transition-colors ${
-            bookmarked 
-              ? 'bg-[#e81123] text-white' 
-              : 'bg-black/60 text-white hover:bg-black/80'
-          }`}
-          title={bookmarked ? 'Remove bookmark' : 'Bookmark article'}
+        <h3 
+          className="relative z-10 font-semibold line-clamp-2 !text-white text-white group-hover:!text-white transition-opacity leading-snug drop-shadow-sm"
+          style={{ color: '#ffffff' }}
         >
-          <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-        </button>
+          {article.title.replace(/^#\s*/, '')}
+        </h3>
       </div>
-
-      {/* Content */}
-      <div className="p-4 pt-3 flex-1 flex flex-col justify-between">
-        <div>
-          <h3 className="text-[14.5px] font-semibold text-[#111827] dark:text-white group-hover:text-[#4cc2ff] dark:group-hover:text-[#4cc2ff] transition-colors leading-snug line-clamp-2">
-            {article.title.replace(/^#\s*/, '')}
-          </h3>
-          <p className="text-xs text-[#4b5563] dark:text-[#9ca3af] line-clamp-2 mt-1.5 leading-relaxed font-normal">
-            {article.excerpt}
-          </p>
-        </div>
-
-        {/* Metadata Footer */}
-        <div className="mt-3.5 pt-2.5 border-t border-[#e5e5e5] dark:border-[#383838] flex items-center justify-between text-xs text-[#6b7280] dark:text-[#8e8e93]">
-          <div className="flex items-center gap-1.5 font-normal">
-            <Calendar className="w-3.5 h-3.5" />
-            <span>{article.publishedAt}</span>
-          </div>
-
-          <div className="flex items-center gap-1 text-[#4cc2ff] font-medium text-xs group-hover:translate-x-0.5 transition-transform">
-            <span>{article.isLocked ? 'Unlock' : 'Read more'}</span>
-            <ArrowRight className="w-3 h-3" />
-          </div>
-        </div>
-      </div>
-    </div>
+    </button>
   );
 };
+
+

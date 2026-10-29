@@ -18,6 +18,7 @@ export interface SystemSettings {
   autoScrollBanner: boolean;
   autoHideSidebar: boolean;
   hoverToExpand: boolean;
+  hoverToExpandVersion?: number;
   searchCategories: boolean;
   searchNews: boolean;
   searchTv: boolean;
@@ -72,7 +73,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   fontScaleVersion: 2,
   autoScrollBanner: true,
   autoHideSidebar: false,
-  hoverToExpand: false,
+  hoverToExpand: true,
+  hoverToExpandVersion: 1,
   searchCategories: true,
   searchNews: true,
   searchTv: true,
@@ -202,7 +204,10 @@ export const getStoredSettings = (): SystemSettings => {
           : false,
         pageLoadingVersion: 2,
         loadPagesSequentially: typeof parsed.loadPagesSequentially === 'boolean' ? parsed.loadPagesSequentially : false,
-        hoverToExpand: typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : DEFAULT_SETTINGS.hoverToExpand,
+        hoverToExpand: parsed.hoverToExpandVersion === 1
+          ? (typeof parsed.hoverToExpand === 'boolean' ? parsed.hoverToExpand : true)
+          : true,
+        hoverToExpandVersion: 1,
         fontScale,
         fontScaleVersion: 2,
       };

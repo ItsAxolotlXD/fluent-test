@@ -531,8 +531,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({
               animate="visible"
               custom={animIdx++}
             >
-              <p className="text-xs uppercase tracking-[0.2em] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">Notes</p>
-              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your notes</h1>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Your notes</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank document.</p>
             </motion.div>
             <motion.button
@@ -586,7 +585,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({
                     event.stopPropagation();
                     setNoteContextMenu({ x: event.clientX, y: event.clientY, noteId: note.id });
                   }}
-                  className="rounded-2xl bg-white dark:bg-[#1e2024] border border-black/10 dark:border-white/10 p-3.5 sm:p-4.5 flex flex-col justify-between shadow-xs transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff]"
+                  className="rounded-2xl bg-[#f0f2f5] dark:bg-[#282b32] border border-black/10 dark:border-white/10 p-3.5 sm:p-4.5 flex flex-col justify-between shadow-xs transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff]"
                 >
                   <div className="flex items-start justify-between mb-2.5">
                     <div className="min-w-0 pr-2">
@@ -638,7 +637,7 @@ export const NotesApp: React.FC<NotesAppProps> = ({
                         handleOpenThisNote();
                       }
                     }}
-                    className="relative h-[88px] sm:h-[98px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group/thumb focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-neutral-100 dark:bg-[#16181d] p-3 select-none flex items-center justify-center border-[3px] border-black/[0.08] dark:border-white/[0.08] group-hover:border-[#d91a9c]/50 dark:group-hover:border-[#ff82ff]/50"
+                    className="relative h-[88px] sm:h-[98px] rounded-2xl overflow-hidden shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer group/thumb focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d91a9c] dark:focus-visible:ring-[#ff82ff] bg-white dark:bg-[#1e2025] p-3 select-none flex items-center justify-center border-[2px] border-black/[0.06] dark:border-white/[0.08] group-hover:border-[#d91a9c]/50 dark:group-hover:border-[#ff82ff]/50"
                   >
                     <div className="flex items-center gap-3.5 z-10 w-full px-2">
                       <div className="shrink-0 flex items-center justify-center bg-transparent">

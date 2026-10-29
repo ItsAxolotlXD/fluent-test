@@ -135,23 +135,24 @@ export const LiveTV: React.FC<LiveTVProps> = ({
               <span className="relative z-10 !bg-transparent">All</span>
               {selectedCategory === 'All' && (
                 <motion.div
+                  key="watch-tab-underline-all"
                   layoutId="watch-category-active-underline"
                   className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-full bg-[#4cc2ff]"
-                  initial={false}
+                  initial={{ scaleX: 1 }}
                   animate={{
-                    scaleX: [1, 1.38, 0.94, 1],
+                    scaleX: [1, 2.8, 0.82, 1],
                   }}
                   transition={{
                     layout: {
                       type: 'spring',
-                      stiffness: 350,
-                      damping: 26,
-                      mass: 0.65,
+                      stiffness: 210,
+                      damping: 24,
+                      mass: 0.8,
                     },
                     scaleX: {
-                      duration: 0.36,
-                      times: [0, 0.45, 0.8, 1],
-                      ease: [0.25, 1, 0.5, 1],
+                      duration: 0.56,
+                      times: [0, 0.4, 0.75, 1],
+                      ease: [0.22, 0.88, 0.35, 1],
                     },
                   }}
                 />
@@ -176,23 +177,24 @@ export const LiveTV: React.FC<LiveTVProps> = ({
                   <span className="relative z-10 !bg-transparent">{cat}</span>
                   {isActive && (
                     <motion.div
+                      key={`watch-tab-underline-${cat}`}
                       layoutId="watch-category-active-underline"
                       className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-full bg-[#4cc2ff]"
-                      initial={false}
+                      initial={{ scaleX: 1 }}
                       animate={{
-                        scaleX: [1, 1.38, 0.94, 1],
+                        scaleX: [1, 2.8, 0.82, 1],
                       }}
                       transition={{
                         layout: {
                           type: 'spring',
-                          stiffness: 350,
-                          damping: 26,
-                          mass: 0.65,
+                          stiffness: 210,
+                          damping: 24,
+                          mass: 0.8,
                         },
                         scaleX: {
-                          duration: 0.36,
-                          times: [0, 0.45, 0.8, 1],
-                          ease: [0.25, 1, 0.5, 1],
+                          duration: 0.56,
+                          times: [0, 0.4, 0.75, 1],
+                          ease: [0.22, 0.88, 0.35, 1],
                         },
                       }}
                     />

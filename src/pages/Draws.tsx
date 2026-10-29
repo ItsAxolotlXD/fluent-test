@@ -737,8 +737,7 @@ export const Draws: React.FC<DrawsProps> = ({ navigate }) => {
               animate="visible"
               custom={animIdx++}
             >
-              <p className="text-xs uppercase tracking-[0.2em] text-[#0078d4] dark:text-[#4cc2ff] font-semibold">Ink Canvas</p>
-              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-2">Your canvases</h1>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Your canvases</h1>
               <p className="text-sm text-black/55 dark:text-white/55 mt-2">Pick up where you left off or start with a blank sheet.</p>
             </motion.div>
             <motion.button
